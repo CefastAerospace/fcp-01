@@ -21,6 +21,7 @@
 #define MPU9250_ADDR    0x68   // AD0 = GND (use 0x69 se AD0 = HIGH)
 #define BH1750_ADDR_1   0x23   // ADDR = GND
 #define BH1750_ADDR_2   0x5C   // ADDR = VCC
+/* Endereço do Encoder AS5600 é fixo no 0x36*/
 
 // --- Parâmetros do Motor BLDC ---
 // IMPORTANTE: Ajuste o número de pole pairs do seu motor!

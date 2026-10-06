@@ -1,6 +1,6 @@
 # Pinagem do OBC - ESP32
 
-*Fonte: Alocação de Pinos.pdf.*
+*Base: Alocação de Pinos.pdf, com decisões vigentes informadas pelo responsável pelo OBC-DH em 06/10/2026. Definições abertas: [PENDENCIAS_ARQUITETURAIS.md](PENDENCIAS_ARQUITETURAIS.md).*
 
 ---
 ## Protocolos de Comunicação:
@@ -8,7 +8,7 @@
 - O rádio LoRa utiliza o barramento **VSPI**; 
 - O cartão SD utiliza **HSPI**; 
 - Os sensores digitais compartilham um barramento **I2C**; 
-- A comunicação com o Payload ocorre por **UART2**;
+- A comunicação com o Payload ocorre por **I2C bidirecional**; barramento, GPIOs e papéis ainda dependem de [P-I2C](PENDENCIAS_ARQUITETURAIS.md#p-i2c--comunicação-obcpayload-e-barramento);
 - A interface de bancada utiliza **UART0** pela conexão **USB** da placa;
 
 ---
@@ -21,10 +21,8 @@ As direções de entrada e saída são relativas ao ESP32.
 | ----------------- | ------------------ | ---------------------- | ---------------------- | ------------------------------------------------------------------------------------------------------- |
 | 1 - TX0           | Transmissão (TX)   | UART0 / USB            | Bancada / solo         | Porta umbilical para telecomandos e telemetria no nível básico. Conexão USB-C.                          |
 | 3 - RX0           | Recepção (RX)      | UART0 / USB            | Bancada / solo         | Recepção da interface umbilical, em conjunto com TX0.                                                   |
-| 16                | Recepção (RX2)     | UART2                  | Payload - Raspberry Pi | Recebe pacotes JSON com dados ADS-B já decodificados.                                                   |
-| 17                | Transmissão (TX2)  | UART2                  | Payload - Raspberry Pi | Envia comandos de status ou requisições de temperatura interna.                                         |
-| 21                | SDA - dados        | I2C único              | Térmico, EPS e ADCS    | Barramento mestre para LM75A, INA219, BMS, MPU-6050 e GY-302.                                           |
-| 22                | SCL - clock        | I2C único              | Térmico, EPS e ADCS    | Clock do barramento mestre compartilhado pelos sensores I2C.                                            |
+| 21                | SDA - dados        | I2C de sensores        | Térmico, EPS e ADCS    | Sensores previstos: LM75A, INA219, BMS, MPU9250 e BH1750. Inventário completo e ligação do Payload dependem das pendências. |
+| 22                | SCL - clock        | I2C de sensores        | Térmico, EPS e ADCS    | Clock do barramento dos sensores; parâmetros e compartilhamento dependem de P-I2C.                      |
 | 23                | MOSI               | VSPI                   | TT&C - LoRa SX1276     | Envio de dados ao rádio.                                                                                |
 | 19                | MISO               | VSPI                   | TT&C - LoRa SX1276     | Recepção de dados do rádio.                                                                             |
 | 18                | SCK                | VSPI                   | TT&C - LoRa SX1276     | Clock SPI do rádio.                                                                                     |
@@ -48,7 +46,7 @@ As direções de entrada e saída são relativas ao ESP32.
 | Interface         | Sinais e GPIOs                          | Uso                            |
 | ----------------- | --------------------------------------- | ------------------------------ |
 | UART0             | TX = 1; RX = 3                          | Comunicação de bancada / solo. |
-| UART2             | TX = 17; RX = 16                        | Comunicação com o Payload.     |
+| I2C do Payload    | Barramento e GPIOs a definir             | Comunicação bidirecional; formato JSON ou binário ainda não escolhido. |
 | I2C               | SDA = 21; SCL = 22                      | Sensores térmicos, EPS e ADCS. |
 | VSPI              | MOSI = 23; MISO = 19; SCK = 18; CS = 5  | Rádio LoRa SX1276.             |
 | Controle do rádio | DIO0 = 4; RST = 14                      | Eventos e recuperação do LoRa. |
@@ -56,7 +54,11 @@ As direções de entrada e saída são relativas ao ESP32.
 | Controle do motor | U = 25; V = 26; W = 27; EN = 12         | Driver do ADCS / SimpleFOC.    |
 | Burn Wire         | Trigger = 33                            | Liberação das antenas.         |
 
-> O DS3231 está confirmado na arquitetura como dispositivo I2C, mas não aparece explicitamente na tabela de pinagem original. A integração ao barramento SDA = 21 / SCL = 22 deve ser confirmada no ICD e no esquema elétrico.
+> GPIOs 16 e 17 não têm mais a antiga função UART2 do Payload. Não considerá-los automaticamente livres: o barramento I2C do Payload e a disponibilidade na placa ainda precisam de definição. `Pinout.h` preserva as constantes antigas até uma alteração de código específica; consultar [P-EPS-ELETRICA](PENDENCIAS_ARQUITETURAIS.md#p-eps-eletrica--energia-placa-e-sensores).
+
+> MPU9250 = `0x68` (AD0 em GND); BH1750 #1 = `0x23` e BH1750 #2 = `0x5C`. A proposta `PAYLOAD_ADDR = 0x80` não é endereço válido de 7 bits. Consultar [P-ENDERECOS](PENDENCIAS_ARQUITETURAIS.md#p-enderecos--inventário-i2c-e-proposta-do-payload).
+
+> O OBC é responsável pelo tempo. O uso exclusivo do relógio interno do ESP32 é uma hipótese; a presença de DS3231 externo ainda não está definida. Consultar [P-TEMPO](PENDENCIAS_ARQUITETURAIS.md#p-tempo--referência-temporal-do-obc).
 
 ---
 
@@ -65,6 +67,8 @@ As direções de entrada e saída são relativas ao ESP32.
 ### Separação dos barramentos SPI
 
 A separação entre VSPI e HSPI evita que rádio e SD disputem o mesmo barramento físico e favorece operações independentes. 
+
+A alocação apresentada é a do OBC; o documento compartilhado ainda registra o mapa inverso. Consultar [P-SPI](PENDENCIAS_ARQUITETURAIS.md#p-spi--rádio-e-armazenamento) antes da integração.
 
 Na implementação, cada periférico ainda deve ter seu acesso coordenado quando utilizado por mais de uma tarefa. A separação física, por si só, não define a sincronização dos drivers, arquivos ou dados compartilhados.
 
@@ -92,22 +96,15 @@ Também lista **GPIO 34, GPIO 36 e GPIO 39** como livres para futuras entradas e
 
 Os níveis ativos de EN, RST, CS, PWM e Burn Wire não foram definidos no PDF. Os estados durante boot e reset, a habilitação do motor e as condições de liberação da antena precisam ser acordados com os subsistemas responsáveis.
 
+EN no GPIO 12 está confirmado; o código do ADCS ainda utiliza o valor antigo 33. Burn Wire no GPIO 33 libera fisicamente a retenção da antena. A flag sugerida `IS_WIRE_BURNT` é uma proposta; persistência e confirmação física continuam abertas. Consultar [P-ADCS](PENDENCIAS_ARQUITETURAIS.md#p-adcs--controle-e-integração) e [P-BURN-WIRE](PENDENCIAS_ARQUITETURAIS.md#p-burn-wire--liberação-da-antena).
+
 > Desabilitar o driver do motor representa a intenção de economizar energia (**o consumo residual deve ser medido** - ter certeza se realmente “zera o consumo”).
 
 ---
 
 ## Pendências relacionadas
 
-| Pendência | Definição necessária |
-|---|---|
-| ADC das placas solares | A arquitetura prevê essa leitura, mas a pinagem evita ADC e não reserva um pino para ela. |
-| Encoder SPI do ADCS | A arquitetura prevê a interface, mas não há alocação para o encoder nem definição de compartilhamento de barramento. |
-| RTC DS3231 | Confirmar ligação, endereço e configuração no I2C compartilhado. |
-| Thermal Watchdog | A arquitetura cita seu acionamento, mas não define interface, circuito ou sinal dedicado. |
-| Controle físico do ADCS | Confirmar a divisão entre OBC e ADCS, pois os requisitos limitam o OBC à coordenação lógica, enquanto a pinagem prevê PWM e EN do motor. |
-| Elétrica e temporização | Confirmar alimentação, GND, níveis lógicos, resistores, velocidades dos barramentos e estados no reset. |
-
-O detalhamento dessas pendências está em [ARCHITECTURE.md](ARCHITECTURE.md), etapa 1. As ações correspondentes estão em [TODO.md](TODO.md).
+Pesquisar em [PENDENCIAS_ARQUITETURAIS.md](PENDENCIAS_ARQUITETURAIS.md) antes de implementar ou montar uma interface ainda aberta: P-I2C e P-ENDERECOS (Payload e sensores), P-SPI (rádio/SD), P-ADCS (motor/encoder), P-TEMPO (relógio), P-EPS-ELETRICA (ADC solar, placa e níveis), P-TERMICO e P-BURN-WIRE (atuações). As ações correspondentes continuam em [TODO.md](TODO.md).
 
 ---
 

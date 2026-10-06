@@ -47,12 +47,15 @@ Essas funcionalidades representam o escopo esperado. A documentação recebida n
 | [README.md](README.md) | Visão geral e regras para trabalhar no projeto. |
 | [PINAGEM.md](PINAGEM.md) | Mapeamento dos GPIOs e observações de integração. |
 | [ARCHITECTURE.md](ARCHITECTURE.md) | Arquitetura e requisitos organizados por dependências. |
+| [PENDENCIAS_ARQUITETURAIS.md](PENDENCIAS_ARQUITETURAIS.md) | Decisões vigentes, hipóteses e contratos ainda abertos entre subsistemas. |
 | [TODO.md](TODO.md) | Checklist de implementação na mesma sequência da arquitetura. |
 | PDFs de origem | Referência das decisões e dos requisitos que deram origem aos arquivos Markdown. |
 | ConOps e ICDs | Definição dos modos de operação e dos contratos entre subsistemas. |
 | Padrão existente de escrita e documentação em C++ | Convenções de código e documentação já adotadas pela equipe. |
 
 A sequência de desenvolvimento começa pelos contratos e pela plataforma, passa por comunicação, tempo e armazenamento e chega à integração dos subsistemas, aos comandos, aos modos de voo e à recuperação de falhas.
+
+As decisões vigentes confirmam MPU9250 em `0x68`, BH1750 em `0x23` / `0x5C`, EN do motor no GPIO 12, Payload por I2C bidirecional e liberação física da antena por Burn Wire no GPIO 33. O OBC é responsável pelo tempo; uso exclusivo do relógio interno ainda é hipótese. Pesquisar os detalhes não definidos em [PENDENCIAS_ARQUITETURAIS.md](PENDENCIAS_ARQUITETURAIS.md), incluindo proposta de endereço `0x80`, arbitragem I2C e escolha de JSON ou binário.
 
 ---
 
@@ -62,7 +65,7 @@ A sequência de desenvolvimento começa pelos contratos e pela plataforma, passa
 
 1. **Consultar os materiais de referência:** ler as partes relevantes da arquitetura, da pinagem, dos requisitos, do ConOps, dos ICDs, do regulamento e do padrão existente de C++ antes de alterar código ou documentação.
 2. **Verificar o que já existe:** antes de criar uma função, classe, driver, utilitário, script ou outra ferramenta de código, procurar implementações equivalentes no projeto e nas dependências adotadas. Reutilizar ou adaptar a solução existente quando ela atender à necessidade.
-3. **Resolver divergências:** se as referências discordarem ou omitirem uma definição necessária, registrar a pendência e alinhá-la com a área responsável antes de implementar o comportamento dependente. Não escolher silenciosamente uma versão.
+3. **Resolver divergências:** pesquisar [PENDENCIAS_ARQUITETURAIS.md](PENDENCIAS_ARQUITETURAIS.md); se as referências discordarem ou omitirem uma definição necessária, registrar a pendência nesse documento e alinhá-la com a área responsável antes de implementar o comportamento dependente. Não escolher silenciosamente uma versão.
 4. **Manter a documentação coerente:** atualizar arquitetura, pinagem e checklist quando a alteração afetar interfaces, responsabilidades, requisitos ou o comportamento esperado.
 
 ### Durante a operação
@@ -82,7 +85,7 @@ A sequência de desenvolvimento começa pelos contratos e pela plataforma, passa
 | Área | Responsabilidade |
 |---|---|
 | Plataforma e comunicação | Inicialização do ESP32, configuração dos GPIOs, barramentos e tarefas FreeRTOS. |
-| Tempo e dados | Referência do RTC, timestamps e organização dos registros. |
+| Tempo e dados | Referência temporal sob responsabilidade do OBC, timestamps e organização dos registros; fonte de tempo depende de P-TEMPO. |
 | Armazenamento | Escrita e leitura do SD, eventos e estatísticas. |
 | Interfaces dos subsistemas | Troca de dados com Payload, TT&C, EPS, ADCS e sistema térmico. |
 | Missão e supervisão | Telecomandos, telemetria, modos de operação, prioridades e recuperação. |
@@ -102,7 +105,7 @@ obc-dh/
 └── tests/           # Testes de comportamento dos módulos e de integração.
 ```
 
-O header [Pinout.h](../headers/Pinout.h) expõe os GPIOs como constantes `constexpr int` no namespace `pinout`, agrupadas por interface. Ele não inicializa hardware nem define níveis ativos, velocidades ou políticas de atuação. As pendências de [PINAGEM.md](PINAGEM.md) continuam válidas.
+O header [Pinout.h](../headers/Pinout.h) expõe os GPIOs como constantes `constexpr int` no namespace `pinout`, agrupadas por interface. Ele não inicializa hardware nem define níveis ativos, velocidades ou políticas de atuação. Suas constantes UART2 ainda representam a antiga interface do Payload e precisam de atualização em uma alteração de código separada. Pesquisar as dependências em [PENDENCIAS_ARQUITETURAIS.md](PENDENCIAS_ARQUITETURAIS.md).
 
 O estado mutável deve pertencer ao módulo responsável. Quando uma variável compartilhada for necessária, declarar com `extern` no header e fornecer uma única definição no `.cpp`; o acesso entre tarefas deve ser coordenado.
 

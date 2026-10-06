@@ -2,7 +2,7 @@
 
 Este documento reúne a definição de arquitetura e a especificação de requisitos fornecidas, organizadas dos fundamentos até a integração e o acabamento. A sequência corresponde às etapas de [TODO.md](TODO.md).
 
-As decisões de hardware, interfaces e requisitos identificados por ID vêm dos PDFs. A divisão em etapas, as entregas sugeridas e os critérios adicionais de implementação são uma proposta de organização. Parâmetros ausentes e divergências permanecem como **pendências**, sem valores presumidos.
+Este documento distingue referências históricas dos PDFs das decisões vigentes informadas pelo responsável pelo OBC-DH em 06/10/2026. A divisão em etapas, as entregas sugeridas e os critérios adicionais de implementação são uma proposta de organização. Requisitos e critérios de validação permanecem preservados. Parâmetros ausentes e divergências estão centralizados em [PENDENCIAS_ARQUITETURAIS.md](PENDENCIAS_ARQUITETURAIS.md), sem valores presumidos.
 
 ---
 
@@ -53,24 +53,17 @@ Antes de modificar a implementação, consultar essas referências, a pinagem, o
 
 ### Definições ainda necessárias
 
-| Pendência | Definição a obter | Etapas afetadas |
-|---|---|---|
-| Revisão dos requisitos | A capa indica v1.5, de 25/05/2026; o histórico registra v1.6, de 29/05/2026. Confirmar a revisão vigente. | Todas. |
-| ConOps | Modos, transições, condições de entrada e saída e prioridades da missão. | 7 a 10. |
-| Arquitetura lógica e ambiente C++ | Organização adotada pelo CEFAST, ferramentas, dependências e configuração de compilação. | 2 a 10. |
-| ICDs e pacotes | Campos obrigatórios, unidades, enquadramento das mensagens, limites de tamanho, comandos, respostas e critérios de validação. | 3 a 10. |
-| UART e aquisição | Velocidade, volume de mensagens e capacidade de absorver rajadas do Payload. | 3, 6 e 9. |
-| Critérios temporais | Tempo máximo de resposta a TC, detecção e recuperação de falhas, detecção de perda de comunicação e resolução dos timestamps. | 4 e 7 a 10. |
-| Tempo do Payload | A arquitetura cita timestamp no JSON; os requisitos atribuem ao OBC a associação do timestamp. Definir o significado de cada tempo e a referência usada. | 4, 6 e 7. |
-| Energia | Cota do OBC, limiares, estados de baixo consumo e prioridades acordadas com EPS. | 2 e 8 a 10. |
-| ADC das placas solares | A arquitetura prevê ADC; a pinagem propõe evitá-lo. Definir a interface real de medição e sua alocação. | 2, 3 e 6. |
-| Encoder do ADCS | A arquitetura cita SPI, mas a pinagem não reserva sinais para o encoder. Definir interface e eventual compartilhamento. | 2, 3, 6 e 8. |
-| Responsabilidade do motor | Conciliar o escopo lógico do OBC com PWM, EN e SimpleFOC previstos na pinagem. | 2, 6 e 8. |
-| RTC | Confirmar ligação do DS3231 ao I2C compartilhado, endereço, inicialização, ajuste e validade do relógio. | 3 e 4. |
-| Thermal Watchdog | Definir a função térmica citada na arquitetura, sua interface, condições de acionamento e recuperação. | 2, 6, 8 e 9. |
-| Burn Wire | Definir condições de autorização, duração, nível ativo, estado em reset e comportamento após reinicialização. | 2, 7 a 10. |
-| Placa e elétrica | Confirmar variante do DevKit, módulo, USB-C, circuito USB/UART, níveis lógicos, resistores e estados dos strapping pins. | 2 e 3. |
-| Registros e estatísticas | Definir formato persistente, estatísticas relevantes, política de gravação, retenção e contagem de reinicializações. | 4, 5 e 9. |
+Pesquisar em [PENDENCIAS_ARQUITETURAIS.md](PENDENCIAS_ARQUITETURAIS.md) antes da implementação dependente. O documento reúne responsáveis, etapas afetadas e definições necessárias:
+
+| Referência no documento de pendências | Assunto |
+|---|---|
+| P-I2C / P-ENDERECOS | I2C bidirecional do Payload, papéis, arbitragem, barramento e endereços. |
+| P-DADOS | JSON ou binário, contratos, TM e TC. |
+| P-TEMPO | Tempo sob responsabilidade do OBC; fonte física e sincronização ainda abertas. |
+| P-BURN-WIRE / P-ADCS | Liberação da antena, flag proposta, motor e encoder. |
+| P-SPI / P-EPS-ELETRICA | Rádio/SD, placa, medição solar e orçamento energético. |
+| P-TERMICO | Hipótese de monitoramento no EPS e função térmica a confirmar. |
+| P-MISSAO / P-REGISTROS / P-VALIDACAO | Referências, ConOps, recuperação, persistência e critérios preservados. |
 
 **Entrega sugerida:** contratos mínimos registrados e cada pendência impeditiva resolvida antes da implementação que depende dela.
 
@@ -82,7 +75,9 @@ Antes de modificar a implementação, consultar essas referências, a pinagem, o
 
 O **ESP32** concentra a coordenação lógica dos subsistemas, coleta e processamento dos dados, execução de telecomandos, geração de telemetria e monitoramento operacional. O software roda sobre **FreeRTOS**, com filas para isolar a troca de mensagens entre tarefas.
 
-O armazenamento local ocorre em cartão SD. O RTC fornece a referência de tempo sem depender de internet. A arquitetura também atribui ao OBC o acionamento do Thermal Watchdog e o gerenciamento da interface umbilical USB-C.
+O armazenamento local ocorre em cartão SD. O OBC é responsável pela referência temporal; uso exclusivo do relógio interno do ESP32 é uma hipótese a definir em P-TEMPO. A função Thermal Watchdog depende de P-TERMICO, incluindo a hipótese de verificação no EPS e envio de dados ao OBC. A interface umbilical USB-C permanece prevista.
+
+A tabela abaixo preserva os componentes citados no PDF. A escolha atual de RTC externo não está confirmada; consultar [PENDENCIAS_ARQUITETURAIS.md](PENDENCIAS_ARQUITETURAIS.md).
 
 | Componente confirmado no PDF | Função | Justificativa de escolha |
 |---|---|---|
@@ -102,7 +97,7 @@ Valores informados na tabela de energia da arquitetura:
 | Leitor de SD | 3,3 V | 0,2 mA | 25 mA | 100 mA | Rail de 3,3 V do EPS. |
 | RTC | 3,3 V | 0,11 mA | 0,2 mA | 1 mA | Rail de 3,3 V do EPS. |
 
-> Esses valores são referências do PDF. Não representam, por si só, a cota energética aprovada pelo EPS nem o consumo medido da placa completa com todos os periféricos.
+> Esses valores são referências do PDF. Não representam, por si só, a cota energética aprovada pelo EPS nem o consumo medido da placa completa com todos os periféricos. A linha de RTC externo é histórica e depende de P-TEMPO; orçamento e medições dependem de P-EPS-ELETRICA em [PENDENCIAS_ARQUITETURAIS.md](PENDENCIAS_ARQUITETURAIS.md).
 
 ### Inicialização
 
@@ -121,13 +116,15 @@ A pinagem está em [PINAGEM.md](PINAGEM.md). A inicialização deve considerar E
 | Interface | Uso previsto |
 |---|---|
 | UART0 / conexão USB da placa | Interface umbilical de bancada e solo para TC e TM básicos. |
-| UART2 | JSON ADS-B do Payload e solicitações do OBC à Raspberry Pi. |
-| I2C compartilhado | Sensores térmicos, EPS, ADCS e integração do RTC a confirmar. |
+| I2C do Payload | Comunicação bidirecional com Raspberry Pi; formato JSON ou binário, barramento, GPIOs e papéis ainda a definir. |
+| I2C de sensores | Térmico, EPS e ADCS; endereços confirmados MPU9250 = 0x68 e BH1750 = 0x23 / 0x5C. Presença de RTC externo e compartilhamento com Payload ainda abertos. |
 | VSPI | Rádio LoRa SX1276 do TT&C. |
 | HSPI | Leitura e gravação do cartão SD. |
 | GPIO / PWM | Reset e eventos do rádio, habilitação e fases do motor e gatilho Burn Wire, conforme acordos de responsabilidade. |
 
 VSPI e HSPI separam rádio e armazenamento. Cada driver e recurso compartilhado ainda precisa de uma política de acesso.
+
+A alocação SPI acima é a da pinagem do OBC e diverge do mapa anterior compartilhado. Para I2C bidirecional, a intenção de envio iniciado por qualquer lado exige definir papéis, suporte dos dispositivos e arbitragem; não basta “quem enviar primeiro manda”. Pesquisar P-I2C, P-ENDERECOS e P-SPI em [PENDENCIAS_ARQUITETURAIS.md](PENDENCIAS_ARQUITETURAIS.md).
 
 ### Organização da execução
 
@@ -141,7 +138,7 @@ O DIO0 do SX1276 sinaliza eventos de recepção ou transmissão. Seu tratamento 
 
 ## 4. Tempo e modelo de dados
 
-Cada mensagem ADS-B recebida e processada deve ter um timestamp com resolução suficiente (**REQ-OBC-006**). Eventos operacionais também devem registrar horário (**REQ-OBC-010**). O DS3231 fornece a referência de tempo.
+Cada mensagem ADS-B recebida e processada deve ter um timestamp com resolução suficiente (**REQ-OBC-006**). Eventos operacionais também devem registrar horário (**REQ-OBC-010**). O OBC define a referência temporal; DS3231 é a referência histórica do PDF, não uma escolha atual confirmada. Ajuste, resolução, validade, deriva e comportamento após perda de alimentação dependem de P-TEMPO em [PENDENCIAS_ARQUITETURAIS.md](PENDENCIAS_ARQUITETURAIS.md).
 
 Os dados de missão e telemetria devem ter estrutura documentada e permitir reprodução da análise posterior (**REQ-OBC-005**). Definir os campos, suas unidades e a representação temporal antes de integrar armazenamento e transmissão.
 
@@ -154,7 +151,7 @@ Os dados de missão e telemetria devem ter estrutura documentada e permitir repr
 | Eventos e falhas | Ocorrência e horário de eventos operacionais, falhas críticas e problemas. |
 | Estatísticas | Informações relevantes da missão e quantidade de reinicializações. |
 
-> A lista é uma base de conteúdo, não um esquema definitivo de pacote. O JSON citado para a UART do Payload não determina automaticamente o formato dos arquivos no SD ou da TM.
+> A lista é uma base de conteúdo, não um esquema definitivo de pacote. O formato I2C do Payload ainda pode ser JSON ou binário. O JSON produzido para armazenamento local na Raspberry Pi não determina o formato do enlace, dos arquivos no SD ou da TM. Pesquisar P-DADOS em [PENDENCIAS_ARQUITETURAIS.md](PENDENCIAS_ARQUITETURAIS.md).
 
 **Entrega sugerida:** modelo comum de registros e política de tempo, incluindo a distinção entre timestamp recebido do Payload e timestamp associado pelo OBC, quando ambos existirem.
 
@@ -168,6 +165,8 @@ A integridade deve ser garantida durante a operação nominal e reinicializaçõ
 
 Como trabalho de implementação, definir a política de escrita, sincronização, fechamento, recuperação de registros e tratamento de indisponibilidade do SD. 
 
+Pesquisar P-REGISTROS em [PENDENCIAS_ARQUITETURAIS.md](PENDENCIAS_ARQUITETURAIS.md) para os contratos de persistência e extração ainda abertos.
+
 > A eficácia deve ser verificada com interrupções durante gravação; o simples fechamento de arquivos na operação normal não demonstra atendimento ao requisito em uma queda inesperada.
 
 **Entrega sugerida:** registros legíveis e documentados, recuperação após reinicialização e extração reproduzível dos dados para análise.
@@ -180,11 +179,11 @@ Como trabalho de implementação, definir a política de escrita, sincronizaçã
 
 | Subsistema | Dados recebidos / monitorados pelo OBC | Ações do OBC |
 |---|---|---|
-| Payload | ADS-B já decodificado: ICAO, posição, altitude e velocidade; status e temperatura conforme ICD. | Estruturar, associar tempo, armazenar e preparar os dados para TM; enviar solicitações pela UART. |
+| Payload | ADS-B já decodificado: ICAO, posição, altitude e velocidade; status e temperatura conforme ICD. | Trocar dados por I2C bidirecional, associar tempo, armazenar e preparar TM; formato e transações dependem de P-I2C e P-DADOS. |
 | TT&C | Telecomandos recebidos do solo. | Entregar TM formatada e compilada; validar e encaminhar os TC para execução. |
 | EPS | Tensão, corrente e temperatura. | Adequar modos e atividades à autonomia disponível. |
 | ADCS | Informações e vetores de atitude. | Compor TM e enviar a solicitação lógica da manobra prevista no ICD e ConOps. |
-| Térmico | Temperatura pelo LM75A indicado na pinagem. | Monitorar e integrar a função Thermal Watchdog quando seu contrato estiver definido. |
+| Térmico | Temperatura pelo LM75A previsto; hipótese de dados térmicos fornecidos pelo EPS. | Armazenar dados e integrar a função definida com EPS/Térmico; contrato aberto em P-TERMICO. |
 
 > O texto dos requisitos usa “tumbling” na interface ADCS, enquanto o escopo e a pinagem mencionam “detumbling”. A nomenclatura e a ação efetiva devem ser confirmadas com ADCS.
 
@@ -192,18 +191,20 @@ Como trabalho de implementação, definir a política de escrita, sincronizaçã
 
 A tabela abaixo preserva os pares de origem e destino indicados no PDF. Nas linhas de leitura, a seta representa o acesso indicado pelo documento; a resposta do sensor fornece o dado ao OBC.
 
+Ela é uma referência de origem, não o contrato vigente completo. A decisão atual é I2C bidirecional com formato JSON ou binário ainda aberto; RTC externo, encoder e ADC solar dependem de [PENDENCIAS_ARQUITETURAIS.md](PENDENCIAS_ARQUITETURAIS.md).
+
 | Origem → destino no PDF | Dado / operação | Interface | Observação de integração |
 |---|---|---|---|
 | ESP32 → ADCS | Leitura do GY-302. | I2C | Solicitação de leitura; informação retornada ao OBC. |
 | ESP32 → ADCS | Leitura de tensão das placas solares. | ADC | Diverge do mapeamento sem ADC; definição pendente. |
-| ADCS → ESP32 | Encoder do motor. | SPI | Não há alocação correspondente na pinagem. |
+| ADCS → ESP32 | Encoder do motor. | I2C | Não há alocação correspondente na pinagem. |
 | ESP32 → TT&C | Transmissão de pacote de dados. | SPI | VSPI do LoRa, conforme pinagem. |
-| Payload → ESP32 | JSON com ICAO, latitude, longitude, velocidade e timestamp. | UART serial | Transmissão em alta velocidade, sem valor definido; conciliar timestamp com REQ-OBC-006. |
+| Payload → ESP32 | JSON com ICAO, latitude, longitude, velocidade e timestamp. | I2C | Descrição de origem; formato vigente e taxa ainda não definidos. |
 | Cartão SD → ESP32 | Verificação de dados. | SPI | Leitura pelo HSPI. |
 | ESP32 → cartão SD | Armazenamento de dados. | SPI | Escrita pelo HSPI. |
 | RTC → ESP32 | Referência para timestamp. | I2C | DS3231. |
 
-Os requisitos complementam esse fluxo com TC do TT&C ao OBC e monitoramento do EPS. A pinagem acrescenta MPU-6050, INA219, BMS, sinais do motor, Burn Wire e a interface umbilical. Esses elementos devem ser integrados respeitando os contratos entre áreas.
+Os requisitos complementam esse fluxo com TC do TT&C ao OBC e monitoramento do EPS. A pinagem vigente utiliza MPU9250, dois BH1750, INA219 e BMS previstos, sinais do motor, Burn Wire e a interface umbilical. Esses elementos devem ser integrados respeitando os contratos entre áreas.
 
 **Entrega sugerida:** entradas validadas e dados de cada subsistema disponíveis no modelo comum, com limites de comunicação definidos.
 
@@ -222,6 +223,8 @@ O formato, a ordenação dos campos, o tamanho máximo e a frequência de envio 
 O OBC recebe os TC encaminhados pelo TT&C, valida-os e executa as ações em um tempo de resposta definido pela equipe (**REQ-OBC-002**). Como organização de implementação, utilizar um fluxo comum de validação e encaminhamento para as interfaces autorizadas, respeitando o modo atual e as condições de cada comando.
 
 O catálogo de comandos, os parâmetros e a forma de confirmação ou rejeição precisam ser definidos. A integração dos comandos que dependem dos modos de missão e das atuações físicas é concluída na etapa 8.
+
+Pesquisar P-DADOS e P-MISSAO em [PENDENCIAS_ARQUITETURAIS.md](PENDENCIAS_ARQUITETURAIS.md) para protocolo, capacidade do enlace e limites temporais ainda abertos.
 
 **Entrega sugerida:** TM inspecionável e comandos válidos encaminhados às ações, com resposta e tempo de execução verificáveis.
 
@@ -244,8 +247,10 @@ A expressão “baixo consumo energético disponível” do requisito é interpr
 | Atuação | Interface prevista | Condição ainda necessária |
 |---|---|---|
 | Manobra de atitude | Solicitação lógica ao ADCS; PWM / EN previstos na pinagem. | Conciliar responsabilidade e definir condições de habilitação e execução. |
-| Thermal Watchdog | Acionamento pelo OBC citado na arquitetura. | Definir interface, limites térmicos e ação de recuperação. |
-| Burn Wire | GPIO 33 para MOSFET de liberação da antena. | Definir autorização, duração, estado em reset e comportamento após reinicialização. |
+| Thermal Watchdog | Hipótese de verificação de temperatura no EPS e envio de dados ao OBC; acionamento pelo OBC é descrição histórica. | Confirmar função e responsabilidades em P-TERMICO. |
+| Burn Wire | GPIO 33 para MOSFET do circuito de queima e liberação física da antena. | Flag `IS_WIRE_BURNT` sugerida, sem implementação aprovada; autorização, duração, confirmação e persistência dependem de P-BURN-WIRE. |
+
+Pesquisar P-ADCS, P-BURN-WIRE, P-TERMICO, P-EPS-ELETRICA e P-MISSAO em [PENDENCIAS_ARQUITETURAIS.md](PENDENCIAS_ARQUITETURAIS.md) antes de implementar as atuações e modos dependentes.
 
 **Entrega sugerida:** transições de modo verificáveis, comandos condicionados ao estado operacional e atuação dentro dos limites acordados.
 
@@ -263,6 +268,8 @@ Falhas críticas, eventos e reinicializações devem alimentar os registros e es
 
 ### Riscos e alternativas considerados nos PDFs
 
+A linha UART abaixo é histórica. A decisão vigente é I2C bidirecional; seus riscos e definições estão em P-I2C, P-ENDERECOS e P-DADOS de [PENDENCIAS_ARQUITETURAIS.md](PENDENCIAS_ARQUITETURAIS.md). A recuperação e retomada dependem também de P-MISSAO e P-REGISTROS.
+
 | Decisão | Alternativa considerada | Motivo da escolha | Risco | Mitigação indicada |
 |---|---|---|---|---|
 | ESP32 como OBC central | Raspberry Pi como computador único. | Menor consumo e simplicidade operacional. | Ponto único de falha; travamento ou falha física interrompe o sistema. | Watchdog para travamentos; armazenamento no OBC preserva os dados já recebidos se o Payload Linux falhar. |
@@ -278,6 +285,8 @@ Falhas críticas, eventos e reinicializações devem alimentar os registros e es
 ## 10. Validação e acabamento
 
 ### Critérios fornecidos nos requisitos
+
+Os critérios e associações abaixo permanecem intactos. Adequações ainda necessárias e referências antigas ao transporte estão registradas em P-VALIDACAO de [PENDENCIAS_ARQUITETURAIS.md](PENDENCIAS_ARQUITETURAIS.md).
 
 | ID associado no PDF | Método | Aplicação indicada |
 |---|---|---|

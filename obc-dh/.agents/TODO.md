@@ -4,6 +4,8 @@ Checklist do CubeSat ADS-B CubeDesign 2026, organizado na mesma sequência de [A
 
 Pendências de contrato devem ser resolvidas antes das tarefas que dependem delas. Estados das saídas, validação de entradas e tratamento básico de erros devem acompanhar o desenvolvimento desde o início.
 
+Pesquisar as definições abertas em [PENDENCIAS_ARQUITETURAIS.md](PENDENCIAS_ARQUITETURAIS.md). Decisões confirmadas não significam implementação ou teste concluído; nenhum item é marcado automaticamente nesta atualização. Critérios e cenários de validação existentes permanecem preservados.
+
 ---
 
 ## 1. Fundamentos e contratos
@@ -18,12 +20,12 @@ Pendências de contrato devem ser resolvidas antes das tarefas que dependem dela
 - [ ] Conciliar a responsabilidade física do ADCS com PWM, EN e SimpleFOC previstos na pinagem.
 - [ ] Resolver a divergência entre ADC das placas solares e o mapeamento que evita ADC.
 - [ ] Definir a interface e a pinagem do encoder do ADCS.
-- [ ] Confirmar a integração do DS3231 ao I2C compartilhado.
+- [ ] Definir a fonte de tempo do OBC: relógio interno do ESP32 é hipótese; DS3231 é referência histórica. Consultar P-TEMPO no documento de pendências.
 - [ ] Definir a interface e o comportamento do Thermal Watchdog.
 - [ ] Definir as condições de liberação, temporização e comportamento em reset do Burn Wire com Estruturas / EPS.
 - [ ] Confirmar a lista de modos, transições e prioridades no ConOps. **REQ-OBC-004**.
 - [ ] Definir os ICDs de dados e comandos, incluindo campos, unidades, limites, enquadramento e validação.
-- [ ] Definir velocidade e volume de dados da UART do Payload, além da capacidade necessária para rajadas.
+- [ ] Definir papéis, arbitragem, barramento, endereço de 7 bits, velocidade e volume de dados do I2C bidirecional do Payload, incluindo rajadas e formato JSON ou binário. Consultar P-I2C, P-ENDERECOS e P-DADOS no documento de pendências.
 - [ ] Definir os limites de resposta a TC, detecção e recuperação de falhas e perda de comunicação. **REQ-OBC-002, REQ-OBC-007 e REQ-OBC-011**.
 - [ ] Definir referência, significado e resolução dos timestamps do OBC e do Payload. **REQ-OBC-006 e REQ-OBC-010**.
 - [ ] Obter a cota energética, os limiares e as prioridades de operação com EPS. **REQ-OBC-012 e REQ-NF-OBC-001**.
@@ -35,6 +37,8 @@ Pendências de contrato devem ser resolvidas antes das tarefas que dependem dela
 
 **Base necessária:** etapa 1 e hardware definido.  
 **Resultado:** ESP32 inicia automaticamente e mantém as saídas nos estados acordados.
+
+Consultar P-EPS-ELETRICA, P-ADCS e P-BURN-WIRE em [PENDENCIAS_ARQUITETURAIS.md](PENDENCIAS_ARQUITETURAIS.md); EN no GPIO 12 está confirmado, mas fases e estados em reset ainda dependem dos contratos.
 
 - [ ] Configurar o ambiente C++ e as dependências conforme a arquitetura existente, reutilizando a infraestrutura disponível.
 - [ ] Confirmar a variante do DevKit, o módulo ESP32, a disponibilidade dos GPIOs e o circuito da interface USB-C / UART.
@@ -53,7 +57,7 @@ Pendências de contrato devem ser resolvidas antes das tarefas que dependem dela
 **Resultado:** comunicação básica e troca controlada de mensagens entre tarefas.
 
 - [ ] Configurar UART0 para a interface umbilical de bancada.
-- [ ] Configurar UART2 para comunicação com o Payload.
+- [ ] Configurar a comunicação I2C bidirecional com o Payload após definir papéis, barramento, GPIOs e endereço. Não utilizar a proposta `0x80` como endereço de 7 bits sem resolver P-ENDERECOS.
 - [ ] Configurar I2C em SDA = 21 / SCL = 22 e conferir dispositivos, endereços e parâmetros elétricos acordados.
 - [ ] Configurar VSPI para o LoRa SX1276 e HSPI para o cartão SD, com os sinais definidos na pinagem.
 - [ ] Configurar DIO0 e RST do rádio conforme o driver adotado.
@@ -69,7 +73,9 @@ Pendências de contrato devem ser resolvidas antes das tarefas que dependem dela
 **Base necessária:** etapa 3 e contratos de dados definidos na etapa 1.  
 **Resultado:** registros estruturados com referência de tempo documentada.
 
-- [ ] Implementar inicialização, leitura, ajuste e identificação de validade do RTC DS3231 conforme o contrato.
+Consultar P-TEMPO e P-DADOS em [PENDENCIAS_ARQUITETURAIS.md](PENDENCIAS_ARQUITETURAIS.md). A referência temporal é responsabilidade do OBC; a fonte física ainda não está confirmada.
+
+- [ ] Implementar inicialização, ajuste, leitura e identificação de validade da fonte de tempo escolhida para o OBC conforme o contrato.
 - [ ] Definir estruturas comuns para ADS-B, estado do sistema, energia, atitude, eventos, falhas e estatísticas.
 - [ ] Documentar campos, unidades e representação temporal. **REQ-OBC-005**.
 - [ ] Implementar a associação de timestamp a cada mensagem ADS-B recebida e processada. **REQ-OBC-006**.
@@ -100,7 +106,7 @@ Pendências de contrato devem ser resolvidas antes das tarefas que dependem dela
 **Base necessária:** etapas 3 a 5 e ICDs definidos.  
 **Resultado:** dados validados da missão e dos subsistemas disponíveis ao OBC.
 
-- [ ] Implementar recepção, delimitação e validação do JSON ADS-B recebido pela UART do Payload.
+- [ ] Implementar recepção, delimitação e validação dos dados ADS-B recebidos pelo I2C do Payload, no formato JSON ou binário que for acordado em P-DADOS.
 - [ ] Integrar os dados ADS-B ao modelo comum, ao timestamp e ao armazenamento. **REQ-OBC-005 e REQ-OBC-006**.
 - [ ] Implementar solicitações de status e temperatura à Raspberry Pi conforme o ICD.
 - [ ] Integrar recepção de TC e envio de dados ao TT&C pelo LoRa.
@@ -150,6 +156,8 @@ Pendências de contrato devem ser resolvidas antes das tarefas que dependem dela
 **Base necessária:** etapas 2 a 8 integradas.  
 **Resultado:** supervisão e recuperação demonstradas no sistema completo.
 
+Consultar P-MISSAO, P-REGISTROS e P-VALIDACAO em [PENDENCIAS_ARQUITETURAIS.md](PENDENCIAS_ARQUITETURAIS.md). O cenário abaixo que cita excesso de dados UART foi preservado; sua adequação ao I2C exige uma proposta explícita antes de alterar a validação.
+
 - [ ] Integrar a detecção de perda de comunicação com os subsistemas. **REQ-OBC-011**.
 - [ ] Implementar a supervisão das tarefas críticas e configurar o watchdog com os limites definidos.
 - [ ] Implementar detecção de falhas e reinicialização automática no tempo acordado. **REQ-OBC-007**.
@@ -183,6 +191,7 @@ Pendências de contrato devem ser resolvidas antes das tarefas que dependem dela
 ## Referências
 
 - [ARCHITECTURE.md](ARCHITECTURE.md) — definição das etapas, requisitos e critérios de verificação.
+- [PENDENCIAS_ARQUITETURAIS.md](PENDENCIAS_ARQUITETURAIS.md) — decisões vigentes e definições ainda necessárias para as tarefas dependentes.
 - [PINAGEM.md](PINAGEM.md) — interfaces físicas e restrições de integração.
 - [README.md](README.md) — visão geral e regras de trabalho.
 - **Definição de Arquitetura OBC.pdf**, **Especificação de Requisitos OBC.pdf** e **Alocação de Pinos.pdf** — materiais de origem.

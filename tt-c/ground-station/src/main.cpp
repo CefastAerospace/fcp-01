@@ -1,305 +1,320 @@
-// ============================================================
-// Estacao Terrena improvisada FCP-01
-// 2o ESP32 + SX1276. Fala com o OBC (tt-c/src/ttc.h) via LoRa.
-// Parâmetros de rádio e protocolo DEVEM ser idênticos aos do satélite.
-//
-// Menu serial: ping | tm | safe | esafe | mission | stop | status | time [unix] | help
-// ============================================================
+#include <Arduino.h>     // Framework Arduino.
+#include "LoraRadio.h"   // para Sx1276Radio, RADIO_PINS
+#include "TtcProtocol.h" // para quadros, opcodes e Crc16
 
-#include <Arduino.h>
-#include <SPI.h>
-#include <LoRa.h>
+// ─── STRUCTS ──────────────────────────────────────────────────────
 
-// --- Pinagem (igual ao satélite: obc-dh/src/drivers/lora_sx1276.h) ---
-#define LORA_SCK_PIN   18
-#define LORA_MISO_PIN  19
-#define LORA_MOSI_PIN  23
-#define LORA_CS_PIN    5
-#define LORA_RST_PIN   14
-#define LORA_DIO0_PIN  4
-
-// --- Parâmetros de rádio (idênticos ao satélite) ---
-#define LORA_FREQ       915E6
-#define LORA_SF         9
-#define LORA_BW         125E3
-#define LORA_CR         6
-#define LORA_TXPOWER    17
-#define LORA_SYNC_WORD  0x12
-
-// --- Opcodes (iguais a CommandID_t do satélite) ---
-enum : uint8_t {
-    CMD_PING = 0x01,
-    CMD_SET_MODE = 0x02,
-    CMD_START_MISSION = 0x03,
-    CMD_STOP_MISSION = 0x04,
-    CMD_GET_STATUS = 0x05,
-    CMD_ENTER_SAFE = 0x0A,
-    CMD_EXIT_SAFE = 0x0B,
-    CMD_REQUEST_TELEMETRY = 0x0C,
-    CMD_SET_TIME = 0x10,
-    CMD_ADCS_START = 0x20,
-    CMD_ADCS_STOP = 0x21,
-    CMD_DEPLOY_ANTENNA = 0x30,
-    CMD_REQUEST_LOG = 0x40,
-    CMD_RESET_OBC = 0xFF
+enum FRAME_KIND {
+    FRAME_NONE,
+    FRAME_INVALID,
+    FRAME_ACK,
+    FRAME_TELEMETRY,
+    FRAME_DATA
 };
 
-// --- Status de ACK (iguais a CmdStatus_t do satélite) ---
-static const char* status_name(uint8_t s) {
-    switch (s) {
-        case 0x00: return "ACK_OK";
-        case 0x01: return "ERR_CRC";
-        case 0x02: return "ERR_INVALID_CMD";
-        case 0x03: return "ERR_INVALID_PARAM";
-        case 0x04: return "ERR_STATE_REJECTED";
-        case 0xFF: return "ERR_UNKNOWN_CMD";
-        default:   return "???";
+// Teto da remontagem; o satélite comporta 16 fragmentos na fila de descida.
+constexpr size_t gs_max_fragments = 32;
+
+struct REASSEMBLY {
+    bool     active;
+    uint16_t message_id;
+    uint8_t  fragment_count;
+    uint8_t  received_count;
+    size_t   total_len;
+    bool     received[gs_max_fragments];
+    uint8_t  buffer[gs_max_fragments * ttc::max_data_chunk + 1];
+};
+
+// ─── ELEMENTOS STATIC ─────────────────────────────────────────────
+
+// Mesma ligação do satélite (VSPI).
+static Sx1276Radio radio({18, 19, 23, 5, 14, 4});
+
+static constexpr uint32_t command_timeout_ms = 6000; // Cobre uma rajada de fragmentos do satélite.
+static constexpr uint32_t default_unix_time  = 1750000000UL;
+static constexpr uint16_t exit_safe_key      = 0xA55A;
+
+static uint16_t uplink_sequence = 0;
+static bool     downlink_seen = false;
+static uint16_t last_downlink_sequence = 0;
+static REASSEMBLY reassembly = {};
+
+// ─── HELPERS ──────────────────────────────────────────────────────
+
+// Nome legível de um ACK_STATUS.
+static const char* StatusName(
+    uint8_t status
+) {
+    switch (status) {
+        case ttc::ACK_OK:             return "ACK_OK";
+        case ttc::ERR_CRC:            return "ERR_CRC";
+        case ttc::ERR_INVALID_CMD:    return "ERR_INVALID_CMD";
+        case ttc::ERR_INVALID_PARAM:  return "ERR_INVALID_PARAM";
+        case ttc::ERR_STATE_REJECTED: return "ERR_STATE_REJECTED";
+        case ttc::ERR_UNKNOWN_CMD:    return "ERR_UNKNOWN_CMD";
+        default:                      return "???";
     }
 }
 
-// --- Pacotes (layouts idênticos aos do satélite, packed) ---
-typedef struct __attribute__((packed)) {
-    uint16_t sequence_id;
-    uint8_t  command_id;
-    uint8_t  flags;
-    uint32_t timestamp;
-    uint8_t  arguments[8];
-    uint16_t checksum;
-} TelecommandPacket_t;  // 18 bytes
-
-typedef struct __attribute__((packed)) {
-    uint16_t header;        // 0xAA55
-    uint16_t sequence_id;
-    uint8_t  command_id;
-    uint8_t  status_code;
-    uint16_t checksum;
-} ACKPacket_t;  // 8 bytes
-
-typedef struct __attribute__((packed)) {
-    uint16_t header;        // 0xAA55
-    uint16_t sequence_id;
-    uint8_t  packet_type;   // 0x01
-    uint8_t  system_status;
-    uint32_t timestamp;
-    float vbat;
-    float ibat;
-    float temp_obc;
-    float rpm;
-    float target_rpm;
-    int16_t  last_rssi;
-    float    last_snr;
-    uint32_t rx_packets_count;
-    uint32_t tx_packets_count;
-    uint32_t rx_errors_count;
-    uint16_t checksum;
-} TelemetryPacket_t;  // 38 bytes
-
-static uint16_t gs_seq = 0;
-static uint16_t last_tm_seq = 0;
-static bool last_tm_valid = false;
-
-// --- CRC16-CCITT (mesmo algoritmo do satélite) ---
-static uint16_t crc16(const uint8_t* data, size_t len) {
-    uint16_t crc = 0xFFFF;
-    for (size_t i = 0; i < len; i++) {
-        crc ^= (uint16_t)data[i] << 8;
-        for (uint8_t b = 0; b < 8; b++) {
-            crc = (crc & 0x8000) ? (crc << 1) ^ 0x1021 : (crc << 1);
-        }
+// Monta e transmite um TC; corrupt altera um byte após o CRC para testar o NACK.
+static uint16_t SendTelecommand(
+    uint8_t command_id,
+    const uint8_t* args,
+    size_t args_len,
+    bool corrupt
+) {
+    ttc::TELECOMMAND_PACKET tc = {};
+    tc.sequence_id = uplink_sequence++;
+    tc.command_id = command_id;
+    if (args != nullptr && args_len > 0) {
+        memcpy(tc.arguments, args, min(args_len, sizeof(tc.arguments)));
     }
-    return crc;
+    tc.checksum = ttc::Crc16((const uint8_t*)&tc, sizeof(tc) - sizeof(uint16_t));
+    if (corrupt) tc.arguments[0] ^= 0xFF;
+
+    bool sent = radio.Send((const uint8_t*)&tc, sizeof(tc));
+    Serial.printf("[GS] TX cmd=0x%02X seq=%u %s\n", command_id, tc.sequence_id, sent ? "" : "(FALHA NO TX)");
+    return tc.sequence_id;
 }
 
-static void radio_send(const uint8_t* data, size_t len) {
-    LoRa.idle();
-    LoRa.beginPacket();
-    LoRa.write(data, len);
-    LoRa.endPacket();
-    LoRa.receive();
+// Detecta perda pelo sequence_id compartilhado entre TM e quadros de dados.
+static void TrackDownlinkSequence(
+    uint16_t sequence_id
+) {
+    if (downlink_seen && (uint16_t)(sequence_id - last_downlink_sequence) != 1) {
+        Serial.printf("[GS] PERDA: esperado seq=%u, veio %u\n", (uint16_t)(last_downlink_sequence + 1), sequence_id);
+    }
+    last_downlink_sequence = sequence_id;
+    downlink_seen = true;
 }
 
-// Espera um pacote por até timeout_ms. Retorna nº de bytes ou 0.
-static int radio_wait(uint8_t* buf, size_t maxlen, uint32_t timeout_ms) {
-    uint32_t t0 = millis();
-    while (millis() - t0 < timeout_ms) {
-        int sz = LoRa.parsePacket();
-        if (sz > 0) {
-            int n = 0;
-            while (LoRa.available() && n < (int)maxlen) buf[n++] = LoRa.read();
-            LoRa.receive();  // Volta a RX contínuo IMEDIATO: parsePacket deixa em STANDBY
-            return n;
-        }
-        delay(20);
+// Identifica o tipo do quadro pelo tamanho e packet_type, após conferir o CRC.
+static FRAME_KIND ClassifyFrame(
+    const uint8_t* frame,
+    int len
+) {
+    if (len <= 5) return FRAME_INVALID;
+
+    uint16_t header = (uint16_t)frame[0] | ((uint16_t)frame[1] << 8);
+    if (header != ttc::downlink_header) return FRAME_INVALID;
+    if (!ttc::CheckFrameCrc(frame, len)) {
+        Serial.printf("[GS] CRC invalido em quadro de %d bytes.\n", len);
+        return FRAME_INVALID;
     }
-    return 0;
+
+    if (len == (int)sizeof(ttc::ACK_PACKET)) return FRAME_ACK;
+    if (frame[4] == ttc::PACKET_TELEMETRY && len == (int)sizeof(ttc::TELEMETRY_PACKET)) return FRAME_TELEMETRY;
+    if (frame[4] == ttc::PACKET_DATA && len >= (int)(sizeof(ttc::DATA_HEADER) + sizeof(uint16_t))) return FRAME_DATA;
+    return FRAME_INVALID;
 }
 
-static void send_tc(uint8_t cmd, const uint8_t* args, size_t args_len) {
-    TelecommandPacket_t pkt;
-    memset(&pkt, 0, sizeof(pkt));
-    pkt.sequence_id = gs_seq++;
-    pkt.command_id = cmd;
-    if (args != NULL && args_len > 0) {
-        size_t n = (args_len > sizeof(pkt.arguments)) ? sizeof(pkt.arguments) : args_len;
-        memcpy(pkt.arguments, args, n);
-    }
-    pkt.checksum = crc16((const uint8_t*)&pkt, sizeof(pkt) - sizeof(uint16_t));
-    Serial.printf("[GS] TX cmd=0x%02X seq=%u (%u bytes no ar)\n", cmd, pkt.sequence_id, (unsigned)sizeof(pkt));
-    radio_send((const uint8_t*)&pkt, sizeof(pkt));
+static void PrintAck(
+    const ttc::ACK_PACKET& ack
+) {
+    Serial.printf("[GS] ACK seq=%u cmd=0x%02X status=%s RSSI=%d dBm SNR=%.1f dB\n",
+                  ack.sequence_id, ack.command_id, StatusName(ack.status_code),
+                  radio.GetRssi(), radio.GetSnr());
 }
 
-// Valida e imprime um ACK. Retorna status_code ou -1.
-static int handle_ack_buf(const uint8_t* buf, int len, uint16_t want_seq) {
-    if (len != (int)sizeof(ACKPacket_t)) {
-        Serial.printf("[GS] Tamanho inesperado: %d bytes (ACK tem %u)\n", len, (unsigned)sizeof(ACKPacket_t));
-        return -1;
-    }
-    ACKPacket_t ack;
-    memcpy(&ack, buf, sizeof(ack));
-    if (ack.header != 0xAA55) { Serial.println("[GS] Header do ACK inválido!"); return -1; }
-    if (ack.sequence_id != want_seq) {
-        Serial.printf("[GS] Sequence divergente: esperado %u, veio %u\n", want_seq, ack.sequence_id);
-        return -1;
-    }
-    if (crc16(buf, sizeof(ack) - sizeof(uint16_t)) != ack.checksum) {
-        Serial.println("[GS] CRC do ACK inválido!");
-        return -1;
-    }
-    Serial.printf("[GS] ACK cmd=0x%02X status=%s RSSI=%d dBm SNR=%.1f dB\n",
-                  ack.command_id, status_name(ack.status_code),
-                  LoRa.packetRssi(), LoRa.packetSnr());
-    return ack.status_code;
-}
-
-// Valida e imprime uma telemetria. Retorna true se íntegra.
-static bool handle_tm_buf(const uint8_t* buf, int len) {
-    if (len != (int)sizeof(TelemetryPacket_t)) {
-        Serial.printf("[GS] Tamanho inesperado: %d bytes (TM tem %u)\n", len, (unsigned)sizeof(TelemetryPacket_t));
-        return false;
-    }
-    TelemetryPacket_t tm;
-    memcpy(&tm, buf, sizeof(tm));
-    if (tm.header != 0xAA55 || tm.packet_type != 0x01) {
-        Serial.println("[GS] Header/tipo da TM inválidos!");
-        return false;
-    }
-    if (crc16(buf, sizeof(tm) - sizeof(uint16_t)) != tm.checksum) {
-        Serial.println("[GS] CRC da TM inválido!");
-        return false;
-    }
-    Serial.printf("[GS] TM seq=%u estado=%u t=%lus Vbat=%.2fV I=%.0fmA T=%.1fC rpm=%.0f/%.0f rssi=%d snr=%.1f rx=%lu tx=%lu err=%lu\n",
+static void PrintTelemetry(
+    const ttc::TELEMETRY_PACKET& tm
+) {
+    Serial.printf("[GS] TM seq=%u estado=%u t=%lus Vbat=%.2fV I=%.0fmA T=%.1fC rpm=%.0f/%.0f\n",
                   tm.sequence_id, tm.system_status, (unsigned long)tm.timestamp,
-                  tm.vbat, tm.ibat, tm.temp_obc, tm.rpm, tm.target_rpm,
+                  tm.vbat, tm.ibat, tm.temp_obc, tm.rpm, tm.target_rpm);
+    Serial.printf("[GS]    enlace a bordo: rssi=%d snr=%.1f rx=%lu tx=%lu err=%lu | aqui: RSSI=%d SNR=%.1f\n",
                   tm.last_rssi, tm.last_snr,
                   (unsigned long)tm.rx_packets_count, (unsigned long)tm.tx_packets_count,
-                  (unsigned long)tm.rx_errors_count);
-    if (last_tm_valid) {
-        uint16_t delta = tm.sequence_id - last_tm_seq;
-        Serial.printf("[GS] Delta de sequência desde a última TM: %u%s\n",
-                      delta, (delta == 1) ? " (sem perda)" : " (HOUVE PERDA!)");
+                  (unsigned long)tm.rx_errors_count, radio.GetRssi(), radio.GetSnr());
+}
+
+// Remonta mensagens fragmentadas; uma mensagem nova descarta a incompleta anterior.
+static void HandleData(
+    const uint8_t* frame,
+    int len
+) {
+    ttc::DATA_HEADER header;
+    memcpy(&header, frame, sizeof(header));
+    const uint8_t* chunk = frame + sizeof(header);
+
+    bool is_last = header.fragment_index + 1 == header.fragment_count;
+    bool valid = len == (int)(sizeof(header) + header.chunk_len + sizeof(uint16_t))
+              && header.fragment_index < header.fragment_count
+              && header.fragment_count <= gs_max_fragments
+              && (is_last || header.chunk_len == ttc::max_data_chunk);
+    if (!valid) {
+        Serial.println("[GS] Quadro de dados inconsistente, descartado.");
+        return;
     }
-    last_tm_seq = tm.sequence_id;
-    last_tm_valid = true;
-    return true;
-}
 
-static void cmd_ping() {
-    uint16_t seq = gs_seq;
-    send_tc(CMD_PING, NULL, 0);
-    uint8_t buf[64];
-    int n = radio_wait(buf, sizeof(buf), 3000);
-    if (n == 0) { Serial.println("[GS] TIMEOUT: nenhum ACK em 3 s."); return; }
-    int st = handle_ack_buf(buf, n, seq);
-    Serial.printf("[GS] PING: %s\n", (st == 0x00) ? "OK (enlace ida-e-volta funciona!)" : "FALHOU");
-}
-
-static void cmd_tm() {
-    uint16_t seq = gs_seq;
-    send_tc(CMD_REQUEST_TELEMETRY, NULL, 0);
-    // Satélite manda TM + ACK; coleta tudo numa janela de 4 s
-    uint32_t t0 = millis();
-    bool saw_tm = false, saw_ack = false;
-    while (millis() - t0 < 4000 && !(saw_tm && saw_ack)) {
-        uint8_t buf[64];
-        int n = radio_wait(buf, sizeof(buf), 500);
-        if (n == 0) continue;
-        if (n == (int)sizeof(TelemetryPacket_t)) saw_tm = handle_tm_buf(buf, n);
-        else if (n == (int)sizeof(ACKPacket_t)) saw_ack = (handle_ack_buf(buf, n, seq) == 0x00);
-        else Serial.printf("[GS] Pacote estranho: %d bytes\n", n);
+    if (!reassembly.active || reassembly.message_id != header.message_id) {
+        if (reassembly.active) {
+            Serial.printf("[GS] Mensagem %u incompleta (%u/%u fragmentos), descartada.\n",
+                          reassembly.message_id, reassembly.received_count, reassembly.fragment_count);
+        }
+        memset(&reassembly, 0, sizeof(reassembly));
+        reassembly.active = true;
+        reassembly.message_id = header.message_id;
+        reassembly.fragment_count = header.fragment_count;
     }
-    if (!saw_tm) Serial.println("[GS] TM não recebida na janela.");
-    if (!saw_ack) Serial.println("[GS] ACK não recebido na janela.");
+
+    if (!reassembly.received[header.fragment_index]) {
+        memcpy(reassembly.buffer + header.fragment_index * ttc::max_data_chunk, chunk, header.chunk_len);
+        reassembly.received[header.fragment_index] = true;
+        reassembly.received_count++;
+        if (is_last) reassembly.total_len = header.fragment_index * ttc::max_data_chunk + header.chunk_len;
+    }
+
+    Serial.printf("[GS] DADOS msg=%u frag %u/%u (%u bytes) RSSI=%d dBm\n",
+                  header.message_id, header.fragment_index + 1, header.fragment_count,
+                  header.chunk_len, radio.GetRssi());
+
+    if (reassembly.received_count == reassembly.fragment_count) {
+        reassembly.buffer[reassembly.total_len] = '\0';
+        Serial.printf("[GS] Mensagem %u completa (%u bytes):\n%s\n",
+                      reassembly.message_id, (unsigned)reassembly.total_len, (const char*)reassembly.buffer);
+        reassembly.active = false;
+    }
 }
 
-static void cmd_simple(const char* nome, uint8_t cmd, const uint8_t* args, size_t args_len) {
-    uint16_t seq = gs_seq;
-    send_tc(cmd, args, args_len);
-    uint8_t buf[64];
-    int n = radio_wait(buf, sizeof(buf), 3000);
-    if (n == 0) { Serial.printf("[GS] %s: TIMEOUT.\n", nome); return; }
-    int st = handle_ack_buf(buf, n, seq);
-    Serial.printf("[GS] %s: %s\n", nome, (st >= 0) ? status_name((uint8_t)st) : "resposta inválida");
+// Lê um quadro, se houver, e trata conforme o tipo. Copia o ACK para ack_out.
+static FRAME_KIND PollRadio(
+    ttc::ACK_PACKET* ack_out
+) {
+    uint8_t frame[ttc::max_frame_len];
+    int len = radio.Receive(frame, sizeof(frame));
+    if (len == 0) return FRAME_NONE;
+    if (len < 0) {
+        Serial.printf("[GS] Quadro corrompido (CRC do radio) RSSI=%d dBm SNR=%.1f dB\n", radio.GetRssi(), radio.GetSnr());
+        return FRAME_INVALID;
+    }
+
+    FRAME_KIND kind = ClassifyFrame(frame, len);
+    switch (kind) {
+        case FRAME_ACK: {
+            ttc::ACK_PACKET ack;
+            memcpy(&ack, frame, sizeof(ack));
+            PrintAck(ack);
+            if (ack_out != nullptr) *ack_out = ack;
+            break;
+        }
+        case FRAME_TELEMETRY: {
+            ttc::TELEMETRY_PACKET tm;
+            memcpy(&tm, frame, sizeof(tm));
+            TrackDownlinkSequence(tm.sequence_id);
+            PrintTelemetry(tm);
+            break;
+        }
+        case FRAME_DATA: {
+            TrackDownlinkSequence((uint16_t)frame[2] | ((uint16_t)frame[3] << 8));
+            HandleData(frame, len);
+            break;
+        }
+        default:
+            Serial.printf("[GS] Quadro invalido de %d bytes.\n", len);
+            break;
+    }
+    return kind;
 }
 
-static void print_help() {
+// Envia um TC e espera o ACK correspondente (e a TM, se expect_tm).
+static void RunCommand(
+    const char* name,
+    uint8_t command_id,
+    const uint8_t* args,
+    size_t args_len,
+    bool expect_tm,
+    bool corrupt
+) {
+    uint16_t sequence_id = SendTelecommand(command_id, args, args_len, corrupt);
+
+    bool saw_ack = false;
+    bool saw_tm = false;
+    uint8_t status = 0;
+    uint32_t start_ms = millis();
+
+    while (millis() - start_ms < command_timeout_ms && !(saw_ack && (saw_tm || !expect_tm))) {
+        ttc::ACK_PACKET ack;
+        FRAME_KIND kind = PollRadio(&ack);
+        if (kind == FRAME_ACK && ack.sequence_id == sequence_id) {
+            saw_ack = true;
+            status = ack.status_code;
+        }
+        if (kind == FRAME_TELEMETRY) saw_tm = true;
+        if (kind == FRAME_NONE) delay(5);
+    }
+
+    if (!saw_ack) Serial.printf("[GS] %s: TIMEOUT sem ACK.\n", name);
+    else Serial.printf("[GS] %s: %s (%lu ms)\n", name, StatusName(status), (unsigned long)(millis() - start_ms));
+    if (expect_tm && !saw_tm) Serial.printf("[GS] %s: TM nao recebida.\n", name);
+}
+
+static void PrintHelp(
+) {
     Serial.println("\n=== ESTACAO TERRENA FCP-01 ===");
-    Serial.println("  ping         -> PING (testa ida-e-volta)");
-    Serial.println("  tm           -> Pede telemetria (valida CRC + sequência)");
+    Serial.println("  ping         -> PING (ida e volta)");
+    Serial.println("  tm           -> Pede telemetria (TM + ACK)");
+    Serial.println("  status       -> Pede status (TM + ACK)");
     Serial.println("  safe         -> Entra em modo seguro");
     Serial.println("  esafe        -> Sai do modo seguro (chave 0xA55A)");
-    Serial.println("  mission      -> Inicia missão (só a partir de SAFE)");
-    Serial.println("  stop         -> Para missão (volta a SAFE)");
-    Serial.println("  status       -> Pede status");
-    Serial.println("  time [unix]  -> Acerta relógio (padrão: 1750000000)");
+    Serial.println("  mission      -> Inicia missao");
+    Serial.println("  stop         -> Para missao");
+    Serial.println("  time [unix]  -> Acerta relogio (padrao: 1750000000)");
+    Serial.println("  badcrc       -> PING com CRC corrompido (espera ERR_CRC)");
     Serial.println("  help         -> Esta ajuda");
+    Serial.println("Quadros nao solicitados (dados JSON, TM) sao exibidos automaticamente.");
 }
 
-void setup() {
+static void HandleSerialLine(
+    String input
+) {
+    input.trim();
+    if (input.length() == 0) return;
+
+    if (input.equalsIgnoreCase("ping")) RunCommand("PING", ttc::CMD_PING, nullptr, 0, false, false);
+    else if (input.equalsIgnoreCase("tm")) RunCommand("REQUEST_TELEMETRY", ttc::CMD_REQUEST_TELEMETRY, nullptr, 0, true, false);
+    else if (input.equalsIgnoreCase("status")) RunCommand("GET_STATUS", ttc::CMD_GET_STATUS, nullptr, 0, true, false);
+    else if (input.equalsIgnoreCase("safe")) RunCommand("ENTER_SAFE", ttc::CMD_ENTER_SAFE, nullptr, 0, false, false);
+    else if (input.equalsIgnoreCase("esafe")) {
+        RunCommand("EXIT_SAFE", ttc::CMD_EXIT_SAFE, (const uint8_t*)&exit_safe_key, sizeof(exit_safe_key), false, false);
+    }
+    else if (input.equalsIgnoreCase("mission")) RunCommand("START_MISSION", ttc::CMD_START_MISSION, nullptr, 0, false, false);
+    else if (input.equalsIgnoreCase("stop")) RunCommand("STOP_MISSION", ttc::CMD_STOP_MISSION, nullptr, 0, false, false);
+    else if (input.startsWith("time")) {
+        uint32_t unix_time = default_unix_time;
+        int space = input.indexOf(' ');
+        if (space > 0) unix_time = (uint32_t)input.substring(space + 1).toInt();
+        Serial.printf("[GS] Enviando unix=%lu\n", (unsigned long)unix_time);
+        RunCommand("SET_TIME", ttc::CMD_SET_TIME, (const uint8_t*)&unix_time, sizeof(unix_time), false, false);
+    }
+    else if (input.equalsIgnoreCase("badcrc")) RunCommand("PING (CRC corrompido)", ttc::CMD_PING, nullptr, 0, false, true);
+    else if (input.equalsIgnoreCase("help")) PrintHelp();
+    else Serial.println("[GS] Desconhecido. Digite help.");
+}
+
+// setup() e loop() são funções obrigatórias do framework Arduino.
+
+/**
+ * @brief Inicializa serial e rádio.
+ */
+void setup(
+) {
     Serial.begin(115200);
     while (!Serial && millis() < 2000);
     Serial.println("\n=== [GS] Estacao Terrena FCP-01 ===");
 
-    SPI.begin(LORA_SCK_PIN, LORA_MISO_PIN, LORA_MOSI_PIN, LORA_CS_PIN);
-    LoRa.setPins(LORA_CS_PIN, LORA_RST_PIN, LORA_DIO0_PIN);
-    if (!LoRa.begin(LORA_FREQ)) {
-        Serial.println("[GS] ERRO: SX1276 não responde! Confira fiação/alimentação.");
-        while (true) { delay(1000); }
+    if (!radio.Init()) {
+        Serial.println("[GS] ERRO: SX1276 nao responde. Confira fiacao/alimentacao.");
+        while (true) delay(1000);
     }
-    LoRa.setSpreadingFactor(LORA_SF);
-    LoRa.setSignalBandwidth(LORA_BW);
-    LoRa.setCodingRate4(LORA_CR);
-    LoRa.setTxPower(LORA_TXPOWER);
-    LoRa.setSyncWord(LORA_SYNC_WORD);
-    LoRa.receive();
-    Serial.println("[GS] Radio OK. Digite help.");
-    print_help();
+    PrintHelp();
 }
 
-void loop() {
-    if (Serial.available() > 0) {
-        String input = Serial.readStringUntil('\n');
-        input.trim();
-        if (input.length() == 0) return;
-
-        if (input.equalsIgnoreCase("ping")) cmd_ping();
-        else if (input.equalsIgnoreCase("tm")) cmd_tm();
-        else if (input.equalsIgnoreCase("safe")) cmd_simple("ENTER_SAFE", CMD_ENTER_SAFE, NULL, 0);
-        else if (input.equalsIgnoreCase("esafe")) {
-            uint8_t key[2] = {0x5A, 0xA5};
-            cmd_simple("EXIT_SAFE", CMD_EXIT_SAFE, key, 2);
-        }
-        else if (input.equalsIgnoreCase("mission")) cmd_simple("START_MISSION", CMD_START_MISSION, NULL, 0);
-        else if (input.equalsIgnoreCase("stop")) cmd_simple("STOP_MISSION", CMD_STOP_MISSION, NULL, 0);
-        else if (input.equalsIgnoreCase("status")) cmd_simple("GET_STATUS", CMD_GET_STATUS, NULL, 0);
-        else if (input.startsWith("time")) {
-            uint32_t unix = 1750000000UL;
-            int sp = input.indexOf(' ');
-            if (sp > 0) unix = (uint32_t)input.substring(sp + 1).toInt();
-            Serial.printf("[GS] Enviando unix=%lu\n", (unsigned long)unix);
-            cmd_simple("SET_TIME", CMD_SET_TIME, (uint8_t*)&unix, sizeof(unix));
-        }
-        else if (input.equalsIgnoreCase("help")) print_help();
-        else Serial.println("[GS] Desconhecido. Digite help.");
-    }
-    delay(50);
+/**
+ * @brief Atende comandos do operador e exibe quadros recebidos.
+ */
+void loop(
+) {
+    if (Serial.available() > 0) HandleSerialLine(Serial.readStringUntil('\n'));
+    if (PollRadio(nullptr) == FRAME_NONE) delay(5);
 }

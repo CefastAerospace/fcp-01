@@ -1,0 +1,14 @@
+{
+    "name": "tt-c",
+    "version": "0.1.0",
+    "description": "Enlace LoRa do TT&C do FCP-01: recepção de telecomandos e entrega de telemetria e dados de missão ao solo.",
+    "frameworks": "arduino",
+    "platforms": "espressif32",
+    "dependencies": {
+        "sandeepmistry/LoRa": "^0.8.0"
+    },
+    "build": {
+        "includeDir": "include",
+        "srcDir": "src"
+    }
+}

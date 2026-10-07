@@ -15,7 +15,7 @@ O FCP-01 usa uma arquitetura **centralizada**: um único ESP32 (OBC) roda **Free
 | Subsistema | Hardware | Interface com o OBC |
 |---|---|---|
 | **OBC & Data Handling** | ESP32, cartão SD, RTC | - (é o próprio OBC) |
-| **TT&C** | LoRa SX1276 (915 MHz), servo motor de antena | SPI (HSPI) + PWM |
+| **TT&C** | LoRa SX1276 (921 MHz), servo motor de antena | SPI (HSPI) + PWM |
 | **EPS** | 2x INA219 | I2C |
 | **Thermal Control** | LM75A | I2C |
 | **ADCS** | SimpleFOC Mini (roda de reação) + MPU6050 | PWM/analógico + I2C |
@@ -48,9 +48,12 @@ FCP-01/
 ├── eps-tc/               # biblioteca - EPS e Thermal Control
 │   ├── include/
 │   └── src/
-├── tt-c/                 # biblioteca - LoRa + controle do servo de antena
+├── tt-c/                 # biblioteca - enlace LoRa (TC/TM/dados) + controle do servo de antena
 │   ├── include/
-│   └── src/
+│   ├── src/
+│   ├── ground-station/   # firmware da estação terrena de bancada (2º ESP32 + SX1276)
+│   └── examples/
+│       └── link-test/    # firmware de teste do enlace no lado do satélite
 ├── payload/               # Raspberry Pi Zero W - projeto separado, NÃO é PlatformIO
 │   └── telemetry.py       # Script de telemetria que captura as informações dos aviões próximos
 ├── str/

@@ -4,7 +4,34 @@ Checklist do CubeSat ADS-B CubeDesign 2026, organizado na mesma sequência de [A
 
 Pendências de contrato devem ser resolvidas antes das tarefas que dependem delas. Estados das saídas, validação de entradas e tratamento básico de erros devem acompanhar o desenvolvimento desde o início.
 
-Pesquisar as definições abertas em [PENDENCIAS_ARQUITETURAIS.md](PENDENCIAS_ARQUITETURAIS.md). Decisões confirmadas não significam implementação ou teste concluído; nenhum item é marcado automaticamente nesta atualização. Critérios e cenários de validação existentes permanecem preservados.
+Pesquisar as definições abertas em [PENDENCIAS_ARQUITETURAIS.md](PENDENCIAS_ARQUITETURAIS.md). Decisões confirmadas não significam implementação ou teste concluído. Os itens concluídos abaixo têm evidências identificadas na revisão de 07/10/2026. Critérios e cenários de validação existentes permanecem preservados.
+
+## Estado verificado em 07/10/2026
+
+A revisão considera os arquivos presentes no repositório e seu histórico. Não foram executados compilação, upload ou testes em hardware nesta revisão; não há evidências de validação funcional nos arquivos examinados.
+
+| Área | Evidência existente | Trabalho restante |
+|---|---|---|
+| Documentação e contratos | Arquitetura, catálogo dos 16 requisitos, pinagem, padrão C++ e pendências entre áreas documentados em `.agents/`. | Obter e conferir as referências externas vigentes; resolver contratos e divergências. Os PDFs, ConOps, ICDs e regulamento citados não estão presentes no repositório. |
+| Ambiente de desenvolvimento | [platformio.ini](../platformio.ini) configura ESP32, Arduino e diretórios; [../.clangd](../.clangd) ajusta a análise no editor; [FUNCIONAMENTO_PIO.md](FUNCIONAMENTO_PIO.md) documenta o uso. | Confirmar a placa real, comprovar compilação e fixar versões validadas. Dependências dos periféricos serão declaradas conforme sua integração. |
+| Firmware e pinagem | [main.cpp](../src/main.cpp) contém os pontos de entrada; [Pinout.h](../headers/Pinout.h) contém constantes dos GPIOs. | `setup()` e `loop()` estão vazios. Não há inicialização de periféricos, tarefas, filas ou comportamento de missão. As constantes UART2 do Payload ainda estão desatualizadas. |
+| Integração e testes | Há implementações independentes no ADCS, Payload e estação de solo, inventariadas abaixo. `tests/` contém apenas `.gitkeep`. | Integrar os subsistemas ao OBC e implementar os testes; nenhuma etapa de comunicação, tempo, armazenamento, TM/TC, atuação ou recuperação está concluída no firmware do OBC. |
+
+### Inventário para reutilização
+
+- **OBC-DH:** `src/main.cpp`, `headers/Pinout.h`, configuração PlatformIO/clangd e documentação. Não há classes, drivers, utilitários ou scripts operacionais próprios além dessa base; não há `lib_deps` de periféricos declaradas.
+- **ADCS:** `adcs/src/` e `adcs/include/` contêm aquisição de sensores, controle de motor/encoder, missões, comandos e interface web. `adcs/platformio.ini` declara SimpleFOC, MPU9250_WE e BH1750. É um firmware separado; EN = 33 e a ordem das fases ainda divergem da pinagem do OBC, conforme P-ADCS.
+- **Payload:** `payload/telemetry.py` recebe dados do dump1090 por TCP, organiza `AircraftTelemetry`, associa UTC e grava registros JSON localmente. Não implementa o transporte I2C ao OBC; seus registros e timestamps não comprovam as tarefas do OBC.
+- **Estação de solo:** `gs/src/main.cpp` contém pacotes de TC/TM/ACK, CRC16, comunicação LoRa e menu serial; `gs/platformio.ini` declara a biblioteca LoRa. O código correspondente no satélite não está presente em `tt-c/src/` nem no OBC. Esses pacotes são uma referência existente, não um ICD confirmado.
+- **Demais áreas:** `common/interfaces/pinout.md` registra interfaces e divergências; `common/protocol/`, `eps-tc/src/` e `tt-c/src/` contêm apenas `.gitkeep`.
+
+### Próximas dependências
+
+1. Resolver os contratos impeditivos da etapa 1: I2C/formatos, tempo, modos, limites de falha, energia, persistência e responsabilidades de atuação.
+2. Confirmar hardware, montagem e estados de boot/reset da etapa 2 antes de acionar periféricos.
+3. Implementar e validar as etapas 3 a 9 na ordem das dependências; reunir as evidências da etapa 10 durante o desenvolvimento.
+
+Os itens compostos permanecem abertos quando apenas parte foi realizada. A documentação dos requisitos não comprova sua implementação; constantes de GPIO não comprovam configuração dos barramentos.
 
 ---
 
@@ -15,7 +42,7 @@ Pesquisar as definições abertas em [PENDENCIAS_ARQUITETURAIS.md](PENDENCIAS_AR
 
 - [ ] Ler a arquitetura, os requisitos, a pinagem, o ConOps, os ICDs, o regulamento, a arquitetura lógica do CEFAST Aerospace e o padrão existente de C++.
 - [ ] Confirmar a revisão vigente da especificação de requisitos: capa v1.5 versus histórico v1.6.
-- [ ] Inventariar funções, classes, drivers, utilitários, scripts e dependências existentes antes de propor novas ferramentas.
+- [x] Inventariar funções, classes, drivers, utilitários, scripts e dependências existentes antes de propor novas ferramentas.
 - [ ] Confirmar as responsabilidades de OBC, Payload, TT&C, EPS, ADCS e sistema térmico.
 - [ ] Conciliar a responsabilidade física do ADCS com PWM, EN e SimpleFOC previstos na pinagem.
 - [ ] Resolver a divergência entre ADC das placas solares e o mapeamento que evita ADC.
@@ -40,7 +67,9 @@ Pesquisar as definições abertas em [PENDENCIAS_ARQUITETURAIS.md](PENDENCIAS_AR
 
 Consultar P-EPS-ELETRICA, P-ADCS e P-BURN-WIRE em [PENDENCIAS_ARQUITETURAIS.md](PENDENCIAS_ARQUITETURAIS.md); EN no GPIO 12 está confirmado, mas fases e estados em reset ainda dependem dos contratos.
 
-- [ ] Configurar o ambiente C++ e as dependências conforme a arquitetura existente, reutilizando a infraestrutura disponível.
+- [x] Configurar o ambiente C++ e as dependências conforme a arquitetura existente, reutilizando a infraestrutura disponível.
+
+  Evidência: configuração base em `platformio.ini`, `.clangd` e ponto de entrada em `src/main.cpp`. Esta conclusão se limita à configuração existente; não comprova compilação, correspondência com a placa real ou integração das bibliotecas de periféricos.
 - [ ] Confirmar a variante do DevKit, o módulo ESP32, a disponibilidade dos GPIOs e o circuito da interface USB-C / UART.
 - [ ] Conferir alimentação de 3,3 V, níveis lógicos, GND e interfaces elétricas com EPS e demais áreas.
 - [ ] Conferir [PINAGEM.md](PINAGEM.md) com a montagem e documentar eventuais alterações acordadas.
@@ -184,7 +213,9 @@ Consultar P-MISSAO, P-REGISTROS e P-VALIDACAO em [PENDENCIAS_ARQUITETURAIS.md](P
 - [ ] Atualizar pinagem, arquitetura e README com decisões finais, parâmetros reais, dependências e instruções de compilação e uso.
 - [ ] Aplicar o padrão existente de escrita e documentação em C++, sem criar um documento redundante.
 - [ ] Revisar termos, tabelas, links e exemplos; consolidar ferramentas redundantes identificadas sem remover funcionalidades necessárias.
-- [ ] Atualizar este checklist de acordo com as evidências e manter pendências restantes identificadas.
+- [x] Atualizar este checklist de acordo com as evidências e manter pendências restantes identificadas.
+
+  Evidência: revisão de 07/10/2026, com inventário, estado real do firmware e dependências restantes registrados neste documento. O checklist deve ser atualizado novamente a cada entrega.
 
 ---
 

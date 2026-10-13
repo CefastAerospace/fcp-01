@@ -55,7 +55,7 @@ Essas funcionalidades representam o escopo esperado. A documentação recebida n
 
 A sequência de desenvolvimento começa pelos contratos e pela plataforma, passa por comunicação, tempo e armazenamento e chega à integração dos subsistemas, aos comandos, aos modos de voo e à recuperação de falhas.
 
-As decisões vigentes confirmam MPU9250 em `0x68`, BH1750 em `0x23` / `0x5C`, EN do motor no GPIO 12, Payload por I2C bidirecional e liberação física da antena por Burn Wire no GPIO 33. O OBC é responsável pelo tempo; uso exclusivo do relógio interno ainda é hipótese. Pesquisar os detalhes não definidos em [PENDENCIAS_ARQUITETURAIS.md](PENDENCIAS_ARQUITETURAIS.md), incluindo proposta de endereço `0x80`, arbitragem I2C e escolha de JSON ou binário.
+As decisões vigentes (Design Package Oct/2026) confirmam MPU9250 em `0x68`, AS5600 em `0x36`, BH1750 em `0x23` / `0x5C`, EN do motor no GPIO 12, Payload por **UART dedicada GPIO 16/17 (binário + SeqID/NACK)**, LoRa no VSPI / SD no HSPI e liberação física da antena por Burn Wire no GPIO 33. O OBC é responsável pelo tempo (**timer interno + TC, sem RTC externo**). Seguem abertos enquadramento final do binário, níveis/temporização do Burn-Wire e ICDs de TM/TC — pesquisar em [PENDENCIAS_ARQUITETURAIS.md](PENDENCIAS_ARQUITETURAIS.md).
 
 ---
 
@@ -105,7 +105,7 @@ obc-dh/
 └── tests/           # Testes de comportamento dos módulos e de integração.
 ```
 
-O header [Pinout.h](../headers/Pinout.h) expõe os GPIOs como constantes `constexpr int` no namespace `pinout`, agrupadas por interface. Ele não inicializa hardware nem define níveis ativos, velocidades ou políticas de atuação. Suas constantes UART2 ainda representam a antiga interface do Payload e precisam de atualização em uma alteração de código separada. Pesquisar as dependências em [PENDENCIAS_ARQUITETURAIS.md](PENDENCIAS_ARQUITETURAIS.md).
+O header [Pinout.h](../headers/Pinout.h) expõe os GPIOs como constantes `constexpr int` no namespace `pinout`, agrupadas por interface. Ele não inicializa hardware nem define níveis ativos, velocidades ou políticas de atuação. Suas constantes `uart2_*` (TX 17 / RX 16) já refletem a UART dedicada do Payload (§6.4).
 
 O estado mutável deve pertencer ao módulo responsável. Quando uma variável compartilhada for necessária, declarar com `extern` no header e fornecer uma única definição no `.cpp`; o acesso entre tarefas deve ser coordenado.
 

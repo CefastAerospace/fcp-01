@@ -1,96 +1,101 @@
 # FCP-01: Falcão-Peregrino
 
-CubeSat 2U desenvolvido pela CEFAST Aerospace (equipe aeroespacial do CEFET-MG) para o CubeDesign 2026, competição que acontece em novembro em Buenos Aires, Argentina.
+CubeSat 2U da **CEFAST Aerospace (CEFET-MG)** para o **CubeDesign 2026** (categoria CubeSat).
+Missão primária: recepção e processamento **ADS-B em 1090 MHz** (janela de 10 min, até 20 aeronaves).
+Missão secundária (opcional): caracterização do noise floor em LEO.
 
-O FCP-01 é o primeiro satélite da linha Falcão-Peregrino, a linha de CubeSats 2U da equipe. As demais linhas são Magela (CubeSats 1U) e Harpia (CanSats).
+> Fonte da verdade de engenharia: `FCP-01_Design_Package_CubeDesign_2026.md` (este README só traz o essencial para desenvolver).
+> Documentação completa e Drive da equipe: [Link do Drive](https://drive.google.com/drive/folders/1zuqoZDisrKwNKC3qj_JZJbrycwYCYJCP).
 
-A missão do FCP-01 é a recepção e o processamento de sinais **ADS-B**, usados para identificação e monitoramento de aeronaves.
+## ConOps — o que o firmware precisa respeitar
 
-Este repositório é **privado** e contém o código de desenvolvimento do satélite. Documentação de engenharia completa (requisitos, arquitetura, resultados de testes) fica no Google Drive da equipe: [Link do Drive](https://drive.google.com/drive/folders/1zuqoZDisrKwNKC3qj_JZJbrycwYCYJCP).
+Sequência operacional (detalhe em §2.4 do Design Package):
 
-## Arquitetura
-
-O FCP-01 usa uma arquitetura **centralizada**: um único ESP32 (OBC) roda **FreeRTOS** e gerencia todos os subsistemas via periféricos ligados diretamente a ele. O **Payload** é a exceção, roda em um Raspberry Pi Zero W separado, e se comunica com o OBC por UART.
-
-| Subsistema | Hardware | Interface com o OBC |
+| Fase | Nome | Resumo p/ dev |
 |---|---|---|
-| **OBC & Data Handling** | ESP32, cartão SD, RTC | - (é o próprio OBC) |
-| **TT&C** | LoRa SX1276 (921 MHz), servo motor de antena | SPI (HSPI) + PWM |
-| **EPS** | 2x INA219 | I2C |
-| **Thermal Control** | LM75A | I2C |
-| **ADCS** | SimpleFOC Mini (roda de reação) + MPU6050 | PWM/analógico + I2C |
-| **Payload** | RTL-SDR v3 + Raspberry Pi Zero W | UART |
-| **STR** | CAD (SolidWorks) | - |
+| P0 | Integração/bancada | Alimentação externa via umbilical USB-C, RBF inserido |
+| P1 | Inicialização | OBC auto-inicia, self-test, entra em SAFE/INIT |
+| P2 | Detumbling | ADCS reduz giro até < 5 rpm (telecomando) |
+| P3 | Apontamento solar | Controle 1 eixo por sensores de luz (telecomando) |
+| P4 | Missão ADS-B | Payload recebe/decodifica; OBC carimba, armazena e prepara TM |
+| P5 | Downlink | TM desce / TC sobe durante passes (concorrente com P4) |
+| P6 | Low-power/safe | Watchdog de energia/temperatura; só tarefas críticas |
 
-O ESP32 usa os dois barramentos SPI disponíveis: **VSPI** para o cartão SD e **HSPI** para o LoRa.
+Modos e transições (detalhe em §2.5):
 
-## Estrutura do repositório
+| Modo | Entrada | Saída |
+|---|---|---|
+| UMBILICAL/BENCH | Configuração de bancada via USB-C | Testes ok → config de voo |
+| SAFE/INIT | Boot ou reset por watchdog | TC específico → DETUMBLING / SUN-POINTING / MISSION |
+| DETUMBLING | TC + condições de segurança | Taxa < 5 rpm → SAFE/INIT |
+| SUN-POINTING | TC + sensores de luz válidos | Estabilidade ok → SAFE/INIT |
+| MISSION (ADS-B) | TC + checks ok | Fim da janela, TC stop ou falha → SAFE/LOW-POWER |
+| LOW-POWER | Limite energia/temperatura | Recuperação → SAFE/INIT |
+
+Regras: qualquer modo vai a LOW-POWER por watchdog; qualquer falha com restart volta a SAFE/INIT; passe de solo não troca modo.
+
+## Interfaces congeladas (ESP32 — não mudar sem ICD)
+
+Alocação unificada (§3.1 do Design Package, espelhada em `obc-dh/headers/Pinout.h`):
+
+| Interface | Pinos ESP32 | Uso |
+|---|---|---|
+| UART0 | GPIO 1 / 3 | Umbilical USB-C (TC/TM bancada) |
+| UART payload | GPIO 16 / 17, 115,2 kbps | Pi → OBC, pacotes binários ADS-B (SeqID + NACK, §6.4) |
+| I2C (único, sensores) | GPIO 21 (SDA) / 22 (SCL) | 3x INA219, 5x LM75A, MPU-9250 (`0x68`), AS5600 (`0x36`), 2x BH1750 (`0x23`/`0x5C`) |
+| VSPI | 23 / 19 / 18, CS 5, DIO0 4, RST 14 | LoRa SX1276 (921 MHz, §7.1) |
+| HSPI | MOSI 32, SCK 15, MISO 35, CS 13 | microSD (missão + logs) |
+| PWM + EN | 25 / 26 / 27 (U/V/W), EN 12 | SimpleFOC Mini (roda de reação; EN desliga fora do detumbling) |
+| Saída digital | GPIO 33 | Burn-wire das 2 antenas (2 circuitos, 2,5 A / 12,5 W transitório) |
+
+Avisos: **sem RTC externo** (tempo = timer interno ESP32 + TC fixa absoluto com correção retroativa, §6.4); **sem servo de antena** (burn-wire); **sem MPU6050** (é MPU-9250); LoRa é VSPI e SD é HSPI (o inverso está obsoleto); MISO do SD no GPIO 35 por segurança de boot.
+
+Detalhe completo em `common/interfaces/pinout.md` e `obc-dh/.agents/PINAGEM.md`.
+
+## Contratos de dados (mínimo para integrar)
+
+- **Payload → OBC:** só dado já decodificado (ICAO, posição, altitude, velocidade) em binário compacto via UART; nunca I/Q cru (§6.3–6.4). Perda/gap trata com SeqID + NACK.
+- **Tempo:** OBC carimba tudo em ms; payload usa referência do OBC (§6.4, REQ-OBC-006).
+- **TM/TC:** LoRa 921 MHz SF7, pacotes JSON ~150 B; OBC enfileira TM e TT&C transmite quando o rádio libera; downlink é agregado por aeronave (log completo fica no SD, §5.3/§7.1).
+- **SD:** FAT32 com fechamento controlado + monitoramento de alimentação (§7.3).
+
+## Estrutura do repositório e build
 
 ```text
 FCP-01/
-├── README.md
-├── .gitignore
-├── obc-dh/              # ÚNICO firmware real - platformio.ini mora aqui
-│   ├── include/              # Interfaces globais e headers
-|   ├── src/
-│       ├── main.cpp          # Boot flow, WDT, e instanciação das tasks
-|       ├── sd_logger.h       # Header do Logger do SD Card
-│       ├── sd_logger.cpp     # Gerenciamento assíncrono do SD Card
-│       ├── base_comms.cpp    # Parser e envio via UART da Payload
-|       ├── base_comms.h      # Header da interface UART da Payload
-│   ├── eps-tc/           # Driver do subsistema de potência
-│   ├── rtc/              # Driver e sincronização do RTC
-│   └── tt-c/             # Protocolo PUS, rádio SX1276 e parser de TC
-└── platformio.ini        # Configurações de compilação e dependências
-├── adcs/                 # biblioteca - consumida pelo obc-dh via lib_extra_dirs
-│   ├── include/
-│   └── src/
-├── eps-tc/               # biblioteca - EPS e Thermal Control
-│   ├── include/
-│   └── src/
-├── tt-c/                 # biblioteca - enlace LoRa (TC/TM/dados) + controle do servo de antena
-│   ├── include/
-│   ├── src/
-│   ├── ground-station/   # firmware da estação terrena de bancada (2º ESP32 + SX1276)
-│   └── examples/
-│       └── link-test/    # firmware de teste do enlace no lado do satélite
-├── payload/               # Raspberry Pi Zero W - projeto separado, NÃO é PlatformIO
-│   └── telemetry.py       # Script de telemetria que captura as informações dos aviões próximos
-├── str/
-│   ├── exports/            # arquivos .STEP
-│   ├── drawings/           # desenhos técnicos em .PDF
-│   └── manufacturing/
-└── common/
-    ├── protocol/            # spec do protocolo UART (OBC ↔ Payload) e pacotes TT&C
-    └── interfaces/
-        └── pinout.md        # endereços I2C, alocação de pinos e barramentos SPI
+├── FCP-01_Design_Package_CubeDesign_2026.md
+├── obc-dh/              # ÚNICO firmware ESP32 (env `obc` em obc-dh/platformio.ini)
+│   ├── headers/Pinout.h # Constantes de GPIO (não inicializa hardware)
+│   ├── src/main.cpp     # Boot, WDT, tasks
+│   ├── tests/           # Testes de comportamento
+│   └── .agents/         # Arquitetura, pinagem, pendências e checklist do OBC-DH
+├── adcs/                # Bancada/lib ADCS (SimpleFOC, sensores) — integra via OBC
+├── eps-tc/              # Lib EPS + Thermal
+├── tt-c/                # Lib enlace LoRa + ground-station/ + examples/link-test/
+├── payload/             # Raspberry Pi Zero W (NÃO é PlatformIO): telemetry.py + runbook
+├── common/
+│   ├── interfaces/pinout.md  # Tabela oficial de pinos/endereços
+│   └── protocol/             # Specs de protocolo UART e pacotes TT&C
+└── str/                 # exports/ (.STEP), drawings/ (.PDF), manufacturing/
 ```
 
-## Estrutura Dual-Core
+Só `obc-dh/` (ESP32) e `payload/` (Raspberry Pi) rodam de forma independente; `adcs/`, `eps-tc/`, `tt-c/` são bibliotecas/consumidas pelo OBC-DH.
+Build do OBC: abrir `obc-dh/` no PlatformIO (`board = esp32doit-devkit-v1`, `framework = arduino`) e compilar o env `obc`. Ver `obc-dh/.agents/FUNCIONAMENTO_PIO.md`.
+Dependências de terceiros vão em `lib_deps` com versão fixada; nunca copiar lib externa para o repo.
 
-```text
-OBC (ESP32 - Dual Core)
-├── Core 0 (I/O, Management & System Supervision)
-│   ├── System Manager (TaskBootManager) [Prioridade 3]
-│   ├── Health Monitor (esp_task_wdt + Loop Supervision)
-│   ├── EPS Manager (TaskEPS) [Prioridade 4]
-│   ├── SD Manager / Data Logger (SD_Task) [Prioridade 2]
-│   ├── RTC Manager (TaskCommunication / I2C) [Prioridade 2]
-│   └── Payload Interface (Base_Task / UART) [Prioridade 2]
-│
-└── Core 1 (Control, Comms & Mission Logic)
-    ├── Mode Manager (State Machine / Mission Control)
-    ├── TT&C Manager (TaskTTC / LoRa SX1276) [Prioridade 3]
-    ├── TC Manager (Command Parser & CRC16 Validation)
-    ├── TM Manager (Telemetry Builder & Queue)
-    └── ADCS / Motor Control (SimpleFOC PWM Task) [Prioridade 2]
-```
+## Onde aprofundar (não duplicado aqui)
 
-**Importante:** `adcs/`, `eps-tc/` e `tt-c/` não são firmwares que rodam sozinhos: são bibliotecas que só ganham vida quando compiladas junto com `obc-dh/`. Só `obc-dh/` (no ESP32) e `payload/` (no Raspberry Pi) são projetos que rodam de forma independente.
+| Preciso de… | Ver |
+|---|---|
+| Requisitos e rastreabilidade | §4 + Apêndice A |
+| Orçamentos (massa/potência/enlace/custo) | §5 |
+| Payload e protocolo binário | §6 |
+| Rádio, FreeRTOS, SD, ground station | §7 |
+| V&V, resultados de bancada | §8 |
+| Status, open issues, roadmap UNSAM | §9 |
+| Dúvidas de interface ainda abertas | `obc-dh/.agents/PENDENCIAS_ARQUITETURAIS.md` |
 
 ## Fluxo de desenvolvimento (Git)
-
-Fluxo padrão para mudanças dentro do seu próprio subsistema:
 
 ```bash
 git pull
@@ -101,14 +106,8 @@ git commit -m "nome do subsistema: descrição da alteração"
 git push
 ```
 
-Os nomes dos subsistemas devem seguir o padrão de nomenclatura das pastas do repositório.
-
-A `main` está protegida contra force-push e deleção, mas não exige review obrigatório.
-
-## Bibliotecas e dependências
-
-Dependências de terceiros (ESP32/Arduino) são declaradas em `obc-dh/platformio.ini` via `lib_deps`, com versão fixada. Código interno de cada subsistema é integrado via `lib_extra_dirs`, apontando para as pastas irmãs (`adcs/`, `eps-tc/`, `tt-c/`, `common/`). Nunca copie bibliotecas de terceiros para dentro do repositório.
+Nomes de subsistema seguem as pastas do repo. A `main` é protegida contra force-push e deleção.
 
 ## CAD
 
-Arquivos nativos do SolidWorks (`.SLDPRT`, `.SLDASM`, `.SLDDRW`) **não** entram no repositório, ficam no Google Drive. Apenas exports em `.STEP` (`str/exports/`) e desenhos em `.PDF` (`str/drawings/`) são versionados aqui.
+Nativos do SolidWorks (`.SLDPRT`, `.SLDASM`, `.SLDDRW`) ficam no Drive. Aqui só `.STEP` (`str/exports/`) e `.PDF` (`str/drawings/`).

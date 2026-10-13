@@ -1,5 +1,7 @@
 # Pendências arquiteturais do OBC-DH
 
+> **Design Package Oct/2026 (decisão vigente):** Payload por **UART dedicada GPIO 16/17 (115,2 kbps, binário + SeqID/NACK, §6.4)**; LoRa no **VSPI** e SD no **HSPI** (§3.1); **sem RTC externo** (timer interno + TC, §6.4). As seções P-I2C, P-SPI, P-TEMPO e o formato em P-DADOS abaixo estão **encerradas/superseded** nesse escopo e mantidas só como histórico. Seguem abertas: níveis/temporização do Burn-Wire, `PIN_EN`/fases no código ADCS, Thermal Watchdog, cota energética e ICDs de TM/TC.
+
 Este documento centraliza as definições ainda abertas entre OBC-DH e os demais subsistemas. Arquitetura, pinagem e checklist devem referenciar esta lista quando dependerem dessas definições. Uma decisão de projeto não comprova implementação ou validação.
 
 ## Decisões confirmadas em 06/10/2026
@@ -11,8 +13,9 @@ As decisões abaixo foram informadas pelo responsável pelo OBC-DH. Elas atualiz
 | Motor | EN do driver no GPIO 12. | O valor 33 no código do ADCS está desatualizado. Fases, níveis e inicialização ainda precisam de alinhamento. |
 | IMU | MPU9250, endereço de 7 bits `0x68`, com AD0 em GND. | Menções ao MPU6050 estão desatualizadas. Conferir os demais dispositivos do barramento. |
 | Luminosidade | BH1750 #1 em `0x23` (ADDR em GND) e BH1750 #2 em `0x5C` (ADDR em VCC). | Confirmar montagem, orientação e parâmetros de aquisição com ADCS. |
-| Payload | Comunicação I2C bidirecional. UART2 não é mais a interface de missão do Payload. | A intenção de que qualquer lado possa iniciar o envio não define os papéis ou a arbitragem do I2C. |
-| Tempo | O OBC é responsável pela referência temporal e associação dos timestamps. | Uso exclusivo do relógio interno do ESP32 é uma hipótese, não uma escolha de hardware confirmada. |
+| Payload | UART dedicada ponto a ponto GPIO 16/17, 115,2 kbps, binário + SeqID/NACK (DP §6.4). | I2C bidirecional de 06/10 superseded; `Pinout.h` uart2_* já conforme. |
+| Tempo | Timer interno do ESP32 (ms) + TC de início fixa absoluto com correção retroativa (DP §6.4). | Sem RTC externo; DS3231 só histórico. |
+| SPI | LoRa no VSPI, SD no HSPI (DP §3.1). | Divergência com mapa antigo encerrada. |
 | Antena | Burn Wire, com gatilho no GPIO 33 conforme a pinagem do OBC. | O MOSFET comanda a corrente do elemento de queima para liberar a retenção física da antena. Servo está desatualizado. |
 
 ## P-I2C — Comunicação OBC–Payload e barramento
@@ -25,7 +28,7 @@ As decisões abaixo foram informadas pelo responsável pelo OBC-DH. Elas atualiz
 - Definir se o Payload compartilhará SDA = 21 / SCL = 22 com os sensores ou utilizará outro barramento. Não há nova alocação de GPIOs aprovada.
 - Definir velocidade, níveis lógicos, pull-ups, capacitância, comprimento das conexões e comportamento quando um dos dispositivos estiver desligado.
 - Definir recuperação se SDA/SCL permanecerem presos, limites das transações e convivência com sensores e controle FOC. Tráfego do Payload ou uma falha no barramento compartilhado pode afetar o ADCS e o EPS.
-- Definir taxa nominal, rajadas, buffers, filas, confirmação, repetição e tratamento de perdas. O script `payload/telemetry.py` ainda não implementa transporte I2C para o OBC.
+- Definir taxa nominal, rajadas, buffers, filas, confirmação, repetição e tratamento de perdas. O script `payload/telemetry.py` ainda não implementa o transporte UART binário para o OBC.
 
 ## P-ENDERECOS — Inventário I2C e proposta do Payload
 
@@ -42,7 +45,7 @@ As decisões abaixo foram informadas pelo responsável pelo OBC-DH. Elas atualiz
 
 **Áreas para alinhamento:** OBC-DH, Payload e TT&C. **Etapas afetadas:** 3 a 7 e 9.
 
-- Escolher JSON ou formato binário para o I2C. O JSON gravado localmente pelo Payload não determina o formato no enlace.
+- **Decidido (DP §6.4): formato binário compacto (~25–35 B) com Sequence ID + NACK via UART.** O JSON gravado localmente pelo Payload não determina o formato no enlace. Aberto: enquadramento/versão finais e validação de bancada (open issue §9.3-4).
 - Definir campos, tipos, unidades, limites, versão, comprimento, enquadramento, fragmentação, sequência, integridade e confirmação.
 - Para formato binário, definir serialização e ordem dos bytes; “bytes brutos” não define representação portável nem autoriza transmitir diretamente a memória de uma struct.
 - Definir status, temperatura, solicitações e respostas; significado de `val_flags`, validade de dados acumulados em instantes diferentes e comportamento de `seq_id` após reset.
@@ -53,8 +56,7 @@ As decisões abaixo foram informadas pelo responsável pelo OBC-DH. Elas atualiz
 
 **Área para definição:** OBC-DH, com alinhamento de Payload e coordenação. **Etapas afetadas:** 2, 4, 6, 7 e 9.
 
-- A responsabilidade é do OBC. A hipótese atual é usar o relógio interno do ESP32, sem RTC externo; ainda falta confirmar essa escolha e sua implementação.
-- DS3231 e seus valores de consumo permanecem apenas como referência histórica dos PDFs enquanto a decisão de hardware estiver aberta.
+- **Decidido (DP §6.4): timer interno do ESP32 (ms desde boot); TC de início fixa o absoluto e o OBC corrige retroativamente.** DS3231 e seus valores de consumo permanecem apenas como referência histórica dos PDFs.
 - Distinguir tempo decorrido desde o boot de data/hora absoluta. O relógio interno não fornece automaticamente UTC válido nem conserva a data/hora após perda total de alimentação.
 - Definir ajuste inicial sem internet, resolução, erro/deriva admissível, validade, sincronização e recuperação após reset ou perda de energia.
 - Definir o instante representado pelo timestamp do OBC e como tratar o horário que o Payload já grava. Não remover esse campo nem redefinir seu significado sem contrato.

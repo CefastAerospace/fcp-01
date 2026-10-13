@@ -8,7 +8,7 @@
 - O rádio LoRa utiliza o barramento **VSPI**; 
 - O cartão SD utiliza **HSPI**; 
 - Os sensores digitais compartilham um barramento **I2C**; 
-- A comunicação com o Payload ocorre por **I2C bidirecional**; barramento, GPIOs e papéis ainda dependem de [P-I2C](PENDENCIAS_ARQUITETURAIS.md#p-i2c--comunicação-obcpayload-e-barramento);
+- A comunicação com o Payload ocorre por **UART dedicada ponto a ponto (GPIO 16/17, 115,2 kbps)**, com pacotes binários + Sequence ID/NACK (Design Package Oct/2026 §3.1/§6.4 — decisão vigente; o I2C bidirecional de 06/10 está superseded);
 - A interface de bancada utiliza **UART0** pela conexão **USB** da placa;
 
 ---
@@ -46,7 +46,7 @@ As direções de entrada e saída são relativas ao ESP32.
 | Interface         | Sinais e GPIOs                          | Uso                            |
 | ----------------- | --------------------------------------- | ------------------------------ |
 | UART0             | TX = 1; RX = 3                          | Comunicação de bancada / solo. |
-| I2C do Payload    | Barramento e GPIOs a definir             | Comunicação bidirecional; formato JSON ou binário ainda não escolhido. |
+| UART payload       | TX = 17; RX = 16; 115,2 kbps 8N1        | Binário compacto OBC ↔ Pi (SeqID + NACK, §6.4). |
 | I2C               | SDA = 21; SCL = 22                      | Sensores térmicos, EPS e ADCS. |
 | VSPI              | MOSI = 23; MISO = 19; SCK = 18; CS = 5  | Rádio LoRa SX1276.             |
 | Controle do rádio | DIO0 = 4; RST = 14                      | Eventos e recuperação do LoRa. |
@@ -54,11 +54,11 @@ As direções de entrada e saída são relativas ao ESP32.
 | Controle do motor | U = 25; V = 26; W = 27; EN = 12         | Driver do ADCS / SimpleFOC.    |
 | Burn Wire         | Trigger = 33                            | Liberação das antenas.         |
 
-> GPIOs 16 e 17 não têm mais a antiga função UART2 do Payload. Não considerá-los automaticamente livres: o barramento I2C do Payload e a disponibilidade na placa ainda precisam de definição. `Pinout.h` preserva as constantes antigas até uma alteração de código específica; consultar [P-EPS-ELETRICA](PENDENCIAS_ARQUITETURAIS.md#p-eps-eletrica--energia-placa-e-sensores).
+> GPIOs 16 e 17 são a UART dedicada do Payload (TX = 17, RX = 16), conforme o Design Package §3.1. A menção antiga a I2C do Payload está superseded. `Pinout.h` (`uart2_tx`/`uart2_rx`) já reflete esse mapa.
 
 > MPU9250 = `0x68` (AD0 em GND); BH1750 #1 = `0x23` e BH1750 #2 = `0x5C`. A proposta `PAYLOAD_ADDR = 0x80` não é endereço válido de 7 bits. Consultar [P-ENDERECOS](PENDENCIAS_ARQUITETURAIS.md#p-enderecos--inventário-i2c-e-proposta-do-payload).
 
-> O OBC é responsável pelo tempo. O uso exclusivo do relógio interno do ESP32 é uma hipótese; a presença de DS3231 externo ainda não está definida. Consultar [P-TEMPO](PENDENCIAS_ARQUITETURAIS.md#p-tempo--referência-temporal-do-obc).
+> O OBC é responsável pelo tempo com o **timer interno do ESP32 (ms) + TC de início que fixa o absoluto com correção retroativa** (Design Package §6.4, REQ-OBC-006). Sem RTC externo; DS3231 é só referência histórica dos PDFs.
 
 ---
 
@@ -68,7 +68,7 @@ As direções de entrada e saída são relativas ao ESP32.
 
 A separação entre VSPI e HSPI evita que rádio e SD disputem o mesmo barramento físico e favorece operações independentes. 
 
-A alocação apresentada é a do OBC; o documento compartilhado ainda registra o mapa inverso. Consultar [P-SPI](PENDENCIAS_ARQUITETURAIS.md#p-spi--rádio-e-armazenamento) antes da integração.
+A alocação apresentada é a do OBC e está conciliada com o Design Package §3.1 (LoRa no VSPI, SD no HSPI). O mapa inverso no `common/interfaces/pinout.md` era obsoleto e foi corrigido. P-SPI está encerrada como decisão.
 
 Na implementação, cada periférico ainda deve ter seu acesso coordenado quando utilizado por mais de uma tarefa. A separação física, por si só, não define a sincronização dos drivers, arquivos ou dados compartilhados.
 

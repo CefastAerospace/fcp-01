@@ -195,7 +195,7 @@ Use `Ctrl+C` para fechar o monitor serial antes de transferir outro firmware. Pe
 
 Conferir a variante da placa, a alimentação e o mapeamento em [PINAGEM.md](.agents/PINAGEM.md). A configuração do PlatformIO não define os estados seguros das saídas nem resolve as pendências de motor, Burn Wire e strapping pins. Essas definições continuam dependendo dos contratos e do esquema elétrico do projeto.
 
-Pesquisar essas dependências e as decisões de I2C, endereçamento e tempo em [PENDENCIAS_ARQUITETURAIS.md](PENDENCIAS_ARQUITETURAIS.md). O transporte do Payload é I2C bidirecional; `Pinout.h` ainda contém as constantes UART2 antigas, preservadas até uma alteração de código específica. O ambiente de compilação não valida os papéis I2C ou o endereço proposto `0x80`.
+Pesquisar dependências de motor, Burn Wire e strapping pins em [PENDENCIAS_ARQUITETURAIS.md](PENDENCIAS_ARQUITETURAIS.md). O transporte do Payload é UART dedicada GPIO 16/17 (binário + SeqID/NACK, DP §6.4); `Pinout.h` (`uart2_*`) já reflete esse mapa. O ambiente de compilação não valida enquadramento do protocolo nem temporização.
 
 ## Referências
 

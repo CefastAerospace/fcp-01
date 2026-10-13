@@ -1,40 +1,53 @@
-# Pinout e Alocação de Barramentos: FCP-01
+# Pinout e alocação de barramentos: FCP-01
 
-Registro compartilhado de endereços I2C, barramentos SPI e pinos reservados. Atualizar sempre que um endereço/pino for definido ou mudar. Decisões abertas e divergências devem ser consultadas em [PENDENCIAS_ARQUITETURAIS.md](../../obc-dh/.agents/PENDENCIAS_ARQUITETURAIS.md); uma proposta não equivale a uma alocação aprovada.
+Registro oficial de pinos, barramentos SPI, I2C e endereços — espelha a §3.1 do Design Package (Oct/2026) e `obc-dh/headers/Pinout.h`.
+Atualizar aqui antes de integrar qualquer hardware novo. Divergências antigas (SPI invertido, Payload por I2C, RTC externo, `0x80`) estão obsoletas — ver histórico no git.
+
+## UART
+
+| Pinos ESP32 | Uso | Observação |
+|---|---|---|
+| GPIO 1 (TX0) / 3 (RX0) | UART0, umbilical USB-C de bancada | TC/TM nível básico (§7.1) |
+| GPIO 16 (RX) / 17 (TX), 115,2 kbps 8N1 | UART dedicada OBC ↔ Payload (Raspberry Pi) | Pacotes binários ADS-B com Sequence ID + NACK (§6.4); ~11,5 kB/s sustentados |
+
+O Payload **não** está no barramento I2C.
 
 ## Barramentos SPI (ESP32)
 
-| Barramento | Dispositivo | Subsistema |
-|---|---|---|
-| VSPI | Cartão SD | OBC&DH |
-| HSPI | LoRa SX1276 | TT&C |
+| Barramento | Pinos | Dispositivo | Subsistema |
+|---|---|---|---|
+| VSPI | MOSI 23 / MISO 19 / SCK 18, CS 5, DIO0 4, RST 14 | LoRa SX1276 (921 MHz) | TT&C |
+| HSPI | MOSI 32 / MISO 35 / SCK 15, CS 13 | microSD (missão + logs) | OBC&DH |
 
-Esta tabela preserva a alocação anterior, ainda não conciliada com a pinagem do OBC, que utiliza LoRa no VSPI e SD no HSPI. Confirmar o esquema elétrico antes da integração; consultar [P-SPI](../../obc-dh/.agents/PENDENCIAS_ARQUITETURAIS.md#p-spi--rádio-e-armazenamento).
+LoRa e SD em barramentos separados para não colidirem. MISO do SD no GPIO 35 (somente entrada) por segurança de boot. DIO0 sinaliza RX/TX Done; RST permite reset físico do rádio.
 
-## Barramento I2C (compartilhado)
+## Barramento I2C (compartilhado, sensores)
+
+SDA = GPIO 21, SCL = GPIO 22. Endereços em 7 bits:
 
 | Endereço | Dispositivo | Subsistema | Observação |
 |---|---|---|---|
-| 0x68 | MPU9250 | ADCS | Confirmado pelo responsável pelo OBC-DH; AD0 em GND. |
-| 0x23 | BH1750 #1 | ADCS | Confirmado pelo responsável pelo OBC-DH; ADDR em GND. |
-| 0x5C | BH1750 #2 | ADCS | Confirmado pelo responsável pelo OBC-DH; ADDR em VCC. |
-| 0x40 (proposto) | INA219 #1 | EPS | Confirmar endereço e configuração dos pinos A0/A1. |
-| 0x41 (proposto) | INA219 #2 | EPS | A0=VCC, A1=GND na documentação anterior; confirmar módulo e configuração. |
-| 0x48 (proposto) | LM75A | TC | Confirmar endereço e configuração dos pinos A0–A2. |
-| Não definido | Payload - Raspberry Pi Zero W | Payload | I2C bidirecional confirmado; proposta `0x80` ainda não é endereço válido de 7 bits. |
-| Não alocado | RTC externo | OBC&DH | DS3231 é referência histórica; presença do componente depende da política de tempo. |
+| 0x68 | MPU-9250 (IMU, AD0 em GND) | ADCS | Taxa p/ detumbling; magnetômetro não usado no controle |
+| 0x36 | AS5600 (encoder do motor) | ADCS | Feedback FOC da roda de reação |
+| 0x23 | BH1750 #1 (ADDR em GND) | ADCS | Par diferencial p/ azimute solar (com baffles) |
+| 0x5C | BH1750 #2 (ADDR em VCC) | ADCS | Par diferencial p/ azimute solar (com baffles) |
+| 3x INA219 | Monitor bateria / rail principal / painéis | EPS | Tensão, corrente e potência p/ OBC |
+| 5x LM75A | Sensores de temperatura | Thermal | Bateria + pontos críticos; watchdog via OBC |
 
-Os endereços da tabela usam a convenção de **7 bits**. `0x80` está fora dessa faixa; se representar o byte de escrita, corresponde a `0x40`, já proposto para INA219 #1. Não converter nem escolher outro endereço sem alinhamento. Se o DS3231 for mantido no mesmo barramento, seu `0x68` conflitará com a IMU. Consultar [P-ENDERECOS](../../obc-dh/.agents/PENDENCIAS_ARQUITETURAIS.md#p-enderecos--inventário-i2c-e-proposta-do-payload).
+Sem RTC externo no barramento (tempo = timer interno ESP32, §6.4). Sem endereço `0x80` (fora da faixa 7 bits; era proposta antiga do Payload, descartada com a migração para UART).
 
-O barramento do Payload, os papéis dos dispositivos e a intenção de envio iniciado por qualquer lado ainda precisam de definição. Não presumir compartilhamento com os sensores; consultar [P-I2C](../../obc-dh/.agents/PENDENCIAS_ARQUITETURAIS.md#p-i2c--comunicação-obcpayload-e-barramento).
+## Atuação
 
-## Outros pinos reservados
-
-| Recurso | Subsistema | Tipo | Observação |
+| Recurso | Pino | Subsistema | Observação |
 |---|---|---|---|
-| Burn Wire da antena | Estruturas / EPS / OBC-DH | Digital - saída | GPIO 33 comanda o MOSFET do circuito de queima; consultar P-BURN-WIRE no documento de pendências. |
-| SimpleFOC Mini (roda de reação) | ADCS | PWM (3 fases) + encoder | EN no GPIO 12 confirmado. Fases, encoder e integração dependem de P-ADCS no documento de pendências. |
+| SimpleFOC Mini fases U/V/W | GPIO 25 / 26 / 27 (PWM) | ADCS | Motor GM2804 da roda de reação |
+| Driver EN | GPIO 12 | ADCS | Desliga o driver fora do detumbling (zera idle) |
+| Burn-wire antenas | GPIO 33 (saída, trigger compartilhado) | Estruturas / EPS / OBC-DH | 2 circuitos nichrome (5 V, 4 Ω cada; 2,5 A / 12,5 W transitório); acionar fora de TX |
 
-## Como manter
+GPIO 34/36/39 livres (somente entrada, sem pulls internos) para expansões futuras.
 
-Qualquer subsistema que adicionar um novo módulo I2C/SPI ou reservar um pino deve atualizar esta tabela antes de integrar o hardware físico com o resto do satélite.
+## Referências
+
+- `FCP-01_Design_Package_CubeDesign_2026.md` §3.1 (pinagem), §6.4 (UART + timestamps), §7.1 (rádio/SD)
+- `obc-dh/headers/Pinout.h` (constantes `pinout::`)
+- `obc-dh/.agents/PINAGEM.md` (notas de integração/strapping pins)

@@ -14,14 +14,14 @@ A revisão considera os arquivos presentes no repositório e seu histórico. Nã
 |---|---|---|
 | Documentação e contratos | Arquitetura, catálogo dos 16 requisitos, pinagem, padrão C++ e pendências entre áreas documentados em `.agents/`. | Obter e conferir as referências externas vigentes; resolver contratos e divergências. Os PDFs, ConOps, ICDs e regulamento citados não estão presentes no repositório. |
 | Ambiente de desenvolvimento | [platformio.ini](../platformio.ini) configura ESP32, Arduino e diretórios; [../.clangd](../.clangd) ajusta a análise no editor; [FUNCIONAMENTO_PIO.md](FUNCIONAMENTO_PIO.md) documenta o uso. | Confirmar a placa real, comprovar compilação e fixar versões validadas. Dependências dos periféricos serão declaradas conforme sua integração. |
-| Firmware e pinagem | [main.cpp](../src/main.cpp) contém os pontos de entrada; [Pinout.h](../headers/Pinout.h) contém constantes dos GPIOs. | `setup()` e `loop()` estão vazios. Não há inicialização de periféricos, tarefas, filas ou comportamento de missão. As constantes UART2 do Payload ainda estão desatualizadas. |
+| Firmware e pinagem | [main.cpp](../src/main.cpp) contém os pontos de entrada; [Pinout.h](../headers/Pinout.h) contém constantes dos GPIOs. | `setup()` e `loop()` estão vazios. Não há inicialização de periféricos, tarefas, filas ou comportamento de missão. `Pinout.h` já reflete o mapa vigente (UART payload 16/17, VSPI LoRa, HSPI SD, EN 12, burn-wire 33). |
 | Integração e testes | Há implementações independentes no ADCS, Payload e estação de solo, inventariadas abaixo. `tests/` contém apenas `.gitkeep`. | Integrar os subsistemas ao OBC e implementar os testes; nenhuma etapa de comunicação, tempo, armazenamento, TM/TC, atuação ou recuperação está concluída no firmware do OBC. |
 
 ### Inventário para reutilização
 
 - **OBC-DH:** `src/main.cpp`, `headers/Pinout.h`, configuração PlatformIO/clangd e documentação. Não há classes, drivers, utilitários ou scripts operacionais próprios além dessa base; não há `lib_deps` de periféricos declaradas.
 - **ADCS:** `adcs/src/` e `adcs/include/` contêm aquisição de sensores, controle de motor/encoder, missões, comandos e interface web. `adcs/platformio.ini` declara SimpleFOC, MPU9250_WE e BH1750. É um firmware separado; EN = 33 e a ordem das fases ainda divergem da pinagem do OBC, conforme P-ADCS.
-- **Payload:** `payload/telemetry.py` recebe dados do dump1090 por TCP, organiza `AircraftTelemetry`, associa UTC e grava registros JSON localmente. Não implementa o transporte I2C ao OBC; seus registros e timestamps não comprovam as tarefas do OBC.
+- **Payload:** `payload/telemetry.py` recebe dados do dump1090 por TCP, organiza `AircraftTelemetry`, associa UTC e grava registros JSON localmente. Não implementa o transporte UART binário (SeqID/NACK, DP §6.4) ao OBC; seus registros e timestamps não comprovam as tarefas do OBC.
 - **Estação de solo:** `gs/src/main.cpp` contém pacotes de TC/TM/ACK, CRC16, comunicação LoRa e menu serial; `gs/platformio.ini` declara a biblioteca LoRa. O código correspondente no satélite não está presente em `tt-c/src/` nem no OBC. Esses pacotes são uma referência existente, não um ICD confirmado.
 - **Demais áreas:** `common/interfaces/pinout.md` registra interfaces e divergências; `common/protocol/`, `eps-tc/src/` e `tt-c/src/` contêm apenas `.gitkeep`.
 
@@ -47,14 +47,14 @@ Os itens compostos permanecem abertos quando apenas parte foi realizada. A docum
 - [ ] Conciliar a responsabilidade física do ADCS com PWM, EN e SimpleFOC previstos na pinagem.
 - [ ] Resolver a divergência entre ADC das placas solares e o mapeamento que evita ADC.
 - [ ] Definir a interface e a pinagem do encoder do ADCS.
-- [ ] Definir a fonte de tempo do OBC: relógio interno do ESP32 é hipótese; DS3231 é referência histórica. Consultar P-TEMPO no documento de pendências.
+- [ ] Definir a fonte de tempo do OBC já decidida no DP §6.4 (timer interno ms + TC com correção retroativa) na implementação; DS3231 é só histórico.
 - [ ] Definir a interface e o comportamento do Thermal Watchdog.
+- [ ] Validar o enlace UART do Payload (binário + SeqID/NACK, DP §6.4): enquadramento, buffers/filas, rajadas e tratamento de perdas — validação de bancada pendente (§9.3-4).
 - [ ] Definir as condições de liberação, temporização e comportamento em reset do Burn Wire com Estruturas / EPS.
 - [ ] Confirmar a lista de modos, transições e prioridades no ConOps. **REQ-OBC-004**.
-- [ ] Definir os ICDs de dados e comandos, incluindo campos, unidades, limites, enquadramento e validação.
-- [ ] Definir papéis, arbitragem, barramento, endereço de 7 bits, velocidade e volume de dados do I2C bidirecional do Payload, incluindo rajadas e formato JSON ou binário. Consultar P-I2C, P-ENDERECOS e P-DADOS no documento de pendências.
+- [ ] Definir os ICDs de dados e comandos, incluindo campos, unidades, limites, enquadramento e validação (enlace Payload já decidido: UART binária §6.4; falta validar em bancada).
 - [ ] Definir os limites de resposta a TC, detecção e recuperação de falhas e perda de comunicação. **REQ-OBC-002, REQ-OBC-007 e REQ-OBC-011**.
-- [ ] Definir referência, significado e resolução dos timestamps do OBC e do Payload. **REQ-OBC-006 e REQ-OBC-010**.
+- [ ] Implementar referência de timestamps do DP §6.4 (OBC em ms, TC corrige absoluto) e tratar o horário local do Payload como debug. **REQ-OBC-006 e REQ-OBC-010**.
 - [ ] Obter a cota energética, os limiares e as prioridades de operação com EPS. **REQ-OBC-012 e REQ-NF-OBC-001**.
 - [ ] Definir formato e política dos registros, estatísticas relevantes e persistência da contagem de reinicializações. **REQ-OBC-005 e REQ-NF-OBC-002 a REQ-NF-OBC-004**.
 
@@ -86,7 +86,7 @@ Consultar P-EPS-ELETRICA, P-ADCS e P-BURN-WIRE em [PENDENCIAS_ARQUITETURAIS.md](
 **Resultado:** comunicação básica e troca controlada de mensagens entre tarefas.
 
 - [ ] Configurar UART0 para a interface umbilical de bancada.
-- [ ] Configurar a comunicação I2C bidirecional com o Payload após definir papéis, barramento, GPIOs e endereço. Não utilizar a proposta `0x80` como endereço de 7 bits sem resolver P-ENDERECOS.
+- [ ] Configurar a UART dedicada do Payload (TX 17 / RX 16, 115,2 kbps, binário + SeqID/NACK, DP §6.4) com buffers/filas e tratamento de gaps; Payload fora do I2C.
 - [ ] Configurar I2C em SDA = 21 / SCL = 22 e conferir dispositivos, endereços e parâmetros elétricos acordados.
 - [ ] Configurar VSPI para o LoRa SX1276 e HSPI para o cartão SD, com os sinais definidos na pinagem.
 - [ ] Configurar DIO0 e RST do rádio conforme o driver adotado.

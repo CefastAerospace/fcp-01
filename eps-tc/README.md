@@ -15,7 +15,7 @@ Subsistema de potência + monitoramento térmico do FCP-01 (§3.3, §4.2.7). Est
 - **5x LM75A:** temperaturas da bateria e pontos críticos (REQ-TC-001/004/005 + alerta REQ-TC-006).
 - **LOW-POWER:** watchdog de energia/temperatura recolhe o satélite a tarefas críticas até recuperar (§2.5).
 
-Endereços I2C finais e limites/períodos ainda estão em definição — ver `../common/interfaces/pinout.md` e `../obc-dh/.agents/PENDENCIAS_ARQUITETURAIS.md` (P-ENDERECOS, P-TERMICO).
+Endereços I2C finais e limites/períodos ainda estão em definição — ver `../common/interfaces/pinout.md`, [P-ENDERECOS](../obc-dh/.agents/TODO.md#p-enderecos) e [P-TERMICO](../obc-dh/.agents/TODO.md#p-termico).
 
 ## Aprofundar
 

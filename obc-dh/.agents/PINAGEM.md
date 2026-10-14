@@ -1,28 +1,19 @@
-# Pinagem do OBC - ESP32
+# Pinagem do OBC — ESP32
 
-*Base: Alocação de Pinos.pdf, com decisões vigentes informadas pelo responsável pelo OBC-DH em 06/10/2026. Definições abertas: [PENDENCIAS_ARQUITETURAIS.md](PENDENCIAS_ARQUITETURAIS.md).*
+Base: Alocação de Pinos.pdf e decisões do responsável. As definições de 06/10/2026 sobre sensores, motor e Burn Wire permanecem; a revisão atual substitui I2C do Payload por UART e confirma ADCS no mesmo ESP32. Pendências e parâmetros estão em [TODO.md](TODO.md#2-pendências-e-dependências); decisões lógicas em [ARCHITECTURE.md](ARCHITECTURE.md).
 
----
-## Protocolos de Comunicação:
+## Interfaces e alocação
 
-- O rádio LoRa utiliza o barramento **VSPI**; 
-- O cartão SD utiliza **HSPI**; 
-- Os sensores digitais compartilham um barramento **I2C**; 
-- A comunicação com o Payload ocorre por **UART dedicada ponto a ponto (GPIO 16/17, 115,2 kbps)**, com pacotes binários + Sequence ID/NACK (Design Package Oct/2026 §3.1/§6.4 — decisão vigente; o I2C bidirecional de 06/10 está superseded);
-- A interface de bancada utiliza **UART0** pela conexão **USB** da placa;
+LoRa utiliza VSPI; SD utiliza HSPI; sensores/encoder compartilham I2C. Payload utiliza UART e bancada utiliza UART0/USB. Alocação SPI conciliada como decisão de projeto; conferir montagem, acesso e validação elétrica em [P-SPI](TODO.md#p-spi).
 
----
-
-## Tabela de alocação
-
-As direções de entrada e saída são relativas ao ESP32.
+As direções são relativas ao ESP32. GPIOs 16/17 são a alocação de projeto para UART do Payload, já presente em `Pinout.h`; disponibilidade no módulo e montagem ainda precisam de conferência. O mapa compartilhado foi conciliado: LoRa/VSPI e SD/HSPI. P-SPI agora trata montagem, acesso e validação elétrica.
 
 | Pino ESP32 / GPIO | Função / sinal     | Interface / barramento | Subsistema / destino   | Observações                                                                                             |
 | ----------------- | ------------------ | ---------------------- | ---------------------- | ------------------------------------------------------------------------------------------------------- |
 | 1 - TX0           | Transmissão (TX)   | UART0 / USB            | Bancada / solo         | Porta umbilical para telecomandos e telemetria no nível básico. Conexão USB-C.                          |
 | 3 - RX0           | Recepção (RX)      | UART0 / USB            | Bancada / solo         | Recepção da interface umbilical, em conjunto com TX0.                                                   |
-| 21                | SDA - dados        | I2C de sensores        | Térmico, EPS e ADCS    | Sensores previstos: LM75A, INA219, BMS, MPU9250 e BH1750. Inventário completo e ligação do Payload dependem das pendências. |
-| 22                | SCL - clock        | I2C de sensores        | Térmico, EPS e ADCS    | Clock do barramento dos sensores; parâmetros e compartilhamento dependem de P-I2C.                      |
+| 21                | SDA - dados        | I2C de sensores        | Térmico, EPS e ADCS    | LM75A, INA219, MPU9250, BH1750 e AS5600. Inventário/montagem dependem de P-ENDERECOS/P-ADCS; interface do BMS a conferir. |
+| 22                | SCL - clock        | I2C de sensores        | Térmico, EPS e ADCS    | Clock dos sensores; parâmetros e acesso coordenado dependem de P-BARRAMENTO.                      |
 | 23                | MOSI               | VSPI                   | TT&C - LoRa SX1276     | Envio de dados ao rádio.                                                                                |
 | 19                | MISO               | VSPI                   | TT&C - LoRa SX1276     | Recepção de dados do rádio.                                                                             |
 | 18                | SCK                | VSPI                   | TT&C - LoRa SX1276     | Clock SPI do rádio.                                                                                     |
@@ -38,79 +29,48 @@ As direções de entrada e saída são relativas ao ESP32.
 | 27                | PWM - fase W       | PWM                    | ADCS - SimpleFOC       | Aciona a fase W do motor brushless por meio do driver.                                                  |
 | 32                | MOSI               | HSPI                   | OBC - cartão SD        | Envio de dados ao SD. O PDF justifica a escolha pelo comportamento esperado dessa linha durante o boot. |
 | 33                | Trigger - gatilho  | Digital - saída        | Estruturas / EPS       | Aciona o MOSFET do circuito Burn Wire para derreter a linha de nylon e liberar as fitas de antena.      |
-
----
+| 17 | Transmissão (TX2) | UART2 | Payload | Alocação de projeto em Pinout.h; conferir disponibilidade no módulo e ligação ao RX do Pi. |
+| 16 | Recepção (RX2) | UART2 | Payload | Alocação de projeto em Pinout.h; conferir disponibilidade no módulo e ligação ao TX do Pi. |
 
 ## Resumo por interface
 
-| Interface         | Sinais e GPIOs                          | Uso                            |
-| ----------------- | --------------------------------------- | ------------------------------ |
-| UART0             | TX = 1; RX = 3                          | Comunicação de bancada / solo. |
-| UART payload       | TX = 17; RX = 16; 115,2 kbps 8N1        | Binário compacto OBC ↔ Pi (SeqID + NACK, §6.4). |
-| I2C               | SDA = 21; SCL = 22                      | Sensores térmicos, EPS e ADCS. |
-| VSPI              | MOSI = 23; MISO = 19; SCK = 18; CS = 5  | Rádio LoRa SX1276.             |
-| Controle do rádio | DIO0 = 4; RST = 14                      | Eventos e recuperação do LoRa. |
-| HSPI              | MOSI = 32; MISO = 35; SCK = 15; CS = 13 | Cartão SD.                     |
-| Controle do motor | U = 25; V = 26; W = 27; EN = 12         | Driver do ADCS / SimpleFOC.    |
-| Burn Wire         | Trigger = 33                            | Liberação das antenas.         |
+| Interface | Sinais e GPIOs | Uso |
+|---|---|---|
+| UART0 | TX = 1; RX = 3 | Bancada / solo pela interface USB da placa. |
+| UART do Payload | UART2: TX = 17; RX = 16, 115,2 kbps 8N1 | Binário compacto (~25–35 B estimados), SeqID + NACK; conferir módulo, montagem, porta Pi e enquadramento final. |
+| I2C | SDA = 21; SCL = 22 | Sensores de ADCS, EPS, Térmico e encoder conforme montagem. |
+| VSPI | MOSI = 23; MISO = 19; SCK = 18; CS = 5 | LoRa SX1276, 921 MHz SF7; usa SPI global. |
+| Rádio | DIO0 = 4; RST = 14 | Eventos e recuperação do rádio. |
+| HSPI | MOSI = 32; MISO = 35; SCK = 15; CS = 13 | microSD FAT32, instância SPI própria. |
+| Motor | EN = 12; U/V/W = 25/26/27 | Integração ADCS; fases e estados dependem de confirmação. |
+| Burn Wire | Trigger = 33 | MOSFET de liberação física da antena. |
 
-> GPIOs 16 e 17 são a UART dedicada do Payload (TX = 17, RX = 16), conforme o Design Package §3.1. A menção antiga a I2C do Payload está superseded. `Pinout.h` (`uart2_tx`/`uart2_rx`) já reflete esse mapa.
+UART exige níveis de 3,3 V, TX/RX cruzados e GND comum. Configuração dos dois lados e comportamento com um lado desligado dependem de [P-PAYLOAD](TODO.md#p-payload). Confirmar circuito USB/UART e conector da placa; DevKit V1 não identifica sozinho o esquema real.
 
-> MPU9250 = `0x68` (AD0 em GND); BH1750 #1 = `0x23` e BH1750 #2 = `0x5C`. A proposta `PAYLOAD_ADDR = 0x80` não é endereço válido de 7 bits. Consultar [P-ENDERECOS](PENDENCIAS_ARQUITETURAIS.md#p-enderecos--inventário-i2c-e-proposta-do-payload).
+## Inventário I2C
 
-> O OBC é responsável pelo tempo com o **timer interno do ESP32 (ms) + TC de início que fixa o absoluto com correção retroativa** (Design Package §6.4, REQ-OBC-006). Sem RTC externo; DS3231 é só referência histórica dos PDFs.
+| Dispositivo | Endereço de 7 bits | Estado |
+|---|---|---|
+| MPU9250 | `0x68` | Confirmado; AD0 em GND. |
+| BH1750 #1 / #2 | `0x23` / `0x5C` | Confirmados; ADDR em GND / VCC. |
+| AS5600 | `0x36` | Encoder definido e utilizado no ADCS; validar montagem/aquisição. |
+| 3x INA219 | A confirmar | Projeto EPS prevê bateria, rail principal e painéis. `0x40`/`0x41` são propostas anteriores; obter mapa final/configuração A0/A1. |
+| 5x LM75A | A confirmar | Bateria/pontos críticos; `0x48` é proposta anterior. Obter mapa final/configuração A0–A2. |
+| BMS | A definir, se houver interface | Conferir aquisição prevista com EPS; não presumir endereço I2C. |
 
----
+O projeto EPS/Térmico prevê sensores digitais INA219/LM75A; aquisição, endereços e proteção ainda dependem dos ICDs. Payload UART não possui endereço I2C e a proposta histórica `0x80` não se aplica. Tempo usa ms monotônicos por boot e referências LoRa, com reconstrução retroativa; RTC externo fica fora da configuração atual. DS3231 só será reconsiderado se esse método não atender à validação temporal acordada; seu `0x68` conflita com a IMU no mesmo barramento. Conferir [P-ENDERECOS](TODO.md#p-enderecos), [P-BARRAMENTO](TODO.md#p-barramento) e [P-TEMPO](TODO.md#p-tempo).
 
-## Notas de integração
+## Boot, reset e restrições elétricas
 
-### Separação dos barramentos SPI
+O MISO do SD usa GPIO 35 para evitar que o cartão imponha nível inadequado ao GPIO 12 no boot. GPIOs 5, 12 e 15 continuam sendo strapping pins e devem ser verificados com os circuitos conectados. GPIOs 34–39 são somente de entrada e não têm pulls internos; 34/36/39 estão sem alocação neste mapa, mas disponibilidade real precisa ser confirmada. GPIOs 16/17 dependem do módulo e de flash/PSRAM.
 
-A separação entre VSPI e HSPI evita que rádio e SD disputem o mesmo barramento físico e favorece operações independentes. 
+Níveis ativos e estados de CS, RST, EN, PWM e Burn Wire precisam de acordo elétrico, inclusive antes de executar o firmware. Conferir [P-EPS-ELETRICA](TODO.md#p-eps-eletrica), [P-ADCS](TODO.md#p-adcs) e [P-BURN-WIRE](TODO.md#p-burn-wire). EN = 12 permanece confirmado, mas ADCS ainda usa 33; fases também divergem. Nenhum código foi corrigido nesta revisão documental.
 
-A alocação apresentada é a do OBC e está conciliada com o Design Package §3.1 (LoRa no VSPI, SD no HSPI). O mapa inverso no `common/interfaces/pinout.md` era obsoleto e foi corrigido. P-SPI está encerrada como decisão.
-
-Na implementação, cada periférico ainda deve ter seu acesso coordenado quando utilizado por mais de uma tarefa. A separação física, por si só, não define a sincronização dos drivers, arquivos ou dados compartilhados.
-
-### Inicialização e restrições dos pinos
-
-O MISO do SD é no GPIO 35 para evitar que o cartão imponha um nível inadequado ao GPIO 12 durante a inicialização. 
-
-Isso não torna toda a pinagem imune a problemas de boot: **GPIO 5, GPIO 12 e GPIO 15 continuam sendo strapping pins** no ESP32 clássico. Seus níveis durante reset devem ser conferidos com os circuitos conectados.
-
-GPIOs 34 a 39 são somente de entrada e não possuem pull-up ou pull-down interno configurável por software. 
-
-> A aplicação de GPIOs 16 e 17 também depende do módulo e do uso de flash/PSRAM. Essas restrições são documentadas pela [Espressif — GPIO & RTC GPIO](https://docs.espressif.com/projects/esp-idf/en/release-v5.5/esp32/api-reference/peripherals/gpio.html).
-
-> Qual a variante real do DevKit e do módulo deve ser confirmado antes da montagem. O conector USB-C e o circuito de interface USB/UART devem ser verificados na placa adotada; o nome genérico DevKit V1 não substitui seu esquema elétrico.
-
-### Sensores digitais e expansão
-
-Existe uma proposta para substituir sensores analógicos NTC por LM75A e INA219 em I2C, evitando o uso de ADC nesse mapeamento. 
-
-Também lista **GPIO 34, GPIO 36 e GPIO 39** como livres para futuras entradas e prevê expansão pelo I2C (pontos de pensamento durante a produção, para deixar o código facilmente adaptável e essas adições/modificações).
-
-> Essas possibilidades dependem da placa real, dos endereços I2C, das características elétricas e dos ICDs. Não constituem uma alocação adicional já aprovada.
-
-### Saídas de atuação
-
-Os níveis ativos de EN, RST, CS, PWM e Burn Wire não foram definidos no PDF. Os estados durante boot e reset, a habilitação do motor e as condições de liberação da antena precisam ser acordados com os subsistemas responsáveis.
-
-EN no GPIO 12 está confirmado; o código do ADCS ainda utiliza o valor antigo 33. Burn Wire no GPIO 33 libera fisicamente a retenção da antena. A flag sugerida `IS_WIRE_BURNT` é uma proposta; persistência e confirmação física continuam abertas. Consultar [P-ADCS](PENDENCIAS_ARQUITETURAIS.md#p-adcs--controle-e-integração) e [P-BURN-WIRE](PENDENCIAS_ARQUITETURAIS.md#p-burn-wire--liberação-da-antena).
-
-> Desabilitar o driver do motor representa a intenção de economizar energia (**o consumo residual deve ser medido** - ter certeza se realmente “zera o consumo”).
-
----
-
-## Pendências relacionadas
-
-Pesquisar em [PENDENCIAS_ARQUITETURAIS.md](PENDENCIAS_ARQUITETURAIS.md) antes de implementar ou montar uma interface ainda aberta: P-I2C e P-ENDERECOS (Payload e sensores), P-SPI (rádio/SD), P-ADCS (motor/encoder), P-TEMPO (relógio), P-EPS-ELETRICA (ADC solar, placa e níveis), P-TERMICO e P-BURN-WIRE (atuações). As ações correspondentes continuam em [TODO.md](TODO.md).
-
----
+Burn Wire substitui a descrição antiga de servo e libera a retenção das antenas. Remoto registra dois circuitos nichrome de 5 V / 4 Ω cada, orçamento de 2,5 A / 12,5 W transitório e acionamento fora de TX. Conferir montagem e usar `Ttc::HoldTransmit()` antes da atuação; autorização, duração, persistência e confirmação física constam do checklist. Desabilitar o motor fora do detumbling é a decisão de operação; medir consumo residual antes de afirmar que é zero.
 
 ## Referências
 
-- **Alocação de Pinos.pdf** — fonte principal da tabela e das justificativas de roteamento; sem versão ou data explícita no arquivo.
-- **Definição de Arquitetura OBC.pdf** — versão 1.5, de 10/07/2026; utilizado para identificar o RTC e as interfaces ainda sem pinagem.
-- **Especificação de Requisitos OBC.pdf** — utilizado para conferir os limites de responsabilidade do OBC.
-- **Espressif. GPIO & RTC GPIO — ESP32** — referência complementar para as restrições dos GPIOs; consulta em 30/09/2026, pelo link acima.
+- [REQUISITOS.md](REQUISITOS.md#fontes-e-controle-de-origem): identificação dos PDFs de arquitetura, requisitos e alocação de pinos, com histórico preservado.
+- [Mapa compartilhado](../../common/interfaces/pinout.md): alocação de projeto conciliada entre setores, com pendências elétricas/validação preservadas.
+- Design Package §3.1/§6.4, conforme referências do remoto; versão Markdown citada não presente neste checkout.
+- [Espressif — GPIO & RTC GPIO](https://docs.espressif.com/projects/esp-idf/en/release-v5.5/esp32/api-reference/peripherals/gpio.html): restrições do ESP32 clássico; consulta original em 30/09/2026.

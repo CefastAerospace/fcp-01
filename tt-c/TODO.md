@@ -89,4 +89,4 @@ Ferramentas prontas; falta executar em bancada e anexar os relatórios de `groun
 - [ ] Integração com o OBC: task do OBC consumindo `Ttc::ReceiveTelecommand()`, executando os TCs e respondendo com `Ttc::SendAck()` (`obc-dh/src/main.cpp` está vazio). O `examples/link-test` serve de referência.
 - [ ] Driver do burn-wire no OBC, usando `Ttc::HoldTransmit()` antes de acionar o GPIO 33.
 - [ ] O SD do OBC deve usar uma instância própria de HSPI; o rádio usa o `SPI` global (VSPI).
-- [ ] Alinhar o contrato JSON com o OBC-DH (parte TT&C de P-DADOS em `obc-dh/.agents/PENDENCIAS_ARQUITETURAIS.md`).
+- [ ] Alinhar o contrato JSON com o OBC-DH (parte TT&C de [P-DADOS](../obc-dh/.agents/TODO.md#p-dados)).

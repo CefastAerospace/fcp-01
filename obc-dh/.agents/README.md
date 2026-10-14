@@ -1,129 +1,39 @@
-# *On-Boarding Computer & Data Handling* (OBC-DH)
+# OBC-DH — documentação e orientação
 
-Software de bordo em C++ para o ESP32, com FreeRTOS, destinado à coordenação dos subsistemas e à organização dos dados da missão.
+Software de bordo em C++ para o ESP32, com Arduino/FreeRTOS. O OBC-DH integra os módulos dos setores, organiza telecomandos (TC), telemetria (TM), referência temporal e registros da missão. O Payload executa no Raspberry Pi e se comunica por UART; o ADCS será integrado ao mesmo ESP32 do OBC.
 
----
+## Mapa dos documentos
 
-## O que é o OBC?
-
-É o núcleo de processamento e gerenciamento de dados do CubeSat. Ele executa o software de voo, acompanha os subsistemas e organiza comandos, telemetria e registros da missão.
-
-- **Recebimento de dados:** O Payload recebe e decodifica os sinais ADS-B das aeronaves. O OBC recebe os dados já decodificados, associa informações de tempo, armazena os registros e prepara a telemetria que será enviada ao solo pelo TT&C. 
-
-- **Envio de dados:** No sentido contrário, recebe os telecomandos do TT&C, valida as solicitações e executa as ações permitidas.
-
-### Conceitos principais
-
-| Termo       | Significado                                                                     |
-| ----------- | ------------------------------------------------------------------------------- |
-| Payload     | Carga útil responsável pela recepção e decodificação ADS-B.                     |
-| Telemetria  | Informações sobre o estado do CubeSat e os dados da missão enviadas ao solo.    |
-| Telecomando | Solicitação enviada pelo solo para executar uma ação a bordo.                   |
-| EPS         | Subsistema responsável pela energia e pela distribuição elétrica.               |
-| ADCS        | Subsistema responsável pela determinação e pelo controle de atitude.            |
-| ConOps      | Conceito de operações que define os modos e o comportamento esperado da missão. |
-| ICD         | Documento que define a interface acordada entre subsistemas.                    |
-
----
-
-## Funcionalidades previstas
-
-- **Inicialização automática:** começar a operação após a energização.
-- **Coordenação da missão:** administrar os modos previstos no ConOps e as prioridades de execução.
-- **Dados ADS-B:** receber informações já decodificadas do Payload e associar timestamps.
-- **Telemetria e telecomandos:** compilar o estado do sistema e executar comandos válidos.
-- **Armazenamento:** registrar dados da missão, telemetria, eventos e estatísticas em cartão SD.
-- **Supervisão:** identificar falhas e perda de comunicação, registrar reinicializações e apoiar a recuperação automática.
-- **Gestão lógica de energia:** ajustar as atividades ao orçamento fornecido pelo EPS.
-
-Essas funcionalidades representam o escopo esperado. A documentação recebida não permite afirmar quais já estão implementadas; o acompanhamento deve ser feito em [TODO.md](TODO.md).
-
----
-
-## Documentação do projeto
-
-| Arquivo / material | Finalidade |
+| Documento | Fonte principal de informação |
 |---|---|
-| [README.md](README.md) | Visão geral e regras para trabalhar no projeto. |
-| [PINAGEM.md](PINAGEM.md) | Mapeamento dos GPIOs e observações de integração. |
-| [ARCHITECTURE.md](ARCHITECTURE.md) | Arquitetura e requisitos organizados por dependências. |
-| [PENDENCIAS_ARQUITETURAIS.md](PENDENCIAS_ARQUITETURAIS.md) | Decisões vigentes, hipóteses e contratos ainda abertos entre subsistemas. |
-| [TODO.md](TODO.md) | Checklist de implementação na mesma sequência da arquitetura. |
-| PDFs de origem | Referência das decisões e dos requisitos que deram origem aos arquivos Markdown. |
-| ConOps e ICDs | Definição dos modos de operação e dos contratos entre subsistemas. |
-| Padrão existente de escrita e documentação em C++ | Convenções de código e documentação já adotadas pela equipe. |
+| [AGENTS.md](AGENTS.md) | Instruções de trabalho e limites de execução. |
+| [CPP_STANDARDS.md](CPP_STANDARDS.md) | Convenções de C++ e documentação do código. |
+| [ARCHITECTURE.md](ARCHITECTURE.md) | Decisões vigentes, responsabilidades e comportamento planejado. |
+| [REQUISITOS.md](REQUISITOS.md) | Requisitos, critérios de validação e referências históricas preservadas. |
+| [DEFINICOES_OBC_DP.md](DEFINICOES_OBC_DP.md) | Síntese para o Design Package: definições, justificativas, custos/sobressalentes e data budget estimado. |
+| [TODO.md](TODO.md) | Estado real, inventário, pendências, cinco entregas e evidências. |
+| [PINAGEM.md](PINAGEM.md) | GPIOs, endereços e restrições elétricas. |
+| [FUNCIONAMENTO_PIO.md](FUNCIONAMENTO_PIO.md) | Instalação, compilação, upload, testes e editor. |
 
-A sequência de desenvolvimento começa pelos contratos e pela plataforma, passa por comunicação, tempo e armazenamento e chega à integração dos subsistemas, aos comandos, aos modos de voo e à recuperação de falhas.
+Para trabalhar, consultar instruções e padrões, entender arquitetura/requisitos e localizar no checklist a entrega e suas dependências. Para bancada, conferir pinagem e guia PlatformIO. ICDs definem interfaces entre áreas; ConOps define modos e operação. Obter suas versões vigentes, regulamento e arquitetura lógica CEFAST antes do trabalho que depende dessas referências.
 
-As decisões vigentes (Design Package Oct/2026) confirmam MPU9250 em `0x68`, AS5600 em `0x36`, BH1750 em `0x23` / `0x5C`, EN do motor no GPIO 12, Payload por **UART dedicada GPIO 16/17 (binário + SeqID/NACK)**, LoRa no VSPI / SD no HSPI e liberação física da antena por Burn Wire no GPIO 33. O OBC é responsável pelo tempo (**timer interno + TC, sem RTC externo**). Seguem abertos enquadramento final do binário, níveis/temporização do Burn-Wire e ICDs de TM/TC — pesquisar em [PENDENCIAS_ARQUITETURAIS.md](PENDENCIAS_ARQUITETURAIS.md).
+Decisões ficam na arquitetura; definições abertas e evidências ficam no checklist. Não replicar o conteúdo nos guias. Alteração de interface deve atualizar as referências dependentes. Decisão, implementação e validação são estados distintos.
 
----
+Consolidação de 14/10/2026: UART Payload TX 17 / RX 16, 115,2 kbps 8N1 e binário compacto com SeqID + NACK; LoRa no VSPI, SD no HSPI; encoder AS5600/I2C `0x36`. TT&C usa JSON, `Send()`/`SendTelemetry()`, quadro ≤255 bytes sem fragmentação, CRC do rádio e tarefa própria via `Start()`. EPS já oferece biblioteca INA219; integração do OBC continua pendente. `PENDENCIAS_ARQUITETURAIS.md` foi incorporado a `TODO.md`.
 
-## Regras de negócio e desenvolvimento
+Tempo de voo usa ms monotônicos por boot e referências absolutas pelo LoRa, com reconstrução retroativa. RTC externo só será reconsiderado se o método não atender à validação temporal acordada; DS3231 permanece no histórico. `args.unix` e `ts` do contrato TT&C estão em segundos; a integração deve converter unidades explicitamente e preservar o horário local do Payload como informação de bancada.
 
-### Antes de qualquer alteração
-
-1. **Consultar os materiais de referência:** ler as partes relevantes da arquitetura, da pinagem, dos requisitos, do ConOps, dos ICDs, do regulamento e do padrão existente de C++ antes de alterar código ou documentação.
-2. **Verificar o que já existe:** antes de criar uma função, classe, driver, utilitário, script ou outra ferramenta de código, procurar implementações equivalentes no projeto e nas dependências adotadas. Reutilizar ou adaptar a solução existente quando ela atender à necessidade.
-3. **Resolver divergências:** pesquisar [PENDENCIAS_ARQUITETURAIS.md](PENDENCIAS_ARQUITETURAIS.md); se as referências discordarem ou omitirem uma definição necessária, registrar a pendência nesse documento e alinhá-la com a área responsável antes de implementar o comportamento dependente. Não escolher silenciosamente uma versão.
-4. **Manter a documentação coerente:** atualizar arquitetura, pinagem e checklist quando a alteração afetar interfaces, responsabilidades, requisitos ou o comportamento esperado.
-
-### Durante a operação
-
-- **Respeitar as responsabilidades:** o OBC coordena o fluxo lógico; a recepção ADS-B pertence ao Payload, a comunicação RF pertence ao TT&C, o controle físico de atitude pertence ao ADCS e a gestão elétrica pertence ao EPS. A divisão do controle do motor precisa ser conciliada com a pinagem fornecida.
-- **Validar antes de executar:** telecomandos devem respeitar o ICD, o estado operacional e as condições acordadas para cada ação.
-- **Preservar os dados:** registros de missão e telemetria devem ser estruturados, documentados e recuperáveis para análise posterior.
-- **Manter a referência de tempo:** cada mensagem ADS-B processada deve ter timestamp com resolução suficiente para a missão; eventos operacionais também devem registrar horário.
-- **Priorizar as atividades críticas:** em disponibilidade energética reduzida, aplicar as prioridades definidas com EPS e ConOps.
-- **Supervisionar a operação:** detectar falhas e perda de comunicação e realizar a recuperação prevista dentro dos limites definidos pela equipe.
-- **Seguir as restrições do projeto:** respeitar a arquitetura lógica do CEFAST Aerospace, os ICDs, a alimentação compatível com o EPS e o regulamento da competição.
-
----
-
-## Módulos previstos
-
-| Área | Responsabilidade |
-|---|---|
-| Plataforma e comunicação | Inicialização do ESP32, configuração dos GPIOs, barramentos e tarefas FreeRTOS. |
-| Tempo e dados | Referência temporal sob responsabilidade do OBC, timestamps e organização dos registros; fonte de tempo depende de P-TEMPO. |
-| Armazenamento | Escrita e leitura do SD, eventos e estatísticas. |
-| Interfaces dos subsistemas | Troca de dados com Payload, TT&C, EPS, ADCS e sistema térmico. |
-| Missão e supervisão | Telecomandos, telemetria, modos de operação, prioridades e recuperação. |
-
-Essa divisão descreve responsabilidades lógicas. Os nomes e diretórios de implementação devem seguir a arquitetura padronizada existente.
-
----
-
-## Organização do código
+## Organização real do módulo
 
 ```text
 obc-dh/
-├── .agents/          # Documentação e instruções do projeto.
-├── headers/         # Declarações, tipos, constantes e interfaces públicas.
-│   └── Pinout.h      # Constantes de GPIO conforme PINAGEM.md.
-├── src/             # Implementações dos módulos do firmware.
-└── tests/           # Testes de comportamento dos módulos e de integração.
+├── .agents/         # Documentação e instruções.
+├── headers/         # Declarações, tipos e interfaces públicas.
+│   └── Pinout.h     # Constantes de GPIO; não inicializa hardware.
+├── src/
+│   └── main.cpp     # setup() e loop() ainda sem comportamento.
+├── tests/           # Ainda sem testes implementados.
+└── platformio.ini   # Ambiente obc: ESP32/Arduino e diretórios.
 ```
 
-O header [Pinout.h](../headers/Pinout.h) expõe os GPIOs como constantes `constexpr int` no namespace `pinout`, agrupadas por interface. Ele não inicializa hardware nem define níveis ativos, velocidades ou políticas de atuação. Suas constantes `uart2_*` (TX 17 / RX 16) já refletem a UART dedicada do Payload (§6.4).
-
-O estado mutável deve pertencer ao módulo responsável. Quando uma variável compartilhada for necessária, declarar com `extern` no header e fornecer uma única definição no `.cpp`; o acesso entre tarefas deve ser coordenado.
-
-Criar arquivos de implementação e testes conforme os comportamentos forem desenvolvidos, sem módulos vazios antecipados. Arquivos `.gitkeep` podem preservar pastas vazias no Git. O [platformio.ini](../platformio.ini) configura o ambiente `obc` com Arduino, implementações em `src/`, headers em `headers/` e testes em `tests/`. Consulte [FUNCIONAMENTO_PIO.md](../FUNCIONAMENTO_PIO.md) para instalação e uso. O ponto de entrada do firmware deve ser implementado conforme o comportamento acordado.
-
-Testes de lógica podem executar no computador quando independentes do hardware. Comunicação, estados em boot/reset e temporização precisam de validação no ESP32. Organizar testes por contratos e cenários, sem exigir um teste separado para cada função privada ou getter.
-
----
-
-## Validação e configuração
-
-Os testes devem verificar inicialização automática, troca de dados, timestamps, telemetria, telecomandos, modos operacionais e recuperação de falhas. Os critérios estão em [ARCHITECTURE.md](ARCHITECTURE.md), etapa 10, e no checklist correspondente.
-
-Antes de executar em hardware, conferir [PINAGEM.md](PINAGEM.md), os ICDs, a correspondência do perfil de placa configurado e os estados das saídas durante boot e reset. Registrar dependências e parâmetros no `platformio.ini` conforme forem integrados e validados.
-
----
-
-## Materiais de referência
-
-- Arquivos `.md` na pasta - Visão geral de todos os aspectos do projeto.
-- ConOps, ICDs, arquitetura lógica do CEFAST Aerospace, regulamento CubeDesign e padrão existente de C++ - consultar suas versões vigentes no acervo do projeto.
+Criar modelos, implementações e testes conforme os comportamentos forem desenvolvidos, sem arquivos vazios antecipados. Reutilização de ADCS e TT&C, tratamento de estado compartilhado e organização da execução estão na arquitetura. O guia de ferramentas não comprova compilação ou funcionamento do hardware; evidências devem constar do checklist.

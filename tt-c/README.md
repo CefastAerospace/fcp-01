@@ -18,9 +18,13 @@ Enlace com o solo do FCP-01: firmware do rádio no OBC + estação terrena espel
 
 | Pasta | Conteúdo |
 |---|---|
-| `src/` + `include/` | Driver SX1276 + protocolo (lib do OBC) |
-| `ground-station/` | Firmware da estação terrena de bancada (2º ESP32 + SX1276) |
-| `examples/link-test/` | Teste do enlace no lado do satélite |
+| `src/` + `include/` | Driver SX1276, enlace umbilical e módulo `Ttc` (lib do OBC) |
+| `ground-station/` | Firmware da ponte da estação terrena (2º ESP32 + SX1276) |
+| `ground-station/app/` | Software do notebook: interface web, logs, testes de verificação |
+| `examples/link-test/` | Teste do enlace no lado do satélite, simulando o OBC |
+| `test/` | Testes do protocolo (nativo) e do `Ttc` (na placa) |
+
+Contrato JSON: [`../common/protocol/ttc-json.md`](../common/protocol/ttc-json.md). Pendências: [`TODO.md`](TODO.md).
 
 ## Aprofundar
 

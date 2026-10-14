@@ -48,7 +48,19 @@ struct LINK_STATS {
     uint32_t duplicates_count; // TCs repetidos não reentregues ao OBC.
     uint32_t wired_rx_packets_count; // Parcela de rx_packets_count vinda do umbilical.
     uint32_t wired_tx_packets_count;
+    uint32_t radio_resets_count;     // Reinicializações pela verificação de saúde.
+    uint32_t last_tc_ms;             // millis() do último TC válido; 0 = nenhum (REQ-OBC-011).
 };
+
+/**
+ * @brief Gera o JSON do beacon (ex.: com ttc::BuildBeacon).
+ *
+ * @return Bytes escritos; 0 para pular este período.
+ */
+typedef size_t (*BEACON_BUILDER)(
+    char* out,
+    size_t capacity
+);
 
 /**
  * @brief TC entregue ao OBC.
@@ -197,8 +209,27 @@ public:
         bool enabled
     );
 
+    /**
+     * @brief Liga o beacon periódico (DP §7.2), só para safe-mode.
+     *
+     * @details A política nominal é sob demanda; o beacon fica desligado
+     * por padrão.
+     *
+     * @param period_ms Intervalo; 0 desliga.
+     * @param builder Gera o conteúdo a cada período, na task do enlace.
+     */
+    void EnableBeacon(
+        uint32_t period_ms,
+        BEACON_BUILDER builder
+    );
+
     bool IsTransmitting();
     LINK_STATS GetLinkStats();
+
+    /**
+     * @return true se as filas existem e o rádio passou na última
+     * verificação de saúde.
+     */
     bool IsHealthy();
 
 private:
@@ -232,6 +263,11 @@ private:
     uint16_t wired_counter = 0; // Só a task do enlace usa.
     volatile bool hold_tx = false;
     volatile bool transmitting = false;
+    volatile bool radio_healthy = false;
+    uint32_t last_health_ms = 0;  // Só a task do enlace usa.
+    volatile uint32_t beacon_period_ms = 0;
+    volatile BEACON_BUILDER beacon_builder = nullptr;
+    uint32_t last_beacon_ms = 0;  // Só a task do enlace usa.
 
     /**
      * @brief Laço da task do enlace.
@@ -239,6 +275,21 @@ private:
     static void TaskEntry(
         void* parameters
     );
+
+    /**
+     * @brief Verificação periódica do rádio e beacon, entre transmissões.
+     */
+    void MaintainLink();
+
+    /**
+     * @brief Reinicializa o rádio que falhou na verificação de saúde.
+     */
+    void CheckRadio();
+
+    /**
+     * @brief Enfileira o beacon quando o período vence.
+     */
+    void SendBeaconIfDue();
 
     /**
      * @brief Lê um quadro do meio e trata o TC, se houver.

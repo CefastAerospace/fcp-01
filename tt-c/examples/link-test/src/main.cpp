@@ -22,6 +22,7 @@ static constexpr uint32_t aircraft_period_ms = 30000;
 static constexpr size_t   aircraft_count     = 3;
 static constexpr uint32_t max_burst          = 2000; // Teto do test_tm.
 static constexpr uint32_t default_unix_time  = 1760000000UL;
+static constexpr uint32_t beacon_period_ms   = 30000;
 
 static int64_t       time_offset_ms = (int64_t)default_unix_time * 1000;
 static ttc::OP_MODE  mode = ttc::MODE_BENCH;
@@ -55,6 +56,22 @@ static ttc::TELEMETRY_DATA BuildTelemetry(
     tm.aircraft_count = aircraft_count;
     tm.message_count = adsb_messages;
     return tm;
+}
+
+// Beacon de safe-mode, gerado na task do enlace.
+static size_t BuildBeacon(
+    char* out,
+    size_t capacity
+) {
+    return ttc::BuildBeacon(Now(), mode, BuildTelemetry().vbat, out, capacity);
+}
+
+// Liga o beacon só em SAFE, como no firmware de safe-mode (DP §7.2).
+static void SetMode(
+    ttc::OP_MODE new_mode
+) {
+    mode = new_mode;
+    ttc_link.EnableBeacon(mode == ttc::MODE_SAFE ? beacon_period_ms : 0, BuildBeacon);
 }
 
 // Estado agregado de uma aeronave fictícia, no formato do Payload.
@@ -121,14 +138,14 @@ static void HandleTelecommand(
         case ttc::CMD_SET_MODE: {
             ttc::OP_MODE requested;
             if (!ParseMode(args["mode"], requested)) status = ttc::ERR_INVALID_PARAM;
-            else mode = requested;
+            else SetMode(requested);
             break;
         }
 
-        case ttc::CMD_ENTER_SAFE:    mode = ttc::MODE_SAFE; break;
-        case ttc::CMD_EXIT_SAFE:     mode = ttc::MODE_BENCH; break;
-        case ttc::CMD_START_MISSION: mode = ttc::MODE_MISSION; break;
-        case ttc::CMD_STOP_MISSION:  mode = ttc::MODE_SUN_POINTING; break;
+        case ttc::CMD_ENTER_SAFE:    SetMode(ttc::MODE_SAFE); break;
+        case ttc::CMD_EXIT_SAFE:     SetMode(ttc::MODE_BENCH); break;
+        case ttc::CMD_START_MISSION: SetMode(ttc::MODE_MISSION); break;
+        case ttc::CMD_STOP_MISSION:  SetMode(ttc::MODE_SUN_POINTING); break;
 
         case ttc::CMD_TEST_TM: {
             uint32_t count = args["count"] | 0u;
@@ -154,8 +171,10 @@ static void HandleTelecommand(
 void setup(
 ) {
     // Ttc::Init() abre a serial pelo umbilical; os logs usam a mesma porta.
-    if (!ttc_link.Init() || !ttc_link.Start()) {
-        Serial.println("[SAT] ERRO: falha ao inicializar o TT&C.");
+    // Sem rádio, o umbilical segue funcionando e a task tenta reinicializá-lo.
+    if (!ttc_link.Init()) Serial.println("[SAT] ERRO: radio indisponivel, seguindo pelo umbilical.");
+    if (!ttc_link.Start()) {
+        Serial.println("[SAT] ERRO: falha ao criar a task do TT&C.");
         while (true) delay(1000);
     }
     Serial.println("[SAT] Teste do enlace TT&C (simulador do OBC) pronto.");

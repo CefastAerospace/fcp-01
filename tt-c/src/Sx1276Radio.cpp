@@ -9,6 +9,10 @@
 // ─── ELEMENTOS STATIC ─────────────────────────────────────────────
 
 static constexpr uint8_t  sx1276_reg_fifo            = 0x00;
+static constexpr uint8_t  sx1276_reg_op_mode         = 0x01;
+static constexpr uint8_t  sx1276_reg_version         = 0x42;
+static constexpr uint8_t  sx1276_version             = 0x12;
+static constexpr uint8_t  sx1276_mode_lora_rx        = 0x85; // LoRa + RX contínuo.
 static constexpr uint8_t  sx1276_reg_fifo_addr_ptr   = 0x0D;
 static constexpr uint8_t  sx1276_reg_fifo_rx_current = 0x10;
 static constexpr uint8_t  sx1276_reg_irq_flags       = 0x12;
@@ -54,6 +58,14 @@ float Sx1276Radio::GetSnr(
 bool Sx1276Radio::IsReady(
 ) {
     return ready;
+}
+
+// Público:
+bool Sx1276Radio::CheckHealth(
+) {
+    if (!ready) return false;
+    if (TransferRegister(sx1276_reg_version, 0x00) != sx1276_version) return false;
+    return TransferRegister(sx1276_reg_op_mode, 0x00) == sx1276_mode_lora_rx;
 }
 
 // Público:

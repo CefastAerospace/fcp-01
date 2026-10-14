@@ -37,6 +37,16 @@ class LoraRadio : public LinkTransport {
 public:
     virtual int16_t GetRssi() = 0;
     virtual float GetSnr() = 0;
+
+    /**
+     * @brief Confere se o rádio responde e está em recepção.
+     *
+     * @details Chamado entre transmissões; false leva o Ttc a reinicializar
+     * o rádio.
+     */
+    virtual bool CheckHealth() {
+        return IsReady();
+    }
 };
 
 /**
@@ -68,6 +78,11 @@ public:
     void SetNotifyTask(
         TaskHandle_t task
     ) override;
+
+    /**
+     * @brief Lê RegVersion (0x12 no SX1276) e RegOpMode (LoRa em RX contínuo).
+     */
+    bool CheckHealth() override;
 
 private:
     RADIO_PINS pins;

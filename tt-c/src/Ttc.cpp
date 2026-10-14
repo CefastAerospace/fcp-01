@@ -15,6 +15,7 @@ static constexpr TickType_t  enqueue_wait     = pdMS_TO_TICKS(100);
 static constexpr TickType_t  idle_wait        = pdMS_TO_TICKS(20); // Polling de reserva.
 static constexpr uint32_t    task_stack_size  = 8192;
 static constexpr uint32_t    dedup_expiry_ms  = 30000; // Cobre as retentativas da estação terrena.
+static constexpr uint32_t    health_period_ms = 1000;
 
 // ==================================================================
 // === CLASSE =======================================================
@@ -43,7 +44,7 @@ LINK_STATS Ttc::GetLinkStats(
 // Público:
 bool Ttc::IsHealthy(
 ) {
-    return radio.IsReady() && rx_queue != nullptr && ack_queue != nullptr && tx_queue != nullptr
+    return radio_healthy && rx_queue != nullptr && ack_queue != nullptr && tx_queue != nullptr
         && dedup_mutex != nullptr;
 }
 
@@ -73,7 +74,10 @@ bool Ttc::Init(
     portEXIT_CRITICAL(&stats_lock);
 
     if (umbilical != nullptr && !umbilical->Init()) Serial.println("[TT&C] ERRO: falha no umbilical.");
-    return radio.Init();
+
+    // Rádio ausente não impede o umbilical; a verificação de saúde tenta de novo.
+    radio_healthy = radio.Init();
+    return radio_healthy;
 }
 
 // Público:
@@ -114,10 +118,52 @@ void Ttc::TaskEntry(
 // Público:
 bool Ttc::Update(
 ) {
+    MaintainLink();
     PollTransport(radio, LINK_RF);
     if (umbilical != nullptr) PollTransport(*umbilical, LINK_WIRED);
     TransmitNext();
     return HasPendingTransmit();
+}
+
+// Privado:
+void Ttc::MaintainLink(
+) {
+    uint32_t now_ms = millis();
+    if (now_ms - last_health_ms >= health_period_ms) {
+        last_health_ms = now_ms;
+        CheckRadio();
+    }
+    SendBeaconIfDue();
+}
+
+// Privado:
+void Ttc::CheckRadio(
+) {
+    if (radio.CheckHealth()) {
+        radio_healthy = true;
+        return;
+    }
+
+    // Init() pulsa o RST (GPIO 14) e reconfigura o rádio.
+    Serial.println("[TT&C] ERRO: SX1276 sem resposta ou fora de RX, reinicializando.");
+    radio_healthy = radio.Init();
+    portENTER_CRITICAL(&stats_lock);
+    stats.radio_resets_count++;
+    portEXIT_CRITICAL(&stats_lock);
+}
+
+// Privado:
+void Ttc::SendBeaconIfDue(
+) {
+    uint32_t period_ms = beacon_period_ms;
+    BEACON_BUILDER builder = beacon_builder;
+    if (period_ms == 0 || builder == nullptr) return;
+    if (millis() - last_beacon_ms < period_ms) return;
+    last_beacon_ms = millis();
+
+    char json[ttc::max_frame_len + 1];
+    size_t len = builder(json, sizeof(json));
+    if (len > 0) Send(json, len);
 }
 
 // Privado:
@@ -168,6 +214,11 @@ void Ttc::HandleTelecommand(
     size_t len,
     LINK_ORIGIN origin
 ) {
+    // Contato válido com o solo, mesmo que o TC seja repetido (REQ-OBC-011).
+    portENTER_CRITICAL(&stats_lock);
+    stats.last_tc_ms = millis();
+    portEXIT_CRITICAL(&stats_lock);
+
     xSemaphoreTake(dedup_mutex, portMAX_DELAY);
     int slot = FindDedupSlot(info.seq);
 
@@ -425,6 +476,7 @@ bool Ttc::SendTelemetry(
     filled.snr = link.last_snr;
     filled.rx_count = (uint16_t)link.rx_packets_count;
     filled.error_count = (uint16_t)link.rx_errors_count;
+    filled.radio_resets = (uint16_t)link.radio_resets_count;
 
     char json[ttc::max_frame_len + 1];
     size_t len = ttc::BuildTelemetry(filled, json, sizeof(json));
@@ -433,6 +485,16 @@ bool Ttc::SendTelemetry(
         return false;
     }
     return Send(json, len);
+}
+
+// Público:
+void Ttc::EnableBeacon(
+    uint32_t period_ms,
+    BEACON_BUILDER builder
+) {
+    beacon_builder = builder;
+    beacon_period_ms = period_ms;
+    Notify();
 }
 
 // Público:

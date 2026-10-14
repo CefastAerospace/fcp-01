@@ -17,13 +17,13 @@ namespace ttc {
     // ─── ELEMENTOS STATIC ─────────────────────────────────────────────
 
     constexpr long     radio_frequency_hz  = 921E6;
-    constexpr int      radio_spreading     = 9;
+    constexpr int      radio_spreading     = 7; // DP §5.3: SF7 confirmado.
     constexpr long     radio_bandwidth_hz  = 125E3;
     constexpr int      radio_coding_rate   = 6; // 4/6.
     constexpr int      radio_tx_power_dbm  = 17;
     constexpr int      radio_sync_word     = 0x12;
     constexpr long     radio_preamble_len  = 32;
-    constexpr uint32_t radio_tx_timeout_ms = 2000; // Airtime de 255 bytes ~1,5 s.
+    constexpr uint32_t radio_tx_timeout_ms = 1000; // Airtime de 255 bytes ~0,45 s em SF7.
 
     constexpr size_t   max_frame_len   = 255; // FIFO do SX1276.
     constexpr uint16_t downlink_header = 0xAA55;

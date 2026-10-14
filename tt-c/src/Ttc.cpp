@@ -8,10 +8,13 @@
 
 // ─── ELEMENTOS STATIC ─────────────────────────────────────────────
 
-static constexpr UBaseType_t rx_queue_len  = 8;
-static constexpr UBaseType_t tx_queue_len  = 16;
-static constexpr TickType_t  enqueue_wait  = pdMS_TO_TICKS(100);
-static constexpr size_t      max_fragments = 255;
+static constexpr UBaseType_t rx_queue_len    = 8;
+static constexpr UBaseType_t ack_queue_len   = 4;
+static constexpr UBaseType_t tx_queue_len    = 16;
+static constexpr TickType_t  enqueue_wait    = pdMS_TO_TICKS(100);
+static constexpr TickType_t  idle_wait       = pdMS_TO_TICKS(20); // Polling de reserva.
+static constexpr uint32_t    task_stack_size = 6144;
+static constexpr size_t      max_fragments   = 255;
 
 // ==================================================================
 // === CLASSE =======================================================
@@ -39,7 +42,13 @@ LINK_STATS Ttc::GetLinkStats(
 // Público:
 bool Ttc::IsHealthy(
 ) {
-    return radio.IsReady() && rx_queue != nullptr && tx_queue != nullptr && tx_mutex != nullptr;
+    return radio.IsReady() && rx_queue != nullptr && ack_queue != nullptr && tx_queue != nullptr && tx_mutex != nullptr;
+}
+
+// Público:
+bool Ttc::IsTransmitting(
+) {
+    return transmitting;
 }
 
 // ─── DEMAIS MÉTODOS ───────────────────────────────────────────────
@@ -48,9 +57,10 @@ bool Ttc::IsHealthy(
 bool Ttc::Init(
 ) {
     if (rx_queue == nullptr) rx_queue = xQueueCreate(rx_queue_len, sizeof(ttc::TELECOMMAND_PACKET));
+    if (ack_queue == nullptr) ack_queue = xQueueCreate(ack_queue_len, sizeof(TX_FRAME));
     if (tx_queue == nullptr) tx_queue = xQueueCreate(tx_queue_len, sizeof(TX_FRAME));
     if (tx_mutex == nullptr) tx_mutex = xSemaphoreCreateMutex();
-    if (rx_queue == nullptr || tx_queue == nullptr || tx_mutex == nullptr) {
+    if (rx_queue == nullptr || ack_queue == nullptr || tx_queue == nullptr || tx_mutex == nullptr) {
         Serial.println("[TT&C] ERRO: falha ao criar filas.");
         return false;
     }
@@ -64,10 +74,39 @@ bool Ttc::Init(
 }
 
 // Público:
-void Ttc::Update(
+bool Ttc::Start(
+    BaseType_t core,
+    UBaseType_t priority
+) {
+    if (task_handle != nullptr) return true;
+
+    BaseType_t created = xTaskCreatePinnedToCore(TaskEntry, "ttc_link", task_stack_size, this, priority, &task_handle, core);
+    if (created != pdPASS) {
+        task_handle = nullptr;
+        Serial.println("[TT&C] ERRO: falha ao criar a task do enlace.");
+        return false;
+    }
+    radio.SetNotifyTask(task_handle);
+    return true;
+}
+
+// Privado:
+void Ttc::TaskEntry(
+    void* parameters
+) {
+    Ttc* self = static_cast<Ttc*>(parameters);
+    for (;;) {
+        // Com descida pendente, segue sem dormir; senão espera um evento.
+        if (!self->Update()) ulTaskNotifyTake(pdTRUE, idle_wait);
+    }
+}
+
+// Público:
+bool Ttc::Update(
 ) {
     PollReceive();
-    FlushTransmit();
+    TransmitNext();
+    return HasPendingTransmit();
 }
 
 // Privado:
@@ -119,17 +158,49 @@ void Ttc::PollReceive(
 }
 
 // Privado:
-void Ttc::FlushTransmit(
+void Ttc::TransmitNext(
 ) {
+    if (hold_tx) return;
+
+    // ACKs primeiro: uma rajada de telemetria não atrasa a confirmação de TC.
     TX_FRAME frame;
-    while (xQueueReceive(tx_queue, &frame, 0) == pdTRUE) {
-        bool sent = radio.Send(frame.data, frame.len);
-        portENTER_CRITICAL(&stats_lock);
-        if (sent) stats.tx_packets_count++;
-        else stats.tx_errors_count++;
-        portEXIT_CRITICAL(&stats_lock);
-        if (!sent) Serial.printf("[TT&C] Falha no TX de %u bytes.\n", frame.len);
+    bool has_frame = xQueueReceive(ack_queue, &frame, 0) == pdTRUE
+                  || xQueueReceive(tx_queue, &frame, 0) == pdTRUE;
+    if (!has_frame) return;
+
+    transmitting = true;
+    bool sent = radio.Send(frame.data, frame.len);
+    transmitting = false;
+
+    portENTER_CRITICAL(&stats_lock);
+    if (sent) stats.tx_packets_count++;
+    else stats.tx_errors_count++;
+    portEXIT_CRITICAL(&stats_lock);
+    if (!sent) Serial.printf("[TT&C] Falha no TX de %u bytes.\n", frame.len);
+}
+
+// Privado:
+bool Ttc::HasPendingTransmit(
+) {
+    if (hold_tx) return false;
+    return uxQueueMessagesWaiting(ack_queue) > 0 || uxQueueMessagesWaiting(tx_queue) > 0;
+}
+
+// Público:
+bool Ttc::HoldTransmit(
+    bool hold,
+    uint32_t wait_ms
+) {
+    hold_tx = hold;
+    if (!hold) {
+        Notify();
+        return !transmitting;
     }
+
+    // Um TX já iniciado termina em até radio_tx_timeout_ms.
+    uint32_t start_ms = millis();
+    while (transmitting && millis() - start_ms < wait_ms) vTaskDelay(pdMS_TO_TICKS(5));
+    return !transmitting;
 }
 
 // Público:
@@ -155,9 +226,16 @@ bool Ttc::SendAck(
     SealFrame((uint8_t*)&ack, sizeof(ack));
 
     if (!LockTransmit()) return false;
-    bool queued = EnqueueFrame((const uint8_t*)&ack, sizeof(ack));
+    bool queued = EnqueueFrame(ack_queue, (const uint8_t*)&ack, sizeof(ack));
     xSemaphoreGive(tx_mutex);
+    Notify();
     return queued;
+}
+
+// Privado:
+void Ttc::Notify(
+) {
+    if (task_handle != nullptr) xTaskNotifyGive(task_handle);
 }
 
 // Privado:
@@ -184,13 +262,14 @@ void Ttc::SealFrame(
 
 // Privado:
 bool Ttc::EnqueueFrame(
+    QueueHandle_t queue,
     const uint8_t* frame,
     size_t len
 ) {
     TX_FRAME item;
     item.len = (uint8_t)len;
     memcpy(item.data, frame, len);
-    if (xQueueSend(tx_queue, &item, enqueue_wait) != pdTRUE) {
+    if (xQueueSend(queue, &item, enqueue_wait) != pdTRUE) {
         Serial.println("[TT&C] Fila de descida cheia, quadro descartado.");
         return false;
     }
@@ -209,8 +288,9 @@ bool Ttc::SendTelemetry(
     frame.packet_type = ttc::PACKET_TELEMETRY;
     SealFrame((uint8_t*)&frame, sizeof(frame));
 
-    bool queued = EnqueueFrame((const uint8_t*)&frame, sizeof(frame));
+    bool queued = EnqueueFrame(tx_queue, (const uint8_t*)&frame, sizeof(frame));
     xSemaphoreGive(tx_mutex);
+    Notify();
     return queued;
 }
 
@@ -257,9 +337,10 @@ bool Ttc::SendData(
         memcpy(frame + sizeof(header), data + offset, chunk_len);
         SealFrame(frame, frame_len);
 
-        queued = EnqueueFrame(frame, frame_len);
+        queued = EnqueueFrame(tx_queue, frame, frame_len);
     }
 
     xSemaphoreGive(tx_mutex);
+    Notify();
     return queued;
 }

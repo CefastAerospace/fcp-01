@@ -13,15 +13,20 @@ static constexpr uint8_t  sx1276_reg_fifo_addr_ptr   = 0x0D;
 static constexpr uint8_t  sx1276_reg_fifo_rx_current = 0x10;
 static constexpr uint8_t  sx1276_reg_irq_flags       = 0x12;
 static constexpr uint8_t  sx1276_reg_rx_nb_bytes     = 0x13;
+static constexpr uint8_t  sx1276_reg_dio_mapping_1   = 0x40;
+static constexpr uint8_t  sx1276_dio0_tx_done        = 0x40; // Em RX, 0x00 = RX Done.
 static constexpr uint8_t  sx1276_irq_rx_done         = 0x40;
 static constexpr uint8_t  sx1276_irq_crc_error       = 0x20;
 static constexpr uint8_t  sx1276_irq_tx_done         = 0x08;
 static constexpr uint8_t  sx1276_write_bit           = 0x80;
 static constexpr uint32_t sx1276_spi_hz              = 8E6;
+static constexpr TickType_t  tx_done_poll         = pdMS_TO_TICKS(5);
 
 // ==================================================================
 // === CLASSE =======================================================
 // ==================================================================
+
+Sx1276Radio* Sx1276Radio::irq_owner = nullptr;
 
 // ─── CONSTRUTORES ─────────────────────────────────────────────────
 
@@ -51,6 +56,13 @@ bool Sx1276Radio::IsReady(
     return ready;
 }
 
+// Público:
+void Sx1276Radio::SetNotifyTask(
+    TaskHandle_t task
+) {
+    notify_task = task;
+}
+
 // ─── DEMAIS MÉTODOS ───────────────────────────────────────────────
 
 // Público:
@@ -73,6 +85,13 @@ bool Sx1276Radio::Init(
     LoRa.setPreambleLength(ttc::radio_preamble_len);
     LoRa.enableCrc();
 
+    // Interrupção própria no DIO0, sem o onReceive() da biblioteca, cuja
+    // ISR lê o FIFO pelo SPI.
+    irq_owner = this;
+    pinMode(pins.dio0, INPUT);
+    attachInterrupt(digitalPinToInterrupt(pins.dio0), OnDio0, RISING);
+
+    // receive() mapeia o DIO0 para RX Done.
     LoRa.receive();
     ready = true;
     Serial.println("[TT&C] SX1276 inicializado.");
@@ -89,6 +108,7 @@ bool Sx1276Radio::Send(
     LoRa.idle();
     LoRa.beginPacket();
     LoRa.write(data, len);
+    TransferRegister(sx1276_reg_dio_mapping_1 | sx1276_write_bit, sx1276_dio0_tx_done);
     LoRa.endPacket(true);
 
     if (!WaitTxDone()) {
@@ -107,12 +127,23 @@ bool Sx1276Radio::WaitTxDone(
     uint32_t start_ms = millis();
     while ((TransferRegister(sx1276_reg_irq_flags, 0x00) & sx1276_irq_tx_done) == 0) {
         if (millis() - start_ms > ttc::radio_tx_timeout_ms) return false;
-        vTaskDelay(pdMS_TO_TICKS(5));
+        // Acorda no TX Done (DIO0) ou a cada tx_done_poll, o que vier antes.
+        ulTaskNotifyTake(pdTRUE, tx_done_poll);
     }
 
     // SX1276 limpa a flag escrevendo 1 no bit.
     TransferRegister(sx1276_reg_irq_flags | sx1276_write_bit, sx1276_irq_tx_done);
     return true;
+}
+
+// Privado:
+void IRAM_ATTR Sx1276Radio::OnDio0(
+) {
+    if (irq_owner == nullptr || irq_owner->notify_task == nullptr) return;
+
+    BaseType_t woken = pdFALSE;
+    vTaskNotifyGiveFromISR(irq_owner->notify_task, &woken);
+    if (woken == pdTRUE) portYIELD_FROM_ISR();
 }
 
 // Privado:

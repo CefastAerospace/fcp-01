@@ -9,6 +9,8 @@
 #include <Arduino.h>     // para millis, digitalWrite, Serial
 #include <SPI.h>         // para SPIClass, SPISettings
 #include <LoRa.h>        // para LoRa (LoRaClass do sandeepmistry/LoRa)
+#include <freertos/FreeRTOS.h> // para TickType_t
+#include <freertos/task.h>     // para TaskHandle_t, vTaskNotifyGiveFromISR, ulTaskNotifyTake
 #include "TtcProtocol.h" // para parâmetros de rádio e max_frame_len
 
 // ─── STRUCTS ──────────────────────────────────────────────────────
@@ -65,13 +67,26 @@ public:
     virtual int16_t GetRssi() = 0;
     virtual float GetSnr() = 0;
     virtual bool IsReady() = 0;
+
+    /**
+     * @brief Define a task acordada pelos eventos do rádio (RX/TX Done).
+     *
+     * @param task Task notificada; nullptr desliga a notificação.
+     */
+    virtual void SetNotifyTask(
+        TaskHandle_t task
+    ) {
+        (void)task;
+    }
 };
 
 /**
  * @brief Driver do SX1276 sobre sandeepmistry/LoRa.
  *
  * @details Send() não usa o endPacket() síncrono, que espera TX_DONE sem
- * prazo; em timeout, o módulo é reinicializado.
+ * prazo; em timeout, o módulo é reinicializado. O DIO0 gera interrupção em
+ * RX Done e TX Done e acorda a task definida em SetNotifyTask(); a ISR não
+ * acessa o SPI. Só uma instância pode existir, pois a ISR é estática.
  */
 class Sx1276Radio : public LoraRadio {
 public:
@@ -91,13 +106,27 @@ public:
     int16_t GetRssi() override;
     float GetSnr() override;
     bool IsReady() override;
+    void SetNotifyTask(
+        TaskHandle_t task
+    ) override;
 
 private:
     RADIO_PINS pins;
     bool ready = false;
+    TaskHandle_t notify_task = nullptr;
+
+    static Sx1276Radio* irq_owner; // Instância atendida pela ISR do DIO0.
+
+    /**
+     * @brief ISR do DIO0: só notifica a task, sem acessar o SPI.
+     */
+    static void IRAM_ATTR OnDio0();
 
     /**
      * @brief Espera TX_DONE em IRQ_FLAGS até ttc::radio_tx_timeout_ms.
+     *
+     * @details Dorme na notificação do DIO0 entre leituras; a leitura de
+     * IRQ_FLAGS cobre o caso de a task chamadora não ser a notificada.
      */
     bool WaitTxDone();
 

@@ -25,17 +25,6 @@ static char     json_buffer[json_buffer_len];
 
 // ─── HELPERS ──────────────────────────────────────────────────────
 
-// Única task que acessa o rádio, como exigido pelo Ttc.
-static void LinkTask(
-    void* parameters
-) {
-    (void)parameters;
-    for (;;) {
-        ttc_link.Update();
-        vTaskDelay(pdMS_TO_TICKS(10));
-    }
-}
-
 // Telemetria com o tempo de bordo e as estatísticas do enlace; demais campos zerados.
 static ttc::TELEMETRY_PACKET BuildTelemetry(
 ) {
@@ -140,11 +129,10 @@ void setup(
     while (!Serial && millis() < 2000);
     Serial.println("\n=== [SAT] Teste do enlace TT&C ===");
 
-    if (!ttc_link.Init()) {
+    if (!ttc_link.Init() || !ttc_link.Start()) {
         Serial.println("[SAT] ERRO: falha ao inicializar o TT&C.");
         while (true) delay(1000);
     }
-    xTaskCreatePinnedToCore(LinkTask, "ttc_link", 4096, nullptr, 2, nullptr, 1);
     Serial.println("[SAT] Pronto. Comandos: json [n] | stats");
 }
 

@@ -1,6 +1,7 @@
-#include <Arduino.h> // Framework Arduino.
-#include "Pinout.h"  // para pinout::radio_*
-#include "Ttc.h"     // para Ttc, Sx1276Radio
+#include <Arduino.h>     // Framework Arduino.
+#include <ArduinoJson.h> // para JsonDocument, deserializeJson
+#include "Pinout.h"      // para pinout::radio_*
+#include "Ttc.h"         // para Ttc, Sx1276Radio, contrato JSON
 
 // ─── ELEMENTOS STATIC ─────────────────────────────────────────────
 
@@ -14,108 +15,133 @@ static Sx1276Radio radio({
 });
 static Ttc ttc_link(radio);
 
-static constexpr uint32_t json_period_ms     = 30000;
-static constexpr int      json_default_count = 5;      // ~4 fragmentos.
-static constexpr size_t   json_buffer_len    = 8192;
+static constexpr uint32_t tm_period_ms       = 10000;
+static constexpr uint32_t aircraft_period_ms = 30000;
+static constexpr size_t   aircraft_count     = 3;
+static constexpr uint32_t max_burst          = 2000; // Teto do test_tm.
+static constexpr uint32_t default_unix_time  = 1760000000UL;
 
-static int64_t  time_offset_ms = 0;
-static uint32_t last_json_ms = 0;
-static uint16_t aircraft_counter = 0;
-static char     json_buffer[json_buffer_len];
+static int64_t       time_offset_ms = (int64_t)default_unix_time * 1000;
+static ttc::OP_MODE  mode = ttc::MODE_BENCH;
+static uint32_t      last_tm_ms = 0;
+static uint32_t      last_aircraft_ms = 0;
+static uint32_t      burst_remaining = 0;
+static uint32_t      adsb_messages = 0;
 
 // ─── HELPERS ──────────────────────────────────────────────────────
 
-// Telemetria com o tempo de bordo e as estatísticas do enlace; demais campos zerados.
-static ttc::TELEMETRY_PACKET BuildTelemetry(
+// Tempo de bordo em segundos unix, ajustável por set_time.
+static uint32_t Now(
 ) {
-    LINK_STATS stats = ttc_link.GetLinkStats();
-    ttc::TELEMETRY_PACKET tm = {};
-    tm.timestamp = (uint32_t)((time_offset_ms + (int64_t)millis()) / 1000);
-    tm.last_rssi = stats.last_rssi;
-    tm.last_snr = stats.last_snr;
-    tm.rx_packets_count = stats.rx_packets_count;
-    tm.tx_packets_count = stats.tx_packets_count;
-    tm.rx_errors_count = stats.rx_errors_count;
+    return (uint32_t)((time_offset_ms + (int64_t)millis()) / 1000);
+}
+
+// TM com dados simulados de EPS, TC, ADCS e Payload (REQ-TTC-001).
+static ttc::TELEMETRY_DATA BuildTelemetry(
+) {
+    float t = millis() / 1000.0f;
+    ttc::TELEMETRY_DATA tm = {};
+    tm.timestamp = Now();
+    tm.mode = mode;
+    tm.vbat = 7.8f + 0.1f * sinf(t / 60.0f);
+    tm.ibat = 420.0f + 30.0f * sinf(t / 7.0f);
+    tm.vsolar = 9.1f;
+    tm.isolar = 310.0f;
+    for (size_t i = 0; i < ttc::thermal_sensors; i++) tm.temps[i] = 21.0f + i + 0.5f * sinf(t / 30.0f);
+    tm.rate_dps = 360.0f * expf(-t / 120.0f); // Detumbling a partir de 60 rpm.
+    tm.azimuth_deg = fmodf(t * 3.0f, 360.0f);
+    tm.aircraft_count = aircraft_count;
+    tm.message_count = adsb_messages;
     return tm;
 }
 
-// Responde ao TC simulando o OBC; opcodes sem simulação recebem ERR_UNKNOWN_CMD.
-static void HandleTelecommand(
-    const ttc::TELECOMMAND_PACKET& tc
+// Estado agregado de uma aeronave fictícia, no formato do Payload.
+static void SendAircraft(
+    size_t index
 ) {
-    Serial.printf("[SAT] TC cmd=0x%02X seq=%u\n", tc.command_id, tc.sequence_id);
+    float t = millis() / 1000.0f;
+    ttc::AIRCRAFT_DATA aircraft = {};
+    aircraft.timestamp = Now();
+    snprintf(aircraft.icao, sizeof(aircraft.icao), "E4%04X", (unsigned)(0x953A + index));
+    aircraft.latitude = -34.57 + 0.01 * index + 0.0001 * t;
+    aircraft.longitude = -58.52 - 0.01 * index;
+    aircraft.altitude = 30000.0f + 500.0f * index;
+    aircraft.velocity = 450.0f + 5.0f * index;
+    aircraft.heading = fmodf(37.0f * index, 360.0f);
+    aircraft.message_count = (uint16_t)(adsb_messages / aircraft_count);
+
+    char json[ttc::max_frame_len + 1];
+    size_t len = ttc::BuildAircraft(aircraft, json, sizeof(json));
+    if (len > 0) ttc_link.Send(json, len);
+}
+
+// Converte o nome de modo do argumento de set_mode.
+static bool ParseMode(
+    const char* name,
+    ttc::OP_MODE& out
+) {
+    if (name == nullptr) return false;
+    for (uint8_t value = ttc::MODE_BENCH; value <= ttc::MODE_LOW_POWER; value++) {
+        if (strcmp(name, ttc::ModeName((ttc::OP_MODE)value)) == 0) {
+            out = (ttc::OP_MODE)value;
+            return true;
+        }
+    }
+    return false;
+}
+
+// Executa o TC simulando o OBC; comandos sem simulação recebem ERR_INVALID_CMD.
+static void HandleTelecommand(
+    const TC_FRAME& tc
+) {
+    Serial.printf("[SAT] TC %s seq=%u\n", ttc::CommandName(tc.cmd), tc.seq);
+
+    JsonDocument doc;
+    deserializeJson(doc, tc.json, tc.len);
+    JsonVariant args = doc["args"];
 
     ttc::ACK_STATUS status = ttc::ACK_OK;
-    switch (tc.command_id) {
+    bool send_tm = false;
+    switch (tc.cmd) {
         case ttc::CMD_PING:
             break;
 
         case ttc::CMD_REQUEST_TELEMETRY:
         case ttc::CMD_GET_STATUS:
-            ttc_link.SendTelemetry(BuildTelemetry());
+            send_tm = true;
             break;
 
-        case ttc::CMD_SET_TIME: {
-            uint32_t unix_time;
-            memcpy(&unix_time, tc.arguments, sizeof(unix_time));
-            time_offset_ms = (int64_t)unix_time * 1000 - (int64_t)millis();
+        case ttc::CMD_SET_TIME:
+            if (!args["unix"].is<uint32_t>()) status = ttc::ERR_INVALID_PARAM;
+            else time_offset_ms = (int64_t)args["unix"].as<uint32_t>() * 1000 - (int64_t)millis();
+            break;
+
+        case ttc::CMD_SET_MODE: {
+            ttc::OP_MODE requested;
+            if (!ParseMode(args["mode"], requested)) status = ttc::ERR_INVALID_PARAM;
+            else mode = requested;
+            break;
+        }
+
+        case ttc::CMD_ENTER_SAFE:    mode = ttc::MODE_SAFE; break;
+        case ttc::CMD_EXIT_SAFE:     mode = ttc::MODE_BENCH; break;
+        case ttc::CMD_START_MISSION: mode = ttc::MODE_MISSION; break;
+        case ttc::CMD_STOP_MISSION:  mode = ttc::MODE_SUN_POINTING; break;
+
+        case ttc::CMD_TEST_TM: {
+            uint32_t count = args["count"] | 0u;
+            if (count == 0 || count > max_burst) status = ttc::ERR_INVALID_PARAM;
+            else burst_remaining = count;
             break;
         }
 
         default:
-            status = ttc::ERR_UNKNOWN_CMD;
+            status = ttc::ERR_INVALID_CMD;
             break;
     }
-    ttc_link.SendAck(tc.sequence_id, tc.command_id, status);
-}
 
-// Gera um array JSON no formato do Payload (payload/README.md) com aeronaves fictícias.
-static size_t BuildAircraftJson(
-    int count
-) {
-    size_t len = snprintf(json_buffer, json_buffer_len, "[");
-    for (int i = 0; i < count && len < json_buffer_len; i++) {
-        uint16_t id = aircraft_counter++;
-        len += snprintf(json_buffer + len, json_buffer_len - len,
-                        "%s{\"icao\":\"E4%04X\",\"lat\":%.5f,\"lon\":%.5f,\"alt\":%.1f,\"vel\":%.1f,\"heading\":%.1f,\"seq_id\":%u}",
-                        (i == 0) ? "" : ",", id,
-                        -19.9 + (id % 50) * 0.01, -43.9 + (id % 30) * 0.01,
-                        30000.0 + (id % 10) * 500.0, 450.0 + (id % 7) * 5.0,
-                        (double)((id * 37) % 360), id);
-    }
-    if (len < json_buffer_len - 1) len += snprintf(json_buffer + len, json_buffer_len - len, "]");
-    return min(len, json_buffer_len - 1);
-}
-
-static void SendAircraftJson(
-    int count
-) {
-    size_t len = BuildAircraftJson(count);
-    size_t fragments = (len + ttc::max_data_chunk - 1) / ttc::max_data_chunk;
-    bool queued = ttc_link.SendData((const uint8_t*)json_buffer, len);
-    Serial.printf("[SAT] JSON %d aeronaves, %u bytes, %u fragmentos: %s\n",
-                  count, (unsigned)len, (unsigned)fragments, queued ? "enfileirado" : "REJEITADO");
-}
-
-static void HandleSerialLine(
-    String input
-) {
-    input.trim();
-    if (input.startsWith("json")) {
-        int space = input.indexOf(' ');
-        int count = (space > 0) ? input.substring(space + 1).toInt() : json_default_count;
-        SendAircraftJson(max(count, 1));
-    }
-    else if (input.equalsIgnoreCase("stats")) {
-        LINK_STATS stats = ttc_link.GetLinkStats();
-        Serial.printf("[SAT] rx=%lu tx=%lu rx_err=%lu tx_err=%lu rssi=%d snr=%.1f\n",
-                      (unsigned long)stats.rx_packets_count, (unsigned long)stats.tx_packets_count,
-                      (unsigned long)stats.rx_errors_count, (unsigned long)stats.tx_errors_count,
-                      stats.last_rssi, stats.last_snr);
-    }
-    else if (input.length() > 0) {
-        Serial.println("[SAT] Comandos: json [n] | stats");
-    }
+    ttc_link.SendAck(tc.seq, tc.cmd, status);
+    if (send_tm) ttc_link.SendTelemetry(BuildTelemetry());
 }
 
 // setup() e loop() são funções obrigatórias do framework Arduino.
@@ -127,27 +153,35 @@ void setup(
 ) {
     Serial.begin(115200);
     while (!Serial && millis() < 2000);
-    Serial.println("\n=== [SAT] Teste do enlace TT&C ===");
+    Serial.println("\n[SAT] Teste do enlace TT&C (simulador do OBC).");
 
     if (!ttc_link.Init() || !ttc_link.Start()) {
         Serial.println("[SAT] ERRO: falha ao inicializar o TT&C.");
         while (true) delay(1000);
     }
-    Serial.println("[SAT] Pronto. Comandos: json [n] | stats");
+    Serial.println("[SAT] Pronto.");
 }
 
 /**
- * @brief Simula o OBC: atende TCs e envia JSON periodicamente.
+ * @brief Simula o OBC: atende TCs e decide quando enviar TM e aeronaves.
  */
 void loop(
 ) {
-    ttc::TELECOMMAND_PACKET tc;
-    if (ttc_link.ReceiveTelecommand(tc, pdMS_TO_TICKS(50))) HandleTelecommand(tc);
+    TC_FRAME tc;
+    if (ttc_link.ReceiveTelecommand(tc, pdMS_TO_TICKS(20))) HandleTelecommand(tc);
 
-    if (millis() - last_json_ms >= json_period_ms) {
-        last_json_ms = millis();
-        SendAircraftJson(json_default_count);
+    // Rajada do test_tm: Send() espera vaga na fila de descida.
+    if (burst_remaining > 0 && ttc_link.SendTelemetry(BuildTelemetry())) burst_remaining--;
+
+    adsb_messages += 1;
+
+    if (millis() - last_tm_ms >= tm_period_ms) {
+        last_tm_ms = millis();
+        ttc_link.SendTelemetry(BuildTelemetry());
     }
 
-    if (Serial.available() > 0) HandleSerialLine(Serial.readStringUntil('\n'));
+    if (millis() - last_aircraft_ms >= aircraft_period_ms) {
+        last_aircraft_ms = millis();
+        for (size_t i = 0; i < aircraft_count; i++) SendAircraft(i);
+    }
 }

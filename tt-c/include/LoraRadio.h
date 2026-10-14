@@ -6,12 +6,13 @@
 // Include guard
 #pragma once
 
-#include <Arduino.h>     // para millis, digitalWrite, Serial
-#include <SPI.h>         // para SPIClass, SPISettings
-#include <LoRa.h>        // para LoRa (LoRaClass do sandeepmistry/LoRa)
+#include <Arduino.h>           // para millis, digitalWrite, attachInterrupt, Serial
+#include <SPI.h>               // para SPIClass, SPISettings
+#include <LoRa.h>              // para LoRa (LoRaClass do sandeepmistry/LoRa)
 #include <freertos/FreeRTOS.h> // para TickType_t
 #include <freertos/task.h>     // para TaskHandle_t, vTaskNotifyGiveFromISR, ulTaskNotifyTake
-#include "TtcProtocol.h" // para parâmetros de rádio e max_frame_len
+#include "LinkTransport.h"     // para LinkTransport
+#include "TtcProtocol.h"       // para parâmetros de rádio e max_frame_len
 
 // ─── STRUCTS ──────────────────────────────────────────────────────
 
@@ -30,54 +31,12 @@ struct RADIO_PINS {
 // ─── CLASSES ──────────────────────────────────────────────────────
 
 /**
- * @brief Interface de rádio, permite substituir o hardware em testes.
+ * @brief Interface de rádio: meio do enlace com medidas de sinal.
  */
-class LoraRadio {
+class LoraRadio : public LinkTransport {
 public:
-    virtual ~LoraRadio() {}
-
-    /**
-     * @brief Inicializa o rádio em recepção.
-     *
-     * @return true se o rádio respondeu.
-     */
-    virtual bool Init() = 0;
-
-    /**
-     * @brief Transmite um quadro e volta à recepção.
-     *
-     * @return true se a transmissão terminou.
-     */
-    virtual bool Send(
-        const uint8_t* data,
-        size_t len
-    ) = 0;
-
-    /**
-     * @brief Lê um quadro recebido.
-     *
-     * @return Bytes lidos; 0 se nada foi recebido; -1 se o quadro chegou
-     * corrompido (CRC do rádio).
-     */
-    virtual int Receive(
-        uint8_t* buffer,
-        size_t max_len
-    ) = 0;
-
     virtual int16_t GetRssi() = 0;
     virtual float GetSnr() = 0;
-    virtual bool IsReady() = 0;
-
-    /**
-     * @brief Define a task acordada pelos eventos do rádio (RX/TX Done).
-     *
-     * @param task Task notificada; nullptr desliga a notificação.
-     */
-    virtual void SetNotifyTask(
-        TaskHandle_t task
-    ) {
-        (void)task;
-    }
 };
 
 /**

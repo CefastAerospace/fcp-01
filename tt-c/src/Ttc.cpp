@@ -24,8 +24,9 @@ static constexpr uint32_t    dedup_expiry_ms  = 30000; // Cobre as retentativas 
 
 // Público:
 Ttc::Ttc(
-    LoraRadio& radio
-) : radio(radio) {
+    LoraRadio& radio,
+    LinkTransport* umbilical
+) : radio(radio), umbilical(umbilical) {
 }
 
 // ─── GETTERS ──────────────────────────────────────────────────────
@@ -71,7 +72,15 @@ bool Ttc::Init(
     stats.last_rssi = -120;
     portEXIT_CRITICAL(&stats_lock);
 
+    if (umbilical != nullptr && !umbilical->Init()) Serial.println("[TT&C] ERRO: falha no umbilical.");
     return radio.Init();
+}
+
+// Público:
+void Ttc::SetUmbilicalEnabled(
+    bool enabled
+) {
+    umbilical_enabled = enabled;
 }
 
 // Público:
@@ -105,32 +114,37 @@ void Ttc::TaskEntry(
 // Público:
 bool Ttc::Update(
 ) {
-    PollReceive();
+    PollTransport(radio, LINK_RF);
+    if (umbilical != nullptr) PollTransport(*umbilical, LINK_WIRED);
     TransmitNext();
     return HasPendingTransmit();
 }
 
 // Privado:
-void Ttc::PollReceive(
+void Ttc::PollTransport(
+    LinkTransport& transport,
+    LINK_ORIGIN origin
 ) {
     char buffer[ttc::max_frame_len + 1];
-    int len = radio.Receive((uint8_t*)buffer, ttc::max_frame_len);
+    int len = transport.Receive((uint8_t*)buffer, ttc::max_frame_len);
     if (len == 0) return;
 
     if (len < 0) {
         CountRxError();
-        Serial.println("[TT&C] Quadro corrompido (CRC do radio) descartado.");
+        Serial.println("[TT&C] Quadro corrompido ou longo demais descartado.");
         return;
     }
     buffer[len] = '\0';
 
-    // Leitura SPI fora da seção crítica: o SPI usa mutex, proibido nela.
-    int16_t rssi = radio.GetRssi();
-    float snr = radio.GetSnr();
-    portENTER_CRITICAL(&stats_lock);
-    stats.last_rssi = rssi;
-    stats.last_snr = snr;
-    portEXIT_CRITICAL(&stats_lock);
+    // Sinal só no RF; leitura SPI fora da seção crítica (o SPI usa mutex).
+    if (origin == LINK_RF) {
+        int16_t rssi = radio.GetRssi();
+        float snr = radio.GetSnr();
+        portENTER_CRITICAL(&stats_lock);
+        stats.last_rssi = rssi;
+        stats.last_snr = snr;
+        portEXIT_CRITICAL(&stats_lock);
+    }
 
     // Envelope inválido: NACK se o seq é legível; senão, só descarta.
     ttc::TC_INFO info;
@@ -139,25 +153,26 @@ void Ttc::PollReceive(
         Serial.printf("[TT&C] TC rejeitado (%s), %d bytes.\n", ttc::StatusName(info.status), len);
         if (info.has_seq) {
             const char* name = info.cmd_name[0] != '\0' ? info.cmd_name : "unknown";
-            EnqueueAck(info.seq, name, info.status, -1);
+            EnqueueAck(info.seq, name, info.status, -1, origin);
         }
         return;
     }
 
-    HandleTelecommand(info, buffer, (size_t)len);
+    HandleTelecommand(info, buffer, (size_t)len, origin);
 }
 
 // Privado:
 void Ttc::HandleTelecommand(
     const ttc::TC_INFO& info,
     const char* json,
-    size_t len
+    size_t len,
+    LINK_ORIGIN origin
 ) {
     xSemaphoreTake(dedup_mutex, portMAX_DELAY);
     int slot = FindDedupSlot(info.seq);
 
     // TC repetido (retentativa da estação terrena): não reexecuta.
-    // - Já respondido: reenvia o mesmo ACK.
+    // - Já respondido: reenvia o mesmo ACK pelo meio da retentativa.
     // - Ainda em execução: ignora; o ACK sairá quando o OBC responder.
     if (slot >= 0) {
         TX_FRAME cached = {};
@@ -171,7 +186,7 @@ void Ttc::HandleTelecommand(
         portENTER_CRITICAL(&stats_lock);
         stats.duplicates_count++;
         portEXIT_CRITICAL(&stats_lock);
-        if (acked) EnqueueFrame(ack_queue, cached.json, cached.len);
+        if (acked) EnqueueFrame(ack_queue, cached.json, cached.len, origin);
         return;
     }
 
@@ -181,6 +196,7 @@ void Ttc::HandleTelecommand(
     dedup[index] = {};
     dedup[index].used = true;
     dedup[index].seq = info.seq;
+    dedup[index].origin = origin;
     dedup[index].rx_ms = millis();
     uint32_t rx_ms = dedup[index].rx_ms;
     xSemaphoreGive(dedup_mutex);
@@ -189,6 +205,7 @@ void Ttc::HandleTelecommand(
     frame.seq = info.seq;
     frame.cmd = info.cmd;
     frame.rx_ms = rx_ms;
+    frame.origin = origin;
     frame.len = (uint8_t)len;
     memcpy(frame.json, json, len);
     frame.json[len] = '\0';
@@ -200,12 +217,13 @@ void Ttc::HandleTelecommand(
         xSemaphoreGive(dedup_mutex);
         CountRxError();
         Serial.println("[TT&C] Fila de TC cheia, comando descartado.");
-        EnqueueAck(info.seq, info.cmd_name, ttc::ERR_STATE_REJECTED, -1);
+        EnqueueAck(info.seq, info.cmd_name, ttc::ERR_STATE_REJECTED, -1, origin);
         return;
     }
 
     portENTER_CRITICAL(&stats_lock);
     stats.rx_packets_count++;
+    if (origin == LINK_WIRED) stats.wired_rx_packets_count++;
     portEXIT_CRITICAL(&stats_lock);
 }
 
@@ -231,26 +249,53 @@ void Ttc::TransmitNext(
                   || xQueueReceive(tx_queue, &frame, 0) == pdTRUE;
     if (!has_frame) return;
 
-    // Contador atribuído no TX: sequência estrita no ar para a detecção de perdas.
-    size_t len = frame.len;
-    if (!ttc::InsertCounter(frame.json, len, sizeof(frame.json), downlink_counter)) {
+    // Cabo primeiro: é instantâneo e não espera o airtime do rádio.
+    if ((frame.dest & LINK_WIRED) && umbilical != nullptr && TransmitTo(*umbilical, wired_counter, frame)) {
         portENTER_CRITICAL(&stats_lock);
-        stats.tx_errors_count++;
+        stats.wired_tx_packets_count++;
         portEXIT_CRITICAL(&stats_lock);
-        Serial.printf("[TT&C] Pacote de %u bytes sem espaco para o contador.\n", frame.len);
-        return;
     }
-    downlink_counter++;
+    if ((frame.dest & LINK_RF) == 0) return;
 
     transmitting = true;
-    bool sent = radio.Send((const uint8_t*)frame.json, len);
+    bool sent = TransmitTo(radio, rf_counter, frame);
     transmitting = false;
 
     portENTER_CRITICAL(&stats_lock);
     if (sent) stats.tx_packets_count++;
     else stats.tx_errors_count++;
     portEXIT_CRITICAL(&stats_lock);
-    if (!sent) Serial.printf("[TT&C] Falha no TX de %u bytes.\n", (unsigned)len);
+}
+
+// Privado:
+bool Ttc::TransmitTo(
+    LinkTransport& transport,
+    uint16_t& counter,
+    const TX_FRAME& frame
+) {
+    // Contador por meio, atribuído no TX: sequência estrita para a detecção de perdas.
+    char json[sizeof(frame.json)];
+    size_t len = frame.len;
+    memcpy(json, frame.json, len + 1);
+    if (!ttc::InsertCounter(json, len, sizeof(json), counter)) {
+        Serial.printf("[TT&C] Pacote de %u bytes sem espaco para o contador.\n", frame.len);
+        return false;
+    }
+    counter++;
+
+    if (!transport.Send((const uint8_t*)json, len)) {
+        Serial.printf("[TT&C] Falha no TX de %u bytes.\n", (unsigned)len);
+        return false;
+    }
+    return true;
+}
+
+// Privado:
+uint8_t Ttc::DownlinkDestinations(
+) {
+    uint8_t dest = LINK_RF;
+    if (umbilical != nullptr && umbilical_enabled) dest |= LINK_WIRED;
+    return dest;
 }
 
 // Privado:
@@ -286,6 +331,7 @@ bool Ttc::SendAck(
 
     xSemaphoreTake(dedup_mutex, portMAX_DELAY);
     int slot = FindDedupSlot(seq);
+    uint8_t dest = slot >= 0 ? dedup[slot].origin : DownlinkDestinations();
     int32_t queue_ms = -1;
     if (slot >= 0 && dedup[slot].delivered_ms != 0) {
         queue_ms = (int32_t)(dedup[slot].delivered_ms - dedup[slot].rx_ms);
@@ -303,7 +349,7 @@ bool Ttc::SendAck(
     xSemaphoreGive(dedup_mutex);
 
     if (len == 0) return false;
-    return EnqueueFrame(ack_queue, ack, len);
+    return EnqueueFrame(ack_queue, ack, len, dest);
 }
 
 // Privado:
@@ -311,23 +357,26 @@ bool Ttc::EnqueueAck(
     uint16_t seq,
     const char* cmd_name,
     ttc::ACK_STATUS status,
-    int32_t queue_ms
+    int32_t queue_ms,
+    uint8_t dest
 ) {
     char ack[ttc::max_ack_len];
     size_t len = ttc::BuildAck(seq, cmd_name, status, queue_ms, ack, sizeof(ack));
     if (len == 0) return false;
-    return EnqueueFrame(ack_queue, ack, len);
+    return EnqueueFrame(ack_queue, ack, len, dest);
 }
 
 // Privado:
 bool Ttc::EnqueueFrame(
     QueueHandle_t queue,
     const char* json,
-    size_t len
+    size_t len,
+    uint8_t dest
 ) {
     if (queue == nullptr) return false;
 
     TX_FRAME item;
+    item.dest = dest;
     item.len = (uint8_t)len;
     memcpy(item.json, json, len);
     item.json[len] = '\0';
@@ -362,7 +411,7 @@ bool Ttc::Send(
         Serial.printf("[TT&C] Pacote de %u bytes rejeitado (limite %u).\n", (unsigned)len, (unsigned)ttc::max_body_len);
         return false;
     }
-    return EnqueueFrame(tx_queue, json, len);
+    return EnqueueFrame(tx_queue, json, len, DownlinkDestinations());
 }
 
 // Público:

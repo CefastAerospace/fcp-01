@@ -2,11 +2,13 @@
  * @file Ttc.h
  * @brief Enlace de rádio entre o OBC e a estação terrena.
  *
- * @details Subida: valida o envelope JSON dos TCs e os entrega ao OBC, que
- * executa e responde com SendAck(). Descida: transmite ACKs, telemetria e
- * demais pacotes JSON sob demanda, assim que o rádio estiver livre. O
- * contador "n" de cada pacote de descida é inserido no momento do TX, em
- * ordem estrita no ar. Start() cria a task do enlace (DP §7.2: Core 0,
+ * @details Subida: valida o envelope JSON dos TCs recebidos pelo rádio ou
+ * pelo umbilical e os entrega ao OBC, que executa e responde com SendAck();
+ * o ACK volta pelo meio de origem do TC. Descida: transmite ACKs,
+ * telemetria e demais pacotes JSON sob demanda, assim que o rádio estiver
+ * livre, também pelo umbilical quando habilitado. O contador "n" de cada
+ * pacote de descida é inserido no momento do TX, com uma sequência estrita
+ * por meio. Start() cria a task do enlace (DP §7.2: Core 0,
  * prioridade alta), única a acessar o rádio; os demais métodos podem ser
  * chamados de qualquer task.
  */
@@ -19,10 +21,19 @@
 #include <freertos/queue.h>    // para QueueHandle_t, xQueueSend, xQueueReceive
 #include <freertos/semphr.h>   // para SemaphoreHandle_t, xSemaphoreTake/Give
 #include <freertos/task.h>     // para TaskHandle_t, xTaskCreatePinnedToCore, xTaskNotifyGive
+#include "LinkTransport.h"     // para LinkTransport
 #include "LoraRadio.h"         // para LoraRadio
 #include "TtcProtocol.h"       // para o contrato JSON e constantes do protocolo
 
 // ─── STRUCTS ──────────────────────────────────────────────────────
+
+/**
+ * @brief Meio do enlace; combinável como máscara de destino.
+ */
+enum LINK_ORIGIN : uint8_t {
+    LINK_RF    = 0x01,
+    LINK_WIRED = 0x02
+};
 
 /**
  * @brief Estatísticas do enlace.
@@ -35,6 +46,8 @@ struct LINK_STATS {
     uint32_t rx_errors_count;
     uint32_t tx_errors_count;
     uint32_t duplicates_count; // TCs repetidos não reentregues ao OBC.
+    uint32_t wired_rx_packets_count; // Parcela de rx_packets_count vinda do umbilical.
+    uint32_t wired_tx_packets_count;
 };
 
 /**
@@ -46,6 +59,7 @@ struct TC_FRAME {
     uint16_t        seq;
     ttc::COMMAND_ID cmd;
     uint32_t        rx_ms; // millis() da recepção.
+    LINK_ORIGIN     origin;
     uint8_t         len;
     char            json[ttc::max_frame_len + 1];
 };
@@ -54,6 +68,7 @@ struct TC_FRAME {
  * @brief Pacote na fila de descida, ainda sem o contador "n".
  */
 struct TX_FRAME {
+    uint8_t dest; // Máscara de LINK_ORIGIN.
     uint8_t len;
     char    json[ttc::max_frame_len + 1];
 };
@@ -68,14 +83,19 @@ constexpr size_t      ttc_dedup_slots   = 8;  // TCs lembrados para deduplicaç�
 
 class Ttc {
 public:
+    /**
+     * @param umbilical Meio cabeado opcional (UmbilicalLink na UART0).
+     */
     explicit Ttc(
-        LoraRadio& radio
+        LoraRadio& radio,
+        LinkTransport* umbilical = nullptr
     );
 
     /**
-     * @brief Cria as filas e inicializa o rádio.
+     * @brief Cria as filas e inicializa o rádio e o umbilical.
      *
-     * @return true se tudo está pronto.
+     * @return true se as filas e o rádio estão prontos; falha do umbilical
+     * só é registrada no log.
      */
     bool Init();
 
@@ -167,6 +187,16 @@ public:
         uint32_t wait_ms
     );
 
+    /**
+     * @brief Liga ou desliga a cópia da descida no umbilical.
+     *
+     * @details ACKs de TCs recebidos pelo cabo seguem por ele mesmo
+     * desligado.
+     */
+    void SetUmbilicalEnabled(
+        bool enabled
+    );
+
     bool IsTransmitting();
     LINK_STATS GetLinkStats();
     bool IsHealthy();
@@ -176,8 +206,9 @@ private:
      * @brief TC recente, para deduplicação e para o campo "q" do ACK.
      */
     struct DEDUP_SLOT {
-        bool     used;
-        bool     acked;
+        bool        used;
+        bool        acked;
+        LINK_ORIGIN origin;
         uint16_t seq;
         uint32_t rx_ms;
         uint32_t delivered_ms;
@@ -186,6 +217,8 @@ private:
     };
 
     LoraRadio& radio;
+    LinkTransport* umbilical;
+    volatile bool umbilical_enabled = true;
     QueueHandle_t rx_queue = nullptr;
     QueueHandle_t ack_queue = nullptr; // Descida prioritária.
     QueueHandle_t tx_queue = nullptr;
@@ -195,7 +228,8 @@ private:
     size_t dedup_next = 0;
     LINK_STATS stats = {};
     portMUX_TYPE stats_lock = portMUX_INITIALIZER_UNLOCKED;
-    uint16_t downlink_counter = 0; // Só a task do enlace usa.
+    uint16_t rf_counter = 0;    // Só a task do enlace usa.
+    uint16_t wired_counter = 0; // Só a task do enlace usa.
     volatile bool hold_tx = false;
     volatile bool transmitting = false;
 
@@ -206,7 +240,13 @@ private:
         void* parameters
     );
 
-    void PollReceive();
+    /**
+     * @brief Lê um quadro do meio e trata o TC, se houver.
+     */
+    void PollTransport(
+        LinkTransport& transport,
+        LINK_ORIGIN origin
+    );
 
     /**
      * @brief Trata um TC com envelope válido: reenvia o ACK de um repetido
@@ -215,7 +255,8 @@ private:
     void HandleTelecommand(
         const ttc::TC_INFO& info,
         const char* json,
-        size_t len
+        size_t len,
+        LINK_ORIGIN origin
     );
 
     /**
@@ -228,9 +269,25 @@ private:
     );
 
     /**
-     * @brief Transmite o próximo pacote, ACKs primeiro, com o contador "n".
+     * @brief Transmite o próximo pacote, ACKs primeiro, em cada meio de destino.
      */
     void TransmitNext();
+
+    /**
+     * @brief Insere o contador do meio e transmite uma cópia do pacote.
+     *
+     * @return true se transmitido.
+     */
+    bool TransmitTo(
+        LinkTransport& transport,
+        uint16_t& counter,
+        const TX_FRAME& frame
+    );
+
+    /**
+     * @return Máscara de destino da descida comum (TM, aeronave, evento).
+     */
+    uint8_t DownlinkDestinations();
 
     bool HasPendingTransmit();
 
@@ -241,7 +298,8 @@ private:
         uint16_t seq,
         const char* cmd_name,
         ttc::ACK_STATUS status,
-        int32_t queue_ms
+        int32_t queue_ms,
+        uint8_t dest
     );
 
     /**
@@ -250,7 +308,8 @@ private:
     bool EnqueueFrame(
         QueueHandle_t queue,
         const char* json,
-        size_t len
+        size_t len,
+        uint8_t dest
     );
 
     /**

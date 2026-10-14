@@ -1,7 +1,8 @@
 #include <Arduino.h>     // Framework Arduino.
 #include <ArduinoJson.h> // para JsonDocument, deserializeJson
 #include "Pinout.h"      // para pinout::radio_*
-#include "Ttc.h"         // para Ttc, Sx1276Radio, contrato JSON
+#include "Ttc.h"           // para Ttc, Sx1276Radio, contrato JSON
+#include "UmbilicalLink.h" // para UmbilicalLink
 
 // ─── ELEMENTOS STATIC ─────────────────────────────────────────────
 
@@ -13,7 +14,8 @@ static Sx1276Radio radio({
     pinout::radio_rst,
     pinout::radio_dio0
 });
-static Ttc ttc_link(radio);
+static UmbilicalLink umbilical(Serial, 115200);
+static Ttc ttc_link(radio, &umbilical);
 
 static constexpr uint32_t tm_period_ms       = 10000;
 static constexpr uint32_t aircraft_period_ms = 30000;
@@ -94,7 +96,7 @@ static bool ParseMode(
 static void HandleTelecommand(
     const TC_FRAME& tc
 ) {
-    Serial.printf("[SAT] TC %s seq=%u\n", ttc::CommandName(tc.cmd), tc.seq);
+    Serial.printf("[SAT] TC %s seq=%u (%s)\n", ttc::CommandName(tc.cmd), tc.seq, tc.origin == LINK_WIRED ? "cabo" : "RF");
 
     JsonDocument doc;
     deserializeJson(doc, tc.json, tc.len);
@@ -151,15 +153,12 @@ static void HandleTelecommand(
  */
 void setup(
 ) {
-    Serial.begin(115200);
-    while (!Serial && millis() < 2000);
-    Serial.println("\n[SAT] Teste do enlace TT&C (simulador do OBC).");
-
+    // Ttc::Init() abre a serial pelo umbilical; os logs usam a mesma porta.
     if (!ttc_link.Init() || !ttc_link.Start()) {
         Serial.println("[SAT] ERRO: falha ao inicializar o TT&C.");
         while (true) delay(1000);
     }
-    Serial.println("[SAT] Pronto.");
+    Serial.println("[SAT] Teste do enlace TT&C (simulador do OBC) pronto.");
 }
 
 /**

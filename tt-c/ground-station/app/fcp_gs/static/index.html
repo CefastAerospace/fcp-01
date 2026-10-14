@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>FCP-01 Estação Terrena</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <header>
+    <h1>FCP-01 <span class="muted">Estação terrena</span></h1>
+    <div class="status">
+      <span id="source" class="pill">—</span>
+      <span id="sse" class="pill bad">desconectado</span>
+    </div>
+  </header>
+
+  <main>
+    <section class="card" id="link-card">
+      <h2>Enlace</h2>
+      <dl class="kv">
+        <dt>Pacotes recebidos</dt><dd id="lk-received">—</dd>
+        <dt>Perdidos (pelo "n")</dt><dd id="lk-lost">—</dd>
+        <dt>Taxa de perda</dt><dd id="lk-rate">—</dd>
+        <dt>CRC inválido</dt><dd id="lk-crc">—</dd>
+        <dt>Reinícios do satélite</dt><dd id="lk-restarts">—</dd>
+        <dt>RSSI / SNR (solo)</dt><dd id="lk-signal">—</dd>
+        <dt>Último pacote</dt><dd id="lk-age">—</dd>
+        <dt>Log da sessão</dt><dd id="lk-log" class="small">—</dd>
+      </dl>
+    </section>
+
+    <section class="card" id="tm-card">
+      <h2>Telemetria <span id="tm-n" class="muted small"></span></h2>
+      <div class="tiles">
+        <div class="tile"><span>Modo</span><b id="tm-md">—</b></div>
+        <div class="tile"><span>Horário de bordo</span><b id="tm-ts">—</b></div>
+        <div class="tile"><span>Bateria</span><b id="tm-bat">—</b></div>
+        <div class="tile"><span>Painéis</span><b id="tm-sol">—</b></div>
+        <div class="tile"><span>Taxa angular</span><b id="tm-w">—</b></div>
+        <div class="tile"><span>Azimute solar</span><b id="tm-az">—</b></div>
+        <div class="tile"><span>Aeronaves / msgs</span><b id="tm-mis">—</b></div>
+        <div class="tile"><span>Enlace a bordo</span><b id="tm-lnk">—</b></div>
+        <div class="tile wide"><span>Temperaturas (°C)</span><b id="tm-tp">—</b></div>
+      </div>
+    </section>
+
+    <section class="card wide" id="charts">
+      <h2>Histórico</h2>
+      <div class="charts">
+        <figure><figcaption>Bateria (V)</figcaption><canvas id="ch-vb"></canvas></figure>
+        <figure><figcaption>Temperaturas (°C)</figcaption><canvas id="ch-tp"></canvas></figure>
+        <figure><figcaption>RSSI no solo (dBm)</figcaption><canvas id="ch-rssi"></canvas></figure>
+      </div>
+    </section>
+
+    <section class="card" id="tc-card">
+      <h2>Telecomandos</h2>
+      <div class="buttons">
+        <button data-cmd="ping">ping</button>
+        <button data-cmd="request_tm">request_tm</button>
+        <button data-cmd="get_status">get_status</button>
+        <button id="btn-time">set_time (agora)</button>
+        <button data-cmd="start_mission">start_mission</button>
+        <button data-cmd="stop_mission">stop_mission</button>
+        <button data-cmd="enter_safe">enter_safe</button>
+        <button data-cmd="exit_safe">exit_safe</button>
+        <button data-cmd="adcs_start">adcs_start</button>
+        <button data-cmd="adcs_stop">adcs_stop</button>
+        <button data-cmd="deploy_antenna" data-confirm="Acionar o burn-wire da antena?" class="danger">deploy_antenna</button>
+        <button data-cmd="reset_obc" data-confirm="Reiniciar o OBC?" class="danger">reset_obc</button>
+      </div>
+      <form id="tc-form" class="row">
+        <select id="tc-cmd"></select>
+        <input id="tc-args" placeholder='args JSON, ex.: {"mode":"safe"}'>
+        <button type="submit">Enviar</button>
+      </form>
+      <ul id="tc-results" class="results"></ul>
+    </section>
+
+    <section class="card" id="test-card">
+      <h2>Verificação</h2>
+      <form class="row test" data-test="tm-loss">
+        <label>REQ-TTC-003 perda de TM <input type="number" min="1" max="2000" value="1000"></label>
+        <button type="submit">Iniciar</button>
+      </form>
+      <form class="row test" data-test="tc-latency">
+        <label>REQ-TTC-004 latência de TC <input type="number" min="1" max="500" value="50"></label>
+        <button type="submit">Iniciar</button>
+      </form>
+      <pre id="test-report" class="report">Nenhum teste executado nesta sessão.</pre>
+    </section>
+
+    <section class="card wide" id="ac-card">
+      <h2>Aeronaves</h2>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>ICAO</th><th>Lat</th><th>Lon</th><th>Alt (ft)</th><th>Vel (kt)</th><th>Rumo</th><th>Msgs</th><th>Horário</th></tr></thead>
+          <tbody id="ac-body"><tr><td colspan="8" class="muted">Nenhuma aeronave recebida.</td></tr></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="card wide" id="log-card">
+      <h2>Eventos</h2>
+      <ol id="log" class="log"></ol>
+    </section>
+  </main>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>

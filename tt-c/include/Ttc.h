@@ -186,8 +186,8 @@ public:
     /**
      * @brief Suspende ou retoma o início de novas transmissões.
      *
-     * @details Usado pelo OBC para acionar o burn-wire fora de TX (DP §5.2).
-     * A recepção continua ativa durante a suspensão.
+     * @details Para cargas de alto consumo que não podem coincidir com o
+     * pico de TX (DP §5.2). A recepção continua ativa durante a suspensão.
      *
      * @param hold true suspende; false retoma.
      * @param wait_ms Espera máxima pelo fim de uma transmissão em curso.

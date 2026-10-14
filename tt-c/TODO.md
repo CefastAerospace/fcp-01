@@ -10,7 +10,7 @@ Itens marcados como concluídos estão implementados e compilam; a validação e
 
 - **Camada de aplicação em JSON** (DP §7.1). Contrato em [`common/protocol/ttc-json.md`](../common/protocol/ttc-json.md).
 - **Transmissão sob demanda**, sem duty cycle fixo: o OBC enfileira e o TT&C transmite assim que o rádio estiver livre (DP §5.3; decisão da equipe).
-- **Burn-wire no OBC.** O TT&C só oferece `Ttc::HoldTransmit()` para a queima ocorrer fora de TX. Se a responsabilidade mudar, o driver entra no `tt-c`.
+- **Burn-wire fora do TT&C.** O mecanismo é do EPS e o comando (`deploy_antenna`) é executado pelo OBC; o `tt-c` não referencia o burn-wire. Para a queima ocorrer fora de TX (DP §5.2), há o interlock genérico `Ttc::HoldTransmit()`.
 - **LOW-POWER mantém o rádio em RX**, sem modo sleep: a saída do LOW-POWER exige um TC de recuperação (DP §2.5).
 - **Integridade pelo CRC de hardware do LoRa** (DP §7.1). CRC16 de aplicação e fragmentação foram removidos.
 
@@ -51,7 +51,7 @@ Itens marcados como concluídos estão implementados e compilam; a validação e
 ## 3. Funcionalidades
 
 - [x] Beacon periódico (`Ttc::EnableBeacon()`), desligado por padrão e ligado só em safe-mode.
-- [x] Interlock de TX para o burn-wire (`Ttc::HoldTransmit()`).
+- [x] Interlock genérico de TX para cargas de alto consumo (`Ttc::HoldTransmit()`).
 - [x] `LINK_STATS.last_tc_ms` para a detecção de perda de comunicação (REQ-OBC-011).
 - [x] Verificação de saúde do SX1276 a cada 1 s (RegVersion e RegOpMode), com reinicialização pelo RST; contador `rst` na TM.
 - [x] Deduplicação de TCs por `seq` (8 TCs, 30 s), com reenvio do ACK anterior.
@@ -80,13 +80,13 @@ Ferramentas prontas; falta executar em bancada e anexar os relatórios de `groun
 - [ ] Verificação de saúde: desligar o SX1276 com o satélite rodando e confirmar a reinicialização (`rst` sobe na TM).
 - [ ] REQ-NF-TTC-001: medir consumo no EPS (15 mA nominal, 120 mA de pico).
 - [ ] REQ-NF-TTC-002: pesar a placa do rádio e o conjunto da antena (< 85 g).
-- [ ] Burn-wire (OBC): mínimo de 5 ciclos de abertura bem-sucedidos em solo.
+- [ ] Burn-wire (EPS/OBC): mínimo de 5 ciclos de abertura bem-sucedidos em solo.
 - [ ] Link budget (DP §5.3 "[PENDING — link budget validation]").
 - [ ] Confirmar que +17 dBm respeita o limite de potência da ENACOM.
 
 ## 6. Dependências externas
 
 - [ ] Integração com o OBC: task do OBC consumindo `Ttc::ReceiveTelecommand()`, executando os TCs e respondendo com `Ttc::SendAck()` (`obc-dh/src/main.cpp` está vazio). O `examples/link-test` serve de referência.
-- [ ] Driver do burn-wire no OBC, usando `Ttc::HoldTransmit()` antes de acionar o GPIO 33.
+- [ ] Acionamento do burn-wire (mecanismo do EPS, comando do OBC) fora de TX; `Ttc::HoldTransmit()` está disponível para isso.
 - [ ] O SD do OBC deve usar uma instância própria de HSPI; o rádio usa o `SPI` global (VSPI).
 - [ ] Alinhar o contrato JSON com o OBC-DH (parte TT&C de P-DADOS em `obc-dh/.agents/PENDENCIAS_ARQUITETURAIS.md`).

@@ -45,7 +45,7 @@ Implementação de referência: `tt-c/include/TtcProtocol.h` (satélite, estaç�
 | `set_time` | `{"unix":1760000000}` | Acerta o relógio de bordo (s, unix). |
 | `adcs_start` | — | Inicia o controle de atitude. |
 | `adcs_stop` | — | Para o controle de atitude. |
-| `deploy_antenna` | — | Aciona o burn-wire (OBC). |
+| `deploy_antenna` | — | Abre a antena do TT&C pelo burn-wire (mecanismo do EPS, acionado pelo OBC). |
 | `request_log` | — | Solicita dados registrados. |
 | `test_tm` | `{"count":1000}` (1–2000) | Só bancada: rajada de TMs para o teste do REQ-TTC-003. |
 | `reset_obc` | — | Reinicia o OBC. |

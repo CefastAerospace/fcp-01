@@ -23,4 +23,4 @@ Motor **GM2804** + driver **SimpleFOC Mini** + roda de reação em anel de aço 
 ## Aprofundar
 
 - `../FCP-01_Design_Package_CubeDesign_2026.md` §§2.6, 3.1, 3.6, 8.3.3 + Apêndice A (REQ-ADCS).
-- `../obc-dh/.agents/PENDENCIAS_ARQUITETURAIS.md` (P-ADCS: fases, encoder, limites).
+- [Pendências OBC — P-ADCS](../obc-dh/.agents/TODO.md#p-adcs): fases, montagem do encoder e limites de integração.

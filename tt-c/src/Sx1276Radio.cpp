@@ -28,7 +28,7 @@ static constexpr uint8_t  sx1276_write_bit           = 0x80;
 static constexpr uint32_t sx1276_spi_hz              = 8E6;
 static constexpr TickType_t  tx_done_poll         = pdMS_TO_TICKS(5);
 static constexpr uint32_t rx_entry_timeout_us        = 2000;
-static constexpr uint32_t rx_entry_settle_us         = 100;  // Folga para a transição automática a STANDBY.
+static constexpr uint32_t rx_entry_settle_us         = 100;  // Entre pedir RX e reler o RegOpMode.
 
 // ==================================================================
 // === CLASSE =======================================================

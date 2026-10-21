@@ -74,7 +74,7 @@ Ferramentas prontas; falta executar em bancada e anexar os relatórios de `groun
 - [ ] Rodar `pio test -e esp32` (test_ttc) na placa.
 - [ ] REQ-TTC-001: dados simulados de Payload e ADCS chegando à estação terrena (`link-test`).
 - [ ] REQ-TTC-002: medir a transmissão em 921 MHz e validar o modo umbilical (`--wired`).
-- [ ] REQ-TTC-003: `python -m fcp_gs tm-loss --count 1000`, perda < 1,0%.
+- [x] REQ-TTC-003: `python -m fcp_gs tm-loss --count 1000`, perda < 1,0%. Bancada (E2 em [`ENSAIOS.md`](ENSAIOS.md)): 0,00%. Entre prédios, a 115 m, ficou em 1,74% com 500 TMs (E3).
 - [ ] REQ-TTC-004 e HLR-COMM-01: `python -m fcp_gs tc-latency --count 50`, `q` ≤ 200 ms e ida e volta ≤ 2 s.
 - [ ] Deduplicação: reenviar o mesmo `seq` e confirmar que o comando não é reexecutado.
 - [ ] Verificação de saúde: desligar o SX1276 com o satélite rodando e confirmar a reinicialização (`rst` sobe na TM).

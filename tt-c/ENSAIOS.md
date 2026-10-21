@@ -10,7 +10,7 @@ Configuração comum: SX1276 a 921 MHz, SF7, +17 dBm, CRC de hardware ligado; li
 |---|---|---|---|---|---|---|---|---|
 | E1 | 21/10/2026 | Bancada, placas lado a lado | 255 / 1000 | 1 em 258 (0,39%) | 0 antes da falha | −45 / −44 / −42 dBm | — | **Inválido**: o rádio da estação terrena caiu aos 108 s |
 | E2 | 21/10/2026 | Bancada | 1011 / 1000 | 0 em 1025 (0,00%) | 0 | −94 / −68 / −61 dBm | 8,8 / 9,8 / 12,8 dB | **Aprovado** (REQ-TTC-003) |
-| E3 | | Entre prédios: | | | | | | |
+| E3 | 21/10/2026 | Estação: prédio 17, 3º andar. Satélite: prédio 7, 7º andar. Cerca de 115 m (Google Maps) | 498 / 500 | 9 em 516 (1,74%), 7 por CRC | 7 | −119 / −117 / −107 dBm | −8,2 / −0,8 / 8,8 dB | **Reprovado**: enlace no limite (caracterização, 500 TMs) |
 
 Nas TMs recebidas entram também as TMs periódicas de 10 s, por isso o total passa de 1000. No E2: 1000 TMs da rajada, 11 periódicas, 13 aeronaves e 2 ACKs (1026 pacotes). As demais TMs periódicas e aeronaves encontraram a fila de descida cheia e foram descartadas antes de receber `n`, sem contar como perda. A métrica do requisito é a perda pelo `n`; a contagem de TMs é só uma conferência.
 
@@ -38,6 +38,20 @@ A ferramenta foi corrigida depois deste ensaio: agora reprova quando o `ping` de
 - Duração: 424,5 s. `ping` de fechamento confirmado. Satélite com `rst` = 0 e `err` = 0 durante todo o ensaio.
 
 Uma rodada anterior (relatório `tm-loss_2026-10-21_105757`) foi descartada: o `ping` de fechamento saiu antes do fim da rajada, porque as TMs periódicas completaram a contagem cerca de 6 s antes. O satélite, transmitindo sem pausa, não ouviu o `ping`, e a estação perdeu 4 TMs enquanto transmitia (enlace half-duplex). O roteiro passou a esperar 2 s de silêncio antes do `ping`.
+
+## E3 — entre prédios, 21/10/2026
+
+Caracterização de alcance, com 500 TMs; não é a verificação do REQ-TTC-003, que o DP define com 1000 pacotes e que foi feita no E2.
+
+- Local: estação terrena no 3º andar do prédio 17; satélite no 7º andar do prédio 7. Distância horizontal de cerca de 115 m, medida no Google Maps.
+- Log serial do satélite: `sat_2026-10-21_132608.log` (13:26 a 13:35, cópia local fora do repositório).
+- Pings antes do ensaio (13:27): 3 de 3, um na segunda tentativa; RSSI −113 a −115 dBm, SNR 3,5 a 5,2 dB.
+- `tm-loss --count 500` (log `2026-10-21_132726.jsonl`, relatório `tm-loss_2026-10-21_133108`): 9 pacotes perdidos pelo `n` em 516 (507 recebidos). Sete são quadros com CRC inválido, espalhados ao longo do ensaio, com SNR entre −10,5 e −0,5 dB. Os outros dois casos (3 pacotes) coincidem com as transmissões do `ping` de fechamento, quando a estação terrena não escuta. Nenhum dos três envios do `ping` chegou ao satélite.
+- `tc-latency --count 50` (log `2026-10-21_133143.jsonl`, relatório `tc-latency_2026-10-21_133307`): 48 de 50 TCs confirmados, 27 retransmissões (29 na primeira tentativa, 15 na segunda, 4 na terceira, 2 sem ACK). Entrega ao OBC (`q`) de no máximo 1 ms; ida e volta média de 1289 ms e máxima de 4374 ms, acima de 2 s por causa das retransmissões. Na subida, o satélite mediu RSSI de −114 a −118 dBm e SNR de −4,5 a 3,3 dB.
+- No satélite (log serial): 52 TCs recebidos, incluindo os 3 pings iniciais, o `test_tm` e 48 TCs distintos do `tc-latency`, que são exatamente os 48 confirmados; os 2 restantes não chegaram em nenhuma tentativa. Dez quadros de subida chegaram com CRC inválido (`Quadro corrompido ou longo demais descartado`).
+- Satélite com `rst` = 0 durante todo o ensaio, sem nenhuma reinicialização do rádio.
+
+Conclusão: o enlace funciona entre os prédios, mas sem margem nessa posição. A mediana de RSSI (−117 dBm) fica poucos dB acima da sensibilidade do SX1276 em SF7/125 kHz, e o SNR caiu de cerca de +4 dB nos pings iniciais para cerca de 0 dB durante o ensaio, o que indica desvanecimento ou obstrução variando no tempo. As perdas são de RF (CRC), não do firmware.
 
 ## Diagnóstico do `rst` do satélite
 

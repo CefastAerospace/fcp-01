@@ -13,6 +13,7 @@ from .protocol import LossTracker
 TM_LOSS_LIMIT = 0.01       # REQ-TTC-003: perda < 1,0%.
 TC_FORWARD_LIMIT_MS = 200  # REQ-TTC-004: entrega ao OBC em até 200 ms.
 TC_END_TO_END_MS = 2000    # HLR-COMM-01 / REQ-OBC-002: até 2 s.
+BURST_QUIET_S = 2.0        # Pausa que marca o fim da rajada; entre TMs dela, ~0,4 s.
 
 
 def _stats(values: list[float]) -> dict:
@@ -28,6 +29,8 @@ def run_tm_loss(link: Link, count: int = 1000, idle_timeout: float = 5.0) -> dic
     """REQ-TTC-003: pede uma rajada de `count` TMs (test_tm) e mede a perda pelo contador "n".
 
     Um ping no final fecha a contagem: o "n" do ACK revela perdas no fim da rajada.
+    Sem o ACK desse ping, ou com menos TMs que as pedidas além do limite, as
+    perdas do fim da rajada ficariam fora da conta; o ensaio é reprovado.
     """
     tracker = LossTracker()
     state = {"tm": 0, "crc": 0, "last_rx": time.monotonic()}
@@ -52,11 +55,15 @@ def run_tm_loss(link: Link, count: int = 1000, idle_timeout: float = 5.0) -> dic
     try:
         request = link.send_tc("test_tm", {"count": count})
         if request["ok"]:
-            # Espera a rajada terminar: todas as TMs ou silêncio prolongado.
+            # Espera a rajada terminar: silêncio prolongado ou, com todas as TMs,
+            # uma pausa curta. As TMs periódicas também contam, então a contagem
+            # chega antes do fim da rajada; um ping nesse momento colide com ela.
             deadline = t0 + 30 + count * 0.6
+            quiet_s = min(BURST_QUIET_S, idle_timeout)
             while time.monotonic() < deadline:
                 with lock:
-                    done = state["tm"] >= count or time.monotonic() - state["last_rx"] > idle_timeout
+                    silence = time.monotonic() - state["last_rx"]
+                    done = silence > idle_timeout or (state["tm"] >= count and silence > quiet_s)
                 if done:
                     break
                 time.sleep(0.1)
@@ -81,7 +88,14 @@ def run_tm_loss(link: Link, count: int = 1000, idle_timeout: float = 5.0) -> dic
             "crc_errors": state["crc"],
             **loss,
         }
-    report["passed"] = bool(request["ok"] and loss["received"] > 0 and loss["loss_rate"] < TM_LOSS_LIMIT)
+    report["tm_missing"] = max(0, count - report["tm_received"])
+    report["passed"] = bool(
+        request["ok"]
+        and closing is not None and closing["status"] != "timeout"
+        and loss["received"] > 0
+        and loss["loss_rate"] < TM_LOSS_LIMIT
+        and count > 0 and report["tm_missing"] / count < TM_LOSS_LIMIT
+    )
     return report
 
 
@@ -150,7 +164,9 @@ def summarize(report: dict) -> str:
              f"- Início: {report['started']}, duração {report['duration_s']} s, meio: {report['source']}"]
     if report["test"] == "tm-loss":
         lines += [
-            f"- TMs pedidas: {report['requested']}, recebidas: {report['tm_received']}",
+            f"- TMs pedidas: {report['requested']}, recebidas: {report['tm_received']}, "
+            f"faltando: {report['tm_missing']}",
+            f"- Ping de fechamento: {(report['closing_ack'] or {}).get('status', 'não enviado')}",
             f"- Pacotes recebidos: {report['received']}, perdidos: {report['lost']}, "
             f"taxa de perda: {report['loss_rate'] * 100:.2f}% (limite {TM_LOSS_LIMIT * 100:.1f}%)",
             f"- Quadros com CRC inválido na estação terrena: {report['crc_errors']}",

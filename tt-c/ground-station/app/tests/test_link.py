@@ -39,6 +39,33 @@ def test_tm_loss_report_passes_without_losses(make_link):
     link = make_link()
     report = run_tm_loss(link, count=200, idle_timeout=0.5)
     assert report["passed"] and report["tm_received"] == 200
+    assert report["received"] == 202  # ACK do test_tm, 200 TMs e ACK do ping de fechamento.
+
+
+def test_tm_loss_counts_closing_ack_with_slow_listener(make_link):
+    # Um listener lento antes do tm-loss (ex.: a interface web) não pode fazer
+    # o ACK do ping de fechamento, que revela perdas no fim da rajada, ficar fora.
+    link = make_link()
+    link.add_listener(lambda event: time.sleep(0.05) if event.get("pkt", {}).get("t") == "ack" else None)
+    report = run_tm_loss(link, count=20, idle_timeout=0.5)
+    assert report["received"] == 22
+
+
+def test_tm_loss_fails_on_interrupted_burst(make_link):
+    link = make_link(burst_limit=50)
+    report = run_tm_loss(link, count=200, idle_timeout=0.5)
+    assert report["lost"] == 0  # Sem saltos no "n": a perda só aparece pelas TMs faltando.
+    assert report["tm_missing"] == 150
+    assert report["passed"] is False
+    assert "faltando: 150" in summarize(report)
+
+
+def test_tm_loss_fails_without_closing_ack(make_link):
+    link = make_link(ignore_cmds={"ping"})
+    report = run_tm_loss(link, count=200, idle_timeout=0.5)
+    assert report["tm_received"] == 200
+    assert report["closing_ack"]["status"] == "timeout"
+    assert report["passed"] is False
 
 
 def test_tc_latency_report(make_link):

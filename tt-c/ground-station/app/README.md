@@ -42,7 +42,7 @@ Abra `http://localhost:8080`. O painel mostra:
 - os roteiros de verificação;
 - o log ao vivo.
 
-Abrir a porta não reinicia o ESP32 (DTR/RTS ficam desligados).
+A porta é aberta com DTR/RTS desligados, mas no Linux a placa ainda pode reiniciar na abertura. Por isso o app só envia o primeiro TC depois de a serial ficar 1 s sem bytes novos (no mínimo 1,5 s, no máximo 6 s); as mensagens do boot vão para o log da sessão.
 
 ## Roteiros de verificação
 
@@ -50,7 +50,7 @@ Podem ser executados pela interface ou pela linha de comando. Cada execução gr
 
 | Comando | Requisito | Critério |
 |---|---|---|
-| `python -m fcp_gs tm-loss --port ... --count 1000` | REQ-TTC-003 | Rajada de 1000 TMs (`test_tm`) com perda < 1,0%, contada pelo `n`. Um `ping` final revela perdas no fim da rajada. |
+| `python -m fcp_gs tm-loss --port ... --count 1000` | REQ-TTC-003 | Rajada de 1000 TMs (`test_tm`) com perda < 1,0%, contada pelo `n`. Um `ping` final revela perdas no fim da rajada; sem o ACK dele, ou com mais de 1,0% das TMs faltando, o ensaio é reprovado. |
 | `python -m fcp_gs tc-latency --port ... --count 50` | REQ-TTC-004, HLR-COMM-01 | 50 TCs distintos; entrega ao OBC (`q` do ACK) ≤ 200 ms e ida e volta ≤ 2 s. |
 
 O `test_tm` é atendido pelo firmware `tt-c/examples/link-test`, que simula o OBC.

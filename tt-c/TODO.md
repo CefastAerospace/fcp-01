@@ -21,7 +21,7 @@ Itens marcados como concluídos estão implementados e compilam; a validação e
 | Biblioteca do enlace | `TtcProtocol`, `Ttc`, `Sx1276Radio`, `UmbilicalLink`: SF7, JSON, TX intercalado com ACK prioritário, DIO0 por interrupção, task no Core 0, umbilical, deduplicação, verificação de saúde, beacon. | Validação em bancada (seção 5) e integração com o OBC (seção 6). |
 | Estação terrena | `ground-station/` (ponte ESP32) e `ground-station/app/` (Python, interface web, logs, roteiros de verificação, análise pós-passagem). | Ensaio com o hardware; fotos e descrição para o DP. |
 | Firmware de teste | `examples/link-test/`: simula o OBC (TM, aeronaves, `test_tm`, beacon em safe). | — |
-| Testes | `test/test_protocol` (nativo, 13 casos), `test/test_ttc` (na placa, 9 casos), `ground-station/app/tests` (pytest, 14 casos). | Rodar `test_ttc` na placa. |
+| Testes | `test/test_protocol` (nativo, 13 casos), `test/test_ttc` (na placa, 9 casos), `ground-station/app/tests` (pytest, 17 casos). | Rodar `test_ttc` na placa. |
 
 ---
 

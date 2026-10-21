@@ -15,12 +15,17 @@ class FakeSatellite:
 
     drop_first: descarta a primeira tentativa de cada seq (testa retentativa).
     skip_n: contadores "n" a pular (simula perdas no ar).
+    burst_limit: TMs do test_tm efetivamente transmitidas (simula rajada interrompida).
+    ignore_cmds: comandos que não recebem ACK (simula enlace caído).
     """
 
-    def __init__(self, bridge: bool = True, drop_first: bool = False, skip_n: set[int] | None = None) -> None:
+    def __init__(self, bridge: bool = True, drop_first: bool = False, skip_n: set[int] | None = None,
+                 burst_limit: int | None = None, ignore_cmds: set[str] | None = None) -> None:
         self.bridge = bridge
         self.drop_first = drop_first
         self.skip_n = skip_n or set()
+        self.burst_limit = burst_limit
+        self.ignore_cmds = ignore_cmds or set()
         self.n = 0
         self.seen: set[int] = set()
         self.lines: queue.Queue[bytes] = queue.Queue()
@@ -44,11 +49,14 @@ class FakeSatellite:
         if self.drop_first and seq not in self.seen:
             self.seen.add(seq)
             return len(data)
+        if tc["cmd"] in self.ignore_cmds:
+            return len(data)
         self._downlink({"t": "ack", "seq": seq, "cmd": tc["cmd"], "st": "ok", "q": 3})
         if tc["cmd"] in ("request_tm", "get_status"):
             self._downlink(self._tm())
         if tc["cmd"] == "test_tm":
-            for _ in range(tc["args"]["count"]):
+            count = tc["args"]["count"]
+            for _ in range(count if self.burst_limit is None else min(count, self.burst_limit)):
                 self._downlink(self._tm())
         return len(data)
 

@@ -12,8 +12,21 @@ from .session_log import SessionLog
 Listener = Callable[[dict], None]
 
 
-def open_serial(port: str, baud: int = 115200) -> serial.Serial:
-    """Abre a porta sem acionar DTR/RTS, que reiniciariam o ESP32."""
+OPEN_SETTLE_S = 1.5    # Boot do ESP32 até "[GS] Pronto." leva ~0,4 s.
+OPEN_QUIET_S = 1.0     # Serial sem bytes novos: boot terminado.
+OPEN_MAX_WAIT_S = 6.0
+
+
+def open_serial(port: str, baud: int = 115200, settle_s: float = OPEN_SETTLE_S,
+                quiet_s: float = OPEN_QUIET_S, max_wait_s: float = OPEN_MAX_WAIT_S) -> serial.Serial:
+    """Abre a porta com DTR/RTS desligados e espera o ESP32 ficar pronto.
+
+    No Linux, o open() aciona DTR/RTS antes de a configuração valer, e a placa
+    pode reiniciar mesmo assim, às vezes mais de 1 s depois da abertura. Um TC
+    enviado durante o boot se perde; por isso a porta só é devolvida após
+    settle_s e quiet_s sem bytes novos (até max_wait_s). A entrada não é
+    descartada: as mensagens do boot seguem para o log da sessão.
+    """
     stream = serial.Serial()
     stream.port = port
     stream.baudrate = baud
@@ -21,6 +34,19 @@ def open_serial(port: str, baud: int = 115200) -> serial.Serial:
     stream.dtr = False
     stream.rts = False
     stream.open()
+
+    start = last_change = time.monotonic()
+    waiting = stream.in_waiting
+    while True:
+        time.sleep(0.05)
+        now = time.monotonic()
+        if stream.in_waiting != waiting:
+            waiting = stream.in_waiting
+            last_change = now
+        if now - start >= max_wait_s:
+            break
+        if now - start >= settle_s and now - last_change >= quiet_s:
+            break
     return stream
 
 
@@ -90,6 +116,9 @@ class Link:
             return
         self._update_state(received)
         self._emit(self._event(received))
+        # O ACK só é entregue a send_tc() depois dos listeners: quem remove o
+        # listener ao receber o ACK (ex.: tm-loss) ainda vê o "n" dele.
+        self._deliver_ack(received)
 
     def _update_state(self, received: Received) -> None:
         with self._cond:
@@ -108,9 +137,16 @@ class Link:
                 self.latest_tm = packet
             elif kind == "ac" and "icao" in packet:
                 self.aircraft[str(packet["icao"])] = packet
-            elif kind == "ack" and isinstance(packet.get("seq"), int):
-                self._acks[packet["seq"]] = packet
-                self._cond.notify_all()
+
+    def _deliver_ack(self, received: Received) -> None:
+        packet = received.packet
+        if received.kind != "packet" or packet is None or packet.get("t") != "ack":
+            return
+        if not isinstance(packet.get("seq"), int):
+            return
+        with self._cond:
+            self._acks[packet["seq"]] = packet
+            self._cond.notify_all()
 
     def _event(self, received: Received) -> dict:
         event: dict = {"dir": "log" if received.kind == "log" else "rx", "kind": received.kind, "link": self.source}

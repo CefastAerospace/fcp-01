@@ -1,5 +1,5 @@
-#include "include/sensors.h"
-#include "include/config.h"
+#include "sensors.h"
+#include "config.h"
 #include <Wire.h>
 #include <MPU9250_WE.h>
 #include <BH1750.h>

@@ -13,7 +13,8 @@ enum MissionState {
     MISSION_IDLE,           // Sem missão ativa
     MISSION_DETUMBLE,       // Detumbling — freiar rotação
     MISSION_SUN_POINTING,   // Apontamento solar — alinhar com o sol
-    MISSION_MANUAL_TEST     // Teste manual (motor comandado diretamente)
+    MISSION_MANUAL_TEST,     // Teste manual (motor comandado diretamente)
+    MISSION_TESTE_APONTAMENTO
 };
 
 // Inicializa o módulo de missões

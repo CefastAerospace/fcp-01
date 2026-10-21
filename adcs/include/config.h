@@ -10,7 +10,7 @@
 #define PIN_IN1   27    // PWM fase A
 #define PIN_IN2   26    // PWM fase B
 #define PIN_IN3   25    // PWM fase C
-#define PIN_EN    33    // Enable do driver
+#define PIN_EN    12    // Enable do driver
 
 // --- Barramento I2C ---
 #define PIN_SDA   21
@@ -29,13 +29,13 @@
 #define MOTOR_POLE_PAIRS   7
 
 // Tensão de alimentação (Volts)
-#define MOTOR_VOLTAGE_SUPPLY   10.0f
+#define MOTOR_VOLTAGE_SUPPLY   9.95f
 
 // Limite de tensão aplicada ao motor (proteção contra superaquecimento)
 #define MOTOR_VOLTAGE_LIMIT     6.0f
 
 // Limite de velocidade (rad/s) — ~190 RPM
-#define MOTOR_VELOCITY_LIMIT   20.0f
+#define MOTOR_VELOCITY_LIMIT   96.0f
 
 // --- PID de Velocidade ---
 #define PID_VEL_P    0.2f

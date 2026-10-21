@@ -1,9 +1,9 @@
-#include "include/web_interface.h"
-#include "include/config.h"
-#include "include/commands.h"
-#include "include/sensors.h"
-#include "include/motor_control.h"
-#include "include/missions.h"
+#include "web_interface.h"
+#include "config.h"
+#include "commands.h"
+#include "sensors.h"
+#include "motor_control.h"
+#include "missions.h"
 #include <WiFi.h>
 #include <WebServer.h>
 
@@ -60,10 +60,10 @@ static String buildDashboardHTML() {
 
     // ---- Motor ----
     p += "<div class='card'>\n<h2>&#9881; Motor — Roda de Reacao</h2>\n";
-    p += "<table><tr><th>Vel. Atual (rad/s)</th><th>Vel. Alvo (rad/s)</th><th>Angulo (rad)</th><th>RPM</th></tr>\n";
+    p += "<table><tr><th>Vel. Atual (rad/s)</th><th>Vel. Alvo (rad/s)</th><th>Angulo (deg)</th><th>RPM</th></tr>\n";
     p += "<tr><td class='val'>" + String(motor_getVelocity(), 2) + "</td>";
     p += "<td class='val'>" + String(motor_getTarget(), 2) + "</td>";
-    p += "<td class='val'>" + String(motor_getAngle(), 2) + "</td>";
+    p += "<td class='val'>" + String(motor_getAngleDeg(), 2) + "</td>";
     p += "<td class='val'>" + String(motor_getVelocity() * 9.5493f, 1) + "</td></tr>\n";
     p += "</table>\n</div>\n";
 

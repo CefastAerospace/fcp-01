@@ -48,6 +48,7 @@ void motor_setMode(ControlMode mode);
 // Leitura do estado atual
 float motor_getVelocity();    // rad/s
 float motor_getAngle();       // rad
+float motor_getAngleDeg();    // deg
 float motor_getTarget();      // target atual
 ControlMode motor_getMode();  // modo atual
 bool motor_isEnabled();       // driver habilitado?

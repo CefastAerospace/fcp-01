@@ -2,6 +2,7 @@
 #include "config.h"
 #include <Wire.h>
 #include <SimpleFOC.h>
+#include <math.h>
 
 // ============================================================================
 //  Implementação do Módulo de Controle do Motor
@@ -51,6 +52,7 @@ void motor_init() {
     motor.init();
     Serial.println("[MOTOR] Alinhando sensor (o motor vai se mover)...");
     motor.initFOC();
+    
 
     currentTarget = 0.0f;
     driverEnabled = true;
@@ -147,6 +149,15 @@ float motor_getVelocity() {
 
 float motor_getAngle() {
     return motor.shaft_angle;
+}
+
+float motor_getAngleDeg() {
+    float angleDeg = fmod(motor.shaft_angle * 180.0 / PI, 360.0);
+
+    if (angleDeg < 0) {
+        angleDeg += 360.0;
+    }
+    return angleDeg;
 }
 
 float motor_getTarget() {

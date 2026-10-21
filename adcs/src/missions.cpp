@@ -139,6 +139,10 @@ void mission_startManualTest() {
     Serial.println("[MISSION] Modo TESTE MANUAL ativado.");
 }
 
+void teste_apontamento(){
+    currentMission = MISSION_TESTE_APONTAMENTO;
+}
+
 void mission_stop() {
     motor_stop();
     currentMission = MISSION_IDLE;

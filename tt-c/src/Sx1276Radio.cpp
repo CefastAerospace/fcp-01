@@ -13,6 +13,8 @@ static constexpr uint8_t  sx1276_reg_op_mode         = 0x01;
 static constexpr uint8_t  sx1276_reg_version         = 0x42;
 static constexpr uint8_t  sx1276_version             = 0x12;
 static constexpr uint8_t  sx1276_mode_lora_rx        = 0x85; // LoRa + RX contínuo.
+static constexpr uint8_t  sx1276_mode_mask           = 0x07;
+static constexpr uint8_t  sx1276_mode_tx             = 0x03;
 static constexpr uint8_t  sx1276_reg_fifo_addr_ptr   = 0x0D;
 static constexpr uint8_t  sx1276_reg_fifo_rx_current = 0x10;
 static constexpr uint8_t  sx1276_reg_irq_flags       = 0x12;
@@ -25,6 +27,8 @@ static constexpr uint8_t  sx1276_irq_tx_done         = 0x08;
 static constexpr uint8_t  sx1276_write_bit           = 0x80;
 static constexpr uint32_t sx1276_spi_hz              = 8E6;
 static constexpr TickType_t  tx_done_poll         = pdMS_TO_TICKS(5);
+static constexpr uint32_t rx_entry_timeout_us        = 2000;
+static constexpr uint32_t rx_entry_settle_us         = 100;  // Folga para a transição automática a STANDBY.
 
 // ==================================================================
 // === CLASSE =======================================================
@@ -64,8 +68,12 @@ bool Sx1276Radio::IsReady(
 bool Sx1276Radio::CheckHealth(
 ) {
     if (!ready) return false;
-    if (TransferRegister(sx1276_reg_version, 0x00) != sx1276_version) return false;
-    return TransferRegister(sx1276_reg_op_mode, 0x00) == sx1276_mode_lora_rx;
+    uint8_t version = TransferRegister(sx1276_reg_version, 0x00);
+    uint8_t op_mode = TransferRegister(sx1276_reg_op_mode, 0x00);
+    if (version == sx1276_version && op_mode == sx1276_mode_lora_rx) return true;
+
+    Serial.printf("[TT&C] SX1276: RegVersion=0x%02X RegOpMode=0x%02X.\n", version, op_mode);
+    return false;
 }
 
 // Público:
@@ -103,8 +111,12 @@ bool Sx1276Radio::Init(
     pinMode(pins.dio0, INPUT);
     attachInterrupt(digitalPinToInterrupt(pins.dio0), OnDio0, RISING);
 
-    // receive() mapeia o DIO0 para RX Done.
-    LoRa.receive();
+    // receive(), chamado em EnterReceive(), mapeia o DIO0 para RX Done.
+    if (!EnterReceive()) {
+        Serial.println("[TT&C] ERRO: SX1276 nao entrou em RX.");
+        ready = false;
+        return false;
+    }
     ready = true;
     Serial.println("[TT&C] SX1276 inicializado.");
     return true;
@@ -129,8 +141,23 @@ bool Sx1276Radio::Send(
         return false;
     }
 
-    LoRa.receive();
+    // O TX já terminou: falha aqui fica para a verificação de saúde.
+    if (!EnterReceive()) Serial.println("[TT&C] ERRO: SX1276 nao voltou ao RX apos o TX.");
     return true;
+}
+
+// Privado:
+bool Sx1276Radio::EnterReceive(
+) {
+    uint32_t start_us = micros();
+    while (micros() - start_us < rx_entry_timeout_us) {
+        if ((TransferRegister(sx1276_reg_op_mode, 0x00) & sx1276_mode_mask) == sx1276_mode_tx) continue;
+
+        LoRa.receive();
+        delayMicroseconds(rx_entry_settle_us);
+        if (TransferRegister(sx1276_reg_op_mode, 0x00) == sx1276_mode_lora_rx) return true;
+    }
+    return false;
 }
 
 // Privado:

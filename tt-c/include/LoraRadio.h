@@ -105,6 +105,17 @@ private:
     bool WaitTxDone();
 
     /**
+     * @brief Coloca o rádio em RX contínuo e confirma pelo RegOpMode.
+     *
+     * @details Depois do TX Done, o SX1276 ainda volta sozinho a STANDBY;
+     * um RX pedido antes disso é sobrescrito e o rádio fica surdo. Espera
+     * o fim do TX, pede RX e relê o modo até rx_entry_timeout_us.
+     *
+     * @return true se o rádio ficou em RX contínuo.
+     */
+    bool EnterReceive();
+
+    /**
      * @brief Acesso direto a registrador, não exposto por LoRaClass.
      *
      * @param address Endereço (bit 7 = 1 para escrita).

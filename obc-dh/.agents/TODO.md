@@ -2,19 +2,20 @@
 
 Este checklist organiza cinco entregas da [arquitetura vigente](ARCHITECTURE.md). [REQUISITOS.md](REQUISITOS.md) preserva os 16 requisitos, critérios e cenários de validação anteriores. Pendências antes separadas foram reunidas aqui; uma decisão não comprova implementação ou teste.
 
-## 1. Estado consolidado em 14/10/2026
+## 1. Estado consolidado em 27/10/2026
 
-Inspeção de arquivos e contrato TT&C recebidos pelo rebase, sem compilação, upload ou testes de hardware nesta consolidação. O OBC continua sem comportamento implementado. As conclusões documentais de 07/10/2026 e a reorganização de 11/10/2026 são preservadas como evidências de inspeção, não de funcionamento.
+Inspeção do checkout até `f75610c`, incluindo o serviço I2C acrescentado em `bdfa48f` (20/10/2026), e execução do teste nativo de escalonamento. O serviço I2C está implementado, mas `setup()`/`loop()` continuam vazios: não há inicialização ou integração operacional no firmware central. Não houve nova compilação ESP32, upload ou teste de hardware nesta revisão. As conclusões documentais anteriores permanecem como evidências de inspeção, não de funcionamento.
 
 | Área | Evidência e reutilização | Trabalho restante |
 |---|---|---|
-| Ambiente OBC | `platformio.ini` configura ESP32/Arduino, diretórios e ambiente `obc`; `.clangd` ajusta o editor. | Confirmar placa real, compilar e fixar versões validadas. Não há dependências de periféricos declaradas. |
+| Ambiente OBC | `platformio.ini` configura ESP32/Arduino, diretórios e ambiente `obc`; `.clangd` ajusta o editor. O commit `bdfa48f` registra compilação do firmware e geração da base do editor. | Confirmar placa real e fixar versões validadas. Compilação ESP32 não foi repetida nesta revisão. Não há dependências de periféricos declaradas. |
 | Firmware OBC | `src/main.cpp` tem `setup()`/`loop()` vazios; `headers/Pinout.h` contém constantes, inclusive UART2 em 16/17. | Inicialização, comunicação, dados, tempo, SD e missão. Constantes não comprovam montagem nem configuração. |
+| Serviço I2C | `headers/I2cBus.h`, `headers/I2cScheduling.h` e `src/I2cBus.cpp`: inicialização a 400 kHz, timeout de transferência de 20 ms, tarefa exclusiva, fila limitada, mutex e prioridade com envelhecimento. | Chamar `i2c::Init()` no boot e integrar consumidores via `i2c::Execute()`; conferir montagem, parâmetros elétricos, recuperação do barramento e prazos do FOC. |
 | TT&C | Biblioteca SX1276 SF7/921 MHz, JSON, CRC do rádio, filas, ACK prioritário, deduplicação, tarefa Core 0, umbilical, saúde/reset e beacon. Exemplo `examples/link-test/`, ponte `ground-station/`, app de notebook `ground-station/app/` e testes próprios. | Integrar via `Init()`/`Start()`, `ReceiveTelecommand()`, `SendAck()`, `Send()`/`SendTelemetry()` e validar fluxo de missão. Sem fragmentação/CRC16 de aplicação; referência antiga a `gs/` encerrada. |
-| ADCS | Firmware de bancada em `adcs/`, com sensores, motor/encoder, missões, comandos e interface web. Bibliotecas SimpleFOC, MPU9250_WE e BH1750 declaradas. | Integrar no mesmo ESP32, preservando algoritmos, conciliando entradas, pinagem, inicialização e atendimento FOC. |
+| ADCS | Firmware de bancada em `adcs/`, com sensores, motor/encoder, missões, comandos e interface web. Bibliotecas SimpleFOC, MPU9250_WE e BH1750 declaradas. `PIN_EN = 12` já coincide com a pinagem OBC. | Integrar no mesmo ESP32, preservando algoritmos, conciliando entradas, fases, inicialização e atendimento FOC. A bancada ainda inicializa e acessa `Wire` diretamente. |
 | Payload | `payload/telemetry.py` coleta TCP do dump1090, organiza `AircraftTelemetry`, associa UTC e grava JSON localmente. | Implementar a ponta UART no Raspberry Pi e acordar o contrato; log local não comprova transporte ou timestamp do OBC. |
 | EPS / Térmico / comum | `eps-tc/EPS_INA219_Standard/` oferece biblioteca INA219, exemplo OBC e guia. Projeto prevê 3x INA219 e 5x LM75A; mapa compartilhado consolidado e `common/protocol/ttc-json.md` existente. | Conferir API/unidades e integrar drivers conforme contrato EPS; endereços finais, LM75A, montagem e proteção térmica ainda precisam de definição/validação. |
-| Validação e referências | `tests/` tem apenas `.gitkeep`. Arquitetura, pinagem e requisitos transcritos existem. | PDFs, ConOps, ICDs e regulamento citados não estão presentes no repositório; obter versões vigentes e reunir evidências funcionais. |
+| Validação e referências | `tests/I2cSchedulingCheck.cpp` verifica a política I2C sem hardware; execução aprovada em 27/10/2026. Arquitetura, pinagem e requisitos transcritos existem. Ensaios próprios do enlace estão em [tt-c/ENSAIOS.md](../../tt-c/ENSAIOS.md), usando exemplo que simula o OBC. | Teste nativo não cobre executor FreeRTOS, transações físicas ou integração. Ensaios TT&C não comprovam requisitos do OBC central. PDFs, ConOps, ICDs e regulamento citados não estão presentes no repositório. |
 
 ### Evidências documentais concluídas
 
@@ -23,6 +24,17 @@ Inspeção de arquivos e contrato TT&C recebidos pelo rebase, sem compilação, 
 - [x] Atualizar este checklist de acordo com as evidências e manter pendências restantes identificadas. Evidência: revisão de 07/10/2026 e reorganização documental atual, com inventário e dependências preservados e atualizados.
 
 Consolidação de 14/10/2026: decisões de interfaces incorporadas dos documentos remotos, contrato TT&C conferido no código e orçamento de rádio recalculado em `DEFINICOES_OBC_DP.md`. Isso não encerra testes nem integração. `PENDENCIAS_ARQUITETURAIS.md` foi incorporado a este checklist e removido; referências históricas e validação permanecem em `REQUISITOS.md`.
+
+### Evidência do teste nativo em 27/10/2026
+
+Executado dentro de `obc-dh/`, sem modificar entradas, asserts ou resultados esperados:
+
+```bash
+g++ -std=c++11 -Wall -Wextra -Werror tests/I2cSchedulingCheck.cpp -o /tmp/fcp01-i2c-check
+/tmp/fcp01-i2c-check
+```
+
+Compilação e execução encerraram com código zero. O teste cobre prioridade, promoção por conclusões, saturação, desempate por chegada, fila vazia, vencimento exato e estouro do contador em ms. Não exercita concorrência FreeRTOS, fila cheia do executor, dispositivos ou recuperação elétrica.
 
 ## 2. Pendências e dependências
 
@@ -47,8 +59,14 @@ Uma pendência bloqueia somente a implementação que depende dela. Modos comple
 
 **Responsáveis:** OBC-DH, ADCS, EPS e Térmico. **Bloqueia:** integração I2C das entregas 1 e 4.
 
-- Conferir controlador/dispositivos, SDA/SCL, frequência, níveis, pull-ups, capacitância, comprimento e comportamento com periférico desligado. O Payload não participa desse barramento.
-- Definir responsável pela inicialização e acesso, limites de transação, timeout e recuperação de SDA/SCL presos. Coordenar sensores e encoder sem interferir no atendimento FOC; limites dependem de P-ADCS.
+- [x] Implementar `i2c::Init()` com SDA 21 / SCL 22, frequência de 400 kHz e timeout de 20 ms por transferência. Evidência: `headers/I2cBus.h` e `src/I2cBus.cpp`; ainda não chamado pelo boot.
+- [x] Implementar atendimento exclusivo em tarefa FreeRTOS e API síncrona `i2c::Execute()`. Prioridade provisória da tarefa = 5 e pilha = 4096 bytes; callbacks devem ser finitos e curtos.
+- [x] Implementar fila de oito posições estáticas, mutex dos metadados e semáforos de conclusão. A posição permanece ocupada até o chamador consumir o resultado.
+- [x] Implementar cinco prioridades de solicitação (0–4), promoção por callback concluído e desempate pela ordem de chegada. Envelhecimento não altera prioridades FreeRTOS nem comprova prazos do FOC.
+- [x] Implementar validação de argumentos/contexto e retornos de serviço não inicializado, fila cheia, timeout de fila e falha da operação. Espera padrão na fila = 1000 ms; operação iniciada é aguardada até terminar, preservando o contexto.
+- [x] Implementar e executar o teste nativo da política em `tests/I2cSchedulingCheck.cpp`. Evidência e limites registrados na seção 1.
+- Conferir controlador/dispositivos, SDA/SCL, compatibilidade dos 400 kHz, níveis, pull-ups, capacitância, comprimento e comportamento com periférico desligado. O Payload não participa desse barramento.
+- Integrar inicialização no boot e todos os consumidores ao serviço; a bancada ADCS ainda usa `Wire` diretamente. Validar concorrência e falhas do executor, limites das operações e recuperação de SDA/SCL presos. Timeout de transferência não limita um callback completo nem recupera sozinho o barramento. Coordenar sensores e encoder sem interferir no atendimento FOC; limites dependem de P-ADCS.
 
 <a id="p-enderecos"></a>
 ### P-ENDERECOS — Inventário dos dispositivos I2C
@@ -97,7 +115,8 @@ Uma pendência bloqueia somente a implementação que depende dela. Modos comple
 **Responsáveis:** ADCS e OBC-DH. **Bloqueia:** saídas do motor da entrega 1 e integração/atuação da entrega 4; limita o acesso ao I2C.
 
 - Execução no mesmo ESP32 foi confirmada. Definir integração do firmware de bancada sem duplicar `setup()`/`loop()`, preservando algoritmos, comandos e responsabilidades; conferir papel da interface web na bancada e na missão.
-- EN no GPIO 12 está confirmado, mas `adcs/include/config.h` ainda usa 33. Conciliar fases 27/26/25 do ADCS com U/V/W = 25/26/27 do OBC. Alterações de código serão feitas em implementação separada.
+- [x] Conciliar EN no GPIO 12 entre `adcs/include/config.h` (`PIN_EN`) e `obc-dh/headers/Pinout.h` (`motor_en`). Evidência: inspeção do código em 27/10/2026; não comprova montagem ou estados em boot/reset.
+- Conciliar fases 27/26/25 do ADCS com U/V/W = 25/26/27 do OBC. Alterações de código serão feitas em implementação separada.
 - Encoder AS5600 por I2C `0x36` está definido; confirmar ligação/montagem e acesso coordenado. Referências antigas a SPI são históricas.
 - Definir frequência/latência FOC, aquisição e missão, prioridades/afinidade, sincronização do I2C, comandos, status, falhas e atuação por modo. Operações de rádio/SD não podem impedir atendimento do controle.
 - Definir se o alinhamento do motor no boot é permitido e em quais condições; confirmar a ação denominada “tumbling” nos requisitos versus “detumbling” nas demais referências.
@@ -158,7 +177,7 @@ Uma pendência bloqueia somente a implementação que depende dela. Modos comple
 
 ## 3. Cinco entregas
 
-Os itens abaixo permanecem abertos; configuração e inventário concluídos estão na seção de evidências. Cada entrega reutiliza as soluções existentes e documenta parâmetros reais. Não é necessário resolver todas as pendências antes de iniciar trabalho independente.
+Os itens compostos abaixo permanecem abertos; configuração, inventário e avanço do serviço I2C estão registrados na seção 1 e em P-BARRAMENTO. A coincidência de EN no código está registrada em P-ADCS. Nenhum desses avanços conclui uma entrega integrada. Cada entrega reutiliza as soluções existentes e documenta parâmetros reais. Não é necessário resolver todas as pendências antes de iniciar trabalho independente.
 
 ### 1. Plataforma e interfaces
 
@@ -204,4 +223,4 @@ Os itens abaixo permanecem abertos; configuração e inventário concluídos est
 
 Para encerrar uma pendência, registrar decisão, responsável, referência e parâmetros com unidades; atualizar arquitetura/pinagem e dependências sem confundir definição com implementação. Para concluir uma entrega, vincular versão do firmware, procedimento, entradas, resultados e limitações às evidências dos requisitos. Itens compostos permanecem abertos enquanto qualquer parte não estiver comprovada.
 
-Esta reorganização não cria, lê ou move documentos de `.agents/tasks/`. O encerramento de tarefas individuais seguirá AGENTS.md quando essas tarefas forem explicitamente solicitadas.
+Não há diretório `.agents/tasks/` neste módulo no checkout inspecionado. As marcações desta revisão estão neste checklist; não há arquivos de tarefas a mover de `active/` para `completed/`.

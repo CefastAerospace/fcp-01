@@ -29,11 +29,17 @@ Tempo de voo usa ms monotônicos por boot e referências absolutas pelo LoRa, co
 obc-dh/
 ├── .agents/         # Documentação e instruções.
 ├── headers/         # Declarações, tipos e interfaces públicas.
-│   └── Pinout.h     # Constantes de GPIO; não inicializa hardware.
+│   ├── Pinout.h     # Constantes de GPIO; não inicializa hardware.
+│   ├── I2cBus.h     # Configuração e API do serviço I2C.
+│   └── I2cScheduling.h # Política de prioridade e expiração.
 ├── src/
-│   └── main.cpp     # setup() e loop() ainda sem comportamento.
-├── tests/           # Ainda sem testes implementados.
+│   ├── main.cpp     # setup() e loop() ainda sem comportamento.
+│   └── I2cBus.cpp   # Inicialização e executor exclusivo do I2C.
+├── tests/
+│   └── I2cSchedulingCheck.cpp # Teste nativo da política I2C.
 └── platformio.ini   # Ambiente obc: ESP32/Arduino e diretórios.
 ```
+
+Revisão de 27/10/2026: serviço I2C implementado e teste nativo aprovado; `main.cpp` ainda não inicializa o serviço e os consumidores não estão integrados. Marcações, parâmetros e limites da evidência estão em [TODO.md](TODO.md#p-barramento).
 
 Criar modelos, implementações e testes conforme os comportamentos forem desenvolvidos, sem arquivos vazios antecipados. Reutilização de ADCS e TT&C, tratamento de estado compartilhado e organização da execução estão na arquitetura. O guia de ferramentas não comprova compilação ou funcionamento do hardware; evidências devem constar do checklist.

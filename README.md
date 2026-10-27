@@ -12,7 +12,7 @@ O Design Package e os ICDs/ConOps vigentes são as referências de engenharia. A
 
 ## Arquitetura e estado da integração
 
-O FCP-01 tem arquitetura centralizada planejada: um ESP32 executará o firmware integrado do OBC, incluindo ADCS, sobre Arduino/FreeRTOS. O Payload executa em Raspberry Pi Zero W e se comunica com o OBC por UART. O firmware do OBC ainda contém `setup()`/`loop()` vazios; a descrição abaixo é de integração prevista, não de funcionalidades já validadas.
+O FCP-01 tem arquitetura centralizada planejada: um ESP32 executará o firmware integrado do OBC, incluindo ADCS, sobre Arduino/FreeRTOS. O Payload executa em Raspberry Pi Zero W e se comunica com o OBC por UART. O serviço I2C do OBC está implementado, com teste nativo da política de escalonamento aprovado, mas `setup()`/`loop()` continuam vazios e não o inicializam. A descrição abaixo é de integração prevista, não de funcionalidades já validadas em hardware.
 
 | Subsistema | Hardware / interface prevista |
 |---|---|
@@ -83,11 +83,11 @@ Detalhes e restrições em [pinout compartilhado](common/interfaces/pinout.md) e
 
 ```text
 fcp-01/
-├── obc-dh/                 # Firmware central a implementar.
+├── obc-dh/                 # Serviço I2C existente; integração central pendente.
 │   ├── .agents/            # Planejamento, requisitos e guias.
-│   ├── headers/Pinout.h    # Constantes, sem inicialização de hardware.
-│   ├── src/main.cpp        # Pontos de entrada ainda vazios.
-│   ├── tests/              # Ainda sem testes implementados.
+│   ├── headers/            # Pinout.h, API I2C e política de escalonamento.
+│   ├── src/                # setup()/loop() vazios; serviço em I2cBus.cpp.
+│   ├── tests/              # Teste nativo da política de escalonamento I2C.
 │   └── platformio.ini      # Ambiente ESP32/Arduino.
 ├── adcs/                   # Firmware de bancada; integração central pendente.
 ├── eps-tc/                 # Biblioteca EPS_INA219_Standard; integração central pendente.

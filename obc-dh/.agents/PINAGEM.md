@@ -64,7 +64,7 @@ O projeto EPS/Térmico prevê sensores digitais INA219/LM75A; aquisição, ender
 
 O MISO do SD usa GPIO 35 para evitar que o cartão imponha nível inadequado ao GPIO 12 no boot. GPIOs 5, 12 e 15 continuam sendo strapping pins e devem ser verificados com os circuitos conectados. GPIOs 34–39 são somente de entrada e não têm pulls internos; 34/36/39 estão sem alocação neste mapa, mas disponibilidade real precisa ser confirmada. GPIOs 16/17 dependem do módulo e de flash/PSRAM.
 
-Níveis ativos e estados de CS, RST, EN, PWM e Burn Wire precisam de acordo elétrico, inclusive antes de executar o firmware. Conferir [P-EPS-ELETRICA](TODO.md#p-eps-eletrica), [P-ADCS](TODO.md#p-adcs) e [P-BURN-WIRE](TODO.md#p-burn-wire). EN = 12 permanece confirmado, mas ADCS ainda usa 33; fases também divergem. Nenhum código foi corrigido nesta revisão documental.
+Níveis ativos e estados de CS, RST, EN, PWM e Burn Wire precisam de acordo elétrico, inclusive antes de executar o firmware. Conferir [P-EPS-ELETRICA](TODO.md#p-eps-eletrica), [P-ADCS](TODO.md#p-adcs) e [P-BURN-WIRE](TODO.md#p-burn-wire). EN = 12 coincide no OBC e em `adcs/include/config.h`, conforme inspeção de 27/10/2026; fases ainda divergem (ADCS 27/26/25 e OBC 25/26/27). Nenhum código foi corrigido nesta revisão documental.
 
 Burn Wire substitui a descrição antiga de servo e libera a retenção das antenas. Remoto registra dois circuitos nichrome de 5 V / 4 Ω cada, orçamento de 2,5 A / 12,5 W transitório e acionamento fora de TX. Conferir montagem e usar `Ttc::HoldTransmit()` antes da atuação; autorização, duração, persistência e confirmação física constam do checklist. Desabilitar o motor fora do detumbling é a decisão de operação; medir consumo residual antes de afirmar que é zero.
 

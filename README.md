@@ -84,7 +84,8 @@ Detalhes e restrições em [pinout compartilhado](common/interfaces/pinout.md) e
 ```text
 fcp-01/
 ├── obc-dh/                 # Serviço I2C existente; integração central pendente.
-│   ├── .agents/            # Planejamento, requisitos e guias.
+│   ├── .agents/            # Painel TODO, requisitos e guias.
+│   ├── .tasks/             # Comunicação, dados/tempo, integração e testes; done/ por grupo.
 │   ├── headers/            # Pinout.h, API I2C e política de escalonamento.
 │   ├── src/                # setup()/loop() vazios; serviço em I2cBus.cpp.
 │   ├── tests/              # Teste nativo da política de escalonamento I2C.

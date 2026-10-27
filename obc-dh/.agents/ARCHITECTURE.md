@@ -1,6 +1,6 @@
 # Arquitetura vigente do OBC-DH
 
-Este documento descreve decisões e comportamento planejado. [REQUISITOS.md](REQUISITOS.md) preserva obrigações, validação e referências históricas; [TODO.md](TODO.md) concentra estado do código, trabalho e pendências. Decisão documentada não comprova implementação ou teste.
+Este documento descreve decisões e comportamento planejado. [REQUISITOS.md](REQUISITOS.md) preserva obrigações, validação e referências históricas; [TODO.md](TODO.md) reúne estado e dependências; os detalhes e evidências ficam nas tarefas vinculadas. Decisão documentada não comprova implementação ou teste.
 
 ## 1. Escopo e responsabilidades
 
@@ -38,7 +38,7 @@ Reutilizar `Wire`, `HardwareSerial`, `SPI` e `SD` do framework, com instância p
 
 O fluxo de missão será: recepção UART, delimitação, validação, associação de tempo, gravação e seleção para envio pelo TT&C. Dados de energia, atitude, estado, eventos, falhas e estatísticas também alimentam registros e TM conforme os contratos.
 
-UART é um fluxo de bytes: uma leitura pode conter parte de uma mensagem ou várias mensagens. O contrato de voo do Payload é binário compacto (~25–35 bytes estimados), com SeqID + NACK; JSON local permanece formato de bancada. Definir serialização, delimitação, tamanho máximo, timeout e recuperação após entrada inválida antes da integração, sem transmitir memória bruta de structs. Taxas, rajadas, buffers/retenção e tratamento de perdas estão em P-PAYLOAD/P-DADOS no checklist. JSON por linha aplica-se ao umbilical TT&C, não ao enlace Payload.
+UART é um fluxo de bytes: uma leitura pode conter parte de uma mensagem ou várias mensagens. O contrato de voo do Payload é binário compacto (~25–35 bytes estimados), com SeqID + NACK; JSON local permanece formato de bancada. Definir serialização, delimitação, tamanho máximo, timeout e recuperação após entrada inválida antes da integração, sem transmitir memória bruta de structs. Taxas, rajadas, buffers/retenção e tratamento de perdas estão em [COM-004](../.tasks/01-comunicacao/COM-004-uart-payload.md)/[DAD-001](../.tasks/02-dados-e-tempo/DAD-001-modelos-e-formatos.md) no checklist. JSON por linha aplica-se ao umbilical TT&C, não ao enlace Payload.
 
 | Referência atual do Payload | Significado a preservar |
 |---|---|
@@ -57,7 +57,7 @@ O SD conserva registros completos; downlink agrega estado por aeronave, conforme
 
 Separar o atendimento frequente do controle FOC das operações demoradas do rádio e do SD. O código ADCS existente não admite operações bloqueantes no atendimento do motor. Após `Ttc::Init()`, `Ttc::Start()` cria a tarefa do enlace no Core 0, prioridade padrão 10; só essa tarefa acessa o rádio e executa `Update()`. Não chamar `Update()` em paralelo com `Start()`. A transmissão por quadro espera TX Done com timeout de 1 s, sem bloquear a tarefa FOC.
 
-OBC consome TCs com `ReceiveTelecommand()` e responde com `SendAck()`; `Send()` e `SendTelemetry()` enfileiram a descida. DIO0 apenas notifica a tarefa na ISR, sem acesso SPI. Quantidade, prioridades e afinidade das demais tarefas dependem de P-ADCS/P-MISSAO e das medições; preservar a decisão de execução do TT&C, sem impor o antigo mapa completo de tarefas por núcleo.
+OBC consome TCs com `ReceiveTelecommand()` e responde com `SendAck()`; `Send()` e `SendTelemetry()` enfileiram a descida. DIO0 apenas notifica a tarefa na ISR, sem acesso SPI. Quantidade, prioridades e afinidade das demais tarefas dependem de [INT-005](../.tasks/03-integracao/INT-005-sensores-e-adcs.md)/[INT-007](../.tasks/03-integracao/INT-007-comandos-modos-e-protecoes.md) e das medições; preservar a decisão de execução do TT&C, sem impor o antigo mapa completo de tarefas por núcleo.
 
 Estabelecer responsável pelo acesso a cada recurso. Coordenar sensores/encoder no I2C sem inicializações concorrentes ou transações intercaladas. Definir limites de espera e recuperação de SDA/SCL presos. Separar barramentos SPI não resolve concorrência sobre um driver ou arquivo. Reutilizar filas do TT&C; acrescentar filas/buffers limitados somente onde forem necessários para absorver rajadas ou isolar escrita.
 
@@ -65,7 +65,7 @@ Integrar o ADCS como módulo do firmware central: seus `setup()`/`loop()` atuais
 
 ## 5. Tempo e persistência
 
-O OBC associará ms desde o boot aos dados recebidos e aos eventos, com referências absolutas recebidas pelo LoRa. A correção retroativa é a reconstrução do horário a partir dessas referências, sem reescrever registros já gravados. DS3231 permanece em [REQUISITOS.md](REQUISITOS.md) como referência histórica e compra registrada. RTC externo só será reconsiderado se o método monotônico/LoRa não atender aos critérios de P-TEMPO; não existe instalação aprovada nesta configuração.
+O OBC associará ms desde o boot aos dados recebidos e aos eventos, com referências absolutas recebidas pelo LoRa. A correção retroativa é a reconstrução do horário a partir dessas referências, sem reescrever registros já gravados. DS3231 permanece em [REQUISITOS.md](REQUISITOS.md) como referência histórica e compra registrada. RTC externo só será reconsiderado se o método monotônico/LoRa não atender aos critérios de [DAD-002](../.tasks/02-dados-e-tempo/DAD-002-tempo-e-boots.md); não existe instalação aprovada nesta configuração.
 
 | Registro planejado | Informação mínima |
 |---|---|
@@ -93,6 +93,6 @@ Integrar modos/transições registrados no README geral e no contrato TT&C, conf
 
 Burn Wire exige autorização, duração, energia, persistência e confirmação física. Usar `Ttc::HoldTransmit(true, wait_ms)` e conferir ausência de TX antes do acionamento; retomar conforme política acordada. Interlock de rádio não autoriza a queima nem comprova liberação. Preservar os limites/ensaios dos setores; não concluir atuação por uma flag volátil.
 
-Detectar perda de comunicação, falhas e travamentos, registrar eventos/reinicializações e recuperar periférico, tarefa ou OBC conforme limites acordados. Ausência de aeronaves ADS-B não significa perda de comunicação com o Payload. Watchdog não recupera falha física; não existe redundância física confirmada. Validar entradas, limites e falhas desde cada integração, seguindo as cinco entregas do checklist.
+Detectar perda de comunicação, falhas e travamentos, registrar eventos/reinicializações e recuperar periférico, tarefa ou OBC conforme limites acordados. Ausência de aeronaves ADS-B não significa perda de comunicação com o Payload. Watchdog não recupera falha física; não existe redundância física confirmada. Validar entradas, limites e falhas desde cada integração, seguindo os quatro grupos do checklist e as dependências de cada tarefa.
 
 Reutilizar `GetLinkStats()`/`last_tc_ms` e a verificação de saúde/reset do SX1276 já implementada no TT&C. Camada de integração deve preservar os limites registrados por esse setor (entrega do TC ao OBC ≤200 ms e resposta ≤2 s), sem alterar testes ou declarar atendimento por inspeção documental. Enquadramento binário UART, proteção EPS/Térmico, atendimento FOC e persistência do OBC mantêm contratos/evidências próprios.

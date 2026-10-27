@@ -195,7 +195,7 @@ Use `Ctrl+C` para fechar o monitor serial antes de transferir outro firmware. Pe
 
 Conferir a variante da placa, a alimentação e o mapeamento em [PINAGEM.md](PINAGEM.md). A configuração do PlatformIO não define os estados seguros das saídas nem resolve as pendências de motor, Burn Wire e strapping pins. Essas definições continuam dependendo dos contratos e do esquema elétrico do projeto.
 
-Consultar hardware, interfaces e tempo em [TODO.md](TODO.md#2-pendências-e-dependências) e as decisões em [ARCHITECTURE.md](ARCHITECTURE.md). Payload usa UART TX 17 / RX 16, 115,2 kbps 8N1 e binário compacto com SeqID + NACK; disponibilidade no módulo, montagem e enquadramento final exigem conferência/validação. TT&C usa contrato JSON compartilhado, distinto do binário Payload. `Pinout.h` registra alocações, sem configurar periféricos. Configuração PlatformIO não comprova comunicação, temporização, estados em boot/reset ou precisão do método monotônico/referências LoRa; RTC externo fica fora da configuração atual.
+Consultar hardware, interfaces e tempo em [TODO.md](TODO.md) e as decisões em [ARCHITECTURE.md](ARCHITECTURE.md). Payload usa UART TX 17 / RX 16, 115,2 kbps 8N1 e binário compacto com SeqID + NACK; disponibilidade no módulo, montagem e enquadramento final exigem conferência/validação. TT&C usa contrato JSON compartilhado, distinto do binário Payload. `Pinout.h` registra alocações, sem configurar periféricos. Configuração PlatformIO não comprova comunicação, temporização, estados em boot/reset ou precisão do método monotônico/referências LoRa; RTC externo fica fora da configuração atual.
 
 ## Referências
 

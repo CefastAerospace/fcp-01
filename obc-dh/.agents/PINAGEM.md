@@ -1,19 +1,19 @@
 # Pinagem do OBC — ESP32
 
-Base: Alocação de Pinos.pdf e decisões do responsável. As definições de 06/10/2026 sobre sensores, motor e Burn Wire permanecem; a revisão atual substitui I2C do Payload por UART e confirma ADCS no mesmo ESP32. Pendências e parâmetros estão em [TODO.md](TODO.md#2-pendências-e-dependências); decisões lógicas em [ARCHITECTURE.md](ARCHITECTURE.md).
+Base: Alocação de Pinos.pdf e decisões do responsável. As definições de 06/10/2026 sobre sensores, motor e Burn Wire permanecem; a revisão atual substitui I2C do Payload por UART e confirma ADCS no mesmo ESP32. Pendências e parâmetros estão em [TODO.md](TODO.md); decisões lógicas em [ARCHITECTURE.md](ARCHITECTURE.md).
 
 ## Interfaces e alocação
 
-LoRa utiliza VSPI; SD utiliza HSPI; sensores/encoder compartilham I2C. Payload utiliza UART e bancada utiliza UART0/USB. Alocação SPI conciliada como decisão de projeto; conferir montagem, acesso e validação elétrica em [P-SPI](TODO.md#p-spi).
+LoRa utiliza VSPI; SD utiliza HSPI; sensores/encoder compartilham I2C. Payload utiliza UART e bancada utiliza UART0/USB. Alocação SPI conciliada como decisão de projeto; conferir montagem, acesso e validação elétrica em [COM-005](../.tasks/01-comunicacao/COM-005-armazenamento-sd.md).
 
-As direções são relativas ao ESP32. GPIOs 16/17 são a alocação de projeto para UART do Payload, já presente em `Pinout.h`; disponibilidade no módulo e montagem ainda precisam de conferência. O mapa compartilhado foi conciliado: LoRa/VSPI e SD/HSPI. P-SPI agora trata montagem, acesso e validação elétrica.
+As direções são relativas ao ESP32. GPIOs 16/17 são a alocação de projeto para UART do Payload, já presente em `Pinout.h`; disponibilidade no módulo e montagem ainda precisam de conferência. O mapa compartilhado foi conciliado: LoRa/VSPI e SD/HSPI. [COM-005](../.tasks/01-comunicacao/COM-005-armazenamento-sd.md) agora trata montagem, acesso e validação elétrica.
 
 | Pino ESP32 / GPIO | Função / sinal     | Interface / barramento | Subsistema / destino   | Observações                                                                                             |
 | ----------------- | ------------------ | ---------------------- | ---------------------- | ------------------------------------------------------------------------------------------------------- |
 | 1 - TX0           | Transmissão (TX)   | UART0 / USB            | Bancada / solo         | Porta umbilical para telecomandos e telemetria no nível básico. Conexão USB-C.                          |
 | 3 - RX0           | Recepção (RX)      | UART0 / USB            | Bancada / solo         | Recepção da interface umbilical, em conjunto com TX0.                                                   |
-| 21                | SDA - dados        | I2C de sensores        | Térmico, EPS e ADCS    | LM75A, INA219, MPU9250, BH1750 e AS5600. Inventário/montagem dependem de P-ENDERECOS/P-ADCS; interface do BMS a conferir. |
-| 22                | SCL - clock        | I2C de sensores        | Térmico, EPS e ADCS    | Clock dos sensores; parâmetros e acesso coordenado dependem de P-BARRAMENTO.                      |
+| 21                | SDA - dados        | I2C de sensores        | Térmico, EPS e ADCS    | LM75A, INA219, MPU9250, BH1750 e AS5600. Inventário/montagem dependem de [INT-005](../.tasks/03-integracao/INT-005-sensores-e-adcs.md); interface do BMS a conferir. |
+| 22                | SCL - clock        | I2C de sensores        | Térmico, EPS e ADCS    | Clock dos sensores; parâmetros e acesso coordenado dependem de [COM-003](../.tasks/01-comunicacao/COM-003-recuperacao-i2c.md).                      |
 | 23                | MOSI               | VSPI                   | TT&C - LoRa SX1276     | Envio de dados ao rádio.                                                                                |
 | 19                | MISO               | VSPI                   | TT&C - LoRa SX1276     | Recepção de dados do rádio.                                                                             |
 | 18                | SCK                | VSPI                   | TT&C - LoRa SX1276     | Clock SPI do rádio.                                                                                     |
@@ -45,7 +45,7 @@ As direções são relativas ao ESP32. GPIOs 16/17 são a alocação de projeto 
 | Motor | EN = 12; U/V/W = 25/26/27 | Integração ADCS; fases e estados dependem de confirmação. |
 | Burn Wire | Trigger = 33 | MOSFET de liberação física da antena. |
 
-UART exige níveis de 3,3 V, TX/RX cruzados e GND comum. Configuração dos dois lados e comportamento com um lado desligado dependem de [P-PAYLOAD](TODO.md#p-payload). Confirmar circuito USB/UART e conector da placa; DevKit V1 não identifica sozinho o esquema real.
+UART exige níveis de 3,3 V, TX/RX cruzados e GND comum. Configuração dos dois lados e comportamento com um lado desligado dependem de [COM-004](../.tasks/01-comunicacao/COM-004-uart-payload.md). Confirmar circuito USB/UART e conector da placa; DevKit V1 não identifica sozinho o esquema real.
 
 ## Inventário I2C
 
@@ -58,13 +58,13 @@ UART exige níveis de 3,3 V, TX/RX cruzados e GND comum. Configuração dos dois
 | 5x LM75A | A confirmar | Bateria/pontos críticos; `0x48` é proposta anterior. Obter mapa final/configuração A0–A2. |
 | BMS | A definir, se houver interface | Conferir aquisição prevista com EPS; não presumir endereço I2C. |
 
-O projeto EPS/Térmico prevê sensores digitais INA219/LM75A; aquisição, endereços e proteção ainda dependem dos ICDs. Payload UART não possui endereço I2C e a proposta histórica `0x80` não se aplica. Tempo usa ms monotônicos por boot e referências LoRa, com reconstrução retroativa; RTC externo fica fora da configuração atual. DS3231 só será reconsiderado se esse método não atender à validação temporal acordada; seu `0x68` conflita com a IMU no mesmo barramento. Conferir [P-ENDERECOS](TODO.md#p-enderecos), [P-BARRAMENTO](TODO.md#p-barramento) e [P-TEMPO](TODO.md#p-tempo).
+O projeto EPS/Térmico prevê sensores digitais INA219/LM75A; aquisição, endereços e proteção ainda dependem dos ICDs. Payload UART não possui endereço I2C e a proposta histórica `0x80` não se aplica. Tempo usa ms monotônicos por boot e referências LoRa, com reconstrução retroativa; RTC externo fica fora da configuração atual. DS3231 só será reconsiderado se esse método não atender à validação temporal acordada; seu `0x68` conflita com a IMU no mesmo barramento. Conferir [INT-005](../.tasks/03-integracao/INT-005-sensores-e-adcs.md), [COM-003](../.tasks/01-comunicacao/COM-003-recuperacao-i2c.md) e [DAD-002](../.tasks/02-dados-e-tempo/DAD-002-tempo-e-boots.md).
 
 ## Boot, reset e restrições elétricas
 
 O MISO do SD usa GPIO 35 para evitar que o cartão imponha nível inadequado ao GPIO 12 no boot. GPIOs 5, 12 e 15 continuam sendo strapping pins e devem ser verificados com os circuitos conectados. GPIOs 34–39 são somente de entrada e não têm pulls internos; 34/36/39 estão sem alocação neste mapa, mas disponibilidade real precisa ser confirmada. GPIOs 16/17 dependem do módulo e de flash/PSRAM.
 
-Níveis ativos e estados de CS, RST, EN, PWM e Burn Wire precisam de acordo elétrico, inclusive antes de executar o firmware. Conferir [P-EPS-ELETRICA](TODO.md#p-eps-eletrica), [P-ADCS](TODO.md#p-adcs) e [P-BURN-WIRE](TODO.md#p-burn-wire). EN = 12 coincide no OBC e em `adcs/include/config.h`, conforme inspeção de 27/10/2026; fases ainda divergem (ADCS 27/26/25 e OBC 25/26/27). Nenhum código foi corrigido nesta revisão documental.
+Níveis ativos e estados de CS, RST, EN, PWM e Burn Wire precisam de acordo elétrico, inclusive antes de executar o firmware. Conferir [INT-003](../.tasks/03-integracao/INT-003-inicializacao-central.md), [INT-005](../.tasks/03-integracao/INT-005-sensores-e-adcs.md) e [INT-007](../.tasks/03-integracao/INT-007-comandos-modos-e-protecoes.md). EN = 12 coincide no OBC e em `adcs/include/config.h`, conforme inspeção de 27/10/2026; fases ainda divergem (ADCS 27/26/25 e OBC 25/26/27). Nenhum código foi corrigido nesta revisão documental.
 
 Burn Wire substitui a descrição antiga de servo e libera a retenção das antenas. Remoto registra dois circuitos nichrome de 5 V / 4 Ω cada, orçamento de 2,5 A / 12,5 W transitório e acionamento fora de TX. Conferir montagem e usar `Ttc::HoldTransmit()` antes da atuação; autorização, duração, persistência e confirmação física constam do checklist. Desabilitar o motor fora do detumbling é a decisão de operação; medir consumo residual antes de afirmar que é zero.
 

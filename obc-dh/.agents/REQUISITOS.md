@@ -2,7 +2,7 @@
 
 Este documento preserva os requisitos e critérios transcritos dos PDFs e os cenários de validação já existentes. A arquitetura vigente está em [ARCHITECTURE.md](ARCHITECTURE.md); execução, pendências e evidências estão em [TODO.md](TODO.md).
 
-IDs, descrições, prioridades, referências CubeDesign, entradas, resultados esperados e associações dos testes foram mantidos. As etapas numéricas do catálogo abaixo pertencem à organização anterior de dez etapas e são preservadas como rastreabilidade histórica. A correspondência vigente aparece em seção própria.
+IDs, descrições, prioridades, referências CubeDesign, entradas, resultados esperados e associações dos testes foram mantidos. As etapas numéricas do catálogo abaixo pertencem à organização anterior de dez etapas e são preservadas como rastreabilidade histórica. A correspondência histórica das cinco entregas permanece abaixo; a distribuição vigente está na [rastreabilidade das tarefas](../.tasks/README.md#cobertura-dos-requisitos).
 
 ## Catálogo original e rastreabilidade histórica
 
@@ -45,7 +45,7 @@ As etapas indicadas no catálogo ampliam essa rastreabilidade como proposta de i
 
 ## Critérios de validação fornecidos
 
-Os critérios e associações abaixo permanecem intactos. Limites ainda não fornecidos constam de [P-VALIDACAO](TODO.md#p-validacao).
+Os critérios e associações abaixo permanecem intactos. Limites ainda não fornecidos constam de [TES-010](../.tasks/04-testes/TES-010-missao-e-cobertura.md).
 
 | ID associado no PDF | Método | Aplicação indicada |
 |---|---|---|
@@ -59,7 +59,7 @@ A associação do teste de TC a **REQ-OBC-001** foi preservada. Esse teste tamb�
 
 As linhas abaixo foram transferidas do checklist anterior sem alteração. São cenários já planejados, não evidência de testes executados. A referência a excesso de dados UART é mantida, compatível com a decisão atual do transporte do Payload. Alterações de entradas ou resultados esperados exigem diagnóstico e discussão prévia com o responsável.
 
-As menções às etapas 8/9 e ao catálogo em ARCHITECTURE nas linhas preservadas são referências da organização anterior. O catálogo agora está neste documento; para execução, usar a correspondência com as cinco entregas abaixo. Isso não muda o procedimento ou resultado esperado dos cenários.
+As menções às etapas 8/9 e ao catálogo em ARCHITECTURE nas linhas preservadas são referências da organização anterior. O catálogo agora está neste documento; para execução, usar a [rastreabilidade das tarefas](../.tasks/README.md#cobertura-dos-requisitos); a correspondência com as cinco entregas abaixo é histórica. Isso não muda o procedimento ou resultado esperado dos cenários.
 
 - [ ] Verificar boot e reset sem acionamento indevido de motor ou Burn Wire.
 - [ ] Verificar comunicação básica e independência de operação entre rádio e armazenamento.
@@ -91,11 +91,11 @@ Conferir os registros após reinicializações e interrupções durante escrita,
 
 O acabamento consiste em revisar clareza, consistência dos termos, links e exemplos reais de configuração e uso. Aplicar o padrão de C++ já existente e consolidar ferramentas redundantes identificadas, sem criar outro documento de convenções.
 
-Para o planejamento vigente, acrescentar evidências de enquadramento UART (mensagens parciais, consecutivas e acima do limite), validade do horário antes da sincronização, referências de tempo em boots diferentes, comandos repetidos, rejeição de envio pelo TT&C e convivência entre FOC, I2C, rádio e SD. Esses acréscimos não substituem os critérios existentes. Os limites quantitativos dependem de P-DADOS, P-TEMPO, P-ADCS e P-VALIDACAO no checklist.
+Para o planejamento vigente, acrescentar evidências de enquadramento UART (mensagens parciais, consecutivas e acima do limite), validade do horário antes da sincronização, referências de tempo em boots diferentes, comandos repetidos, rejeição de envio pelo TT&C e convivência entre FOC, I2C, rádio e SD. Esses acréscimos não substituem os critérios existentes. Os limites quantitativos dependem de [DAD-001](../.tasks/02-dados-e-tempo/DAD-001-modelos-e-formatos.md), [DAD-002](../.tasks/02-dados-e-tempo/DAD-002-tempo-e-boots.md), [INT-005](../.tasks/03-integracao/INT-005-sensores-e-adcs.md) e [TES-010](../.tasks/04-testes/TES-010-missao-e-cobertura.md) no checklist.
 
-## Correspondência com as cinco entregas vigentes
+## Correspondência histórica com as cinco entregas
 
-| Entrega do TODO | Requisitos atendidos principalmente |
+| Entrega do TODO anterior | Requisitos atendidos principalmente |
 |---|---|
 | 1. Plataforma e interfaces | REQ-OBC-008; preparação de REQ-OBC-007 e REQ-OBC-011. |
 | 2. Recepção, modelos e tempo | REQ-OBC-005, REQ-OBC-006 e REQ-OBC-010. |
@@ -117,7 +117,7 @@ As tabelas seguintes são referências de origem. Não aprovam componentes, cons
 | Leitor de cartão SD | Armazenamento dos dados da missão. | Persistência e conservação local dos dados recebidos. |
 | RTC DS3231 | Referência de tempo via I2C. | Contagem de tempo independente da internet para timestamps ADS-B. |
 
-DS3231 permanece como referência histórica. O plano atual usa tempo monotônico do ESP32 e referências pelo LoRa; precisão e necessidade de hardware adicional dependem de P-TEMPO.
+DS3231 permanece como referência histórica. O plano atual usa tempo monotônico do ESP32 e referências pelo LoRa; precisão e necessidade de hardware adicional dependem de [DAD-002](../.tasks/02-dados-e-tempo/DAD-002-tempo-e-boots.md).
 
 ### Alimentação
 

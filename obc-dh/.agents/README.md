@@ -33,15 +33,34 @@ obc-dh/
 ├── headers/         # Declarações, tipos e interfaces públicas.
 │   ├── Pinout.h     # Constantes de GPIO; não inicializa hardware.
 │   ├── I2cBus.h     # Configuração e API do serviço I2C.
-│   └── I2cScheduling.h # Política de prioridade e expiração.
+│   ├── I2cScheduling.h # Política de prioridade e expiração.
+│   ├── ObcTime.h     # Contrato temporal portátil e reserva de boots.
+│   ├── ObcTimeEsp32.h # Timer/NVS, sem ligação automática ao boot.
+│   ├── ObcRecordCodec.h # Codec portátil com CRC e saídas atômicas.
+│   └── models/ObcData.h # Modelos portáteis do contrato v1 proposto.
 ├── src/
 │   ├── main.cpp     # setup() e loop() ainda sem comportamento.
-│   └── I2cBus.cpp   # Inicialização e executor exclusivo do I2C.
+│   ├── I2cBus.cpp   # Inicialização e executor exclusivo do I2C.
+│   ├── ObcTime.cpp # Lógica temporal sem hardware.
+│   ├── ObcTimeEsp32.cpp # Timer de 64 bits e NVS.
+│   ├── ObcData.cpp # Validação dos modelos, sem drivers.
+│   └── ObcRecordCodec.cpp # Layout binário explícito e CRC.
 ├── tests/
-│   └── I2cSchedulingCheck.cpp # Teste nativo da política I2C.
+│   ├── I2cSchedulingCheck.cpp # Teste nativo da política I2C.
+│   ├── ObcTimeCheck.cpp # Referências e persistência simulada.
+│   ├── ObcDataCheck.cpp # Modelos, disponibilidade e limites.
+│   ├── ObcRecordCodecCheck.cpp # Vetores independentes e limites do codec.
+│   └── ReadRecordsCheck.py # Executa/verifica o leitor C++ real.
+├── tools/          # Leitor nativo e instruções para arquivos extraídos.
 └── platformio.ini   # Ambiente obc: ESP32/Arduino e diretórios.
 ```
 
 Revisão de 27/10/2026: serviço I2C implementado e teste nativo aprovado; `main.cpp` ainda não inicializa o serviço e os consumidores não estão integrados. Marcações estão no [TODO](TODO.md); parâmetros e limites estão em [COM-001](../.tasks/01-comunicacao/done/COM-001-servico-i2c.md), [COM-002](../.tasks/01-comunicacao/done/COM-002-prioridade-dinamica-i2c.md), [TES-001](../.tasks/04-testes/done/TES-001-escalonamento-i2c.md).
 
 Criar modelos, implementações e testes conforme os comportamentos forem desenvolvidos, sem arquivos vazios antecipados. Reutilização de ADCS e TT&C, tratamento de estado compartilhado e organização da execução estão na arquitetura. O guia de ferramentas não comprova compilação ou funcionamento do hardware; evidências devem constar das tarefas vinculadas pelo checklist.
+
+Revisão de 01/11/2026: `ObcTime` implementa reconstrução temporal portátil e reserva de boots; `ObcTimeEsp32` fornece timer de 64 bits e NVS. Teste nativo temporal e build ESP32 aprovados, conforme [DAD-002](../.tasks/02-dados-e-tempo/done/DAD-002-tempo-e-boots.md). Esses módulos ainda não estão conectados ao boot, rádio ou registros; precisão e persistência física continuam sem ensaio nesta entrega.
+
+DAD-001 tem modelos/validadores portáteis, teste nativo e build ESP32 aprovados. O [contrato OBC v1 proposto](../../common/protocol/obc-data.md) define representação lógica e layout persistente; permanece em andamento até o aceite dos produtores. UART, TT&C e seus formatos atuais não foram alterados. Codec e acesso ao SD ficam nas tarefas correspondentes.
+
+DAD-003 acrescenta `ObcRecordCodec` e o [leitor nativo](../tools/README.md), sobre os mesmos modelos e layouts. A implementação local não encerra a tarefa: o aceite de DAD-001 e a definição dos estados duráveis de retomada continuam pendentes. Não há integração de armazenamento físico ou atuação do Burn Wire.

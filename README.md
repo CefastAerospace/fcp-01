@@ -14,6 +14,8 @@ O Design Package e os ICDs/ConOps vigentes são as referências de engenharia. A
 
 O FCP-01 tem arquitetura centralizada planejada: um ESP32 executará o firmware integrado do OBC, incluindo ADCS, sobre Arduino/FreeRTOS. O Payload executa em Raspberry Pi Zero W e se comunica com o OBC por UART. O serviço I2C do OBC está implementado, com teste nativo da política de escalonamento aprovado, mas `setup()`/`loop()` continuam vazios e não o inicializam. A descrição abaixo é de integração prevista, não de funcionalidades já validadas em hardware.
 
+Atualização OBC-DH de 01/11/2026: estão implementados localmente os modelos/validadores de dados, a reconstrução temporal por boot com adaptador timer/NVS e o codec binário com CRC-32, além de um leitor nativo que exporta JSON Lines e relata trechos inválidos. Testes nativos e compilação ESP32 aprovados estão registrados nas tarefas. DAD-002 está concluída no seu escopo local; DAD-001 aguarda aceite dos produtores e DAD-003 também depende da definição dos estados duráveis de retomada. Os módulos ainda não estão ligados ao firmware central, rádio ou SD. Consultar o [contrato OBC v1 proposto](common/protocol/obc-data.md) e o [guia do codec/leitor](obc-dh/tools/README.md).
+
 | Subsistema | Hardware / interface prevista |
 |---|---|
 | **OBC-DH** | ESP32 e microSD FAT32; tempo monotônico por boot com referências recebidas pelo LoRa. RTC externo fora da configuração atual. |
@@ -78,17 +80,19 @@ Detalhes e restrições em [pinout compartilhado](common/interfaces/pinout.md) e
 - **Tempo:** OBC associa ms desde o boot e referências absolutas recebidas via `set_time`; preserva o timestamp local do Payload como informação de bancada, sem confundi-lo com a referência de voo.
 - **TM/TC:** [contrato JSON TT&C](common/protocol/ttc-json.md), LoRa 921 MHz SF7 e umbilical. `Ttc::Send()` aceita corpo de até 245 bytes sem `n`; o quadro final tem até 255 bytes, sem fragmentação. Descida sob demanda, ACK prioritário e agregação por aeronave; log completo no SD.
 - **SD:** FAT32, fechamento controlado e monitoramento de alimentação (§7.3); integridade após interrupção de escrita ainda exige evidência de validação.
+- **Registros OBC:** contrato binário v1 proposto, separado dos transportes UART/LoRa; sete tipos de 36–105 bytes, limite global de 512 bytes. Codec portátil implementado e leitor no computador disponível; driver SD, extração pelo umbilical e integração operacional continuam pendentes.
 
 ## Estrutura do repositório
 
 ```text
 fcp-01/
-├── obc-dh/                 # Serviço I2C existente; integração central pendente.
+├── obc-dh/                 # I2C, tempo, modelos e codec; integração central pendente.
 │   ├── .agents/            # Painel TODO, requisitos e guias.
 │   ├── .tasks/             # Comunicação, dados/tempo, integração e testes; done/ por grupo.
-│   ├── headers/            # Pinout.h, API I2C e política de escalonamento.
-│   ├── src/                # setup()/loop() vazios; serviço em I2cBus.cpp.
-│   ├── tests/              # Teste nativo da política de escalonamento I2C.
+│   ├── headers/            # Pinagem, I2C, tempo, modelos e codec públicos.
+│   ├── src/                # Módulos implementados; setup()/loop() ainda vazios.
+│   ├── tests/              # Verificações nativas de I2C, tempo, modelos e registros.
+│   ├── tools/              # Leitor C++ de arquivos OBC e exportação JSON Lines.
 │   └── platformio.ini      # Ambiente ESP32/Arduino.
 ├── adcs/                   # Firmware de bancada; integração central pendente.
 ├── eps-tc/                 # Biblioteca EPS_INA219_Standard; integração central pendente.
@@ -102,7 +106,7 @@ fcp-01/
 ├── payload/                # Coleta/registro no Raspberry Pi; UART pendente.
 ├── str/                    # Estruturas e arquivos CAD exportados.
 └── common/
-    ├── protocol/           # Contrato JSON TT&C; binário UART do Payload a detalhar.
+    ├── protocol/           # JSON TT&C e proposta de dados/registros OBC; UART a detalhar.
     └── interfaces/pinout.md
 ```
 
@@ -120,6 +124,7 @@ O firmware central ESP32 é o ambiente `obc` em `obc-dh/platformio.ini`; o Paylo
 |---|---|
 | Requisitos e rastreabilidade | Design Package §4 + Apêndice A; `obc-dh/.agents/REQUISITOS.md` |
 | Orçamentos | Design Package §5; `obc-dh/.agents/DEFINICOES_OBC_DP.md` |
+| Dados, registros e análise OBC | [Contrato v1 proposto](common/protocol/obc-data.md) e [codec/leitor](obc-dh/tools/README.md) |
 | Payload e binário UART | Design Package §6; `payload/README.md` |
 | Rádio, execução, SD e estação | Design Package §7; `tt-c/README.md` e contrato JSON compartilhado |
 | V&V e resultados | Design Package §8; evidências dos setores |

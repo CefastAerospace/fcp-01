@@ -5,6 +5,8 @@
 
 **Consolidação:** 14/10/2026, incorporando o contrato JSON e os parâmetros atuais de `tt-c/include/TtcProtocol.h`. Critérios de missão/validação e definições financeiras permanecem; as premissas antigas de enquadramento binário TT&C e SF9 foram substituídas pelo contrato implementado. Referências ao DP seguem os materiais citados nesta síntese e pelos setores; a versão Markdown indicada no remoto não está presente neste checkout.
 
+**Atualização OBC — 01/11/2026:** modelos, tempo/boots, codec e leitor nativo possuem implementação local e verificações registradas nas tarefas. O contrato v1 ainda aguarda aceite; integração, precisão física e integridade do SD continuam pendentes. O orçamento de armazenamento abaixo usa os tamanhos desse contrato proposto, sem alterar requisitos ou parâmetros do rádio.
+
 ## 1. Custos e sobressalentes
 
 ### 1.1 Configuração considerada
@@ -76,29 +78,29 @@ O OBC armazenará mensagens ADS-B já decodificadas, referências de tempo, iden
 | Duração | 600 s | Missão contínua de dez minutos prevista no DP. |
 | Aeronaves simultâneas | Até 20 | Cenário da competição descrito no DP. |
 | Fluxo de mensagens | 40–120 mensagens/s; nominal 60/s | Estimativa da equipe no DP, seção 5.3, página 33; pendente de medição. |
-| Registro binário persistente | 64 bytes por mensagem | Provisão para dados decodificados, tempo, identificação e enquadramento do OBC. |
+| Registro binário persistente | 105 bytes por atualização | Contrato OBC v1 proposto: sessão/sequência, dados opcionais, metadados e CRC; codec local implementado, integração SD pendente. |
 | Registro JSON compacto | 256 bytes por mensagem | Estimativa média de dimensionamento, com margem sobre o exemplo atual do Payload e espaço para metadados. |
 | Reserva por missão | 25 MB | Volume superior estimado em JSON, acrescido de registros auxiliares e margem. |
 
-Os 64 bytes de armazenamento não correspondem aos 25–35 bytes estimados para o enlace UART no DP. O arquivo persistente inclui metadados próprios. Os 256 bytes de JSON não são tamanho fixo ou máximo garantido: tamanho real, campos, limites e registros incompletos serão definidos no contrato e medidos na integração.
+Os 105 bytes são o tamanho especificado do registro de missão em [obc-data.md](../../common/protocol/obc-data.md), proposta ainda sujeita ao aceite dos produtores. Substituem a provisão histórica de 64 bytes, não uma entrada ou um critério de teste. Não correspondem aos 25–35 bytes estimados para o enlace UART no DP: o arquivo inclui sessão, timestamp local opcional, metadados OBC e CRC. O formato UART continua em COM-004. Os 256 bytes de JSON são somente uma estimativa comparativa, sem máximo garantido e sem medição do novo contrato; o v1 escolhe persistência binária, sem exigir gravação duplicada.
 
 ### 2.3 Volume de armazenamento
 
 O cálculo utiliza `volume = duração × mensagens por segundo × bytes por registro`. GB, MB e kB nesta estimativa são unidades decimais: `1 MB = 1.000.000 bytes`.
 
-| Cenário | Mensagens/s | Registros em 600 s | Binário a 64 bytes | JSON a 256 bytes |
+| Cenário | Mensagens/s | Registros em 600 s | Binário v1 a 105 bytes | JSON estimado a 256 bytes |
 |---|---:|---:|---:|---:|
-| Inferior estimado | 40 | 24.000 | 1,536 MB | 6,144 MB |
-| Nominal estimado | 60 | 36.000 | 2,304 MB | 9,216 MB |
-| Superior estimado | 120 | 72.000 | 4,608 MB | 18,432 MB |
+| Inferior estimado | 40 | 24.000 | 2,520 MB | 6,144 MB |
+| Nominal estimado | 60 | 36.000 | 3,780 MB | 9,216 MB |
+| Superior estimado | 120 | 72.000 | 7,560 MB | 18,432 MB |
 
-As representações são alternativas. Se ambas forem mantidas, seus volumes deverão ser somados; no cenário superior, apenas os registros de missão ocupariam 23,040 MB antes dos dados auxiliares, exigindo revisar a reserva de 25 MB.
+O contrato v1 proposto escolhe uma única representação binária. Manter também o JSON completo elevaria o cenário superior a 25,992 MB antes dos dados auxiliares, ultrapassando a reserva de 25 MB; essa duplicação não faz parte da decisão atual.
 
-Para uma única representação, o orçamento considera **1 MB para eventos, estatísticas, referências temporais e metadados auxiliares**, mais **15,3 kB de TM de estado**: provisão de sessenta quadros JSON de até 255 bytes, conforme seção 2.4. No cenário superior em JSON, a soma estimada é `18,432 + 1 + 0,0153 = 19,4473 MB`. A reserva de 25 MB acrescenta cerca de **28,55%** sobre essa soma. A provisão anterior de 3 kB de TM pressupunha quadros binários de 50 bytes e foi substituída. Quantidade de TMs, metadados e eventos não têm máximo comprovado; a reserva depende das medições e não impõe política operacional.
+Para a representação binária v1, o orçamento conserva **1 MB para eventos, estatísticas, referências temporais e metadados auxiliares**, mais **5,940 kB para sessenta registros de TM de 99 bytes**. No cenário superior, a soma estimada é `7,560 + 1 + 0,005940 = 8,565940 MB`, abaixo da reserva de 25 MB. Os **15,3 kB de sessenta quadros JSON de até 255 bytes no ar**, na seção 2.4, permanecem no orçamento de rádio: o arquivo usa outro enquadramento. Os tamanhos do codec foram conferidos localmente; quantidade de TMs, metadados, eventos e tráfego real não têm máximo comprovado e continuam dependendo da integração. A reserva não impõe política operacional.
 
 A reserva não autoriza descarte de mensagens ou encerramento de gravação ao atingir 25 MB. É um valor de dimensionamento; retenção e comportamento de SD cheio/indisponível continuam dependendo do contrato de registros. Nenhuma estimativa de capacidade substitui teste de integridade após queda de energia.
 
-O binário será serializado com campos, ordem dos bytes e versão documentados. “Bytes brutos” não significa persistir memória interna de estruturas C++ sem contrato. JSON compacto favorece inspeção; binário reduz espaço e processamento de serialização. O uso efetivo será escolhido conforme a integração, sem exigir armazenamento duplicado.
+O codec local serializa segundo o contrato v1, com ordem little-endian, larguras explícitas, versão e CRC-32; seu [leitor nativo](../tools/README.md) exporta JSON Lines sem reescrever a origem. A integração de gravação no SD ainda está pendente. “Bytes brutos” não significa persistir memória interna de estruturas C++. JSON permanece representação legível e formato dos setores que já o utilizam, sem criar gravação duplicada obrigatória no OBC.
 
 ### 2.4 Volume e capacidade do downlink
 
@@ -208,7 +210,7 @@ Essa definição é uma condição para iniciar os ensaios, não um novo modo op
 | Rateio financeiro | Quantidade física dos kits/placas e correspondência do ESP32 adquirido com a placa de integração. |
 | Cartão e conexões | Cotação do cartão de 32 GB, composição das conexões e compatibilidade elétrica/software. |
 | Tempo | Validar ms monotônicos/referências LoRa, quantização e latência de `args.unix` em segundos, erro/deriva e resets. RTC externo só será reconsiderado se o método não atender aos critérios temporais acordados. Não inferir tempo desligado após reset. |
-| Formatos | Implementar binário UART decidido, preservando JSON local de bancada do Payload; definir formato persistente e medir tamanhos. Downlink já usa JSON TT&C, corpo ≤245 bytes/quadro ≤255 bytes, sem fragmentação. |
+| Formatos | Alinhar o contrato OBC v1 proposto com os produtores e implementar o binário UART em COM-004, preservando o JSON de bancada. Codec/leitor de registros estão implementados localmente; medir tráfego e validar armazenamento integrado. Downlink mantém JSON TT&C, corpo ≤245 bytes/quadro ≤255 bytes, sem fragmentação. |
 | Rádio | Validar parâmetros atuais SF7/BW125/CR4/6/preâmbulo32, capacidade útil, contato e filas. Orçamento recalculado não comprova entrega nem autoriza mudar decisões/limites TT&C. |
 | Critérios de missão | Confirmar compatibilidade entre transmissão agregada, latência e perdas sem modificar critérios existentes silenciosamente. |
 | Recuperação | Confirmar ou corrigir promessas de watchdog externo/partição de recuperação presentes no DP. |

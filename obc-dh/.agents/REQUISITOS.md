@@ -91,7 +91,7 @@ Conferir os registros após reinicializações e interrupções durante escrita,
 
 O acabamento consiste em revisar clareza, consistência dos termos, links e exemplos reais de configuração e uso. Aplicar o padrão de C++ já existente e consolidar ferramentas redundantes identificadas, sem criar outro documento de convenções.
 
-Para o planejamento vigente, acrescentar evidências de enquadramento UART (mensagens parciais, consecutivas e acima do limite), validade do horário antes da sincronização, referências de tempo em boots diferentes, comandos repetidos, rejeição de envio pelo TT&C e convivência entre FOC, I2C, rádio e SD. Esses acréscimos não substituem os critérios existentes. Os limites quantitativos dependem de [DAD-001](../.tasks/02-dados-e-tempo/DAD-001-modelos-e-formatos.md), [DAD-002](../.tasks/02-dados-e-tempo/DAD-002-tempo-e-boots.md), [INT-005](../.tasks/03-integracao/INT-005-sensores-e-adcs.md) e [TES-010](../.tasks/04-testes/TES-010-missao-e-cobertura.md) no checklist.
+Para o planejamento vigente, acrescentar evidências de enquadramento UART (mensagens parciais, consecutivas e acima do limite), validade do horário antes da sincronização, referências de tempo em boots diferentes, comandos repetidos, rejeição de envio pelo TT&C e convivência entre FOC, I2C, rádio e SD. Esses acréscimos não substituem os critérios existentes. Os limites quantitativos dependem de [DAD-001](../.tasks/02-dados-e-tempo/DAD-001-modelos-e-formatos.md), [DAD-002](../.tasks/02-dados-e-tempo/done/DAD-002-tempo-e-boots.md), [INT-005](../.tasks/03-integracao/INT-005-sensores-e-adcs.md) e [TES-010](../.tasks/04-testes/TES-010-missao-e-cobertura.md) no checklist.
 
 ## Correspondência histórica com as cinco entregas
 
@@ -117,7 +117,7 @@ As tabelas seguintes são referências de origem. Não aprovam componentes, cons
 | Leitor de cartão SD | Armazenamento dos dados da missão. | Persistência e conservação local dos dados recebidos. |
 | RTC DS3231 | Referência de tempo via I2C. | Contagem de tempo independente da internet para timestamps ADS-B. |
 
-DS3231 permanece como referência histórica. O plano atual usa tempo monotônico do ESP32 e referências pelo LoRa; precisão e necessidade de hardware adicional dependem de [DAD-002](../.tasks/02-dados-e-tempo/DAD-002-tempo-e-boots.md).
+DS3231 permanece como referência histórica. O plano atual usa tempo monotônico do ESP32 e referências pelo LoRa; precisão e necessidade de hardware adicional dependem de [DAD-002](../.tasks/02-dados-e-tempo/done/DAD-002-tempo-e-boots.md).
 
 ### Alimentação
 

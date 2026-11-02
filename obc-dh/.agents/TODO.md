@@ -1,6 +1,6 @@
 # TODO — OBC-DH
 
-Painel unificado das tarefas em quatro grupos. Revisão: 27/10/2026. O serviço I2C e sua política estão implementados; o teste nativo passou. O firmware central ainda não inicializa esses recursos.
+Painel unificado das tarefas em quatro grupos. Revisão: 01/11/2026. O serviço I2C e sua política estão implementados; o teste nativo passou. DAD-002 acrescenta lógica temporal e reserva de boots em NVS, com teste nativo e build ESP32 aprovados. DAD-001 tem modelos/validadores e contrato v1 proposto; DAD-003 tem codec e leitor nativo, com verificações e build aprovados. Permanecem pendentes o aceite dos produtores e os estados duráveis de retomada. O firmware central ainda não inicializa esses recursos.
 
 Cada entrega aparece uma única vez. O link abre escopo, condições, conclusão e evidências. **Pendente** = não iniciada; **Em andamento** = execução iniciada; **Bloqueada** = impedimento registrado durante a execução; **Concluída** = escopo comprovado e arquivo em `done/`. Pendente não significa automaticamente disponível.
 
@@ -22,9 +22,9 @@ Detalhes e histórico: [regras e rastreabilidade](../.tasks/README.md). Requisit
 
 | ID | Entrega | Tarefas prévias | Condições externas | Estado |
 |---|---|---|---|---|
-| DAD-001 | [Modelos de dados e formatos persistidos](../.tasks/02-dados-e-tempo/DAD-001-modelos-e-formatos.md) | — | Campos e unidades dos produtores | Pendente |
-| DAD-002 | [Tempo monotônico, boots e referências absolutas](../.tasks/02-dados-e-tempo/DAD-002-tempo-e-boots.md) | — | Critérios temporais e boots | Pendente |
-| DAD-003 | [Codificação e interpretação dos registros](../.tasks/02-dados-e-tempo/DAD-003-registros-e-interpretacao.md) | DAD-001, DAD-002 | — | Pendente |
+| DAD-001 | [Modelos de dados e formatos persistidos](../.tasks/02-dados-e-tempo/DAD-001-modelos-e-formatos.md) | — | Aceite dos produtores sobre o contrato v1 proposto | Em andamento |
+| DAD-002 | [Tempo monotônico, boots e referências absolutas](../.tasks/02-dados-e-tempo/done/DAD-002-tempo-e-boots.md) | — | Contrato local aprovado; precisão física em TES-008 | Concluída |
+| DAD-003 | [Codificação e interpretação dos registros](../.tasks/02-dados-e-tempo/DAD-003-registros-e-interpretacao.md) | DAD-001, DAD-002 | Consolidação do contrato e estados duráveis de retomada | Em andamento |
 
 ## 3. Integração e operação
 

@@ -58,7 +58,7 @@ UART exige níveis de 3,3 V, TX/RX cruzados e GND comum. Configuração dos dois
 | 5x LM75A | A confirmar | Bateria/pontos críticos; `0x48` é proposta anterior. Obter mapa final/configuração A0–A2. |
 | BMS | A definir, se houver interface | Conferir aquisição prevista com EPS; não presumir endereço I2C. |
 
-O projeto EPS/Térmico prevê sensores digitais INA219/LM75A; aquisição, endereços e proteção ainda dependem dos ICDs. Payload UART não possui endereço I2C e a proposta histórica `0x80` não se aplica. Tempo usa ms monotônicos por boot e referências LoRa, com reconstrução retroativa; RTC externo fica fora da configuração atual. DS3231 só será reconsiderado se esse método não atender à validação temporal acordada; seu `0x68` conflita com a IMU no mesmo barramento. Conferir [INT-005](../.tasks/03-integracao/INT-005-sensores-e-adcs.md), [COM-003](../.tasks/01-comunicacao/COM-003-recuperacao-i2c.md) e [DAD-002](../.tasks/02-dados-e-tempo/DAD-002-tempo-e-boots.md).
+O projeto EPS/Térmico prevê sensores digitais INA219/LM75A; aquisição, endereços e proteção ainda dependem dos ICDs. Payload UART não possui endereço I2C e a proposta histórica `0x80` não se aplica. Tempo usa ms monotônicos por boot e referências LoRa, com reconstrução retroativa; RTC externo fica fora da configuração atual. DS3231 só será reconsiderado se esse método não atender à validação temporal acordada; seu `0x68` conflita com a IMU no mesmo barramento. Conferir [INT-005](../.tasks/03-integracao/INT-005-sensores-e-adcs.md), [COM-003](../.tasks/01-comunicacao/COM-003-recuperacao-i2c.md) e [DAD-002](../.tasks/02-dados-e-tempo/done/DAD-002-tempo-e-boots.md).
 
 ## Boot, reset e restrições elétricas
 

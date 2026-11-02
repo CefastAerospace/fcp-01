@@ -102,6 +102,8 @@ Se houver mais de um ambiente no `platformio.ini`, use `-e obc` para selecionar 
 
 A execução de `pio test` exige testes implementados e um ambiente adequado. Testes de lógica no computador precisam de um ambiente nativo; testes que dependem de GPIOs, barramentos, boot ou temporização precisam de validação na placa. O ambiente ESP32 não configura automaticamente testes nativos.
 
+As verificações atuais de escalonamento I2C, tempo, modelos e codec são executáveis nativos compilados diretamente com `g++`, conforme os comandos registrados nas tarefas do [TODO](TODO.md). A verificação do leitor usa Python apenas para gerar entradas independentes e executar o programa C++ real. Compilação do leitor, execução sobre arquivo e comandos dos testes de registros estão no [guia do codec/leitor](../tools/README.md). Esses comandos não exigem ESP32; build e execução no hardware continuam sendo evidências distintas.
+
 ### Reconhecimento dos includes no Zed
 
 O Zed utiliza o **clangd** para analisar C++. O PlatformIO conhece os caminhos das bibliotecas, mas o clangd precisa da base `compile_commands.json` para utilizar esses mesmos caminhos e parâmetros. Um erro de include no editor não implica, por si só, falha na compilação do firmware.

@@ -91,6 +91,109 @@ const charts = {
   rssi: new LineChart($("ch-rssi"), 1),
 };
 
+// ─── Mapa das aeronaves (folhas via proxy /tiles, sem CDN) ───────────
+
+// Centro inicial da sessão; ajustável por sessão conforme o local da captura.
+const MAP_CENTER = [-15.79, -47.88];
+const MAP_ZOOM = 4;
+const AC_TRAIL_POINTS = 40;   // Últimas posições gráficas por aeronave.
+const AC_STALE_MS = 15 * 60 * 1000; // Aeronave ativa há menos de 15 min.
+
+class AircraftMap {
+  constructor(container) {
+    this.map = L.map(container, { worldCopyJump: true }).setView(MAP_CENTER, MAP_ZOOM);
+    this.map.attributionControl.setPrefix("");
+    this.archived = new Map(); // ICAO -> { trail, trailLine, marker, lastSeen }
+    L.tileLayer("/tiles/{z}/{x}/{y}.png", {
+      maxZoom: 17,
+      attribution: "&copy; OpenStreetMap",
+    }).addTo(this.map);
+  }
+
+  static color(alt) {
+    const bands = [1000, 5000, 10000, 20000];
+    const index = bands.findIndex((band) => (alt ?? 0) < band);
+    return ["--series-1", "--series-3", "--series-2", "--series-4", "--series-5"][index === -1 ? 4 : index];
+  }
+
+  upsert(list) {
+    const now = Date.now();
+    list.forEach((ac) => {
+      if (typeof ac.lat !== "number" || typeof ac.lon !== "number" ||
+          !Number.isFinite(ac.lat) || !Number.isFinite(ac.lon)) return;
+      this.reach(String(ac.icao), ac, now);
+    });
+    [...this.archived].forEach(([icao, entry]) => {
+      if (now - entry.lastSeen > AC_STALE_MS) this.remove(icao);
+    });
+  }
+
+  reach(icao, ac, now) {
+    const color = cssVar(AircraftMap.color(ac.alt));
+    let entry = this.archived.get(icao);
+    if (!entry) {
+      entry = { trail: [], trailLine: null, marker: null, lastSeen: 0 };
+      this.archived.set(icao, entry);
+    }
+    entry.lastSeen = now;
+    const point = [ac.lat, ac.lon];
+    entry.trail.push(point);
+    if (entry.trail.length > AC_TRAIL_POINTS) entry.trail.shift();
+    if (!entry.trailLine) {
+      entry.trailLine = L.polyline(entry.trail, {
+        color,
+        weight: 1.5,
+        opacity: 0.7,
+      }).addTo(this.map);
+    } else {
+      entry.trailLine.setStyle({ color });
+      entry.trailLine.setLatLngs(entry.trail);
+    }
+    const heading = (((ac.hdg ?? 0) % 360) + 360) % 360;
+    const content = `<span class="ac-icon"><span style="color:${color};transform:rotate(${heading}deg)">✈</span></span>`;
+    const tooltip = `<b class="ac-tip">${icao}</b> ${heading}°<br>alt ${fmt(ac.alt, 0)} ft · vel ${fmt(ac.vel, 0)} kt · ${ac.cnt ?? 0} msgs`;
+    if (!entry.marker) {
+      entry.marker = L.marker(point, {
+        icon: L.divIcon({ html: content, className: "", iconSize: [22, 22], iconAnchor: [11, 11] }),
+        zIndexOffset: 100,
+      }).addTo(this.map).bindTooltip(tooltip, { direction: "top", offset: [0, -12] });
+    } else {
+      entry.marker.setLatLng(point);
+      entry.marker.setIcon(L.divIcon({ html: content, className: "", iconSize: [22, 22], iconAnchor: [11, 11] }));
+      entry.marker.setTooltipContent(tooltip);
+    }
+  }
+
+  remove(icao) {
+    const entry = this.archived.get(icao);
+    if (!entry) return;
+    if (entry.trailLine) this.map.removeLayer(entry.trailLine);
+    if (entry.marker) this.map.removeLayer(entry.marker);
+    this.archived.delete(icao);
+  }
+
+  fit() {
+    const points = [...this.archived.values()]
+      .flatMap((entry) => entry.trail)
+      .map((point) => L.latLng(point[0], point[1]));
+    if (points.length === 0) return;
+    if (points.length === 1) this.map.setView(points[0], Math.max(this.map.getZoom(), 9));
+    else this.map.fitBounds(L.latLngBounds(points), { padding: [30, 30], maxZoom: 11 });
+  }
+
+  clearTrails() {
+    this.archived.forEach((entry) => {
+      entry.trail = [];
+      if (entry.trailLine) {
+        this.map.removeLayer(entry.trailLine);
+        entry.trailLine = null;
+      }
+    });
+  }
+}
+
+const map = (window.L !== undefined && $("map")) ? new AircraftMap("map") : null;
+
 // ─── Renderização ────────────────────────────────────────────────────
 
 function renderTelemetry(tm) {
@@ -137,6 +240,7 @@ function renderState(state) {
   $("lk-log").textContent = state.log_file ?? "—";
   if (state.latest_tm) renderTelemetry(state.latest_tm);
   renderAircraft(state.aircraft || []);
+  map?.upsert(state.aircraft || []);
 }
 
 function appendLog(text, cls = "") {
@@ -178,6 +282,7 @@ function handleEvent(event) {
     charts.vb.push([pkt.vb]);
     charts.tp.push(pkt.tp || []);
   }
+  if (pkt && pkt.t === "ac") map?.upsert([pkt]);
 }
 
 function connect() {
@@ -236,6 +341,9 @@ document.querySelectorAll("button[data-cmd]").forEach((button) => {
 });
 
 $("btn-time").addEventListener("click", (e) => sendTc("set_time", { unix: Math.floor(Date.now() / 1000) }, e.currentTarget));
+
+$("map-fit").addEventListener("click", () => map?.fit());
+$("map-clear-trails").addEventListener("click", () => map?.clearTrails());
 
 const select = $("tc-cmd");
 COMMANDS.forEach((cmd) => select.append(new Option(cmd, cmd)));

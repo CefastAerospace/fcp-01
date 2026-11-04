@@ -109,4 +109,22 @@ def create_app(link: Link, report_dir: Path) -> Flask:
         threading.Thread(target=run_test, args=(name, count), name=f"test-{name}", daemon=True).start()
         return jsonify({"started": name, "count": count}), 202
 
+    @app.post("/api/inject")
+    def inject():
+        """Bancada: processa um quadro fictício como se tivesse chegado pelo enlace.
+
+        Body: {"packet": {...}} (um objeto JSON do contrato) ou
+        {"line": "..."} (a linha cruza de ponte ou umbilical). Uso local;
+        o servidor só escuta em 127.0.0.1.
+        """
+        body = request.get_json(silent=True)
+        if isinstance(body, dict) and isinstance(body.get("packet"), dict):
+            line = json.dumps(body["packet"], separators=(",", ":"))
+        elif isinstance(body, dict) and isinstance(body.get("line"), str):
+            line = body["line"]
+        else:
+            return jsonify({"error": "envie {'packet': {}} ou {'line': ''}"}), 400
+        link.handle_line(line + "\n")
+        return jsonify({"ok": True})
+
     return app

@@ -4,12 +4,14 @@
     python -m fcp_gs serve --port /dev/ttyUSB0 [--wired] [--http 8080]
     python -m fcp_gs tm-loss --port /dev/ttyUSB0 [--count 1000] [--wired]
     python -m fcp_gs tc-latency --port /dev/ttyUSB0 [--count 50] [--wired]
+    python -m fcp_gs inject [--port /dev/ttyUSB0] [--file quadros.jsonl] [--delay 0.05]
     python -m fcp_gs analyze logs/2026-10-14_120000.jsonl
 """
 
 import argparse
 import json
 import sys
+import time
 from pathlib import Path
 
 from serial.tools import list_ports
@@ -25,9 +27,19 @@ REPORT_DIR = BASE_DIR / "reports"
 
 
 def _open_link(args: argparse.Namespace) -> Link:
-    link = Link(open_serial(args.port, args.baud), "wired" if args.wired else "rf", SessionLog(LOG_DIR))
+    if args.demo:
+        from .demo import DemoSatellite
+
+        stream = DemoSatellite()
+    else:
+        if args.port is None:
+            print("--port é obrigatório sem --demo.", file=sys.stderr)
+            sys.exit(2)
+        stream = open_serial(args.port, args.baud)
+    link = Link(stream, "wired" if args.wired else "rf", SessionLog(LOG_DIR))
     link.start()
-    print(f"Log da sessão: {link.log.path}")
+    if not args.demo:
+        print(f"Log da sessão: {link.log.path}")
     return link
 
 
@@ -70,6 +82,25 @@ def _cmd_analyze(args: argparse.Namespace) -> int:
     return 0
 
 
+def _cmd_inject(args: argparse.Namespace) -> int:
+    """Manda linhas JSON na serial, como se a ponte/satélite as recebesse."""
+    frames = args.file.read().splitlines() if args.file else sys.stdin.read().splitlines()
+    frames = [line.strip() for line in frames if line.strip()]
+    if not frames:
+        print("Nada para injetar (entrada vazia).", file=sys.stderr)
+        return 1
+    link = _open_link(args)
+    try:
+        for line in frames:
+            link.stream.write((line + "\n").encode())
+            link.stream.flush()
+            print(f"→ {line}")
+            time.sleep(max(args.delay, 0.0))
+    finally:
+        link.close()
+    return 0
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(prog="fcp_gs", description="Estação terrena do FCP-01")
     commands = parser.add_subparsers(dest="command", required=True)
@@ -77,9 +108,10 @@ def main(argv: list[str] | None = None) -> int:
     commands.add_parser("ports", help="lista as portas seriais").set_defaults(func=_cmd_ports)
 
     def with_port(sub: argparse.ArgumentParser) -> argparse.ArgumentParser:
-        sub.add_argument("--port", required=True, help="porta da ponte (RF) ou do satélite (umbilical)")
+        sub.add_argument("--port", help="porta da ponte (RF) ou do satélite (umbilical)")
         sub.add_argument("--baud", type=int, default=115200)
         sub.add_argument("--wired", action="store_true", help="conexão direta ao satélite (umbilical)")
+        sub.add_argument("--demo", action="store_true", help="satélite simulado na memória, sem hardware")
         return sub
 
     serve = with_port(commands.add_parser("serve", help="interface web"))
@@ -90,6 +122,11 @@ def main(argv: list[str] | None = None) -> int:
     tm_loss = with_port(commands.add_parser("tm-loss", help="REQ-TTC-003: perda em rajada de TMs"))
     tm_loss.add_argument("--count", type=int, default=1000)
     tm_loss.set_defaults(func=_cmd_test)
+
+    inject_cmd = with_port(commands.add_parser("inject", help="injeta linhas JSON fictícias na serial"))
+    inject_cmd.add_argument("--file", type=argparse.FileType("r"), help="arquivo com uma linha JSON por quadro; padrão: stdin")
+    inject_cmd.add_argument("--delay", type=float, default=0.05, help="segundos entre quadros")
+    inject_cmd.set_defaults(func=_cmd_inject)
 
     tc_latency = with_port(commands.add_parser("tc-latency", help="REQ-TTC-004 / HLR-COMM-01: latência de TCs"))
     tc_latency.add_argument("--count", type=int, default=50)

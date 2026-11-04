@@ -30,6 +30,7 @@ Para instalar sem internet no local de testes, baixe os pacotes antes (`pip down
 .venv/bin/python -m fcp_gs ports                                # lista as portas seriais
 .venv/bin/python -m fcp_gs serve --port /dev/ttyUSB0            # interface web, modo RF
 .venv/bin/python -m fcp_gs serve --port /dev/ttyUSB0 --wired    # interface web, umbilical
+.venv/bin/python -m fcp_gs serve --demo                         # interface web sem hardware
 ```
 
 Abra `http://localhost:8080`. O painel mostra:

@@ -108,6 +108,11 @@
             reset_obc
           </button>
         </div>
+        <div class="row mode-row">
+          <label for="tc-mode">Modo</label>
+          <select id="tc-mode"></select>
+          <button id="btn-mode" type="button">set_mode</button>
+        </div>
         <form id="tc-form" class="row">
           <select id="tc-cmd"></select>
           <input id="tc-args" placeholder='args JSON, ex.: {"mode":"safe"}' />
@@ -141,7 +146,7 @@ Nenhum teste executado nesta sessão.</pre
         <h2>Mapa das aeronaves</h2>
         <div class="row">
           <button id="map-fit">Centralizar na área</button>
-          <button id="map-clear-trails">Limpar rotas</button>
+          <button id="map-clear-trails">Limpar rastros</button>
         </div>
         <div id="map"></div>
       </section>
@@ -177,6 +182,7 @@ Nenhum teste executado nesta sessão.</pre
       </section>
     </main>
 
+    <script src="/static/vendor/leaflet/leaflet.js"></script>
     <script src="/static/app.js"></script>
   </body>
 </html>

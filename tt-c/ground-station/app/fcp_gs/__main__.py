@@ -1,7 +1,9 @@
 """Linha de comando da estação terrena.
 
     python -m fcp_gs ports
-    python -m fcp_gs serve --port /dev/ttyUSB0 [--wired] [--http 8080]
+    python -m fcp_gs serve --port /dev/ttyUSB0 [--wired] [--http 8080] [--map-center LAT,LON[,ZOOM]]
+    python -m fcp_gs serve --demo [--map-center LAT,LON[,ZOOM]]
+    python -m fcp_gs tiles --bbox S,W,N,E [--zoom 4-11]
     python -m fcp_gs tm-loss --port /dev/ttyUSB0 [--count 1000] [--wired]
     python -m fcp_gs tc-latency --port /dev/ttyUSB0 [--count 50] [--wired]
     python -m fcp_gs inject [--port /dev/ttyUSB0] [--file quadros.jsonl] [--delay 0.05]
@@ -24,13 +26,51 @@ from .verification import run_tc_latency, run_tm_loss, summarize, write_report
 BASE_DIR = Path(__file__).resolve().parent.parent
 LOG_DIR = BASE_DIR / "logs"
 REPORT_DIR = BASE_DIR / "reports"
+TILE_DIR = BASE_DIR / "cache" / "tiles"
+DEFAULT_MAP_CENTER = "-15.79,-47.88,4"  # Brasília.
+
+
+def _map_center(text: str) -> tuple[float, float, int]:
+    parts = text.split(",")
+    try:
+        if len(parts) not in (2, 3):
+            raise ValueError
+        lat, lon = float(parts[0]), float(parts[1])
+        zoom = int(parts[2]) if len(parts) == 3 else 9
+    except ValueError:
+        raise argparse.ArgumentTypeError("use LAT,LON ou LAT,LON,ZOOM (ex.: -15.79,-47.88,9)")
+    if not (-90 <= lat <= 90 and -180 <= lon <= 180 and 0 <= zoom <= 17):
+        raise argparse.ArgumentTypeError("latitude, longitude ou zoom fora do intervalo")
+    return lat, lon, zoom
+
+
+def _bbox(text: str) -> tuple[float, float, float, float]:
+    try:
+        south, west, north, east = (float(v) for v in text.split(","))
+    except ValueError:
+        raise argparse.ArgumentTypeError("use SUL,OESTE,NORTE,LESTE (ex.: -16.2,-48.2,-15.4,-47.3)")
+    if not (-90 <= south < north <= 90 and -180 <= west < east <= 180):
+        raise argparse.ArgumentTypeError("bbox inválido: sul < norte e oeste < leste")
+    return south, west, north, east
+
+
+def _zoom_range(text: str) -> tuple[int, int]:
+    try:
+        low, _, high = text.partition("-")
+        zmin, zmax = int(low), int(high or low)
+    except ValueError:
+        raise argparse.ArgumentTypeError("use ZMIN-ZMAX (ex.: 4-11)")
+    if not 0 <= zmin <= zmax <= 17:
+        raise argparse.ArgumentTypeError("zoom entre 0 e 17, ZMIN <= ZMAX")
+    return zmin, zmax
 
 
 def _open_link(args: argparse.Namespace) -> Link:
     if args.demo:
         from .demo import DemoSatellite
 
-        stream = DemoSatellite()
+        center = getattr(args, "map_center", None) or _map_center(DEFAULT_MAP_CENTER)
+        stream = DemoSatellite(center=center[:2], wired=args.wired)
     else:
         if args.port is None:
             print("--port é obrigatório sem --demo.", file=sys.stderr)
@@ -52,8 +92,10 @@ def _cmd_ports(_: argparse.Namespace) -> int:
 def _cmd_serve(args: argparse.Namespace) -> int:
     from .server import create_app  # Flask só é necessário aqui.
 
+    from .tiles import TileCache
+
     link = _open_link(args)
-    app = create_app(link, REPORT_DIR)
+    app = create_app(link, REPORT_DIR, map_center=args.map_center, tile_cache=TileCache(TILE_DIR))
     print(f"Abra http://localhost:{args.http}")
     try:
         app.run(host=args.host, port=args.http, threaded=True)
@@ -101,6 +143,25 @@ def _cmd_inject(args: argparse.Namespace) -> int:
     return 0
 
 
+def _cmd_tiles(args: argparse.Namespace) -> int:
+    from .tiles import TileCache
+
+    zmin, zmax = args.zoom
+
+    def progress(result: dict) -> None:
+        done = result["cached"] + result["fetched"] + result["failed"]
+        print(f"\r{done}/{result['total']} folhas", end="", flush=True)
+
+    try:
+        result = TileCache(TILE_DIR).prefetch(args.bbox, zmin, zmax, progress=progress)
+    except ValueError as error:
+        print(error, file=sys.stderr)
+        return 2
+    print(f"\nNo cache: {result['cached']} · baixadas: {result['fetched']} · falhas: {result['failed']}"
+          f"\nPasta: {TILE_DIR}")
+    return 1 if result["failed"] else 0
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(prog="fcp_gs", description="Estação terrena do FCP-01")
     commands = parser.add_subparsers(dest="command", required=True)
@@ -117,6 +178,8 @@ def main(argv: list[str] | None = None) -> int:
     serve = with_port(commands.add_parser("serve", help="interface web"))
     serve.add_argument("--http", type=int, default=8080)
     serve.add_argument("--host", default="127.0.0.1")
+    serve.add_argument("--map-center", type=_map_center, default=_map_center(DEFAULT_MAP_CENTER),
+                       help="centro inicial do mapa: LAT,LON[,ZOOM] (padrão: Brasília)")
     serve.set_defaults(func=_cmd_serve)
 
     tm_loss = with_port(commands.add_parser("tm-loss", help="REQ-TTC-003: perda em rajada de TMs"))
@@ -131,6 +194,11 @@ def main(argv: list[str] | None = None) -> int:
     tc_latency = with_port(commands.add_parser("tc-latency", help="REQ-TTC-004 / HLR-COMM-01: latência de TCs"))
     tc_latency.add_argument("--count", type=int, default=50)
     tc_latency.set_defaults(func=_cmd_test)
+
+    tiles_cmd = commands.add_parser("tiles", help="pré-carrega folhas do mapa para uso sem internet")
+    tiles_cmd.add_argument("--bbox", type=_bbox, required=True, help="SUL,OESTE,NORTE,LESTE")
+    tiles_cmd.add_argument("--zoom", type=_zoom_range, default=(4, 11), help="ZMIN-ZMAX (padrão 4-11)")
+    tiles_cmd.set_defaults(func=_cmd_tiles)
 
     analyze_cmd = commands.add_parser("analyze", help="análise pós-passagem de um log .jsonl")
     analyze_cmd.add_argument("log")

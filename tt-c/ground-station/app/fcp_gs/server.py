@@ -9,10 +9,12 @@ from flask import Flask, Response, jsonify, request, send_from_directory
 
 from .link import Link
 from .protocol import COMMANDS
+from .tiles import TileCache
 from .verification import run_tc_latency, run_tm_loss, summarize, write_report
 
 STATIC_DIR = Path(__file__).parent / "static"
 KEEPALIVE_S = 15
+DEFAULT_MAP_CENTER = (-15.79, -47.88, 4)  # Brasília; ajuste com serve --map-center.
 
 
 class Broadcaster:
@@ -47,7 +49,9 @@ class Broadcaster:
                 self._clients.discard(client)
 
 
-def create_app(link: Link, report_dir: Path) -> Flask:
+def create_app(link: Link, report_dir: Path,
+               map_center: tuple[float, float, int] = DEFAULT_MAP_CENTER,
+               tile_cache: TileCache | None = None) -> Flask:
     app = Flask(__name__, static_folder=None)
     broadcaster = Broadcaster()
     link.add_listener(broadcaster.publish)
@@ -77,6 +81,23 @@ def create_app(link: Link, report_dir: Path) -> Flask:
     def events():
         return Response(broadcaster.stream(), mimetype="text/event-stream",
                         headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"})
+
+    @app.get("/tiles/<int:z>/<int:x>/<int:y>.png")
+    def tile(z: int, x: int, y: int):
+        data = tile_cache.get(z, x, y) if tile_cache else None
+        if data is None:
+            return Response(status=404)  # O contorno offline aparece por baixo.
+        return Response(data, mimetype="image/png", headers={"Cache-Control": "max-age=3600"})
+
+    @app.get("/api/config")
+    def config():
+        lat, lon, zoom = map_center
+        return jsonify({"map_center": [lat, lon], "map_zoom": zoom,
+                        "commands": sorted(COMMANDS)})
+
+    @app.get("/api/tracks")
+    def tracks():
+        return jsonify(link.tracks_snapshot())
 
     @app.get("/api/state")
     def state():

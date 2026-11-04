@@ -1,7 +1,9 @@
 """Conexão serial com a ponte da estação terrena (RF) ou com o satélite (umbilical)."""
 
+import math
 import threading
 import time
+from collections import deque
 from collections.abc import Callable
 
 import serial
@@ -15,6 +17,7 @@ Listener = Callable[[dict], None]
 OPEN_SETTLE_S = 1.5    # Boot do ESP32 até "[GS] Pronto." leva ~0,4 s.
 OPEN_QUIET_S = 1.0     # Serial sem bytes novos: boot terminado.
 OPEN_MAX_WAIT_S = 6.0
+TRACK_POINTS = 200     # Posições guardadas por aeronave para o rastro no mapa.
 
 
 def open_serial(port: str, baud: int = 115200, settle_s: float = OPEN_SETTLE_S,
@@ -64,6 +67,7 @@ class Link:
         self.counts: dict[str, int] = {}
         self.latest_tm: dict | None = None
         self.aircraft: dict[str, dict] = {}
+        self.tracks: dict[str, deque] = {}  # ICAO -> [[lat, lon, alt, ts], ...]
         self.last_meta: dict = {}
 
         self._listeners: list[Listener] = []
@@ -136,7 +140,22 @@ class Link:
             if kind == "tm":
                 self.latest_tm = packet
             elif kind == "ac" and "icao" in packet:
-                self.aircraft[str(packet["icao"])] = packet
+                icao = str(packet["icao"])
+                self.aircraft[icao] = packet
+                self._extend_track(icao, packet)
+
+    def _extend_track(self, icao: str, packet: dict) -> None:
+        """Acrescenta a posição ao rastro, ignorando inválidas e repetidas."""
+        lat, lon = packet.get("lat"), packet.get("lon")
+        if not all(isinstance(v, (int, float)) and not isinstance(v, bool) and math.isfinite(v)
+                   for v in (lat, lon)):
+            return
+        if not (-90 <= lat <= 90 and -180 <= lon <= 180):
+            return
+        track = self.tracks.setdefault(icao, deque(maxlen=TRACK_POINTS))
+        if track and track[-1][0] == lat and track[-1][1] == lon:
+            return
+        track.append([lat, lon, packet.get("alt"), packet.get("ts")])
 
     def _deliver_ack(self, received: Received) -> None:
         packet = received.packet
@@ -209,6 +228,10 @@ class Link:
             return self._acks.pop(seq)
 
     # ─── Estado ───────────────────────────────────────────────────────
+
+    def tracks_snapshot(self) -> dict[str, list]:
+        with self._cond:
+            return {icao: list(track) for icao, track in self.tracks.items()}
 
     def snapshot(self) -> dict:
         with self._cond:

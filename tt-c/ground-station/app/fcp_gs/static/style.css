@@ -343,10 +343,18 @@ td:first-child {
   height: 100%;
 }
 
-.ac-icon span {
+.ac-icon svg {
   display: block;
-  font-size: 17px;
-  line-height: 1;
+  filter: drop-shadow(0 0 1px rgb(0 0 0 / 0.4));
+}
+
+.mode-row select {
+  min-width: 8em;
+}
+
+.leaflet-control-layers {
+  background: var(--card, #fff);
+  color: inherit;
 }
 
 .ac-tip {

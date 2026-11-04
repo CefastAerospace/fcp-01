@@ -31,6 +31,7 @@ Para instalar sem internet no local de testes, baixe os pacotes antes (`pip down
 .venv/bin/python -m fcp_gs serve --port /dev/ttyUSB0            # interface web, modo RF
 .venv/bin/python -m fcp_gs serve --port /dev/ttyUSB0 --wired    # interface web, umbilical
 .venv/bin/python -m fcp_gs serve --demo                         # interface web sem hardware
+.venv/bin/python -m fcp_gs serve --port ... --map-center -34.57,-58.52,9   # centro inicial do mapa (LAT,LON[,ZOOM])
 ```
 
 Abra `http://localhost:8080`. O painel mostra:
@@ -38,12 +39,44 @@ Abra `http://localhost:8080`. O painel mostra:
 - o estado do enlace: pacotes, perdas pelo contador `n`, CRC inválido e sinal no solo;
 - a última TM: modo, energia, temperaturas, atitude, missão e enlace a bordo;
 - gráficos de bateria, temperaturas e RSSI;
+- o mapa das aeronaves, com o rastro de cada uma (últimas 200 posições, guardadas no servidor, então recarregar a página não apaga). O rastro fica esmaecido após 30 s sem notícia e some após 15 min;
 - a tabela de aeronaves;
-- o envio de TCs (com retentativa automática e o mesmo `seq`);
+- o envio de TCs (com retentativa automática e o mesmo `seq`): botões para os comandos sem argumento, seletor de modo para `set_mode` e formulário livre que preenche o exemplo de `args` do catálogo. ACK e NACK (`invalid_param`, `state_rejected`...) aparecem na lista de resultados;
 - os roteiros de verificação;
 - o log ao vivo.
 
 A porta é aberta com DTR/RTS desligados, mas no Linux a placa ainda pode reiniciar na abertura. Por isso o app só envia o primeiro TC depois de a serial ficar 1 s sem bytes novos (no mínimo 1,5 s, no máximo 6 s); as mensagens do boot vão para o log da sessão.
+
+## Mapa sem internet
+
+O mapa tem duas camadas, que podem ser ligadas e desligadas no canto do mapa:
+
+- **Contornos offline:** países e divisas estaduais do Natural Earth (`fcp_gs/static/vendor/borders/`). Estão sempre disponíveis.
+- **OSM (cache local):** o servidor busca as folhas do OpenStreetMap e grava em `cache/tiles/`. Sem rede, só aparece o que já está no cache.
+
+Antes de ir ao local de testes, com internet, pré-carregue a região:
+
+```sh
+.venv/bin/python -m fcp_gs tiles --bbox -16.2,-48.2,-15.4,-47.3 --zoom 4-11   # SUL,OESTE,NORTE,LESTE
+```
+
+A política de uso do OSM proíbe downloads em massa, por isso o comando recusa pedidos com mais de 2000 folhas: reduza a área ou o zoom máximo. Com `--zoom 4-11`, uma área de cerca de 1° × 1° fica bem abaixo do limite.
+
+## Modo demo
+
+`serve --demo` simula o satélite na memória, sem serial, para desenvolver e apresentar a interface:
+
+- TM a cada 2 s, com a bateria e as temperaturas variando em ciclo de órbita;
+- 6 aeronaves em voo ao redor de `--map-center`, em rotas retas com rumo coerente, mais uma em órbita de espera. O tempo de voo corre 20× mais rápido, para o rastro crescer em segundos, e quem sai da área é trocado por uma nova aeronave;
+- os TCs mudam o estado como o OBC faria:
+  - `set_mode`, `enter_safe`/`exit_safe` e `start_mission`/`stop_mission` aparecem no campo `md`;
+  - `adcs_start` faz a taxa angular cair;
+  - `set_time` desloca o horário de bordo;
+  - `deploy_antenna` gera o evento `antenna_deployed`;
+  - `reset_obc` reinicia o contador `n` e conta como reinício no painel;
+- `args` inválidos geram NACK `invalid_param`, e `start_mission` em safe gera `state_rejected`;
+- em safe, o satélite manda beacon a cada 10 s;
+- no modo RF, os quadros chegam no envelope `gs` da ponte, com RSSI e SNR variando. Com `--wired`, chegam sem envelope.
 
 ## Roteiros de verificação
 

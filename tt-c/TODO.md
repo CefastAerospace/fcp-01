@@ -21,7 +21,7 @@ Itens marcados como concluídos estão implementados e compilam; a validação e
 | Biblioteca do enlace | `TtcProtocol`, `Ttc`, `Sx1276Radio`, `UmbilicalLink`: SF7, JSON, TX intercalado com ACK prioritário, DIO0 por interrupção, task no Core 0, umbilical, deduplicação, verificação de saúde, beacon. | Validação em bancada (seção 5) e integração com o OBC (seção 6). |
 | Estação terrena | `ground-station/` (ponte ESP32) e `ground-station/app/` (Python, interface web, logs, roteiros de verificação, análise pós-passagem). | Ensaio com o hardware; fotos e descrição para o DP. |
 | Firmware de teste | `examples/link-test/`: simula o OBC (TM, aeronaves, `test_tm`, beacon em safe). | — |
-| Testes | `test/test_protocol` (nativo, 13 casos), `test/test_ttc` (na placa, 9 casos), `ground-station/app/tests` (pytest, 17 casos). | Rodar `test_ttc` na placa. |
+| Testes | `test/test_protocol` (nativo, 13 casos), `test/test_ttc` (na placa, 9 casos), `ground-station/app/tests` (pytest, 50 casos). | Rodar `test_ttc` na placa. |
 
 ---
 
@@ -63,6 +63,9 @@ Itens marcados como concluídos estão implementados e compilam; a validação e
 - [x] Software no notebook (`ground-station/app/`), conectado à ponte ESP32 ou ao umbilical.
 - [x] Log da sessão em JSON Lines, com horário do PC, RSSI e SNR (HLR-SW-02).
 - [x] Interface web com TM, gráficos, aeronaves, TCs e log, sem dependência de internet.
+- [x] Mapa das aeronaves com rastro guardado no servidor (`/api/tracks`), contornos offline e folhas OSM em cache (`python -m fcp_gs tiles`).
+- [x] Envio de TCs pela interface com os `args` do catálogo (seletor de modo, exemplos), mostrando ACK e NACK.
+- [x] Modo demo (`serve --demo`) que simula o OBC: modos, NACK, eventos, reinício e aeronaves em voo.
 - [x] Análise pós-passagem (`python -m fcp_gs analyze`): perdas, latências e CSVs.
 - [ ] Testar a interface com a ponte e o satélite reais.
 - [ ] Descrição final do software e fotos da estação para o DP (hoje "[PENDING]"); base em `ground-station/app/README.md`.

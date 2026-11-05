@@ -2,18 +2,26 @@
 
 Núcleo de processamento do FCP-01: um ESP32 DevKit V1 coordena todos os subsistemas via FreeRTOS e organiza comandos, telemetria e registros da missão (§§3.4, 7.2).
 
-## Estado local — 01/11/2026
+## Estado local — 05/11/2026
 
-Estão implementados o serviço I2C, os modelos/validadores de dados, a referência temporal por boot, o adaptador timer/NVS para ESP32 e o codec de registros com CRC-32. O [leitor nativo](tools/README.md) interpreta arquivos no computador, exporta JSON Lines, reconstrói horários e relata trechos inválidos sem alterar a origem. Testes nativos e build ESP32 passaram; isso não comprova funcionamento físico ou integração.
+Estão implementados o serviço I2C, os modelos/validadores de dados, a referência temporal por boot, o adaptador timer/NVS para ESP32, o codec de registros com CRC-32 e o serviço de arquivos com adaptador SD/HSPI. O [leitor nativo](tools/README.md) interpreta arquivos no computador, exporta JSON Lines, reconstrói horários e relata trechos inválidos sem alterar a origem. Testes nativos e build ESP32 passaram; isso não comprova funcionamento físico ou integração.
 
-DAD-002 está concluída no escopo local. DAD-001 continua em andamento até o aceite do contrato pelos produtores; DAD-003 aguarda essa consolidação e a resolução dos estados duráveis de retomada. `setup()`/`loop()` continuam sem inicializar esses módulos. UART do Payload, integração TT&C, armazenamento físico e atuação do Burn Wire conservam tarefas próprias.
+DAD-002 está concluída no escopo local. DAD-001 continua em andamento até o aceite do contrato pelos produtores; DAD-003 aguarda essa consolidação e a resolução dos estados duráveis de retomada. INT-003 acrescenta o boot de bancada: Serial a 115200 baud, reserva de boot/NVS, I2C e tentativa de montagem SD, com relatório de falhas independentes. `loop()` cede execução com `delay(100)`. UART do Payload, TT&C, aquisição, registros e atuação do Burn Wire conservam tarefas próprias.
+
+Em 05/11/2026, o responsável confirmou snapshots JSON completos diretamente pela UART do Payload. DAD-001 acrescenta `PAYLOAD_SNAPSHOT`, `AIRCRAFT_STATE` e `EXTRA_FIELD` aos modelos existentes, com campos opcionais, extras textuais e limites fixos. `tests/PayloadSnapshotCheck.cpp` verifica esses modelos sem parser ou hardware. O [contrato](../common/protocol/obc-data.md#0-snapshot-do-payload--modelo-em-memória) descreve mapeamento, limites e pendências. O codec v1 continua cobrindo os modelos anteriores; recepção e gravação integrada dos snapshots no SD permanecem pendentes, assim como a compatibilização dos critérios por mensagem ADS-B. Os testes novos, os testes anteriores de dados/codec/leitor e o build ESP32 passaram. O snapshot ocupa 64672 bytes tanto no computador como na toolchain ESP32, sem instância alocada pelo firmware central.
+
+COM-005 implementa `ObcStorage` e `ObcStorageEsp32`: criação exclusiva sem apagar histórico, sincronização a cada bloco, até três tentativas no mesmo offset e leitura por blocos. O teste `ObcStorageCheck.cpp` verifica arquivos reais e falhas injetadas; build ESP32 aprovado. INT-003 chama sua montagem no boot de bancada, sem abrir arquivos, gerar registros ou implementar `request_log`. A [tarefa](.tasks/01-comunicacao/COM-005-armazenamento-sd.md) permanece em andamento até confirmação de módulo/alimentação com EPS; os ensaios físicos estão em TES-006/TES-009.
+
+O teste `ObcStartupCheck.cpp` verifica ordem, continuidade e relatório nas oito combinações de resultados dos serviços; o build ESP32 também passou. Logs `[OBC]` mostram o ID válido ou indisponível, resultado de I2C/SD e tempo monotônico separado de UTC desconhecido. Não há repetição/reset automático, inicialização de atuadores ou modo de voo implementado. A [INT-003](.tasks/03-integracao/INT-003-inicializacao-central.md) permanece em andamento pelas condições externas do boot integrado; nenhum upload ou ensaio físico foi realizado nesta entrega.
+
+DAD-003 implementa persistência dos snapshots e extras em registros v2 de 37–64497 bytes, usando o modelo existente e buffers do chamador. O codec v1 e seus layouts permanecem compatíveis; o leitor exporta arquivos v1/v2/mistos e reconstrói horários pelas referências existentes. `SnapshotCodecCheck.cpp` e `SnapshotRecordsCheck.py` verificam vetores independentes, limites, corrupção, truncamento e preservação das saídas/origem. Testes anteriores e build ESP32 também passaram. A [DAD-003](.tasks/02-dados-e-tempo/DAD-003-registros-e-interpretacao.md) permanece em andamento por aceite de DAD-001 e estados duráveis de retomada; recepção e gravação integrada no SD ainda não estão ligadas ao boot.
 
 ## Barramentos (resumo — oficial em `../common/interfaces/pinout.md`)
 
 | Interface | Pinos | Uso |
 |---|---|---|
 | UART0 | 1 / 3 | Umbilical USB-C de bancada |
-| UART payload | 16 / 17, 115,2 kbps | Binário ADS-B + SeqID/NACK (§6.4) |
+| UART payload | 16 / 17, 115,2 kbps | Snapshots JSON completos; enquadramento e perdas/repetição pendentes em COM-004 |
 | I2C sensores | 21 / 22 | INA219, LM75A, MPU-9250, AS5600, BH1750 |
 | VSPI | 23/19/18, CS 5, DIO0 4, RST 14 | LoRa SX1276 |
 | HSPI | 32/35/15, CS 13 | microSD |
@@ -24,10 +32,10 @@ DAD-002 está concluída no escopo local. DAD-001 continua em andamento até o a
 
 ## Contratos
 
-- **Payload → OBC:** só dado decodificado em binário; OBC carimba (ms), armazena no SD e prepara TM (§§6.4, 7.3).
+- **Payload → OBC:** snapshots JSON completos com dados ADS-B já decodificados, por decisão de 05/11/2026. O fluxo planejado associa tempo OBC, armazena e prepara TM; o codec de snapshots v2 está implementado, enquanto recepção e gravação integrada no SD permanecem pendentes.
 - **OBC ↔ TT&C:** filas `filaTC` (TC validado) e `filaTM` (telemetria JSON ~150 B) — picos de um lado não travam o outro (§7.1–7.2).
 - **Modos:** ver ConOps no `../README.md` (detalhe em §2.5 do Design Package).
-- **Dados e persistência:** [contrato OBC v1 proposto](../common/protocol/obc-data.md), com disponibilidade explícita, sessão/sequência e registros binários de 36–105 bytes. O formato persistido não determina o quadro UART e não altera o JSON TT&C.
+- **Dados e persistência:** [contrato OBC](../common/protocol/obc-data.md), com modelos de snapshot em memória e registros binários v1 de 36–105 bytes. Sessão/sequência pertencem às atualizações individuais v1, não ao snapshot. Os snapshots têm codec v2 próprio, sem alterar o JSON TT&C.
 
 ## Build
 

@@ -102,7 +102,28 @@ Se houver mais de um ambiente no `platformio.ini`, use `-e obc` para selecionar 
 
 A execução de `pio test` exige testes implementados e um ambiente adequado. Testes de lógica no computador precisam de um ambiente nativo; testes que dependem de GPIOs, barramentos, boot ou temporização precisam de validação na placa. O ambiente ESP32 não configura automaticamente testes nativos.
 
-As verificações atuais de escalonamento I2C, tempo, modelos e codec são executáveis nativos compilados diretamente com `g++`, conforme os comandos registrados nas tarefas do [TODO](TODO.md). A verificação do leitor usa Python apenas para gerar entradas independentes e executar o programa C++ real. Compilação do leitor, execução sobre arquivo e comandos dos testes de registros estão no [guia do codec/leitor](../tools/README.md). Esses comandos não exigem ESP32; build e execução no hardware continuam sendo evidências distintas.
+As verificações atuais de escalonamento I2C, tempo, modelos, snapshots e codec são executáveis nativos compilados diretamente com `g++`, conforme os comandos registrados nas tarefas do [TODO](TODO.md). `tests/PayloadSnapshotCheck.cpp` verifica o modelo em memória, sem interpretar o JSON de entrada. A verificação do leitor usa Python apenas para gerar entradas independentes e executar o programa C++ real. Compilação do leitor, execução sobre arquivo e comandos dos testes de registros estão no [guia do codec/leitor](../tools/README.md). Esses comandos não exigem ESP32; build e execução no hardware continuam sendo evidências distintas.
+
+COM-005 acrescenta `tests/ObcStorageCheck.cpp`, teste nativo do núcleo POSIX com arquivos temporários e falhas de I/O injetadas por GNU ld. Seu comando está no [guia de armazenamento](../tools/README.md#serviço-de-arquivos-sdhspi). O adaptador SD/HSPI compila no ambiente `obc` com as bibliotecas já instaladas do framework, sem dependência nova; compilação não monta o cartão nem executa os ensaios de hardware.
+
+A extensão de DAD-003 acrescenta `tests/SnapshotCodecCheck.cpp` e `tests/SnapshotRecordsCheck.py`. O script gera vetores independentes com `struct`/`zlib` da biblioteca padrão Python, invoca o teste C++ do codec v2 e o leitor real sobre arquivos v1/v2/mistos. Compilar ambos antes de executar o script; comandos no [guia de snapshots](../tools/README.md#snapshots-v2). O codec usa buffers do chamador, sem reserva do modelo/buffer máximo no boot de bancada; o build não demonstra ainda a memória do fluxo integrado.
+
+### Boot de bancada vigente
+
+O firmware atual inicia Serial em 115200 baud, reserva o boot na NVS, inicializa o controlador/executor I2C e tenta montar o SD. Emite uma vez o relatório com prefixo `[OBC]`, sem JSON ou protocolo de comandos. Não espera o computador conectar. `loop()` usa `delay(100)`; as falhas não causam reset ou repetição automática. SD ausente produz indisponibilidade no diagnóstico; I2C inicializado não comprova sensores. O tempo impresso é monotônico, com `UTC=desconhecido`.
+
+Essa entrega de INT-003 é de bancada, sem iniciar rádio, Payload, aquisição, atuadores ou missão. Não abre arquivos ou grava registros. Confirmar placa e condições elétricas antes de upload; esta entrega foi compilada e verificada no computador, sem upload ou execução física. Não concluir TES-008 pela existência dessa sequência.
+
+Verificação portátil do coordenador, dentro de `obc-dh/`:
+
+```bash
+g++ -std=c++11 -Wall -Wextra -Werror \
+    -fsanitize=undefined -fno-sanitize-recover=undefined -Iheaders \
+    src/ObcStartup.cpp tests/ObcStartupCheck.cpp -o /tmp/fcp01-startup-check
+/tmp/fcp01-startup-check
+```
+
+O teste conserva a ordem e exercita as oito combinações de resultados com inicializadores finitos de teste. As APIs de drivers e suas políticas permanecem preservadas; Serial, FreeRTOS e dispositivos não são exercitados por esse executável.
 
 ### Reconhecimento dos includes no Zed
 
@@ -197,7 +218,7 @@ Use `Ctrl+C` para fechar o monitor serial antes de transferir outro firmware. Pe
 
 Conferir a variante da placa, a alimentação e o mapeamento em [PINAGEM.md](PINAGEM.md). A configuração do PlatformIO não define os estados seguros das saídas nem resolve as pendências de motor, Burn Wire e strapping pins. Essas definições continuam dependendo dos contratos e do esquema elétrico do projeto.
 
-Consultar hardware, interfaces e tempo em [TODO.md](TODO.md) e as decisões em [ARCHITECTURE.md](ARCHITECTURE.md). Payload usa UART TX 17 / RX 16, 115,2 kbps 8N1 e binário compacto com SeqID + NACK; disponibilidade no módulo, montagem e enquadramento final exigem conferência/validação. TT&C usa contrato JSON compartilhado, distinto do binário Payload. `Pinout.h` registra alocações, sem configurar periféricos. Configuração PlatformIO não comprova comunicação, temporização, estados em boot/reset ou precisão do método monotônico/referências LoRa; RTC externo fica fora da configuração atual.
+Consultar hardware, interfaces e tempo em [TODO.md](TODO.md) e as decisões em [ARCHITECTURE.md](ARCHITECTURE.md). Payload usa UART TX 17 / RX 16, 115,2 kbps 8N1, com snapshots JSON completos por decisão de 05/11/2026; disponibilidade no módulo, montagem, enquadramento, integridade e perdas/repetição exigem definição/validação. TT&C usa seu próprio contrato JSON compartilhado; seus limites não são os do Payload. `Pinout.h` registra alocações, sem configurar periféricos. Configuração PlatformIO não comprova comunicação, temporização, estados em boot/reset ou precisão do método monotônico/referências LoRa; RTC externo fica fora da configuração atual.
 
 ## Referências
 

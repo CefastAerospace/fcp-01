@@ -1,6 +1,6 @@
 /**
  * @file ObcData.h
- * @brief Modelos portáteis do contrato OBC v1 proposto aos produtores.
+ * @brief Modelos portáteis de registros v1 e snapshots do Payload.
  * @details Ordem e tamanhos persistidos estão em common/protocol/obc-data.md.
  * Não serializar memória destas estruturas. Aceite externo ainda pendente.
  */
@@ -28,6 +28,12 @@ namespace obc_data {
     constexpr size_t timestamp_chars = 20;
     constexpr size_t description_chars = 64;
     constexpr size_t thermal_sensors = 5;
+    constexpr size_t max_snapshot_aircraft = 20;
+    constexpr size_t max_aircraft_extras = 32;
+    constexpr size_t extra_key_chars = 32;
+    constexpr size_t extra_value_chars = 64;
+    constexpr size_t identification_chars = 16;
+    constexpr size_t tick_chars = 40;
 
     static_assert(sizeof(float) == 4 && std::numeric_limits<float>::is_iec559,
         "Contrato v1 exige float IEEE 754 de 32 bits");
@@ -64,6 +70,15 @@ namespace obc_data {
         PAYLOAD_VELOCITY = 1U << 3,
         PAYLOAD_HEADING = 1U << 4,
         PAYLOAD_TIMESTAMP = 1U << 5
+    };
+
+    /** @brief Disponibilidade do snapshot; não é a máscara de registros v1. */
+    enum SNAPSHOT_FIELD : uint8_t {
+        SNAPSHOT_LATITUDE = PAYLOAD_LATITUDE,
+        SNAPSHOT_LONGITUDE = PAYLOAD_LONGITUDE,
+        SNAPSHOT_ALTITUDE = PAYLOAD_ALTITUDE,
+        SNAPSHOT_IDENTIFICATION = 1U << 3,
+        SNAPSHOT_TICK = 1U << 4
     };
 
     /** @brief Disponibilidade local da TM; não muda o pacote TT&C. */
@@ -147,6 +162,57 @@ namespace obc_data {
         double velocity;
         double heading;
         char timestamp[timestamp_chars + 1];
+    };
+
+    /**
+     * @brief Campo textual não padronizado, com chave e valor terminados em NUL.
+     * @details Limites em bytes, sem contar NUL. Chave não vazia; valor vazio
+     * permitido. Preserva também textos de campos conhecidos não decodificados.
+     * Não truncar, nem converter outros tipos JSON silenciosamente em strings.
+     */
+    struct EXTRA_FIELD {
+        char key[extra_key_chars + 1];
+        char value[extra_value_chars + 1];
+    };
+
+    /**
+     * @brief Estado acumulado de uma aeronave no snapshot, sem sessão/sequência.
+     * @details ICAO de 24 bits obrigatório; posição em graus, altitude em ft.
+     * Latitude/longitude são um par disponível ou indisponível. Não exige
+     * dado de voo: uma aeronave pode ter somente ICAO, identificação ou extras.
+     * Campos ausentes são ignorados; zero é válido quando disponível.
+     * tick é texto original do produtor, não UTC validado nem tempo OBC.
+     * Valida apenas limite/terminação dos textos, não UTF-8 ou calendário.
+     * Extras têm chaves únicas, sensíveis a maiúsculas. Não copiar esta RAM
+     * para arquivos ou quadros; o codec v1 não representa este modelo.
+     */
+    struct AIRCRAFT_STATE {
+        uint32_t icao;
+        uint8_t available_fields;
+        double latitude;
+        double longitude;
+        double altitude;
+        char identification[identification_chars + 1];
+        char tick[tick_chars + 1];
+        uint8_t extra_count;
+        EXTRA_FIELD extras[max_aircraft_extras];
+    };
+
+    /**
+     * @brief Lista completa recebida do Payload e instante validado no OBC.
+     * @details id é opaco, inclusive zero; não implica sequência nem contagem.
+     * stamp reutiliza o boot/monotônico do OBC. Lista vazia é válida; ICAOs
+     * não podem se repetir. O futuro receptor deve publicar somente snapshots
+     * completos e válidos, sem mesclar a lista anterior. Não há parser aqui.
+     * Arrays fixos evitam alocação dinâmica; usar armazenamento do chamador
+     * fora da pilha de tarefas FreeRTOS. Validar contagens antes de converter
+     * ou preencher arrays; não truncar dados para fazê-los caber.
+     */
+    struct PAYLOAD_SNAPSHOT {
+        uint64_t id;
+        obc_time::EVENT_STAMP stamp;
+        uint8_t aircraft_count;
+        AIRCRAFT_STATE aircraft[max_snapshot_aircraft];
     };
 
     /**
@@ -244,6 +310,24 @@ namespace obc_data {
     STATUS Validate(
         const RECORD_HEADER& header,
         const PAYLOAD_DATA& data
+    );
+
+    /**
+     * @brief Valida disponibilidade, domínios, textos e extras de uma aeronave.
+     * @param data Estado acumulado, sem interpretar o JSON de origem.
+     * @return OK, INVALID_LENGTH ou INVALID_VALUE; não modifica a entrada.
+     */
+    STATUS Validate(
+        const AIRCRAFT_STATE& data
+    );
+
+    /**
+     * @brief Valida boot, limite, aeronaves e unicidade dos ICAOs do snapshot.
+     * @param data Snapshot completo; não representa um registro v1.
+     * @return OK, INVALID_LENGTH ou INVALID_VALUE; não publica estado global.
+     */
+    STATUS Validate(
+        const PAYLOAD_SNAPSHOT& data
     );
 
     /**

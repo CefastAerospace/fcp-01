@@ -7,6 +7,8 @@
 
 **Atualização OBC — 01/11/2026:** modelos, tempo/boots, codec e leitor nativo possuem implementação local e verificações registradas nas tarefas. O contrato v1 ainda aguarda aceite; integração, precisão física e integridade do SD continuam pendentes. O orçamento de armazenamento abaixo usa os tamanhos desse contrato proposto, sem alterar requisitos ou parâmetros do rádio.
 
+**Atualização OBC — 05/11/2026:** o responsável confirmou snapshots JSON completos diretamente pela UART do Payload. DAD-001 acrescenta modelos em memória com extras; codec v1 e valores calculados abaixo permanecem preservados. As estimativas de tráfego por atualização individual não dimensionam os novos snapshots. Recalcular UART/armazenamento em COM-004/DAD-003 após confirmar frequência, tamanho máximo e persistência. Não alterar critérios de latência, perdas ou registro por mensagem para acomodar o novo formato.
+
 ## 1. Custos e sobressalentes
 
 ### 1.1 Configuração considerada
@@ -68,6 +70,8 @@ Um cartão reserva não recupera registros perdidos no cartão original. Integri
 ### 2.1 Capacidade e conteúdo armazenado
 
 Adota-se cartão microSD de **32 GB, formatado em FAT32**. A capacidade foi escolhida para permitir várias execuções de missão, diagnósticos e campanha de integração, com ampla margem sobre o volume estimado. Um cartão SDHC de 32 GB permite usar FAT32 sem depender da configuração exFAT normalmente associada a cartões de maior capacidade. A compatibilidade com leitor, driver e alimentação deverá ser validada.
+
+Em 05/11/2026, a implementação local de COM-005 passou a usar SD/HSPI a 4 MHz iniciais, com sincronização a cada bloco e até três tentativas no mesmo offset. O responsável indicou disponibilidade de cartão de 32 ou 64 GB; manter FAT32 em ambos, pois o FatFs instalado não suporta exFAT. O orçamento permanece calculado para 32 GB. Nenhum arquivo é apagado automaticamente; falta de espaço e limite de arquivo são falhas explícitas. O limite por arquivo de `INT32_MAX` bytes do serviço deriva do runtime, não da capacidade total. A implementação e o build aprovados não comprovam alimentação, montagem ou integridade física.
 
 O OBC armazenará mensagens ADS-B já decodificadas, referências de tempo, identificação dos boots, telemetria de estado, eventos, falhas e estatísticas. Não armazenará amostras brutas de RF/IQ. Essa escolha conserva a informação necessária à análise sem transferir ao OBC o grande volume da aquisição de rádio do Payload.
 
@@ -210,7 +214,7 @@ Essa definição é uma condição para iniciar os ensaios, não um novo modo op
 | Rateio financeiro | Quantidade física dos kits/placas e correspondência do ESP32 adquirido com a placa de integração. |
 | Cartão e conexões | Cotação do cartão de 32 GB, composição das conexões e compatibilidade elétrica/software. |
 | Tempo | Validar ms monotônicos/referências LoRa, quantização e latência de `args.unix` em segundos, erro/deriva e resets. RTC externo só será reconsiderado se o método não atender aos critérios temporais acordados. Não inferir tempo desligado após reset. |
-| Formatos | Alinhar o contrato OBC v1 proposto com os produtores e implementar o binário UART em COM-004, preservando o JSON de bancada. Codec/leitor de registros estão implementados localmente; medir tráfego e validar armazenamento integrado. Downlink mantém JSON TT&C, corpo ≤245 bytes/quadro ≤255 bytes, sem fragmentação. |
+| Formatos | Alinhar snapshots JSON UART com os produtores em COM-004 e definir sua persistência em DAD-003, preservando o codec/leitor v1 e o script atual até migração explícita. Medir tráfego e validar armazenamento integrado. Downlink mantém JSON TT&C, corpo ≤245 bytes/quadro ≤255 bytes, sem fragmentação. |
 | Rádio | Validar parâmetros atuais SF7/BW125/CR4/6/preâmbulo32, capacidade útil, contato e filas. Orçamento recalculado não comprova entrega nem autoriza mudar decisões/limites TT&C. |
 | Critérios de missão | Confirmar compatibilidade entre transmissão agregada, latência e perdas sem modificar critérios existentes silenciosamente. |
 | Recuperação | Confirmar ou corrigir promessas de watchdog externo/partição de recuperação presentes no DP. |

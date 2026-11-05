@@ -7,7 +7,7 @@ Registro compartilhado de endereços, barramentos e pinos. Consolida a alocaçã
 | Pinos ESP32 | Uso | Observação |
 |---|---|---|
 | TX0 = 1 / RX0 = 3 | UART0, umbilical USB-C de bancada | TC/TM JSON, um objeto por linha; contrato TT&C §7.1. |
-| RX = 16 / TX = 17, 115,2 kbps 8N1 | UART dedicada OBC ↔ Raspberry Pi | Binário ADS-B compacto com SeqID + NACK (§6.4); capacidade serial teórica de 11,52 kB/s antes do protocolo. |
+| RX = 16 / TX = 17, 115,2 kbps 8N1 | UART dedicada OBC ↔ Raspberry Pi | Snapshots JSON completos, por decisão de 05/11/2026; enquadramento, integridade e perdas/repetição pendentes em COM-004. Capacidade serial teórica de 11,52 kB/s antes do protocolo. |
 
 O Payload não participa do I2C. Confirmar UART/porta no Pi, TX/RX cruzados, GND comum, níveis de 3,3 V, disponibilidade de 16/17 no módulo/flash/PSRAM e comportamento com um lado desligado. Parâmetros de projeto não comprovam o transporte no script nem validação da montagem; consultar [COM-004](../../obc-dh/.tasks/01-comunicacao/COM-004-uart-payload.md).
 
@@ -56,5 +56,5 @@ Atualizar a referência antes de integrar novo dispositivo ou ligação, com dec
 
 - Design Package §3.1 (pinagem), §6.4 (UART e tempo), §7.1 (rádio/umbilical), conforme referências dos setores no remoto; arquivo Markdown citado não disponível neste checkout.
 - [Pinout.h](../../obc-dh/headers/Pinout.h): constantes, sem inicialização de hardware.
-- [Contrato JSON TT&C](../protocol/ttc-json.md): protocolo distinto do binário UART do Payload.
+- [Contrato JSON TT&C](../protocol/ttc-json.md): protocolo distinto dos snapshots JSON UART do Payload, cuja decisão de 05/11/2026 está no [contrato OBC](../protocol/obc-data.md).
 - [EPS/Térmico](../../eps-tc/README.md) e [ADCS](../../adcs/README.md): decisões e contratos dos responsáveis.

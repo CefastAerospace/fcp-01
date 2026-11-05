@@ -131,6 +131,71 @@ namespace obc_data {
     }
 
     STATUS Validate(
+        const AIRCRAFT_STATE& data
+    ) {
+        // Reutiliza os bits de posição/altitude, sem aplicar o contrato de
+        // atualização individual (sessão, sequência e dado de voo obrigatório).
+        const uint8_t fields = data.available_fields;
+        const uint8_t position = SNAPSHOT_LATITUDE | SNAPSHOT_LONGITUDE;
+        const uint8_t known = position | SNAPSHOT_ALTITUDE
+            | SNAPSHOT_IDENTIFICATION | SNAPSHOT_TICK;
+        if (data.icao > 0xFFFFFFUL || (fields & ~known) != 0
+                || ((fields & position) != 0 && (fields & position) != position)) {
+            return STATUS::INVALID_VALUE;
+        }
+        if ((fields & SNAPSHOT_LATITUDE) && (!std::isfinite(data.latitude)
+                || data.latitude < -90 || data.latitude > 90)) return STATUS::INVALID_VALUE;
+        if ((fields & SNAPSHOT_LONGITUDE) && (!std::isfinite(data.longitude)
+                || data.longitude < -180 || data.longitude > 180)) return STATUS::INVALID_VALUE;
+        if ((fields & SNAPSHOT_ALTITUDE) && !std::isfinite(data.altitude)) return STATUS::INVALID_VALUE;
+
+        // tick permanece opaco: aceitação do texto não valida seu horário.
+        if ((fields & SNAPSHOT_IDENTIFICATION) && std::memchr(data.identification,
+                '\0', sizeof(data.identification)) == nullptr) return STATUS::INVALID_LENGTH;
+        if ((fields & SNAPSHOT_TICK) && std::memchr(data.tick,
+                '\0', sizeof(data.tick)) == nullptr) return STATUS::INVALID_LENGTH;
+        if (data.extra_count > max_aircraft_extras) return STATUS::INVALID_LENGTH;
+
+        // Verifica terminação antes de comparar chaves; apenas os slots ativos
+        // participam. ponytail: busca quadrática limitada a 32 extras;
+        // usar índice se o contrato exigir coleções maiores.
+        for (size_t index = 0; index < data.extra_count; ++index) {
+            const EXTRA_FIELD& extra = data.extras[index];
+            if (std::memchr(extra.key, '\0', sizeof(extra.key)) == nullptr
+                    || std::memchr(extra.value, '\0', sizeof(extra.value)) == nullptr) {
+                return STATUS::INVALID_LENGTH;
+            }
+            if (extra.key[0] == '\0') return STATUS::INVALID_VALUE;
+            for (size_t previous = 0; previous < index; ++previous) {
+                if (std::strcmp(extra.key, data.extras[previous].key) == 0) {
+                    return STATUS::INVALID_VALUE;
+                }
+            }
+        }
+        return STATUS::OK;
+    }
+
+    STATUS Validate(
+        const PAYLOAD_SNAPSHOT& data
+    ) {
+        if (data.stamp.boot_id == 0) return STATUS::INVALID_VALUE;
+        if (data.aircraft_count > max_snapshot_aircraft) return STATUS::INVALID_LENGTH;
+
+        // A identidade é o ICAO, não a posição no array. ponytail: busca
+        // quadrática limitada a 20 aeronaves; usar índice se o limite crescer.
+        for (size_t index = 0; index < data.aircraft_count; ++index) {
+            const STATUS result = Validate(data.aircraft[index]);
+            if (result != STATUS::OK) return result;
+            for (size_t previous = 0; previous < index; ++previous) {
+                if (data.aircraft[index].icao == data.aircraft[previous].icao) {
+                    return STATUS::INVALID_VALUE;
+                }
+            }
+        }
+        return STATUS::OK;
+    }
+
+    STATUS Validate(
         const RECORD_HEADER& header,
         const TELEMETRY_DATA& data
     ) {

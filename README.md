@@ -12,9 +12,15 @@ O Design Package e os ICDs/ConOps vigentes são as referências de engenharia. A
 
 ## Arquitetura e estado da integração
 
-O FCP-01 tem arquitetura centralizada planejada: um ESP32 executará o firmware integrado do OBC, incluindo ADCS, sobre Arduino/FreeRTOS. O Payload executa em Raspberry Pi Zero W e se comunica com o OBC por UART. O serviço I2C do OBC está implementado, com teste nativo da política de escalonamento aprovado, mas `setup()`/`loop()` continuam vazios e não o inicializam. A descrição abaixo é de integração prevista, não de funcionalidades já validadas em hardware.
+O FCP-01 tem arquitetura centralizada planejada: um ESP32 executará o firmware integrado do OBC, incluindo ADCS, sobre Arduino/FreeRTOS. O Payload executa em Raspberry Pi Zero W e se comunica com o OBC por UART. O firmware atual tem boot de bancada: Serial a 115200 baud, reserva de boot/NVS, controlador/executor I2C e tentativa de montagem SD, com relatório de falhas independentes. `loop()` cede execução com `delay(100)`. A integração de missão abaixo continua prevista, sem comprovação física por essas verificações locais.
 
 Atualização OBC-DH de 01/11/2026: estão implementados localmente os modelos/validadores de dados, a reconstrução temporal por boot com adaptador timer/NVS e o codec binário com CRC-32, além de um leitor nativo que exporta JSON Lines e relata trechos inválidos. Testes nativos e compilação ESP32 aprovados estão registrados nas tarefas. DAD-002 está concluída no seu escopo local; DAD-001 aguarda aceite dos produtores e DAD-003 também depende da definição dos estados duráveis de retomada. Os módulos ainda não estão ligados ao firmware central, rádio ou SD. Consultar o [contrato OBC v1 proposto](common/protocol/obc-data.md) e o [guia do codec/leitor](obc-dh/tools/README.md).
+
+Atualização OBC-DH de 05/11/2026: o responsável confirmou snapshots JSON completos diretamente pela UART do Payload, substituindo a decisão anterior de binário compacto. DAD-001 acrescenta modelos em memória com campos opcionais e extras textuais, com teste nativo e build ESP32 aprovados. O codec/leitor v1 e o script atual do Payload foram preservados; recepção, gravação integrada dos snapshots e compatibilização dos critérios por mensagem ADS-B continuam pendentes. DAD-003 implementa o codec persistente v2 descrito abaixo. O [contrato OBC](common/protocol/obc-data.md#0-snapshot-do-payload--modelo-em-memória) registra limites e mapeamento proposto.
+
+COM-005 acrescenta serviço de arquivos POSIX e adaptador SD/HSPI, com criação exclusiva, sincronização por bloco, até três tentativas no mesmo offset e leitura por blocos. Teste nativo de falhas e build ESP32 aprovados; confirmação de módulo/alimentação com EPS e ensaios físicos continuam pendentes. INT-003 chama a montagem no boot de bancada; geração de registros e transporte de extração ainda não estão integrados. Contrato e uso estão no [guia de armazenamento](obc-dh/tools/README.md#serviço-de-arquivos-sdhspi).
+
+INT-003 tem entrega parcial de bancada com coordenador portátil e verificação das oito combinações de sucesso/falha dos serviços, além de build ESP32 aprovado. Não há repetição/reset automático, inicialização de atuadores ou implementação dos modos de voo. A tarefa permanece em andamento pelas definições de placa, ConOps e estados elétricos do boot integrado. Nenhum upload ou ensaio físico foi realizado nesta entrega; logs USB não substituem o protocolo umbilical de INT-004.
 
 | Subsistema | Hardware / interface prevista |
 |---|---|
@@ -63,7 +69,7 @@ Alocação registrada na §3.1 do Design Package e nas constantes de `obc-dh/hea
 | Interface | Pinos ESP32 | Uso |
 |---|---|---|
 | UART0 | GPIO 1 / 3 | Umbilical USB-C (TC/TM bancada) |
-| UART payload | RX 16 / TX 17, 115,2 kbps 8N1 | Pi ↔ OBC, binário ADS-B com SeqID + NACK (§6.4) |
+| UART payload | RX 16 / TX 17, 115,2 kbps 8N1 | Snapshots JSON completos; enquadramento, integridade e perdas/repetição pendentes em COM-004 |
 | I2C de sensores | SDA 21 / SCL 22 | 3x INA219, 5x LM75A, MPU-9250 (`0x68`), AS5600 (`0x36`), 2x BH1750 (`0x23`/`0x5C`) |
 | VSPI | MOSI 23 / MISO 19 / SCK 18, CS 5, DIO0 4, RST 14 | LoRa SX1276 (921 MHz, §7.1) |
 | HSPI | MOSI 32 / MISO 35 / SCK 15, CS 13 | microSD (missão + logs) |
@@ -76,11 +82,11 @@ Detalhes e restrições em [pinout compartilhado](common/interfaces/pinout.md) e
 
 ## Contratos de dados
 
-- **Payload → OBC:** dados ADS-B já decodificados em binário compacto via UART; SeqID + NACK trata gaps (§6.3–6.4). I/Q cru permanece no Pi. Enquadramento final e transporte no script aguardam implementação/validação.
+- **Payload → OBC:** snapshots JSON completos com dados ADS-B já decodificados via UART, conforme decisão de 05/11/2026. I/Q cru permanece no Pi. Enquadramento, integridade, perdas/repetição e migração do produtor aguardam definição/implementação em COM-004; `id` ainda não equivale a SeqID.
 - **Tempo:** OBC associa ms desde o boot e referências absolutas recebidas via `set_time`; preserva o timestamp local do Payload como informação de bancada, sem confundi-lo com a referência de voo.
 - **TM/TC:** [contrato JSON TT&C](common/protocol/ttc-json.md), LoRa 921 MHz SF7 e umbilical. `Ttc::Send()` aceita corpo de até 245 bytes sem `n`; o quadro final tem até 255 bytes, sem fragmentação. Descida sob demanda, ACK prioritário e agregação por aeronave; log completo no SD.
 - **SD:** FAT32, fechamento controlado e monitoramento de alimentação (§7.3); integridade após interrupção de escrita ainda exige evidência de validação.
-- **Registros OBC:** contrato binário v1 proposto, separado dos transportes UART/LoRa; sete tipos de 36–105 bytes, limite global de 512 bytes. Codec portátil implementado e leitor no computador disponível; driver SD, extração pelo umbilical e integração operacional continuam pendentes.
+- **Registros OBC:** contrato binário v1 proposto, separado dos transportes UART/LoRa; sete tipos de 36–105 bytes, limite global de 512 bytes. Codec portátil, leitor no computador e serviço de arquivos SD/HSPI implementados localmente; snapshots e extras têm representação v2 de 37–64497 bytes, separada do limite v1 de 512 bytes. Extração pelo umbilical, integração operacional e ensaios físicos continuam pendentes.
 
 ## Estrutura do repositório
 
@@ -90,7 +96,7 @@ fcp-01/
 │   ├── .agents/            # Painel TODO, requisitos e guias.
 │   ├── .tasks/             # Comunicação, dados/tempo, integração e testes; done/ por grupo.
 │   ├── headers/            # Pinagem, I2C, tempo, modelos e codec públicos.
-│   ├── src/                # Módulos implementados; setup()/loop() ainda vazios.
+│   ├── src/                # Módulos e boot de bancada; sem missão integrada.
 │   ├── tests/              # Verificações nativas de I2C, tempo, modelos e registros.
 │   ├── tools/              # Leitor C++ de arquivos OBC e exportação JSON Lines.
 │   └── platformio.ini      # Ambiente ESP32/Arduino.
@@ -125,7 +131,7 @@ O firmware central ESP32 é o ambiente `obc` em `obc-dh/platformio.ini`; o Paylo
 | Requisitos e rastreabilidade | Design Package §4 + Apêndice A; `obc-dh/.agents/REQUISITOS.md` |
 | Orçamentos | Design Package §5; `obc-dh/.agents/DEFINICOES_OBC_DP.md` |
 | Dados, registros e análise OBC | [Contrato v1 proposto](common/protocol/obc-data.md) e [codec/leitor](obc-dh/tools/README.md) |
-| Payload e binário UART | Design Package §6; `payload/README.md` |
+| Payload e snapshots UART | Decisão de 05/11/2026 em `payload/README.md`; binário anterior no Design Package §6 |
 | Rádio, execução, SD e estação | Design Package §7; `tt-c/README.md` e contrato JSON compartilhado |
 | V&V e resultados | Design Package §8; evidências dos setores |
 | Status e roadmap UNSAM | Design Package §9 |

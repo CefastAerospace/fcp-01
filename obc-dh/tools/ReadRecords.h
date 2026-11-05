@@ -12,7 +12,7 @@
 #include <iomanip> // Precisão decimal suficiente para round-trip dos reais.
 #include <iostream> // stdout JSON Lines e stderr com diagnósticos.
 #include <locale> // Formatação JSON independente da configuração regional.
-#include <vector> // Apenas referências temporais, não os registros de missão.
+#include <vector> // Histórico somente de referências; snapshots usam espaço fixo.
 
 namespace obc_record_tool {
 

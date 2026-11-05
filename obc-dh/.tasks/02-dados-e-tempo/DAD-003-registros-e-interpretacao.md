@@ -19,6 +19,8 @@ Implementar codificação/decodificação conforme o formato acordado, com ident
 ## Definições e condições
 
 - Definir contagem/identificação de boots e estados necessários à retomada, incluindo Burn Wire e referências temporais, sem reescrever dados já gravados.
+- Revisão de 05/11/2026: DAD-001 acrescentou modelos em memória para snapshots JSON completos do Payload com extras. O codec/leitor v1 foi preservado e não representa esses tipos. Definir persistência dos snapshots, preservação de extras e identificação dos limites de cada lista (inclusive vazia), com versionamento explícito se alterar o layout. Não fabricar sessão/sequência ou atualizações individuais a partir de `id`. A implementação dessa extensão não ocorreu em DAD-001.
+- Extensão posterior de 05/11/2026: persistência e leitura dos snapshots implementadas em formato v2 próprio, conforme a entrega abaixo. A definição anterior descreve a lacuna identificada após DAD-001; permanecem pendentes a consolidação dos produtores e os estados duráveis de retomada, não o codec dos snapshots.
 
 ## Critérios de conclusão
 
@@ -84,6 +86,68 @@ e48dad3f0a665a6d65f73d35dde2473102d7295bbfe41d4266e92443ce6374c8  obc-dh/src/Obc
 - Resolver explicitamente a exigência de estados duráveis de retomada, inclusive Burn Wire, com os responsáveis. Eventos são evidência de ocorrência registrada, não autorização nem confirmação física de atuação.
 - Sem upload ou execução física, sem I/O SD, sem recuperação de FAT32, sem extração pelo umbilical e sem integração operacional. COM-005/INT-006/INT-008 conservam suas responsabilidades.
 - Não concluir automaticamente TES-007 ou ensaios físicos por estes resultados locais. Não mover DAD-003 para `done/` enquanto as pendências de seu escopo não estiverem resolvidas.
+
+### Persistência de snapshots v2 — 05/11/2026
+
+Implementação local sobre a base Git `28504b1` e os trabalhos anteriores de DAD-001/COM-005/INT-003. O responsável escolheu um registro variável por snapshot, com buffer do chamador, preservando o v1. Sem commit, upload ou ensaio físico. DAD-003 permanece **Em andamento** até consolidação de DAD-001 e definição dos estados duráveis de retomada, inclusive Burn Wire. Não foi movida para `done/`.
+
+**Entrega:** `GetSnapshotSize`, `EncodeSnapshot` e `DecodeSnapshot` no módulo existente, reutilizando validadores, resultados, primitivas little-endian/f64 e CRC-32. O [contrato](../../../common/protocol/obc-data.md#persistência-de-snapshots--v2) define `FCP2`, versão 2/tipo 8, cabeçalho de 24 bytes, `id` u64, contagem/lista de aeronaves, campos opcionais e extras com comprimento u8 e bytes sem NUL/padding. Registro vazio = 37 bytes; somente ICAO = 42; máximo = 64497. O comprimento u16 é suficiente. A união/tipos v1 e seu limite de 512 bytes não foram ampliados.
+
+Codificação valida modelo/capacidade antes da primeira escrita e copia somente uma aeronave temporária. Decodificação verifica CRC e conteúdo em primeira passagem, depois publica/normaliza em segunda passagem sobre a mesma entrada estável, sem outro snapshot completo. Campos/slots ausentes são zerados. Fonte/destino não podem se sobrepor. Não há alocação dinâmica ou I/O no codec, nem novos buffers reservados pelo firmware central. Modelo de 64672 bytes e buffer de até 64497 são responsabilidade da integração futura, fora da pilha padrão de tarefas.
+
+**Leitor:** mesma ferramenta e CLI, agora buscando `FCP1`/`FCP2` em janela de 64497 bytes. V1/v2/mistos são aceitos. Reutiliza reconstrução temporal e referências v1 por boot; exporta um JSON Lines por snapshot, com `type: "payload_snapshot"`, `version: 2`, `data.id` e `data.aircraft`. Preserva `tick`, ausência, zero negativo, extras e inteiros de 64 bits. A política de descrição não UTF-8 foi consolidada em helper compartilhado: campos textuais dos snapshots também recebem indicação/hex sem perder bytes ou gerar JSON inválido. Exportação v1 e seus códigos de saída foram preservados.
+
+**Procedimento**, executado em `obc-dh/`:
+
+```bash
+g++ -std=c++11 -Wall -Wextra -Werror -fsanitize=undefined -fno-sanitize-recover=undefined -Iheaders src/ObcData.cpp src/ObcRecordCodec.cpp tests/SnapshotCodecCheck.cpp -o /tmp/fcp01-snapshot-codec-check
+g++ -std=c++11 -Wall -Wextra -Werror -fsanitize=undefined -fno-sanitize-recover=undefined -Iheaders src/ObcData.cpp src/ObcTime.cpp src/ObcRecordCodec.cpp tools/ReadRecords.cpp -o /tmp/fcp01-read-records
+python3 tests/SnapshotRecordsCheck.py /tmp/fcp01-snapshot-codec-check /tmp/fcp01-read-records
+g++ -std=c++11 -Wall -Wextra -Werror -fsanitize=undefined -fno-sanitize-recover=undefined -Iheaders src/ObcData.cpp tests/ObcDataCheck.cpp -o /tmp/fcp01-data-check
+/tmp/fcp01-data-check
+g++ -std=c++11 -Wall -Wextra -Werror -fsanitize=undefined -fno-sanitize-recover=undefined -Iheaders src/ObcData.cpp src/ObcRecordCodec.cpp tests/ObcRecordCodecCheck.cpp -o /tmp/fcp01-codec-check
+/tmp/fcp01-codec-check
+python3 tests/ReadRecordsCheck.py /tmp/fcp01-read-records
+pio run -e obc
+```
+
+Todos os comandos terminaram com código zero, sem diagnóstico do UBSan. O novo script usa apenas `struct`, `zlib` e demais recursos da biblioteca padrão Python; gera entradas temporárias e invoca os executáveis C++ reais. Resultados:
+
+- `Snapshot v2: vetores independentes, limites e saidas preservadas aprovados.`
+- `Snapshot v2: leitor misto, referencias, recuperacao e preservacao da origem aprovados.`
+- `Leitor C++: layouts, recuperação, JSON, referências e preservação da origem aprovados.`
+
+Os quatro vetores independentes representam lista vazia, ICAO isolado, amostra com opcionais/extras e limite máximo de 20 aeronaves × 32 extras. Foram comparados byte a byte, incluindo texto UTF-8/escapes e f64 −0.0. Conferidos buffers desalinhados, origem preservada, bytes posteriores intactos, ausência com lixo em RAM e normalização. Vetores curtos exercitam todos os prefixos/capacidades menores; o máximo exercita fronteiras sem repetir comparações redundantes de gigabytes. Falhas mantêm toda a saída e contagem zero.
+
+CRC válido não contornou validação de boot, contagens, ICAOs/chaves duplicados, máscara, par de coordenadas, NaN/Inf, limites de strings/extras, NUL embutido ou corpo com bytes sobrando. O leitor recuperou registros posteriores sem saltar comprimentos inválidos, preservou a origem byte a byte, detectou caudas truncadas e assinatura cruzando a janela. Assinaturas dentro de registro íntegro não criaram registros adicionais. `id` repetido conservou ambos os snapshots.
+
+Arquivo misto de snapshot/boot/snapshot/referência/snapshot conservou ordem e offsets. Referência v1 do boot 7 em 1000 ms, Unix 100 s e compensação 162 ms produziu 104162 ms Unix para snapshot em 5000 ms e 99162 ms para boot em zero. Outros boots ficaram sem referência. Textos não UTF-8 de identificação, `tick`, chave/valor de extras foram preservados em hex sem descartar o registro; strings vazias disponíveis continuaram distintas de ausência.
+
+Testes anteriores de modelos, codec e leitor passaram sem editar seus arquivos, entradas/asserts ou resultados esperados. Novos arquivos de teste: [SnapshotCodecCheck.cpp](../../tests/SnapshotCodecCheck.cpp) e [SnapshotRecordsCheck.py](../../tests/SnapshotRecordsCheck.py). Sem alterações em modelos/validadores, serviço SD, inicialização central, UART, TT&C ou atuadores.
+
+Build incremental ESP32 aprovado: PlatformIO 6.2.0, Espressif32 6.6.0, Arduino-ESP32 2.0.14, Xtensa 8.4.0+2021r2-patch5. Codec novo compilou sem avisos. RAM estática 23776/327680 bytes; flash 347429/1310720 bytes. Os novos codecs não são chamados pelo boot e o buffer máximo/modelo de snapshot não estão reservados no firmware; esses valores não demonstram consumo do fluxo integrado.
+
+Verificação adicional de pilha, executada em `obc-dh/`:
+
+```bash
+/home/o-grande-kayky/.local/share/platformio/packages/toolchain-xtensa-esp32/bin/xtensa-esp32-elf-g++ -std=c++11 -Os -Wall -Wextra -Werror -fstack-usage -Iheaders -c src/ObcRecordCodec.cpp -o /tmp/fcp01-snapshot-codec-esp32.o
+```
+
+O relatório `/tmp/fcp01-snapshot-codec-esp32.su` informou quadros individuais de 3280 bytes para `WriteAircraft`, 3408 para `ReadSnapshotBody`, 64 para `GetSnapshotSize`, 80 para `EncodeSnapshot` e 96 para `DecodeSnapshot`. Confirma ausência de outra cópia integral do snapshot no quadro dessas funções; não é medição do máximo total de pilha ou de execução física. A integração deverá provisionar a pilha dos consumidores além do modelo e buffer externos.
+
+SHA-256 desta extensão; os hashes de 01/11 acima continuam identificando a entrega histórica, não os fontes estendidos:
+
+```text
+74ab002547d39d272bd430afa8f003241c5066f65032c4c41d90392025cb0a2d  obc-dh/headers/ObcRecordCodec.h
+1d473b1bb13b404b428df510bd779aee45889196a29144a9821c67bfd3f4d8ce  obc-dh/src/ObcRecordCodec.cpp
+b32a60a978c20622181e3fe18b657b0db0ec7242e684a62f57d138ff0f4d170c  obc-dh/tools/ReadRecords.h
+4fbf7d3f0e1e23a50ab568836419b0d7b45ce7f80d74889b2f5c4bea5e07f1b7  obc-dh/tools/ReadRecords.cpp
+f7ad752ea9e11f1ee88f6027a528bc93eb3f28ad4343e793f09f26284e022344  obc-dh/tests/SnapshotCodecCheck.cpp
+53ee717e67a5d60f9a06b7892751b3512d3bb729f4292db4e7b6a95839e66c40  obc-dh/tests/SnapshotRecordsCheck.py
+dee7938e8a5c0ee5cf7dc4f3201e27cb6c90668efb5e576ea55546ebb4b81bd5  common/protocol/obc-data.md
+```
+
+**Pendências atuais:** consolidação dos contratos/aceites de DAD-001 e definição dos estados duráveis de retomada com os responsáveis. Persistência dos snapshots e extras já tem codec e leitor localmente verificados. Recepção UART permanece em COM-004; ligação de registros ao SD e extração pelo umbilical em INT-006. Nada nesta entrega comprova recuperação física de FAT32, requisito por mensagem ADS-B ou atuação/rearme de Burn Wire. Não encerrar automaticamente TES-007 ou os ensaios físicos.
 
 ## Referências
 

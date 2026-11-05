@@ -37,7 +37,7 @@ As direções são relativas ao ESP32. GPIOs 16/17 são a alocação de projeto 
 | Interface | Sinais e GPIOs | Uso |
 |---|---|---|
 | UART0 | TX = 1; RX = 3 | Bancada / solo pela interface USB da placa. |
-| UART do Payload | UART2: TX = 17; RX = 16, 115,2 kbps 8N1 | Binário compacto (~25–35 B estimados), SeqID + NACK; conferir módulo, montagem, porta Pi e enquadramento final. |
+| UART do Payload | UART2: TX = 17; RX = 16, 115,2 kbps 8N1 | Snapshots JSON completos, por decisão de 05/11/2026; conferir módulo, montagem, porta Pi, enquadramento, integridade e perdas/repetição. |
 | I2C | SDA = 21; SCL = 22 | Sensores de ADCS, EPS, Térmico e encoder conforme montagem. |
 | VSPI | MOSI = 23; MISO = 19; SCK = 18; CS = 5 | LoRa SX1276, 921 MHz SF7; usa SPI global. |
 | Rádio | DIO0 = 4; RST = 14 | Eventos e recuperação do rádio. |

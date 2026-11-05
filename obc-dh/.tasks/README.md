@@ -33,7 +33,7 @@ Implementação, integração e validação física são estados distintos. Na r
 
 Reorganização de 27/10/2026 a partir do TODO do commit `423dacb`. O inventário de 07/10, a reorganização de 11/10 e a consolidação de interfaces de 14/10 permanecem como histórico documental. O serviço I2C foi acrescentado em `bdfa48f` (20/10); o teste nativo aprovado em 27/10 está em [TES-001](04-testes/done/TES-001-escalonamento-i2c.md). A presente migração não executa novamente os ensaios nem comprova hardware.
 
-O I2C anteriormente cogitado para o Payload foi substituído por UART. A proposta `0x80` e a decisão encerrada continuam no [histórico dos requisitos](../.agents/REQUISITOS.md#histórico-de-decisões-de-interface). O contrato vigente é binário compacto com SeqID/NACK; JSON do Payload é bancada. LoRa usa VSPI, SD usa HSPI e sensores/encoder usam I2C. Não há RTC externo na configuração atual.
+O I2C anteriormente cogitado para o Payload foi substituído por UART. A proposta `0x80` e a decisão encerrada continuam no [histórico dos requisitos](../.agents/REQUISITOS.md#histórico-de-decisões-de-interface). Em 05/11/2026, o responsável substituiu a decisão de binário compacto por snapshots JSON completos na UART. Modelos locais estão em DAD-001; enquadramento, integridade e compatibilização dos cenários existentes de SeqID/NACK ficam em COM-004. LoRa usa VSPI, SD usa HSPI e sensores/encoder usam I2C. Não há RTC externo na configuração atual.
 
 As pendências antigas foram distribuídas sem alterar decisões ou critérios. Os IDs P-* abaixo existem apenas para rastrear sua origem; os IDs operacionais são COM/DAD/INT/TES.
 

@@ -244,6 +244,152 @@ namespace obc_record {
             }
         }
 
+        // Mede somente campos significativos, depois da validação do modelo.
+        size_t GetAircraftSize(
+            const obc_data::AIRCRAFT_STATE& data
+        ) {
+            size_t size = 5; // ICAO, máscara e contagem de extras.
+            for (unsigned bit = 0; bit < 3; ++bit) {
+                if (data.available_fields & (1U << bit)) size += 8;
+            }
+            if (data.available_fields & obc_data::SNAPSHOT_IDENTIFICATION) {
+                size += 1 + std::strlen(data.identification);
+            }
+            if (data.available_fields & obc_data::SNAPSHOT_TICK) size += 1 + std::strlen(data.tick);
+            for (size_t index = 0; index < data.extra_count; ++index) {
+                size += 2 + std::strlen(data.extras[index].key) + std::strlen(data.extras[index].value);
+            }
+            return size;
+        }
+
+        // Prefixo de comprimento sem padding; o modelo já garante NUL na RAM.
+        void WriteSnapshotText(
+            CURSOR& cursor,
+            const char* text
+        ) {
+            uint8_t size = static_cast<uint8_t>(std::strlen(text));
+            TransferUnsigned(cursor, size);
+            std::memcpy(cursor.output, text, size);
+            cursor.output += size;
+        }
+
+        // Compartilha primitivas v1, copiando somente uma aeronave por vez.
+        void WriteAircraft(
+            CURSOR& cursor,
+            const obc_data::AIRCRAFT_STATE& source
+        ) {
+            obc_data::AIRCRAFT_STATE data = source;
+            TransferUnsigned(cursor, data.icao, 3);
+            TransferUnsigned(cursor, data.available_fields);
+            double* values[] = {&data.latitude, &data.longitude, &data.altitude};
+            for (unsigned bit = 0; bit < 3; ++bit) {
+                if (data.available_fields & (1U << bit)) TransferReal<double, uint64_t>(cursor, *values[bit]);
+            }
+            if (data.available_fields & obc_data::SNAPSHOT_IDENTIFICATION) WriteSnapshotText(cursor, data.identification);
+            if (data.available_fields & obc_data::SNAPSHOT_TICK) WriteSnapshotText(cursor, data.tick);
+            TransferUnsigned(cursor, data.extra_count);
+            for (size_t index = 0; index < data.extra_count; ++index) {
+                WriteSnapshotText(cursor, data.extras[index].key);
+                WriteSnapshotText(cursor, data.extras[index].value);
+            }
+        }
+
+        // Um cursor v2 nunca avança sem conferir os bytes até o fim do corpo.
+        template<typename INTEGER>
+        bool ReadSnapshotUnsigned(
+            CURSOR& cursor,
+            const uint8_t* end,
+            INTEGER& value,
+            size_t width = sizeof(INTEGER)
+        ) {
+            if (static_cast<size_t>(end - cursor.input) < width) return false;
+            TransferUnsigned(cursor, value, width);
+            return true;
+        }
+
+        // O comprimento deve caber na RAM e não pode esconder sufixo após NUL.
+        STATUS ReadSnapshotText(
+            CURSOR& cursor,
+            const uint8_t* end,
+            char* text,
+            size_t maximum
+        ) {
+            uint8_t size = 0;
+            if (!ReadSnapshotUnsigned(cursor, end, size) || size > maximum
+                    || static_cast<size_t>(end - cursor.input) < size) return STATUS::INVALID_LENGTH;
+            if (std::memchr(cursor.input, '\0', size) != nullptr) return STATUS::INVALID_DATA;
+            std::memcpy(text, cursor.input, size);
+            text[size] = '\0';
+            cursor.input += size;
+            return STATUS::OK;
+        }
+
+        // Validação por aeronave reutiliza os domínios e a unicidade dos extras.
+        STATUS ReadAircraft(
+            CURSOR& cursor,
+            const uint8_t* end,
+            obc_data::AIRCRAFT_STATE& data
+        ) {
+            std::memset(&data, 0, sizeof(data));
+            if (!ReadSnapshotUnsigned(cursor, end, data.icao, 3)
+                    || !ReadSnapshotUnsigned(cursor, end, data.available_fields)) return STATUS::INVALID_LENGTH;
+            if ((data.available_fields & ~0x1FU) != 0) return STATUS::INVALID_DATA;
+            double* values[] = {&data.latitude, &data.longitude, &data.altitude};
+            for (unsigned bit = 0; bit < 3; ++bit) {
+                if (data.available_fields & (1U << bit)) {
+                    if (static_cast<size_t>(end - cursor.input) < 8) return STATUS::INVALID_LENGTH;
+                    TransferReal<double, uint64_t>(cursor, *values[bit]);
+                }
+            }
+            if (data.available_fields & obc_data::SNAPSHOT_IDENTIFICATION) {
+                const STATUS status = ReadSnapshotText(cursor, end, data.identification, obc_data::identification_chars);
+                if (status != STATUS::OK) return status;
+            }
+            if (data.available_fields & obc_data::SNAPSHOT_TICK) {
+                const STATUS status = ReadSnapshotText(cursor, end, data.tick, obc_data::tick_chars);
+                if (status != STATUS::OK) return status;
+            }
+            if (!ReadSnapshotUnsigned(cursor, end, data.extra_count)
+                    || data.extra_count > obc_data::max_aircraft_extras) return STATUS::INVALID_LENGTH;
+            for (size_t index = 0; index < data.extra_count; ++index) {
+                STATUS status = ReadSnapshotText(cursor, end, data.extras[index].key, obc_data::extra_key_chars);
+                if (status != STATUS::OK) return status;
+                status = ReadSnapshotText(cursor, end, data.extras[index].value, obc_data::extra_value_chars);
+                if (status != STATUS::OK) return status;
+            }
+            return MapStatus(obc_data::Validate(data));
+        }
+
+        // A primeira passagem não publica dados. A segunda percorre a mesma
+        // entrada imutável e copia aeronaves já validadas, sem modelo temporário.
+        STATUS ReadSnapshotBody(
+            CURSOR cursor,
+            const uint8_t* end,
+            obc_data::PAYLOAD_SNAPSHOT* output
+        ) {
+            uint64_t id = 0;
+            uint8_t count = 0;
+            if (!ReadSnapshotUnsigned(cursor, end, id) || !ReadSnapshotUnsigned(cursor, end, count)
+                    || count > obc_data::max_snapshot_aircraft) return STATUS::INVALID_LENGTH;
+            if (output != nullptr) {
+                output->id = id;
+                output->aircraft_count = count;
+            }
+            uint32_t identifiers[obc_data::max_snapshot_aircraft] = {};
+            obc_data::AIRCRAFT_STATE aircraft;
+            for (size_t index = 0; index < count; ++index) {
+                const STATUS status = ReadAircraft(cursor, end, aircraft);
+                if (status != STATUS::OK) return status;
+                // ponytail: até 20 ICAOs; usar índice se o limite crescer.
+                for (size_t previous = 0; previous < index; ++previous) {
+                    if (identifiers[previous] == aircraft.icao) return STATUS::INVALID_DATA;
+                }
+                identifiers[index] = aircraft.icao;
+                if (output != nullptr) output->aircraft[index] = aircraft;
+            }
+            return cursor.input == end ? STATUS::OK : STATUS::INVALID_LENGTH;
+        }
+
     } // namespace
 
     // ─── HELPERS ──────────────────────────────────────────────────────
@@ -320,6 +466,97 @@ namespace obc_record {
         const STATUS status = ValidateRecord(decoded);
         if (status != STATUS::OK) return status;
         record = decoded;
+        consumed = size;
+        return STATUS::OK;
+    }
+
+    STATUS GetSnapshotSize(
+        const obc_data::PAYLOAD_SNAPSHOT& snapshot,
+        size_t& total_bytes
+    ) {
+        total_bytes = 0;
+        const STATUS status = MapStatus(obc_data::Validate(snapshot));
+        if (status != STATUS::OK) return status;
+        size_t size = min_snapshot_record_bytes;
+        for (size_t index = 0; index < snapshot.aircraft_count; ++index) size += GetAircraftSize(snapshot.aircraft[index]);
+        total_bytes = size;
+        return STATUS::OK;
+    }
+
+    STATUS EncodeSnapshot(
+        const obc_data::PAYLOAD_SNAPSHOT& snapshot,
+        uint8_t* buffer,
+        size_t capacity,
+        size_t& written
+    ) {
+        written = 0;
+        if (buffer == nullptr) return STATUS::INVALID_ARGUMENT;
+        size_t size = 0;
+        const STATUS status = GetSnapshotSize(snapshot, size);
+        if (status != STATUS::OK) return status;
+        if (capacity < size) return STATUS::BUFFER_TOO_SMALL;
+
+        std::memcpy(buffer, snapshot_magic, 4);
+        CURSOR cursor = {buffer + 4, nullptr};
+        uint8_t version = snapshot_version;
+        uint8_t type = snapshot_type;
+        uint16_t total = static_cast<uint16_t>(size);
+        uint64_t boot_id = snapshot.stamp.boot_id;
+        uint64_t monotonic_ms = snapshot.stamp.monotonic_ms;
+        uint64_t id = snapshot.id;
+        uint8_t count = snapshot.aircraft_count;
+        TransferUnsigned(cursor, version);
+        TransferUnsigned(cursor, type);
+        TransferUnsigned(cursor, total);
+        TransferUnsigned(cursor, boot_id);
+        TransferUnsigned(cursor, monotonic_ms);
+        TransferUnsigned(cursor, id);
+        TransferUnsigned(cursor, count);
+        for (size_t index = 0; index < count; ++index) WriteAircraft(cursor, snapshot.aircraft[index]);
+        uint32_t crc = ComputeCrc32(buffer, size - obc_data::crc_bytes);
+        TransferUnsigned(cursor, crc);
+        written = size;
+        return STATUS::OK;
+    }
+
+    STATUS DecodeSnapshot(
+        const uint8_t* buffer,
+        size_t available,
+        obc_data::PAYLOAD_SNAPSHOT& snapshot,
+        size_t& consumed
+    ) {
+        consumed = 0;
+        if (buffer == nullptr) return STATUS::INVALID_ARGUMENT;
+        if (available < obc_data::header_bytes) return STATUS::INCOMPLETE;
+        if (std::memcmp(buffer, snapshot_magic, 4) != 0) return STATUS::BAD_MAGIC;
+        CURSOR cursor = {nullptr, buffer + 4};
+        uint8_t version = 0;
+        uint8_t type = 0;
+        uint16_t size = 0;
+        obc_time::EVENT_STAMP stamp = {};
+        TransferUnsigned(cursor, version);
+        TransferUnsigned(cursor, type);
+        TransferUnsigned(cursor, size);
+        TransferUnsigned(cursor, stamp.boot_id);
+        TransferUnsigned(cursor, stamp.monotonic_ms);
+        if (version != snapshot_version) return STATUS::UNSUPPORTED_VERSION;
+        if (type != snapshot_type) return STATUS::UNSUPPORTED_TYPE;
+        if (size < min_snapshot_record_bytes || size > max_snapshot_record_bytes) return STATUS::INVALID_LENGTH;
+        if (available < size) return STATUS::INCOMPLETE;
+        CURSOR crc_cursor = {nullptr, buffer + size - obc_data::crc_bytes};
+        uint32_t crc = 0;
+        TransferUnsigned(crc_cursor, crc);
+        if (crc != ComputeCrc32(buffer, size - obc_data::crc_bytes)) return STATUS::CRC_MISMATCH;
+        if (stamp.boot_id == 0) return STATUS::INVALID_DATA;
+        const uint8_t* end = buffer + size - obc_data::crc_bytes;
+        const STATUS status = ReadSnapshotBody(cursor, end, nullptr);
+        if (status != STATUS::OK) return status;
+
+        // Publicação só começa depois da validação integral; fonte permanece
+        // imutável entre passagens por contrato. Zera todos os slots inativos.
+        std::memset(&snapshot, 0, sizeof(snapshot));
+        snapshot.stamp = stamp;
+        ReadSnapshotBody(cursor, end, &snapshot);
         consumed = size;
         return STATUS::OK;
     }

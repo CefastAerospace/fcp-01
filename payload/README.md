@@ -8,7 +8,7 @@ Cadeia de voo (Design Package §6): antena fita 1090 MHz (face sul) → **RTL-SD
 
 ## Visão geral
 
-O script `telemetry.py` consome o fluxo BaseStation do `dump1090` na porta `30003` e extrai os parâmetros de voo. Hoje loga JSON de bancada; o formato de voo (pacotes **binários compactos ~25–35 B** com **Sequence ID + NACK** via ring buffer em RAM — §6.4) está decidido e com validação pendente (§9.3-4).
+O script `telemetry.py` consome o fluxo BaseStation do `dump1090` na porta `30003` e extrai os parâmetros de voo. Hoje loga JSON de bancada e não implementa transporte UART. Em **05/11/2026**, o responsável OBC confirmou snapshots JSON completos diretamente pela UART, conforme [a amostra recebida](../obc-dh/payload.json), substituindo a decisão anterior de binário compacto de ~25–35 B com Sequence ID + NACK (§6.4). O script foi preservado; a migração do produtor, enquadramento, integridade e tratamento de perdas ainda precisam de acordo com Payload em COM-004. Os [modelos OBC](../common/protocol/obc-data.md#0-snapshot-do-payload--modelo-em-memória) não comprovam essa implementação.
 Só dado processado voa para o OBC e para o solo; I/Q cru nunca sai do Pi (§6.3).
 
 - **Janela de missão:** 10 min contínuos, até 20 aeronaves (§2.2).
@@ -33,7 +33,7 @@ Só dado processado voa para o OBC e para o solo; I/Q cru nunca sai do Pi (§6.3
 ## Log de missão e enlace
 
 - **Bancada:** JSON Lines em `/mnt/data/mission_log.json` (exemplo abaixo) — formato de debug, não é o formato de voo.
-- **Voo (OBC ↔ Payload):** binário compacto via UART (validação de bancada pendente — open issue §9.3-4).
+- **Voo (Payload → OBC):** snapshots JSON completos por UART, conforme decisão de 05/11/2026; implementação e validação pendentes. Enquadramento e retorno OBC → Payload ainda a definir em COM-004.
 - **Voo (satélite → solo):** TM LoRa agregada por aeronave (JSON ~150 B, §7.1); log completo fica no microSD do OBC para extração via umbilical (§5.3).
 
 ```json

@@ -7,7 +7,7 @@ Contratos entre subsistemas do FCP-01. Vale como referência oficial — atualiz
 | `interfaces/pinout.md` | Pinos, barramentos SPI/I2C/UART e endereços (§3.1 do Design Package) |
 | `protocol/` | Spec do protocolo UART OBC ↔ Payload e dos pacotes TT&C |
 
-[Contrato OBC v1 proposto](protocol/obc-data.md): modelos lógicos e layout persistente, ainda sujeitos ao aceite dos produtores. Os exemplos JSON não substituem a UART binária nem o contrato TT&C em uso.
+[Contrato OBC](protocol/obc-data.md): modelos de snapshots JSON do Payload, layouts persistentes v1 e snapshots binários v2, ainda sujeitos ao aceite dos produtores. Snapshots JSON completos na UART são a decisão de 05/11/2026; seu enquadramento UART permanece pendente; a persistência v2 já tem codec e leitor locais, sem gravação integrada no SD. O contrato TT&C foi preservado.
 
 [Codec e leitor OBC](../obc-dh/tools/README.md): implementação local de DAD-003, com exportação JSON Lines, identificação de corrupção e reconstrução temporal, sem alterar o contrato v1 proposto.
 

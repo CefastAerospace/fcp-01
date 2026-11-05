@@ -1,10 +1,92 @@
-# Contrato de dados OBC v1 — proposta aos produtores
+# Dados OBC — registros v1 e snapshots v2 do Payload
 
 **Estado:** implementado localmente em DAD-001; aceite de Payload, TT&C, ADCS, EPS e Térmico pendente. Este documento não substitui automaticamente os contratos em uso. Referência C++: [ObcData.h](../../obc-dh/headers/models/ObcData.h); validação: [ObcData.cpp](../../obc-dh/src/ObcData.cpp).
 
 **Atualização de implementação — 01/11/2026:** DAD-003 acrescentou o [codec portátil](../../obc-dh/headers/ObcRecordCodec.h) e o [leitor nativo](../../obc-dh/tools/README.md), com testes locais e build ESP32 aprovados. Esta revisão documental atualiza estado e referências; versão, layouts, tamanhos e exemplos do contrato permanecem iguais aos da proposta inicial. DAD-001/DAD-003 continuam em andamento pelas pendências registradas nas tarefas; não há integração automática ao rádio ou SD.
 
-O contrato separa dados lógicos, transporte e persistência. O Payload continua com UART binária; o enquadramento UART, confirmação/retransmissão, limites de buffers, solicitações/respostas e geração de sessão pertencem a COM-004. O SD adota os registros binários abaixo. JSON neste documento é uma representação legível, sem ser um novo protocolo no ar. TT&C conserva seu [contrato JSON](ttc-json.md), incluindo unidades, `n` atribuído pelo enlace e limites de 245/255 bytes.
+**Decisão de 05/11/2026:** o responsável confirmou snapshots JSON completos diretamente pela UART do Payload, substituindo a decisão anterior de binário compacto. DAD-001 acrescenta modelos em memória e validação, sem parser ou transporte. Os registros v1 e seu codec continuam disponíveis com a semântica original; não representam automaticamente os snapshots e extras. O aceite dos produtores continua pendente.
+
+**Extensão de 05/11/2026:** DAD-003 implementa persistência de snapshots em registros v2 variáveis, com codec portátil e leitor v1/v2/misto. O formato v1 e os modelos em memória permanecem preservados. Não há recepção UART ou gravação automática de snapshots no boot; o aceite de DAD-001 e os estados duráveis de retomada continuam pendentes.
+
+O contrato separa dados lógicos, transporte e persistência. Enquadramento UART, integridade, confirmação/retransmissão, limites de tráfego/buffers e retomada pertencem a COM-004. Os registros binários v1 abaixo são preservados; snapshots têm formato v2 próprio. TT&C conserva seu [contrato JSON](ttc-json.md), incluindo unidades, `n` atribuído pelo enlace e limites de 245/255 bytes.
+
+## 0. Snapshot do Payload — modelo em memória
+
+Referência recebida: [payload.json](../../obc-dh/payload.json), objeto com `id` e `messages`, indexado por ICAO. Não é uma atualização parcial: cada objeto completo descreve a lista inteira. A coleção pode crescer, diminuir ou permanecer com os mesmos ICAOs e valores atualizados. Ordem não define identidade. O arquivo de exemplo é preservado; esta entrega não implementa sua leitura.
+
+### Tipos e disponibilidade
+
+`PAYLOAD_SNAPSHOT` contém `id` u64 opaco (inclusive zero), `stamp` do tipo existente `EVENT_STAMP`, `aircraft_count` e array de `AIRCRAFT_STATE`. O boot deve ser não zero; ms monotônicos podem ser zero. Não interpretar `id` como sessão, sequência, contagem ADS-B ou garantia de ordenação. Ausência de `id` não pode ser convertida implicitamente em zero pelo futuro parser.
+
+| Origem JSON | Campo de AIRCRAFT_STATE | Representação e mapeamento previsto para COM-004 |
+|---|---|---|
+| Chave em `messages` | `icao` | u32 limitado a 24 bits; interpretar seis hexadecimais sem distinção de caixa. Se `ICAO Address` existir, conferir concordância. |
+| `Identification` | `identification` | Texto original, até 16 bytes. |
+| `Latitude` / `Longitude` | `latitude` / `longitude` | f64 em graus, finitos, nos intervalos −90..90 / −180..180. Ambas disponíveis ou ambas indisponíveis. |
+| `Altitude` | `altitude` | f64 finito em pés; interpretar estritamente número e sufixo ` feet`. Zero e valores negativos são permitidos. |
+| `tick` | `tick` | Texto original de até 40 bytes, conservando frações e fuso. Não é UTC validado nem referência absoluta do OBC. |
+| Outros campos e textos não decodificados | `extras` | Array de `EXTRA_FIELD`, pares textuais `key`/`value`. Inclui velocidades e diagnósticos sem inventar unidades ou calcular rumo. |
+
+`available_fields` usa `SNAPSHOT_LATITUDE`, `SNAPSHOT_LONGITUDE`, `SNAPSHOT_ALTITUDE`, `SNAPSHOT_IDENTIFICATION` e `SNAPSHOT_TICK`. Os três primeiros reutilizam os bits existentes de posição/altitude; os dois últimos pertencem somente ao snapshot. Não confundir a máscara completa com `PAYLOAD_DATA`. Bits não definidos são rejeitados. Campo ausente ou `null` deixa seu bit desmarcado; bytes numéricos/textuais indisponíveis são ignorados, sem fabricar validade para zero. Strings disponíveis podem ser vazias; chaves de extras não podem. Validadores não verificam UTF-8 ou o calendário de `tick`.
+
+Uma aeronave com apenas ICAO, identificação ou extras é válida. `96298 (not decoded)` e `26514 (not decoded)` devem permanecer como textos nos extras, com posição indisponível. O futuro parser deve consumir o texto numérico inteiro, sem interpretar o prefixo de uma mensagem de diagnóstico como coordenada. Se somente uma coordenada for válida, conservar os textos recebidos nos extras e deixar o par indisponível. Textos conhecidos não interpretáveis também permanecem nos extras; não descartar informação silenciosamente.
+
+### Limites locais e validação
+
+- Até **20 aeronaves**, **32 extras por aeronave**, **32 bytes por chave** e **64 bytes por valor**. Limites textuais excluem NUL; arrays reservam um byte adicional. Esses limites cobrem a amostra, mas ainda precisam do aceite do produtor.
+- Extras representam os valores string presentes no exemplo. Outros tipos JSON precisam de contrato explícito; não converter objetos, arrays, números ou `null` silenciosamente em texto. Não há preservação byte a byte da formatação do JSON original.
+- `Validate(AIRCRAFT_STATE)` verifica ICAO, máscara, par de coordenadas, domínios numéricos, terminação e limite dos textos ativos, contagem e unicidade das chaves dos extras (sensíveis a maiúsculas).
+- `Validate(PAYLOAD_SNAPSHOT)` verifica boot, contagem, aeronaves e unicidade dos ICAOs. Lista vazia é válida. Retorna o `STATUS` existente: `OK`, `INVALID_LENGTH` ou `INVALID_VALUE`, sem modificar a entrada.
+- O receptor deve verificar limites antes de converter contagens ou preencher arrays. Dados acima do limite exigem falha explícita; truncar uma aeronave ou um campo produziria um snapshot incompleto. O tamanho máximo do quadro UART **não** é `sizeof` dessas estruturas e continua pendente em COM-004.
+
+Os arrays não usam alocação dinâmica. Na verificação de 05/11/2026, tanto no compilador nativo como na toolchain Xtensa ESP32: `EXTRA_FIELD` = 98 bytes, `AIRCRAFT_STATE` = 3232 bytes e `PAYLOAD_SNAPSHOT` = 64672 bytes. Não alocar o snapshot na pilha padrão de uma tarefa FreeRTOS, nem copiar toda a coleção sem necessidade. O proprietário futuro deve reservar armazenamento fora da pilha e definir publicação/concorrência em COM-004/INT-006. Ausência de parser significa que ainda não há buffer de recepção ou cópia dupla alocados pelo firmware.
+
+### Substituição e limites de evidência
+
+O receptor futuro publica a nova lista somente após receber e validar o snapshot completo. ICAOs ausentes saem da lista ativa; os registros históricos não são apagados. `messages: {}` válido limpa a lista. Entrada inválida, incompleta ou acima dos limites conserva o estado anterior. `Validate` não gerencia essa substituição.
+
+Os campos de uma aeronave podem ter idades diferentes. `tick` não comprova atualização de todos os campos. Snapshots podem omitir mensagens ADS-B intermediárias; não satisfazem, por si, o registro/timestamp de cada mensagem. Essa incompatibilidade deve ser resolvida com Payload e coordenação sem alterar os critérios de validação existentes. Significado de `id`, unidades das velocidades, idade dos campos e estratégia de perdas/repetição permanecem abertos.
+
+`PAYLOAD_DATA` continua sendo atualização individual com sessão/sequência. `ttc::AIRCRAFT_DATA` continua sendo conteúdo de downlink e depende do contrato TT&C. Nenhum desses tipos tem o mesmo contrato do snapshot. Os layouts/comportamentos v1, o script do Payload e os testes anteriores foram preservados; codec e leitor foram estendidos para v2. [PayloadSnapshotCheck.cpp](../../obc-dh/tests/PayloadSnapshotCheck.cpp) verifica somente os modelos; as verificações do codec/leitor v2 estão descritas abaixo. Não há parser JSON ou publicação de estado.
+
+## Persistência de snapshots — v2
+
+Um snapshot completo ocupa um único registro, inclusive quando sua lista está vazia. Não serializar a memória de `PAYLOAD_SNAPSHOT`. Reutilizar little-endian, f64 IEEE 754 e CRC-32/ISO-HDLC do v1; `id` conserva os 64 bits e não identifica sessão, sequência ou deduplicação. Boot e instante OBC são independentes de `tick`.
+
+| Offset | Campo | Bytes | Definição v2 |
+|---:|---|---:|---|
+| 0 | assinatura | 4 | ASCII `FCP2` |
+| 4 | version | 1 | `2` |
+| 5 | type | 1 | `8`, somente snapshot |
+| 6 | total_bytes | 2 | Cabeçalho + corpo variável + CRC |
+| 8 | boot_id | 8 | Boot OBC não zero |
+| 16 | monotonic_ms | 8 | Instante OBC, inclusive zero |
+| 24 | id | 8 | Identificador opaco do produtor, inclusive zero |
+| 32 | aircraft_count | 1 | 0–20 aeronaves |
+| 33 | aeronaves | variável | Ordem abaixo, sem padding |
+| total_bytes − 4 | CRC | 4 | Mesmo algoritmo v1, cobrindo todos os bytes anteriores |
+
+Cada aeronave contém, na ordem: ICAO u24, máscara u8, latitude/longitude/altitude f64 somente quando disponíveis (nessa ordem), identificação e `tick` somente quando disponíveis, contagem u8 dos extras e cada par chave/valor. Cada string contém um comprimento u8 seguido pelos bytes significativos, sem NUL ou padding. Cada extra grava comprimento/chave e depois comprimento/valor. Os limites e domínios são os do modelo acima: 16/40 bytes para identificação/`tick`, 32/64 por chave/valor e até 32 extras.
+
+NUL dentro do comprimento declarado é inválido: o modelo C++ não representa sufixos significativos após esse byte. String disponível vazia é permitida; chave vazia continua inválida. Demais bytes são preservados, sem impor validação UTF-8 ou calendário que o modelo não possui. Chaves de extras e ICAOs precisam ser únicos dentro de suas coleções. Máscaras desconhecidas, campos fora do domínio e bytes sobrando no corpo são rejeitados.
+
+Registro vazio: **37 bytes**. Uma aeronave somente com ICAO: **42 bytes**. Maior aeronave: **3223 bytes**; maior snapshot: `37 + 20 × 3223 = 64497 bytes`, dentro do comprimento u16. Isso não altera o limite v1 de 512 bytes nem os tamanhos de UART/LoRa. Leitor v1 não reconhece `FCP2`; usar o leitor atualizado para arquivos v2 ou mistos. Não migrar ou reescrever arquivos antigos automaticamente. Os tipos 1–7 e a união `RECORD` permanecem exclusivos do v1; o tipo 8 é tratado pela API de snapshot.
+
+### Codec, memória e publicação
+
+Em `obc_record`, `GetSnapshotSize(snapshot, total_bytes)` valida o modelo e calcula o tamanho exato. `EncodeSnapshot(snapshot, buffer, capacity, written)` valida modelo/capacidade antes da primeira escrita. `DecodeSnapshot(buffer, available, snapshot, consumed)` verifica cabeçalho, comprimento, CRC e todo o conteúdo antes de publicar a saída. Reutilizam o `STATUS` existente; contagens são zero em falha. `written`/`consumed` incluem cabeçalho e CRC. Fonte e destino não podem se sobrepor e a fonte deve permanecer estável durante a chamada.
+
+O codec não faz I/O ou alocação dinâmica e não amplia `RECORD` para conter snapshots. O chamador fornece modelo e buffer, fora da pilha padrão das tarefas. Codificação copia apenas uma aeronave por vez. Decodificação usa uma passagem de validação e outra de publicação, com uma aeronave temporária e até 20 ICAOs, sem outro snapshot completo. Ausências e slots inativos são zerados na saída. Falha preserva o destino, inclusive quando o registro tem CRC válido e conteúdo inválido.
+
+O objeto do modelo ocupa 64672 bytes; o buffer máximo codificado exige outros 64497 bytes. Provisionar ambos conscientemente na integração, sem criar reservas automáticas no boot. Com Xtensa `-Os -fstack-usage`, os quadros individuais medidos foram 3280 bytes em `WriteAircraft`, 3408 em `ReadSnapshotBody`, 80 em `EncodeSnapshot` e 96 em `DecodeSnapshot`. Esses valores não são o máximo total da cadeia de chamadas; dimensionar também a pilha da tarefa consumidora e o restante do firmware.
+
+### Leitura, compatibilidade e verificações
+
+O leitor aceita v1/v2 no mesmo arquivo, com janela máxima de 64497 bytes e um modelo de snapshot no programa nativo. Reutiliza referências temporais v1 por boot, inclusive recebidas depois do snapshot. Exporta `version: 2`, `type: "payload_snapshot"` e `data: {"id": ..., "aircraft": [...]}` no envelope existente. Cada aeronave tem `icao`, `identification`, `lat`, `lon`, `alt`, `tick` e `extras: [{"key": ..., "value": ...}]`; ausências viram `null`. Textos disponíveis inválidos em UTF-8 viram `null` com campos `<nome>_encoding: "invalid_utf8"` e `<nome>_hex`, preservando os bytes como já ocorria com descrições v1. `tick` original não é sobrescrito pela reconstrução temporal.
+
+Lista vazia é um snapshot válido; lista incompleta não é publicada. CRC/comprimento/conteúdo inválido causa descarte relatado por offset e busca do próximo `FCP1` ou `FCP2`. Um candidato inválido não autoriza saltar seu comprimento declarado. Assinaturas dentro de um registro válido não produzem registros adicionais. A origem permanece intacta. Os códigos de saída continuam 0 para leitura íntegra, 1 para descarte/truncamento recuperável e 2 para erro de uso/I/O/recurso.
+
+[SnapshotCodecCheck.cpp](../../obc-dh/tests/SnapshotCodecCheck.cpp) e [SnapshotRecordsCheck.py](../../obc-dh/tests/SnapshotRecordsCheck.py) comparam vetores independentes `struct`/`zlib`, verificam limites e saídas preservadas e executam o leitor real sobre arquivos mistos, corrompidos e truncados. Os testes v1 foram mantidos e passaram sem alteração de entradas/asserts/resultados esperados. Comandos e limites estão no [guia](../../obc-dh/tools/README.md). Essa entrega não implementa UART, gravação automática no SD, estados duráveis do Burn Wire ou ensaios físicos.
 
 ## 1. Convenções comuns
 

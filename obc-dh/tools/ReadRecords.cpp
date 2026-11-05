@@ -52,18 +52,20 @@ namespace {
 
     // Busca por assinatura em blocos, conservando três bytes na fronteira.
     // Um candidato só avança seu comprimento depois de Decode aceitar tudo.
-    // A janela é fixa; uma cauda incompleta não impede achar outro registro
+    // A janela comporta o maior snapshot; uma cauda incompleta não impede achar outro registro
     // íntegro que tenha começado dentro do trecho danificado.
     bool ReadNext(
         std::ifstream& input,
         uint64_t file_size,
         uint64_t& offset,
         RECORD& record,
+        obc_data::PAYLOAD_SNAPSHOT& snapshot,
+        bool& is_snapshot,
         uint64_t& record_offset,
         SCAN_SUMMARY& summary,
         bool report
     ) {
-        uint8_t buffer[obc_data::max_record_bytes];
+        uint8_t buffer[obc_record::max_snapshot_record_bytes];
         const uint64_t begin = offset;
         bool discarded = false;
         bool incomplete = false;
@@ -77,11 +79,15 @@ namespace {
                 return false;
             }
 
-            const uint8_t* found = std::search(buffer, buffer + count,
+            const uint8_t* legacy = std::search(buffer, buffer + count,
                 obc_data::record_magic, obc_data::record_magic + 4);
+            const uint8_t* current = std::search(buffer, buffer + count,
+                obc_record::snapshot_magic, obc_record::snapshot_magic + 4);
+            const uint8_t* found = std::min(legacy, current);
             if (found == buffer + count) {
                 discarded = true;
-                if (count < 4 && std::memcmp(buffer, obc_data::record_magic, count) == 0) {
+                if (count < 4 && (std::memcmp(buffer, obc_data::record_magic, count) == 0
+                        || std::memcmp(buffer, obc_record::snapshot_magic, count) == 0)) {
                     incomplete = true;
                     reason = obc_record::STATUS::INCOMPLETE;
                 }
@@ -95,10 +101,14 @@ namespace {
             }
 
             size_t consumed = 0;
-            const obc_record::STATUS status = obc_record::Decode(buffer, count, record, consumed);
+            const bool candidate_snapshot = buffer[3] == '2';
+            const obc_record::STATUS status = candidate_snapshot
+                ? obc_record::DecodeSnapshot(buffer, count, snapshot, consumed)
+                : obc_record::Decode(buffer, count, record, consumed);
             if (status == obc_record::STATUS::OK) {
                 if (discarded) DiscardRange(begin, offset, reason, incomplete, summary, report);
                 record_offset = offset;
+                is_snapshot = candidate_snapshot;
                 offset += consumed;
                 ++summary.records;
                 return true;
@@ -188,6 +198,38 @@ namespace {
         return true;
     }
 
+    // Campos textuais usam nomes ASCII internos; seus valores podem conter
+    // bytes não UTF-8. Mantém a política de descrição também para os snapshots.
+    void WriteTextField(
+        const char* name,
+        const char* text,
+        bool available
+    ) {
+        WriteString(name);
+        std::cout << ':';
+        if (!available) std::cout << "null";
+        else if (IsUtf8(text)) WriteString(text);
+        else {
+            const char digits[] = "0123456789abcdef";
+            std::cout << "null,\"" << name << "_encoding\":\"invalid_utf8\",\"" << name << "_hex\":\"";
+            for (size_t index = 0; text[index] != '\0'; ++index) {
+                const unsigned char value = static_cast<unsigned char>(text[index]);
+                std::cout << digits[value >> 4] << digits[value & 15];
+            }
+            std::cout << '"';
+        }
+    }
+
+    // A mesma representação de seis hexadecimais serve às duas versões.
+    void WriteIcao(
+        uint32_t value
+    ) {
+        char icao[7] = {};
+        const char digits[] = "0123456789ABCDEF";
+        for (unsigned index = 0; index < 6; ++index) icao[index] = digits[(value >> (4 * (5 - index))) & 15];
+        WriteString(icao);
+    }
+
     // JSON não tem NaN/Inf; o decoder já rejeita esses valores disponíveis.
     // max_digits10 permite representar o real original, inclusive -0.0.
     template<typename REAL>
@@ -204,11 +246,8 @@ namespace {
     void WriteMission(
         const obc_data::PAYLOAD_DATA& data
     ) {
-        char icao[7] = {};
-        const char digits[] = "0123456789ABCDEF";
-        for (unsigned index = 0; index < 6; ++index) icao[index] = digits[(data.icao >> (4 * (5 - index))) & 15];
         std::cout << "{\"session_id\":" << data.session_id << ",\"seq_id\":" << data.seq_id << ",\"icao\":";
-        WriteString(icao);
+        WriteIcao(data.icao);
         std::cout << ",\"msg_type\":" << static_cast<unsigned>(data.msg_type);
         const char* names[] = {"lat", "lon", "alt", "vel", "heading"};
         const double values[] = {data.latitude, data.longitude, data.altitude, data.velocity, data.heading};
@@ -258,18 +297,41 @@ namespace {
         const obc_data::EVENT_DATA& data
     ) {
         std::cout << "{\"source\":" << static_cast<unsigned>(data.source) << ",\"code\":" << data.code
-            << ",\"severity\":" << static_cast<unsigned>(data.severity) << ",\"description\":";
-        if (IsUtf8(data.description)) WriteString(data.description);
-        else {
-            const char digits[] = "0123456789abcdef";
-            std::cout << "null,\"description_encoding\":\"invalid_utf8\",\"description_hex\":\"";
-            for (size_t index = 0; data.description[index] != '\0'; ++index) {
-                const unsigned char value = static_cast<unsigned char>(data.description[index]);
-                std::cout << digits[value >> 4] << digits[value & 15];
-            }
-            std::cout << '"';
-        }
+            << ",\"severity\":" << static_cast<unsigned>(data.severity) << ',';
+        WriteTextField("description", data.description, true);
         std::cout << '}';
+    }
+
+    // Exporta a lista inteira, inclusive vazia, sem inferir atualizações ADS-B.
+    void WriteSnapshotBody(
+        const obc_data::PAYLOAD_SNAPSHOT& snapshot
+    ) {
+        std::cout << "{\"id\":" << snapshot.id << ",\"aircraft\":[";
+        for (size_t index = 0; index < snapshot.aircraft_count; ++index) {
+            if (index != 0) std::cout << ',';
+            const obc_data::AIRCRAFT_STATE& data = snapshot.aircraft[index];
+            std::cout << "{\"icao\":"; WriteIcao(data.icao);
+            std::cout << ',';
+            WriteTextField("identification", data.identification,
+                (data.available_fields & obc_data::SNAPSHOT_IDENTIFICATION) != 0);
+            const char* names[] = {"lat", "lon", "alt"};
+            const double values[] = {data.latitude, data.longitude, data.altitude};
+            for (unsigned bit = 0; bit < 3; ++bit) {
+                std::cout << ','; WriteString(names[bit]); std::cout << ':';
+                WriteReal(values[bit], (data.available_fields & (1U << bit)) != 0);
+            }
+            std::cout << ',';
+            WriteTextField("tick", data.tick, (data.available_fields & obc_data::SNAPSHOT_TICK) != 0);
+            std::cout << ",\"extras\":[";
+            for (size_t extra = 0; extra < data.extra_count; ++extra) {
+                if (extra != 0) std::cout << ',';
+                std::cout << '{'; WriteTextField("key", data.extras[extra].key, true);
+                std::cout << ','; WriteTextField("value", data.extras[extra].value, true);
+                std::cout << '}';
+            }
+            std::cout << "]}";
+        }
+        std::cout << "]}";
     }
 
     // Serialização JSON somente no programa nativo; firmware usa o codec.
@@ -308,21 +370,22 @@ namespace {
 
     // Acrescenta horário estimado e proveniência, sem sobrescrever o horário
     // original do Payload ou o ts armazenado na TM.
-    void WriteRecord(
-        const RECORD& record,
+    void WriteEnvelope(
+        uint8_t version,
+        const char* type,
+        const obc_time::EVENT_STAMP& stamp,
         uint64_t offset,
         const std::vector<REFERENCE>& references
     ) {
-        const char* types[] = {"mission", "telemetry", "event", "fault", "statistics", "boot", "time_reference"};
-        const REFERENCE* reference = SelectReference(references, record.header.stamp);
+        const REFERENCE* reference = SelectReference(references, stamp);
         int64_t unix_ms = 0;
-        const obc_time::STATUS status = obc_time::Reconstruct(record.header.stamp,
+        const obc_time::STATUS status = obc_time::Reconstruct(stamp,
             reference ? &reference->value : nullptr, unix_ms);
-        std::cout << "{\"file_offset\":" << offset << ",\"version\":" << static_cast<unsigned>(record.header.version)
+        std::cout << "{\"file_offset\":" << offset << ",\"version\":" << static_cast<unsigned>(version)
             << ",\"type\":";
-        WriteString(types[static_cast<uint8_t>(record.header.type) - 1]);
-        std::cout << ",\"boot_id\":" << record.header.stamp.boot_id
-            << ",\"monotonic_ms\":" << record.header.stamp.monotonic_ms << ",\"unix_ms\":";
+        WriteString(type);
+        std::cout << ",\"boot_id\":" << stamp.boot_id
+            << ",\"monotonic_ms\":" << stamp.monotonic_ms << ",\"unix_ms\":";
         if (status == obc_time::STATUS::OK) std::cout << unix_ms;
         else std::cout << "null";
         std::cout << ",\"time_status\":";
@@ -331,7 +394,20 @@ namespace {
         std::cout << ",\"reference_offset\":";
         if (reference) std::cout << reference->file_offset;
         else std::cout << "null";
-        std::cout << ",\"data\":"; WriteBody(record); std::cout << "}\n";
+        std::cout << ",\"data\":";
+    }
+
+    // Conserva o envelope e o corpo v1, sem ampliar sua união na RAM.
+    void WriteRecord(
+        const RECORD& record,
+        uint64_t offset,
+        const std::vector<REFERENCE>& references
+    ) {
+        const char* types[] = {"mission", "telemetry", "event", "fault", "statistics", "boot", "time_reference"};
+        WriteEnvelope(record.header.version, types[static_cast<uint8_t>(record.header.type) - 1],
+            record.header.stamp, offset, references);
+        WriteBody(record);
+        std::cout << "}\n";
     }
 
     // Duas passagens no mesmo arquivo seekable. Memória extra cresce apenas
@@ -348,11 +424,14 @@ namespace {
         }
         std::vector<REFERENCE> references;
         RECORD record = {};
+        obc_data::PAYLOAD_SNAPSHOT snapshot = {};
+        bool is_snapshot = false;
         uint64_t offset = 0;
         uint64_t record_offset = 0;
         SCAN_SUMMARY first_pass = {};
-        while (ReadNext(input, static_cast<uint64_t>(size), offset, record, record_offset, first_pass, false)) {
-            if (record.header.type == obc_data::RECORD_TYPE::TIME_REFERENCE) {
+        while (ReadNext(input, static_cast<uint64_t>(size), offset, record, snapshot,
+                is_snapshot, record_offset, first_pass, false)) {
+            if (!is_snapshot && record.header.type == obc_data::RECORD_TYPE::TIME_REFERENCE) {
                 references.push_back({record.body.time_reference, record_offset});
             }
         }
@@ -364,8 +443,15 @@ namespace {
 
         offset = 0;
         SCAN_SUMMARY summary = {};
-        while (ReadNext(input, static_cast<uint64_t>(size), offset, record, record_offset, summary, true)) {
-            WriteRecord(record, record_offset, references);
+        while (ReadNext(input, static_cast<uint64_t>(size), offset, record, snapshot,
+                is_snapshot, record_offset, summary, true)) {
+            if (is_snapshot) {
+                WriteEnvelope(obc_record::snapshot_version, "payload_snapshot", snapshot.stamp, record_offset, references);
+                WriteSnapshotBody(snapshot);
+                std::cout << "}\n";
+            } else {
+                WriteRecord(record, record_offset, references);
+            }
         }
         std::cout.flush();
         if (summary.io_error || !std::cout) {

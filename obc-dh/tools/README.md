@@ -6,7 +6,7 @@ Em 05/11/2026, DAD-001 acrescentou modelos em memória de snapshots JSON do Payl
 
 ## Serviço de arquivos SD/HSPI
 
-[ObcStorage.h](../headers/ObcStorage.h) implementa operações POSIX portáteis; [ObcStorageEsp32.h](../headers/ObcStorageEsp32.h) monta o cartão e coordena acesso no ESP32. A API não interpreta registros ou gera nomes por boot. INT-003 chama sua montagem no boot de bancada, sem abrir arquivos ou gravar registros. O contrato completo e as evidências estão em [COM-005](../.tasks/01-comunicacao/COM-005-armazenamento-sd.md).
+[ObcStorage.h](../headers/ObcStorage.h) implementa operações POSIX portáteis; [ObcStorageEsp32.h](../headers/ObcStorageEsp32.h) monta o cartão e coordena acesso no ESP32. A API não interpreta registros ou gera nomes por boot. INT-003 chama sua montagem no boot de bancada, sem abrir arquivos ou gravar registros. O contrato completo e as evidências estão em [COM-005](../.tasks/01-comunicacao/done/COM-005-armazenamento-sd.md).
 
 No ESP32, chamar `obc_storage::esp32::Init()` uma primeira vez antes dos consumidores, sem concorrência. Usa HSPI e pinagem existente, 4 MHz ajustáveis, montagem `/sd` e diretório `/sd/obc`, sem formatação automática. Preparar o cartão em FAT32; o FatFs instalado não suporta exFAT, inclusive no caso de um cartão de 64 GB. A confirmação elétrica com EPS e os ensaios físicos continuam pendentes.
 
@@ -141,4 +141,10 @@ O script gera quatro vetores independentes com `struct`/`zlib` em diretório tem
 
 ## Pendências
 
-DAD-003 permanece em andamento enquanto DAD-001 não estiver consolidado e a pendência dos estados duráveis de retomada não estiver explicitamente resolvida. Burn Wire é representado somente pelos eventos já previstos; os eventos não autorizam atuação nem comprovam liberação após reset. Esta implementação não conclui automaticamente TES-007, não gera estatísticas operacionais ativas e não comprova interoperabilidade ou comportamento físico.
+DAD-003 e TES-007 foram concluídas em 09/11/2026 no escopo dos codecs,
+leitor e verificação portátil. A consolidação dos produtores fica nas
+INT-004/INT-005/INT-006; estados duráveis e retomada de atuações ficam em
+INT-007/INT-008, com ensaios físicos em TES-008/TES-009. Burn Wire é
+representado apenas pelos eventos disponíveis: eles não autorizam atuação
+nem confirmam liberação. Estatísticas operacionais e interoperabilidade
+continuam dependendo da integração; os critérios de validação foram preservados.

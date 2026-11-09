@@ -9,6 +9,13 @@ Cadeia de voo (Design Package §6): antena fita 1090 MHz (face sul) → **RTL-SD
 ## Visão geral
 
 O script `telemetry.py` consome o fluxo BaseStation do `dump1090` na porta `30003` e extrai os parâmetros de voo. Hoje loga JSON de bancada e não implementa transporte UART. Em **05/11/2026**, o responsável OBC confirmou snapshots JSON completos diretamente pela UART, conforme [a amostra recebida](../obc-dh/payload.json), substituindo a decisão anterior de binário compacto de ~25–35 B com Sequence ID + NACK (§6.4). O script foi preservado; a migração do produtor, enquadramento, integridade e tratamento de perdas ainda precisam de acordo com Payload em COM-004. Os [modelos OBC](../common/protocol/obc-data.md#0-snapshot-do-payload--modelo-em-memória) não comprovam essa implementação.
+**Atualização OBC — 09/11/2026:** o receptor e o adaptador ESP32 estão
+implementados e verificados localmente conforme o [contrato FCPU v1](../common/protocol/payload-uart.md).
+O corpo conserva o snapshot JSON; controle de transporte fica fora dele.
+Aceite do Payload, porta/configuração, tráfego e implementação da ponta Pi
+continuam pendentes. `telemetry.py` e o runbook foram preservados; não houve
+ensaio direto ESP32–Pi.
+
 Só dado processado voa para o OBC e para o solo; I/Q cru nunca sai do Pi (§6.3).
 
 - **Janela de missão:** 10 min contínuos, até 20 aeronaves (§2.2).

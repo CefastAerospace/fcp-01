@@ -33,6 +33,22 @@ Construir a coordenação de setup()/loop(), ordem de inicialização e organiza
 
 Boot central implementado, falhas de inicialização tratadas e estado inicial documentado. Compilar o firmware; comprovar boot/reset físico em [TES-008](../04-testes/TES-008-integracao.md). Não considerar a existência de setup() suficiente para REQ-OBC-008.
 
+## Encaminhamentos recebidos — 09/11/2026
+
+As origens abaixo encerraram seu escopo próprio. Estes itens continuam
+abertos nesta tarefa, com os setores responsáveis, antes do aceite da
+integração ou do ensaio correspondente. Não substituem os critérios e
+cenários originais e não mudam seu estado por conclusão da origem.
+
+| Origem concluída | Obrigação recebida | Situação |
+|---|---|---|
+| [COM-005](../01-comunicacao/done/COM-005-armazenamento-sd.md) | Confirmar módulo/cartão, alimentação e condições de boot do SD com EPS antes do uso integrado; preservar indisponibilidade sem formatação/reparo automático. | Pendente |
+
+A auditoria mantém INT-003 em andamento: o coordenador de bancada está
+implementado, mas o estado inicial de voo e os níveis seguros ainda
+precisam de definição e implementação no próprio boot integrado. A
+identificação WROOM-32 e o loopback não comprovam esse estado.
+
 ## Evidências
 
 Entrega parcial de bancada implementada e verificada em 05/11/2026, sobre a base Git `28504b1` e os trabalhos locais anteriores de DAD-001/COM-005. Sem commit, upload ou execução física. A tarefa permanece **Em andamento** até confirmar placa, circuito, estado inicial do ConOps e níveis elétricos do boot integrado. Não foi movida para `done/`.

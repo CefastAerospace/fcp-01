@@ -25,6 +25,18 @@ Supervisionar tarefas críticas e recursos, distinguindo watchdog de tarefas de 
 
 Supervisão, limites e recuperação implementados, eventos registrados e verificações locais disponíveis. Atendimento aos tempos e integridade após falhas depende de [TES-009](../04-testes/TES-009-falhas-e-recuperacao.md).
 
+## Encaminhamentos recebidos — 09/11/2026
+
+As origens abaixo encerraram seu escopo próprio. Estes itens continuam
+abertos nesta tarefa, com os setores responsáveis, antes do aceite da
+integração ou do ensaio correspondente. Não substituem os critérios e
+cenários originais e não mudam seu estado por conclusão da origem.
+
+| Origem concluída | Obrigação recebida | Situação |
+|---|---|---|
+| [COM-005](../01-comunicacao/done/COM-005-armazenamento-sd.md) | Integrar a política de retomada do escritor após falha/reset: preservar arquivos, End/Init e nome novo, sem apagar ou reutilizar conteúdo anterior. | Pendente |
+| [DAD-003](../02-dados-e-tempo/done/DAD-003-registros-e-interpretacao.md) | Integrar retomada persistente por boot e falhas com os estados definidos em INT-007, sem deduzir autorização de atuação de eventos ou flags voláteis. | Pendente |
+
 ## Evidências
 
 Nenhuma evidência de conclusão registrada. Ao executar, registrar versão, procedimento, entradas, resultados observados e limitações; não marcar esta tarefa por decisão documental.

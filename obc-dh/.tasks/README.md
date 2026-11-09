@@ -21,13 +21,33 @@ Pendente significa não iniciada, mesmo se ainda houver dependências. Em andame
 
 [TES-008](04-testes/TES-008-integracao.md) e [TES-009](04-testes/TES-009-falhas-e-recuperacao.md) possuem cenários independentes: iniciar um cenário depende apenas dos IDs e condições daquela linha. A tarefa inteira só termina quando todos os seus cenários terminarem. Não criar dependência circular entre implementação e teste; uma tarefa de implementação conserva sua verificação local, enquanto os ensaios vinculados comprovam propriedades adicionais.
 
+### Encerramento por responsabilidade — orientação de 09/11/2026
+
+Uma tarefa pode encerrar quando sua própria entrega está implementada e
+comprovada e só restam responsabilidades de integração, outros setores ou
+ensaios com tarefas próprias. Registrar a evidência, transferir cada obrigação
+com origem/destinatária e mantê-la aberta na receptora. `done/` não significa
+aceite externo ou validação de missão. Código ou ensaio ainda incompleto no
+próprio escopo mantém a tarefa aberta. Alterações posteriores podem gerar
+correção/reabertura, com critérios de validação preservados.
+
+Na auditoria de 09/11/2026 foram examinadas as vinte tarefas então abertas.
+COM-004, COM-005, DAD-001, DAD-003, TES-004 e TES-007 foram encerradas por esse
+critério, totalizando doze arquivos em `done/`. Quatorze continuam abertas;
+INT-003 é parcial no próprio boot de voo e os demais ensaios/integrações ainda
+têm entregas próprias não executadas. Não houve alteração de código ou testes.
+
 ## Conteúdo e encerramento
 
 Cada arquivo contém estado/responsáveis, objetivo, entrega, pré-requisitos, critérios de conclusão, evidências e referências. Definições e condições detalham somente o trabalho correspondente. Testes integrados incluem sua tabela de cenários.
 
 Ao encerrar: registrar versão, procedimento, entradas, resultados e limitações; marcar o estado; mover o arquivo para `done/`; corrigir seus links relativos e todos os links que apontam para ele; atualizar a linha no TODO. Não renumerar tarefas, nem marcar tarefas dependentes automaticamente. Se uma tarefa precisar ser reaberta, fazer o percurso inverso mantendo o histórico das evidências.
 
-Implementação, integração e validação física são estados distintos. Na reorganização de 27/10/2026 havia cinco tarefas em `done/`, com escopo limitado. DAD-002 acrescentou a sexta conclusão em 01/11/2026, também sem integração física. DAD-001 e DAD-003 possuem implementação local e verificações registradas, mas continuam em andamento pelas pendências de contrato e retomada. Nenhum resultado de ensaio foi inferido pela existência de código.
+Implementação, integração e validação física são estados distintos. Na
+reorganização de 27/10/2026 havia cinco tarefas em `done/`; DAD-002
+acrescentou a sexta em 01/11/2026. A auditoria de 09/11 encerrou mais
+seis escopos próprios com evidências e encaminhamentos explícitos.
+Nenhum aceite externo ou ensaio físico foi inferido desses movimentos.
 
 ## Histórico e rastreabilidade
 
@@ -39,25 +59,25 @@ As pendências antigas foram distribuídas sem alterar decisões ou critérios. 
 
 | Pendência anterior | Destinos |
 |---|---|
-| P-PAYLOAD | [COM-004](01-comunicacao/COM-004-uart-payload.md) |
+| P-PAYLOAD | [COM-004](01-comunicacao/done/COM-004-uart-payload.md) |
 | P-BARRAMENTO | [COM-001](01-comunicacao/done/COM-001-servico-i2c.md), [COM-002](01-comunicacao/done/COM-002-prioridade-dinamica-i2c.md), [COM-003](01-comunicacao/COM-003-recuperacao-i2c.md), [TES-001](04-testes/done/TES-001-escalonamento-i2c.md), [TES-003](04-testes/TES-003-i2c-hardware.md), [INT-005](03-integracao/INT-005-sensores-e-adcs.md) |
 | P-ENDERECOS | [INT-005](03-integracao/INT-005-sensores-e-adcs.md), [DAD-002](02-dados-e-tempo/done/DAD-002-tempo-e-boots.md) |
-| P-DADOS | [COM-004](01-comunicacao/COM-004-uart-payload.md), [DAD-001](02-dados-e-tempo/DAD-001-modelos-e-formatos.md), [INT-007](03-integracao/INT-007-comandos-modos-e-protecoes.md), [INT-006](03-integracao/INT-006-fluxo-de-dados.md) |
+| P-DADOS | [COM-004](01-comunicacao/done/COM-004-uart-payload.md), [DAD-001](02-dados-e-tempo/done/DAD-001-modelos-e-formatos.md), [INT-007](03-integracao/INT-007-comandos-modos-e-protecoes.md), [INT-006](03-integracao/INT-006-fluxo-de-dados.md) |
 | P-TEMPO | [DAD-002](02-dados-e-tempo/done/DAD-002-tempo-e-boots.md) |
 | P-BURN-WIRE | [INT-007](03-integracao/INT-007-comandos-modos-e-protecoes.md) |
 | P-ADCS | [INT-005](03-integracao/INT-005-sensores-e-adcs.md), [INT-002](03-integracao/done/INT-002-pinagem-en-motor.md), [INT-007](03-integracao/INT-007-comandos-modos-e-protecoes.md) |
-| P-SPI | [COM-005](01-comunicacao/COM-005-armazenamento-sd.md), [INT-004](03-integracao/INT-004-ttc-e-umbilical.md) |
+| P-SPI | [COM-005](01-comunicacao/done/COM-005-armazenamento-sd.md), [INT-004](03-integracao/INT-004-ttc-e-umbilical.md) |
 | P-EPS-ELETRICA | [INT-003](03-integracao/INT-003-inicializacao-central.md), [INT-005](03-integracao/INT-005-sensores-e-adcs.md), [INT-007](03-integracao/INT-007-comandos-modos-e-protecoes.md) |
 | P-TERMICO | [INT-007](03-integracao/INT-007-comandos-modos-e-protecoes.md) |
 | P-MISSAO | [TES-010](04-testes/TES-010-missao-e-cobertura.md), [INT-007](03-integracao/INT-007-comandos-modos-e-protecoes.md), [INT-008](03-integracao/INT-008-supervisao-e-retomada.md) |
-| P-REGISTROS | [COM-005](01-comunicacao/COM-005-armazenamento-sd.md), [DAD-003](02-dados-e-tempo/DAD-003-registros-e-interpretacao.md) |
+| P-REGISTROS | [COM-005](01-comunicacao/done/COM-005-armazenamento-sd.md), [DAD-003](02-dados-e-tempo/done/DAD-003-registros-e-interpretacao.md) |
 | P-VALIDACAO | [TES-010](04-testes/TES-010-missao-e-cobertura.md), [TES-008](04-testes/TES-008-integracao.md) |
 
 | Entrega anterior | Destinos atuais |
 |---|---|
-| Plataforma e interfaces | [COM-001](01-comunicacao/done/COM-001-servico-i2c.md) a [COM-005](01-comunicacao/COM-005-armazenamento-sd.md); [INT-001](03-integracao/done/INT-001-ambiente-obc.md) a [INT-005](03-integracao/INT-005-sensores-e-adcs.md); [TES-002](04-testes/TES-002-executor-i2c.md), [TES-003](04-testes/TES-003-i2c-hardware.md), [TES-005](04-testes/TES-005-uart-hardware.md), [TES-006](04-testes/TES-006-sd-hardware.md) e cenário de boot em [TES-008](04-testes/TES-008-integracao.md). |
-| Recepção, modelos e tempo | [COM-004](01-comunicacao/COM-004-uart-payload.md); [DAD-001](02-dados-e-tempo/DAD-001-modelos-e-formatos.md) a [DAD-003](02-dados-e-tempo/DAD-003-registros-e-interpretacao.md); [TES-004](04-testes/TES-004-uart-software.md), [TES-005](04-testes/TES-005-uart-hardware.md), [TES-007](04-testes/TES-007-dados-e-tempo.md) e referência temporal em [TES-008](04-testes/TES-008-integracao.md). |
-| Registros persistentes | [COM-005](01-comunicacao/COM-005-armazenamento-sd.md); [DAD-001](02-dados-e-tempo/DAD-001-modelos-e-formatos.md) a [DAD-003](02-dados-e-tempo/DAD-003-registros-e-interpretacao.md); [INT-006](03-integracao/INT-006-fluxo-de-dados.md); [TES-006](04-testes/TES-006-sd-hardware.md), [TES-007](04-testes/TES-007-dados-e-tempo.md) e [TES-009](04-testes/TES-009-falhas-e-recuperacao.md). |
+| Plataforma e interfaces | [COM-001](01-comunicacao/done/COM-001-servico-i2c.md) a [COM-005](01-comunicacao/done/COM-005-armazenamento-sd.md); [INT-001](03-integracao/done/INT-001-ambiente-obc.md) a [INT-005](03-integracao/INT-005-sensores-e-adcs.md); [TES-002](04-testes/TES-002-executor-i2c.md), [TES-003](04-testes/TES-003-i2c-hardware.md), [TES-005](04-testes/TES-005-uart-hardware.md), [TES-006](04-testes/TES-006-sd-hardware.md) e cenário de boot em [TES-008](04-testes/TES-008-integracao.md). |
+| Recepção, modelos e tempo | [COM-004](01-comunicacao/done/COM-004-uart-payload.md); [DAD-001](02-dados-e-tempo/done/DAD-001-modelos-e-formatos.md) a [DAD-003](02-dados-e-tempo/done/DAD-003-registros-e-interpretacao.md); [TES-004](04-testes/done/TES-004-uart-software.md), [TES-005](04-testes/TES-005-uart-hardware.md), [TES-007](04-testes/done/TES-007-dados-e-tempo.md) e referência temporal em [TES-008](04-testes/TES-008-integracao.md). |
+| Registros persistentes | [COM-005](01-comunicacao/done/COM-005-armazenamento-sd.md); [DAD-001](02-dados-e-tempo/done/DAD-001-modelos-e-formatos.md) a [DAD-003](02-dados-e-tempo/done/DAD-003-registros-e-interpretacao.md); [INT-006](03-integracao/INT-006-fluxo-de-dados.md); [TES-006](04-testes/TES-006-sd-hardware.md), [TES-007](04-testes/done/TES-007-dados-e-tempo.md) e [TES-009](04-testes/TES-009-falhas-e-recuperacao.md). |
 | Integração e missão | [INT-003](03-integracao/INT-003-inicializacao-central.md) a [INT-008](03-integracao/INT-008-supervisao-e-retomada.md); [TES-008](04-testes/TES-008-integracao.md) a [TES-010](04-testes/TES-010-missao-e-cobertura.md). |
 | Validação integrada | [TES-001](04-testes/done/TES-001-escalonamento-i2c.md) a [TES-010](04-testes/TES-010-missao-e-cobertura.md), mantendo os critérios originais. |
 
@@ -73,17 +93,17 @@ Esta tabela indica responsáveis pela implementação e pela comprovação. Não
 | REQ-OBC-002 | [INT-004](03-integracao/INT-004-ttc-e-umbilical.md), [INT-007](03-integracao/INT-007-comandos-modos-e-protecoes.md) | [TES-008](04-testes/TES-008-integracao.md). |
 | REQ-OBC-003 | [INT-005](03-integracao/INT-005-sensores-e-adcs.md), [INT-006](03-integracao/INT-006-fluxo-de-dados.md) | [TES-008](04-testes/TES-008-integracao.md) (inspeção TM). |
 | REQ-OBC-004 | [INT-007](03-integracao/INT-007-comandos-modos-e-protecoes.md) | [TES-008](04-testes/TES-008-integracao.md), [TES-009](04-testes/TES-009-falhas-e-recuperacao.md). |
-| REQ-OBC-005 | [COM-004](01-comunicacao/COM-004-uart-payload.md), [COM-005](01-comunicacao/COM-005-armazenamento-sd.md), [DAD-001](02-dados-e-tempo/DAD-001-modelos-e-formatos.md), [DAD-003](02-dados-e-tempo/DAD-003-registros-e-interpretacao.md), [INT-006](03-integracao/INT-006-fluxo-de-dados.md) | [TES-004](04-testes/TES-004-uart-software.md) a [TES-008](04-testes/TES-008-integracao.md). |
-| REQ-OBC-006 | [DAD-002](02-dados-e-tempo/done/DAD-002-tempo-e-boots.md), [INT-006](03-integracao/INT-006-fluxo-de-dados.md) | [TES-007](04-testes/TES-007-dados-e-tempo.md), [TES-008](04-testes/TES-008-integracao.md) (ADS-B simulado e timestamp na TM). |
+| REQ-OBC-005 | [COM-004](01-comunicacao/done/COM-004-uart-payload.md), [COM-005](01-comunicacao/done/COM-005-armazenamento-sd.md), [DAD-001](02-dados-e-tempo/done/DAD-001-modelos-e-formatos.md), [DAD-003](02-dados-e-tempo/done/DAD-003-registros-e-interpretacao.md), [INT-006](03-integracao/INT-006-fluxo-de-dados.md) | [TES-004](04-testes/done/TES-004-uart-software.md) a [TES-008](04-testes/TES-008-integracao.md). |
+| REQ-OBC-006 | [DAD-002](02-dados-e-tempo/done/DAD-002-tempo-e-boots.md), [INT-006](03-integracao/INT-006-fluxo-de-dados.md) | [TES-007](04-testes/done/TES-007-dados-e-tempo.md), [TES-008](04-testes/TES-008-integracao.md) (ADS-B simulado e timestamp na TM). |
 | REQ-OBC-007 | [COM-003](01-comunicacao/COM-003-recuperacao-i2c.md), [INT-008](03-integracao/INT-008-supervisao-e-retomada.md) | [TES-009](04-testes/TES-009-falhas-e-recuperacao.md). |
 | REQ-OBC-008 | [INT-003](03-integracao/INT-003-inicializacao-central.md) | [TES-008](04-testes/TES-008-integracao.md) (boot). |
-| REQ-OBC-009 | [DAD-001](02-dados-e-tempo/DAD-001-modelos-e-formatos.md), [DAD-003](02-dados-e-tempo/DAD-003-registros-e-interpretacao.md), [INT-006](03-integracao/INT-006-fluxo-de-dados.md), [INT-008](03-integracao/INT-008-supervisao-e-retomada.md) | [TES-007](04-testes/TES-007-dados-e-tempo.md), [TES-009](04-testes/TES-009-falhas-e-recuperacao.md). |
-| REQ-OBC-010 | [DAD-002](02-dados-e-tempo/done/DAD-002-tempo-e-boots.md), [DAD-003](02-dados-e-tempo/DAD-003-registros-e-interpretacao.md), [INT-006](03-integracao/INT-006-fluxo-de-dados.md), [INT-008](03-integracao/INT-008-supervisao-e-retomada.md) | [TES-007](04-testes/TES-007-dados-e-tempo.md) a [TES-009](04-testes/TES-009-falhas-e-recuperacao.md). |
+| REQ-OBC-009 | [DAD-001](02-dados-e-tempo/done/DAD-001-modelos-e-formatos.md), [DAD-003](02-dados-e-tempo/done/DAD-003-registros-e-interpretacao.md), [INT-006](03-integracao/INT-006-fluxo-de-dados.md), [INT-008](03-integracao/INT-008-supervisao-e-retomada.md) | [TES-007](04-testes/done/TES-007-dados-e-tempo.md), [TES-009](04-testes/TES-009-falhas-e-recuperacao.md). |
+| REQ-OBC-010 | [DAD-002](02-dados-e-tempo/done/DAD-002-tempo-e-boots.md), [DAD-003](02-dados-e-tempo/done/DAD-003-registros-e-interpretacao.md), [INT-006](03-integracao/INT-006-fluxo-de-dados.md), [INT-008](03-integracao/INT-008-supervisao-e-retomada.md) | [TES-007](04-testes/done/TES-007-dados-e-tempo.md) a [TES-009](04-testes/TES-009-falhas-e-recuperacao.md). |
 | REQ-OBC-011 | [INT-005](03-integracao/INT-005-sensores-e-adcs.md), [INT-008](03-integracao/INT-008-supervisao-e-retomada.md) | [TES-005](04-testes/TES-005-uart-hardware.md), [TES-009](04-testes/TES-009-falhas-e-recuperacao.md). |
 | REQ-OBC-012 | [INT-007](03-integracao/INT-007-comandos-modos-e-protecoes.md) | [TES-008](04-testes/TES-008-integracao.md), [TES-010](04-testes/TES-010-missao-e-cobertura.md). |
 | REQ-NF-OBC-001 | [INT-007](03-integracao/INT-007-comandos-modos-e-protecoes.md) | [TES-008](04-testes/TES-008-integracao.md), [TES-010](04-testes/TES-010-missao-e-cobertura.md) (consumo contra cota EPS). |
-| REQ-NF-OBC-002 | [DAD-001](02-dados-e-tempo/DAD-001-modelos-e-formatos.md), [DAD-003](02-dados-e-tempo/DAD-003-registros-e-interpretacao.md), [INT-006](03-integracao/INT-006-fluxo-de-dados.md) | [TES-007](04-testes/TES-007-dados-e-tempo.md), [TES-008](04-testes/TES-008-integracao.md), [TES-010](04-testes/TES-010-missao-e-cobertura.md). |
-| REQ-NF-OBC-003 | [DAD-002](02-dados-e-tempo/done/DAD-002-tempo-e-boots.md), [DAD-003](02-dados-e-tempo/DAD-003-registros-e-interpretacao.md), [INT-006](03-integracao/INT-006-fluxo-de-dados.md), [INT-008](03-integracao/INT-008-supervisao-e-retomada.md) | [TES-007](04-testes/TES-007-dados-e-tempo.md), [TES-009](04-testes/TES-009-falhas-e-recuperacao.md). |
-| REQ-NF-OBC-004 | [COM-005](01-comunicacao/COM-005-armazenamento-sd.md), [DAD-003](02-dados-e-tempo/DAD-003-registros-e-interpretacao.md), [INT-008](03-integracao/INT-008-supervisao-e-retomada.md) | [TES-006](04-testes/TES-006-sd-hardware.md), [TES-009](04-testes/TES-009-falhas-e-recuperacao.md). |
+| REQ-NF-OBC-002 | [DAD-001](02-dados-e-tempo/done/DAD-001-modelos-e-formatos.md), [DAD-003](02-dados-e-tempo/done/DAD-003-registros-e-interpretacao.md), [INT-006](03-integracao/INT-006-fluxo-de-dados.md) | [TES-007](04-testes/done/TES-007-dados-e-tempo.md), [TES-008](04-testes/TES-008-integracao.md), [TES-010](04-testes/TES-010-missao-e-cobertura.md). |
+| REQ-NF-OBC-003 | [DAD-002](02-dados-e-tempo/done/DAD-002-tempo-e-boots.md), [DAD-003](02-dados-e-tempo/done/DAD-003-registros-e-interpretacao.md), [INT-006](03-integracao/INT-006-fluxo-de-dados.md), [INT-008](03-integracao/INT-008-supervisao-e-retomada.md) | [TES-007](04-testes/done/TES-007-dados-e-tempo.md), [TES-009](04-testes/TES-009-falhas-e-recuperacao.md). |
+| REQ-NF-OBC-004 | [COM-005](01-comunicacao/done/COM-005-armazenamento-sd.md), [DAD-003](02-dados-e-tempo/done/DAD-003-registros-e-interpretacao.md), [INT-008](03-integracao/INT-008-supervisao-e-retomada.md) | [TES-006](04-testes/TES-006-sd-hardware.md), [TES-009](04-testes/TES-009-falhas-e-recuperacao.md). |
 
 REQ-OBC-013 continua como proposta no Design Package, pendente de incorporação formal. [TES-010](04-testes/TES-010-missao-e-cobertura.md) acompanha a condição de missão anterior aos ensaios ambientais, sem ampliar silenciosamente o catálogo de 16 requisitos.

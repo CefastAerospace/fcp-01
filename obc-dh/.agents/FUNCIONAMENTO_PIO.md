@@ -110,9 +110,29 @@ A extensão de DAD-003 acrescenta `tests/SnapshotCodecCheck.cpp` e `tests/Snapsh
 
 ### Boot de bancada vigente
 
-O firmware atual inicia Serial em 115200 baud, reserva o boot na NVS, inicializa o controlador/executor I2C e tenta montar o SD. Emite uma vez o relatório com prefixo `[OBC]`, sem JSON ou protocolo de comandos. Não espera o computador conectar. `loop()` usa `delay(100)`; as falhas não causam reset ou repetição automática. SD ausente produz indisponibilidade no diagnóstico; I2C inicializado não comprova sensores. O tempo impresso é monotônico, com `UTC=desconhecido`.
+O firmware atual inicia Serial em 115200 baud, reserva o boot na NVS, inicializa o controlador/executor I2C e tenta montar o SD. Emite uma vez o relatório com prefixo `[OBC]`; esses logs são distintos dos pacotes JSON. Não espera o computador conectar. Após esse boot, a INT-004 inicia `ObcTtc` e `loop()` atende um TC por chamada, esperando até 20 ms pela fila existente. SD ausente produz indisponibilidade no diagnóstico; I2C inicializado não comprova sensores. O tempo impresso é monotônico, com `UTC=desconhecido`.
 
-Essa entrega de INT-003 é de bancada, sem iniciar rádio, Payload, aquisição, atuadores ou missão. Não abre arquivos ou grava registros. Confirmar placa e condições elétricas antes de upload; esta entrega foi compilada e verificada no computador, sem upload ou execução física. Não concluir TES-008 pela existência dessa sequência.
+A sequência de INT-003 continua de bancada. A INT-004 acrescenta a inicialização do rádio e do umbilical e inicia a tarefa TT&C no Core 0, prioridade 10. O firmware não inicia Payload, aquisição, atuadores ou missão, nem abre arquivos ou grava registros. O USB funciona sem rádio/SD; o TT&C mantém sua tentativa periódica de recuperação do rádio ausente. Falhas de inicialização dos serviços de boot não causam reset ou repetição desses serviços. Em 09/11/2026, o firmware central foi gravado e verificado no ESP por USB; o ensaio integrado TES-008 permanece separado.
+
+`ping` retorna ACK; `get_status` e `request_tm` retornam ACK e TM sob demanda.
+A TM publica `bench` e os contadores reais do enlace, com `null` para UTC,
+sensores e payload indisponíveis; RSSI/SNR ficam `null` até receber TC RF.
+Comandos catalogados ainda não implementados retornam `invalid_cmd`.
+As dependências do OBC são a biblioteca local `tt-c`, LoRa 0.8.0 e
+ArduinoJson 7.0.4 com o patch controlado existente. Os ambientes UART
+mantêm suas dependências anteriores, sem consumir TT&C.
+
+Verificação USB, dentro de `obc-dh/`, com Python contendo pyserial:
+
+```bash
+pio run -e obc -t upload --upload-port /dev/ttyUSB0
+python3 tests/ObcTtcCheck.py /dev/ttyUSB0 --report /tmp/fcp01-int004-usb.json
+```
+
+O roteiro reutiliza a abertura serial da estação terrena, executa 77
+cenários e registra entradas, pacotes e latências. Requer somente ESP e
+USB, sem TC RF concorrente. As evidências e o aceite conjunto pendente
+estão na [INT-004](../.tasks/03-integracao/INT-004-ttc-e-umbilical.md).
 
 Verificação portátil do coordenador, dentro de `obc-dh/`:
 
@@ -124,6 +144,24 @@ g++ -std=c++11 -Wall -Wextra -Werror \
 ```
 
 O teste conserva a ordem e exercita as oito combinações de resultados com inicializadores finitos de teste. As APIs de drivers e suas políticas permanecem preservadas; Serial, FreeRTOS e dispositivos não são exercitados por esse executável.
+
+### Bancadas UART2 e receptor de snapshots
+
+Em 09/11/2026 foram acrescentados `uart-loopback`, para o beta original com
+G17–G16, e `uart-receiver-check`, para injeção da amostra em RAM e medição de
+heap/pilha no ESP32. `obc` permanece padrão e exclui as entradas de bancada;
+seu `main` não inicia o receptor. Cada ambiente tem firmware próprio: depois
+do ensaio, fazer upload explícito de `obc` para retornar ao boot normal.
+
+O receptor usa ArduinoJson 7.0.4, fixado em `lib_deps`, com hook automático
+que aplica a correção aprovada de `nextId_` somente à versão/hash conhecidos.
+O loopback não depende dessa biblioteca. Os blocos de quadro/snapshot são
+alocados separadamente uma única vez, com falha de inicialização explícita.
+
+Comandos nativos/ESP32, resultados esperados, logs e retorno ao firmware
+normal estão em [examples/README.md](../examples/README.md). FCPU v1 está em
+[payload-uart.md](../../common/protocol/payload-uart.md). Compilação, loopback
+local e injeção em RAM são evidências diferentes; nenhuma comprova a ponta Pi.
 
 ### Reconhecimento dos includes no Zed
 

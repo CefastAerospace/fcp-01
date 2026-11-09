@@ -31,6 +31,17 @@ Reutilizar drivers dos setores, incluindo EPS_INA219_Standard, e encaminhar cons
 
 Consumidores integrados e acesso a Wire coordenado, com build e verificações locais. Documentar versões, parâmetros, estados e falhas. Medições físicas e coexistência com rádio/SD pertencem a [TES-003](../04-testes/TES-003-i2c-hardware.md)/[TES-008](../04-testes/TES-008-integracao.md).
 
+## Encaminhamentos recebidos — 09/11/2026
+
+As origens abaixo encerraram seu escopo próprio. Estes itens continuam
+abertos nesta tarefa, com os setores responsáveis, antes do aceite da
+integração ou do ensaio correspondente. Não substituem os critérios e
+cenários originais e não mudam seu estado por conclusão da origem.
+
+| Origem concluída | Obrigação recebida | Situação |
+|---|---|---|
+| [DAD-001](../02-dados-e-tempo/done/DAD-001-modelos-e-formatos.md) | Obter os aceites de ADCS/EPS/Térmico para mapeamento, unidades, disponibilidade, posições térmicas, origens/códigos e dados dos sensores. | Pendente |
+
 ## Evidências
 
 Nenhuma evidência de conclusão registrada. Ao executar, registrar versão, procedimento, entradas, resultados observados e limitações; não marcar esta tarefa por decisão documental.

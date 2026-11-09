@@ -177,10 +177,13 @@ public:
     /**
      * @brief Completa os campos de enlace, serializa e enfileira a TM.
      *
+     * @param available Máscara de campos publicáveis; os demais ficam null.
+     * Os campos de enlace também respeitam a máscara.
      * @return true se enfileirada.
      */
     bool SendTelemetry(
-        const ttc::TELEMETRY_DATA& tm
+        const ttc::TELEMETRY_DATA& tm,
+        uint32_t available = ttc::TELEMETRY_ALL
     );
 
     /**

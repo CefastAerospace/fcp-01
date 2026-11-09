@@ -1,6 +1,11 @@
 # Dados OBC — registros v1 e snapshots v2 do Payload
 
-**Estado:** implementado localmente em DAD-001; aceite de Payload, TT&C, ADCS, EPS e Térmico pendente. Este documento não substitui automaticamente os contratos em uso. Referência C++: [ObcData.h](../../obc-dh/headers/models/ObcData.h); validação: [ObcData.cpp](../../obc-dh/src/ObcData.cpp).
+**Estado:** desenvolvimento local de modelos e codecs concluído em
+DAD-001/DAD-003, com verificação portátil de TES-007. Aceites de Payload,
+TT&C, ADCS, EPS e Térmico continuam nas integrações INT-004/INT-005/INT-006;
+não são presumidos por este contrato. Referência C++: [ObcData.h](../../obc-dh/headers/models/ObcData.h);
+validação: [ObcData.cpp](../../obc-dh/src/ObcData.cpp). As revisões datadas
+abaixo preservam os estados históricos, anteriores ao encerramento local.
 
 **Atualização de implementação — 01/11/2026:** DAD-003 acrescentou o [codec portátil](../../obc-dh/headers/ObcRecordCodec.h) e o [leitor nativo](../../obc-dh/tools/README.md), com testes locais e build ESP32 aprovados. Esta revisão documental atualiza estado e referências; versão, layouts, tamanhos e exemplos do contrato permanecem iguais aos da proposta inicial. DAD-001/DAD-003 continuam em andamento pelas pendências registradas nas tarefas; não há integração automática ao rádio ou SD.
 
@@ -9,6 +14,13 @@
 **Extensão de 05/11/2026:** DAD-003 implementa persistência de snapshots em registros v2 variáveis, com codec portátil e leitor v1/v2/misto. O formato v1 e os modelos em memória permanecem preservados. Não há recepção UART ou gravação automática de snapshots no boot; o aceite de DAD-001 e os estados duráveis de retomada continuam pendentes.
 
 O contrato separa dados lógicos, transporte e persistência. Enquadramento UART, integridade, confirmação/retransmissão, limites de tráfego/buffers e retomada pertencem a COM-004. Os registros binários v1 abaixo são preservados; snapshots têm formato v2 próprio. TT&C conserva seu [contrato JSON](ttc-json.md), incluindo unidades, `n` atribuído pelo enlace e limites de 245/255 bytes.
+
+**Implementação UART — 09/11/2026:** COM-004 acrescenta parser e publicação
+local de snapshots em `PayloadReceiver`, com adaptador ESP32 e
+[contrato FCPU v1](payload-uart.md). Reutiliza os modelos/validadores abaixo,
+sem alterar seus campos, limites ou a amostra. Os controles ficam fora do
+JSON; aceite do Payload e ponta Pi permanecem pendentes. O boot normal ainda
+não inicia o receptor ou grava snapshots automaticamente.
 
 ## 0. Snapshot do Payload — modelo em memória
 
@@ -47,7 +59,15 @@ O receptor futuro publica a nova lista somente após receber e validar o snapsho
 
 Os campos de uma aeronave podem ter idades diferentes. `tick` não comprova atualização de todos os campos. Snapshots podem omitir mensagens ADS-B intermediárias; não satisfazem, por si, o registro/timestamp de cada mensagem. Essa incompatibilidade deve ser resolvida com Payload e coordenação sem alterar os critérios de validação existentes. Significado de `id`, unidades das velocidades, idade dos campos e estratégia de perdas/repetição permanecem abertos.
 
-`PAYLOAD_DATA` continua sendo atualização individual com sessão/sequência. `ttc::AIRCRAFT_DATA` continua sendo conteúdo de downlink e depende do contrato TT&C. Nenhum desses tipos tem o mesmo contrato do snapshot. Os layouts/comportamentos v1, o script do Payload e os testes anteriores foram preservados; codec e leitor foram estendidos para v2. [PayloadSnapshotCheck.cpp](../../obc-dh/tests/PayloadSnapshotCheck.cpp) verifica somente os modelos; as verificações do codec/leitor v2 estão descritas abaixo. Não há parser JSON ou publicação de estado.
+`PAYLOAD_DATA` continua sendo atualização individual com sessão/sequência.
+`ttc::AIRCRAFT_DATA` continua sendo conteúdo de downlink e depende do contrato
+TT&C. Nenhum desses tipos tem o mesmo contrato do snapshot. Os layouts e
+comportamentos v1, o script do Payload e os testes anteriores foram preservados;
+codec e leitor foram estendidos para v2.
+[PayloadSnapshotCheck.cpp](../../obc-dh/tests/PayloadSnapshotCheck.cpp) verifica
+somente os modelos; as verificações do codec/leitor v2 estão descritas abaixo.
+COM-004 implementa parser/publicação em `PayloadReceiver` conforme o contrato
+UART vinculado acima; `Validate` continua sem gerenciar a lista ativa.
 
 ## Persistência de snapshots — v2
 

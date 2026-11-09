@@ -130,6 +130,31 @@ namespace ttc {
     };
 
     /**
+     * @brief Campos disponíveis na TM; ausência produz null, nunca omissão.
+     * @details TM_TEMPS representa o conjunto das cinco temperaturas.
+     * A máscara padrão conserva o comportamento dos consumidores existentes.
+     */
+    enum TELEMETRY_FIELD : uint32_t {
+        TM_TIMESTAMP    = 1UL << 0,
+        TM_MODE         = 1UL << 1,
+        TM_VBAT         = 1UL << 2,
+        TM_IBAT         = 1UL << 3,
+        TM_VSOLAR       = 1UL << 4,
+        TM_ISOLAR       = 1UL << 5,
+        TM_TEMPS        = 1UL << 6,
+        TM_RATE         = 1UL << 7,
+        TM_AZIMUTH      = 1UL << 8,
+        TM_AIRCRAFT     = 1UL << 9,
+        TM_MESSAGES     = 1UL << 10,
+        TM_RSSI         = 1UL << 11,
+        TM_SNR          = 1UL << 12,
+        TM_RX_COUNT     = 1UL << 13,
+        TM_ERROR_COUNT  = 1UL << 14,
+        TM_RADIO_RESETS = 1UL << 15,
+        TELEMETRY_ALL   = (1UL << 16) - 1
+    };
+
+    /**
      * @brief Estado agregado de uma aeronave (DP §5.3).
      */
     struct AIRCRAFT_DATA {
@@ -202,7 +227,8 @@ namespace ttc {
     size_t BuildTelemetry(
         const TELEMETRY_DATA& tm,
         char* out,
-        size_t capacity
+        size_t capacity,
+        uint32_t available = TELEMETRY_ALL
     );
 
     /**

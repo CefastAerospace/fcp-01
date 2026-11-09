@@ -273,6 +273,74 @@ static void TestTelemetryFillsLinkFields(
     TEST_ASSERT_TRUE(Contains(radio.sent[0], "\"rssi\":-80,\"snr\":9.5,\"rx\":1,"));
 }
 
+// Ausência real do rádio não deve impedir o transporte cabeado.
+class MissingRadio : public FakeTransport {
+public:
+    bool Init() override { return false; }
+    bool IsReady() override { return false; }
+    bool CheckHealth() override { return false; }
+    bool Send(
+        const uint8_t*,
+        size_t
+    ) override { return false; }
+};
+
+static void TestWiredWithoutRadioAndUnavailableTelemetry(
+) {
+    MissingRadio radio;
+    FakeTransport wired;
+    Ttc link(radio, &wired);
+    TEST_ASSERT_FALSE(link.Init());
+    TEST_ASSERT_FALSE(link.IsHealthy());
+    wired.inbox.push_back(Tc(40, "request_tm"));
+    link.Update();
+    TC_FRAME tc;
+    TEST_ASSERT_TRUE(link.ReceiveTelecommand(tc, 0));
+    TEST_ASSERT_EQUAL_UINT8(LINK_WIRED, tc.origin);
+
+    ttc::TELEMETRY_DATA tm = {};
+    tm.mode = ttc::MODE_BENCH;
+    uint32_t available = ttc::TM_MODE | ttc::TM_RX_COUNT
+        | ttc::TM_ERROR_COUNT | ttc::TM_RADIO_RESETS;
+    const LINK_STATS before_tm = link.GetLinkStats();
+    TEST_ASSERT_TRUE(before_tm.radio_resets_count >= 1);
+    TEST_ASSERT_TRUE(link.SendTelemetry(tm, available));
+    TEST_ASSERT_TRUE(link.SendAck(tc.seq, tc.cmd, ttc::ACK_OK));
+    Drain(link);
+    TEST_ASSERT_EQUAL(2, wired.sent.size());
+    TEST_ASSERT_TRUE(Contains(wired.sent[0], "\"t\":\"ack\""));
+    TEST_ASSERT_TRUE(Contains(wired.sent[1], "\"ts\":null,\"md\":\"bench\""));
+    TEST_ASSERT_TRUE(Contains(wired.sent[1], "\"rssi\":null,\"snr\":null,\"rx\":1,"));
+    JsonDocument received_tm;
+    TEST_ASSERT_TRUE(deserializeJson(received_tm, wired.sent[1]) == DeserializationError::Ok);
+    TEST_ASSERT_EQUAL_UINT16(0, received_tm["err"].as<uint16_t>());
+    TEST_ASSERT_EQUAL_UINT16(static_cast<uint16_t>(before_tm.radio_resets_count),
+        received_tm["rst"].as<uint16_t>());
+
+    // Retentativa reenvia o ACK, sem entregar outro pedido ao OBC.
+    wired.inbox.push_back(Tc(40, "request_tm"));
+    Drain(link);
+    TEST_ASSERT_FALSE(link.ReceiveTelecommand(tc, 0));
+    TEST_ASSERT_EQUAL(3, wired.sent.size());
+    TEST_ASSERT_TRUE(Contains(wired.sent[2], "\"t\":\"ack\""));
+}
+
+static void TestTelemetryQueueFullKeepsAckQueueAvailable(
+) {
+    FakeTransport radio;
+    Ttc link(radio);
+    TEST_ASSERT_TRUE(link.Init());
+    TEST_ASSERT_TRUE(link.HoldTransmit(true, 0));
+    ttc::TELEMETRY_DATA tm = {};
+    for (int i = 0; i < 16; i++) TEST_ASSERT_TRUE(link.SendTelemetry(tm));
+    TEST_ASSERT_FALSE(link.SendTelemetry(tm));
+    TEST_ASSERT_TRUE(link.SendAck(55, ttc::CMD_REQUEST_TELEMETRY, ttc::ERR_STATE_REJECTED));
+    TEST_ASSERT_TRUE(link.HoldTransmit(false, 0));
+    Drain(link);
+    TEST_ASSERT_EQUAL(17, radio.sent.size());
+    TEST_ASSERT_TRUE(Contains(radio.sent[0], "\"st\":\"state_rejected\""));
+}
+
 // setup() e loop() são funções obrigatórias do framework Arduino.
 
 void setup(
@@ -288,6 +356,8 @@ void setup(
     RUN_TEST(TestWiredOriginAndCounters);
     RUN_TEST(TestRadioHealthReset);
     RUN_TEST(TestTelemetryFillsLinkFields);
+    RUN_TEST(TestWiredWithoutRadioAndUnavailableTelemetry);
+    RUN_TEST(TestTelemetryQueueFullKeepsAckQueueAvailable);
     UNITY_END();
 }
 

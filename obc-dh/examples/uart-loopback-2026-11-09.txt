@@ -1,0 +1,163 @@
+# ESP32-WROOM-32; UART2 G17-G16; USB 115200; 2026-11-09
+# RUN 1: 60 transmissions
+ets Jul 29 2019 12:21:46
+
+rst:0x1 (POWERON_RESET),boot:0x13 (SPI_FAST_FLASH_BOOT)
+configsip: 0, SPIWP:0xee
+clk_drv:0x00,q_drv:0x00,d_drv:0x00,cs0_drv:0x00,hd_drv:0x00,wp_drv:0x00
+mode:DIO, clock div:2
+load:0x3fff0030,len:1184
+load:0x40078000,len:13232
+load:0x40080400,len:3028
+entry 0x400805e4
+UART2 iniciada: RX=GPIO16, TX=GPIO17, 115200 8N1
+Teste de bancada: ligar GPIO17 ao GPIO16 (loopback).
+[UART-TEST] 60 envios, um por segundo; esperado: 1, 2, 4, 5...61
+[UART-TEST] Conferir recepcao e uma perda simulada da sequencia 3
+Enviado SeqID=1
+Recebido: ICAO=E4953A | Altitude=39000 pes | Velocidade=489 nos | SeqID=1
+Enviado SeqID=2
+Recebido: ICAO=E4953A | Altitude=39000 pes | Velocidade=489 nos | SeqID=2
+Enviado SeqID=4
+PACOTE(S) PERDIDO(S): esperado 3, recebido 4
+NACK SIMULADO: solicitar pacote 3
+Recebido: ICAO=E4953A | Altitude=39000 pes | Velocidade=489 nos | SeqID=4
+Enviado SeqID=5
+Recebido: ICAO=E4953A | Altitude=39000 pes | Velocidade=489 nos | SeqID=5
+Enviado SeqID=6
+Recebido: ICAO=E4953A | Altitude=39000 pes | Velocidade=489 nos | SeqID=6
+Enviado SeqID=7
+Recebido: ICAO=E4953A | Altitude=39000 pes | Velocidade=489 nos | SeqID=7
+Enviado SeqID=8
+Recebido: ICAO=E4953A | Altitude=39000 pes | Velocidade=489 nos | SeqID=8
+Enviado SeqID=9
+Recebido: ICAO=E4953A | Altitude=39000 pes | Velocidade=489 nos | SeqID=9
+Enviado SeqID=10
+Recebido: ICAO=E4953A | Altitude=39000 pes | Velocidade=489 nos | SeqID=10
+Enviado SeqID=11
+Recebido: ICAO=E4953A | Altitude=39000 pes | Velocidade=489 nos | SeqID=11
+Enviado SeqID=12
+Recebido: ICAO=E4953A | Altitude=39000 pes | Velocidade=489 nos | SeqID=12
+Enviado SeqID=13
+Recebido: ICAO=E4953A | Altitude=39000 pes | Velocidade=489 nos | SeqID=13
+Enviado SeqID=14
+Recebido: ICAO=E4953A | Altitude=39000 pes | Velocidade=489 nos | SeqID=14
+Enviado SeqID=15
+Recebido: ICAO=E4953A | Altitude=39000 pes | Velocidade=489 nos | SeqID=15
+Enviado SeqID=16
+Recebido: ICAO=E4953A | Altitude=39000 pes | Velocidade=489 nos | SeqID=16
+Enviado SeqID=17
+Recebido: ICAO=E4953A | Altitude=39000 pes | Velocidade=489 nos | SeqID=17
+Enviado SeqID=18
+Recebido: ICAO=E4953A | Altitude=39000 pes | Velocidade=489 nos | SeqID=18
+Enviado SeqID=19
+Recebido: ICAO=E4953A | Altitude=39000 pes | Velocidade=489 nos | SeqID=19
+Enviado SeqID=20
+Recebido: ICAO=E4953A | Altitude=39000 pes | Velocidade=489 nos | SeqID=20
+Enviado SeqID=21
+Recebido: ICAO=E4953A | Altitude=39000 pes | Velocidade=489 nos | SeqID=21
+Enviado SeqID=22
+Recebido: ICAO=E4953A | Altitude=39000 pes | Velocidade=489 nos | SeqID=22
+Enviado SeqID=23
+Recebido: ICAO=E4953A | Altitude=39000 pes | Velocidade=489 nos | SeqID=23
+Enviado SeqID=24
+Recebido: ICAO=E4953A | Altitude=39000 pes | Velocidade=489 nos | SeqID=24
+Enviado SeqID=25
+Recebido: ICAO=E4953A | Altitude=39000 pes | Velocidade=489 nos | SeqID=25
+Enviado SeqID=26
+Recebido: ICAO=E4953A | Altitude=39000 pes | Velocidade=489 nos | SeqID=26
+Enviado SeqID=27
+Recebido: ICAO=E4953A | Altitude=39000 pes | Velocidade=489 nos | SeqID=27
+Enviado SeqID=28
+Recebido: ICAO=E4953A | Altitude=39000 pes | Velocidade=489 nos | SeqID=28
+Enviado SeqID=29
+Recebido: ICAO=E4953A | Altitude=39000 pes | Velocidade=489 nos | SeqID=29
+Enviado SeqID=30
+Recebido: ICAO=E4953A | Altitude=39000 pes | Velocidade=489 nos | SeqID=30
+Enviado SeqID=31
+Recebido: ICAO=E4953A | Altitude=39000 pes | Velocidade=489 nos | SeqID=31
+Enviado SeqID=32
+Recebido: ICAO=E4953A | Altitude=39000 pes | Velocidade=489 nos | SeqID=32
+Enviado SeqID=33
+Recebido: ICAO=E4953A | Altitude=39000 pes | Velocidade=489 nos | SeqID=33
+Enviado SeqID=34
+Recebido: ICAO=E4953A | Altitude=39000 pes | Velocidade=489 nos | SeqID=34
+Enviado SeqID=35
+Recebido: ICAO=E4953A | Altitude=39000 pes | Velocidade=489 nos | SeqID=35
+Enviado SeqID=36
+Recebido: ICAO=E4953A | Altitude=39000 pes | Velocidade=489 nos | SeqID=36
+Enviado SeqID=37
+Recebido: ICAO=E4953A | Altitude=39000 pes | Velocidade=489 nos | SeqID=37
+Enviado SeqID=38
+Recebido: ICAO=E4953A | Altitude=39000 pes | Velocidade=489 nos | SeqID=38
+Enviado SeqID=39
+Recebido: ICAO=E4953A | Altitude=39000 pes | Velocidade=489 nos | SeqID=39
+Enviado SeqID=40
+Recebido: ICAO=E4953A | Altitude=39000 pes | Velocidade=489 nos | SeqID=40
+Enviado SeqID=41
+Recebido: ICAO=E4953A | Altitude=39000 pes | Velocidade=489 nos | SeqID=41
+Enviado SeqID=42
+Recebido: ICAO=E4953A | Altitude=39000 pes | Velocidade=489 nos | SeqID=42
+Enviado SeqID=43
+Recebido: ICAO=E4953A | Altitude=39000 pes | Velocidade=489 nos | SeqID=43
+Enviado SeqID=44
+Recebido: ICAO=E4953A | Altitude=39000 pes | Velocidade=489 nos | SeqID=44
+Enviado SeqID=45
+Recebido: ICAO=E4953A | Altitude=39000 pes | Velocidade=489 nos | SeqID=45
+Enviado SeqID=46
+Recebido: ICAO=E4953A | Altitude=39000 pes | Velocidade=489 nos | SeqID=46
+Enviado SeqID=47
+Recebido: ICAO=E4953A | Altitude=39000 pes | Velocidade=489 nos | SeqID=47
+Enviado SeqID=48
+Recebido: ICAO=E4953A | Altitude=39000 pes | Velocidade=489 nos | SeqID=48
+Enviado SeqID=49
+Recebido: ICAO=E4953A | Altitude=39000 pes | Velocidade=489 nos | SeqID=49
+Enviado SeqID=50
+Recebido: ICAO=E4953A | Altitude=39000 pes | Velocidade=489 nos | SeqID=50
+Enviado SeqID=51
+Recebido: ICAO=E4953A | Altitude=39000 pes | Velocidade=489 nos | SeqID=51
+Enviado SeqID=52
+Recebido: ICAO=E4953A | Altitude=39000 pes | Velocidade=489 nos | SeqID=52
+Enviado SeqID=53
+Recebido: ICAO=E4953A | Altitude=39000 pes | Velocidade=489 nos | SeqID=53
+Enviado SeqID=54
+Recebido: ICAO=E4953A | Altitude=39000 pes | Velocidade=489 nos | SeqID=54
+Enviado SeqID=55
+Recebido: ICAO=E4953A | Altitude=39000 pes | Velocidade=489 nos | SeqID=55
+Enviado SeqID=56
+Recebido: ICAO=E4953A | Altitude=39000 pes | Velocidade=489 nos | SeqID=56
+Enviado SeqID=57
+Recebido: ICAO=E4953A | Altitude=39000 pes | Velocidade=489 nos | SeqID=57
+Enviado SeqID=58
+Recebido: ICAO=E4953A | Altitude=39000 pes | Velocidade=489 nos | SeqID=58
+Enviado SeqID=59
+Recebido: ICAO=E4953A | Altitude=39000 pes | Velocidade=489 nos | SeqID=59
+Enviado SeqID=60
+Recebido: ICAO=E4953A | Altitude=39000 pes | Velocidade=489 nos | SeqID=60
+Enviado SeqID=61
+Recebido: ICAO=E4953A | Altitude=39000 pes | Velocidade=489 nos | SeqID=61
+[UART-TEST] 60 envios encerrados; conferir o log de recepcao
+
+# RUN 2: restart must begin with 1, 2, 4
+ets Jul 29 2019 12:21:46
+
+rst:0x1 (POWERON_RESET),boot:0x13 (SPI_FAST_FLASH_BOOT)
+configsip: 0, SPIWP:0xee
+clk_drv:0x00,q_drv:0x00,d_drv:0x00,cs0_drv:0x00,hd_drv:0x00,wp_drv:0x00
+mode:DIO, clock div:2
+load:0x3fff0030,len:1184
+load:0x40078000,len:13232
+load:0x40080400,len:3028
+entry 0x400805e4
+UART2 iniciada: RX=GPIO16, TX=GPIO17, 115200 8N1
+Teste de bancada: ligar GPIO17 ao GPIO16 (loopback).
+[UART-TEST] 60 envios, um por segundo; esperado: 1, 2, 4, 5...61
+[UART-TEST] Conferir recepcao e uma perda simulada da sequencia 3
+Enviado SeqID=1
+Recebido: ICAO=E4953A | Altitude=39000 pes | Velocidade=489 nos | SeqID=1
+Enviado SeqID=2
+Recebido: ICAO=E4953A | Altitude=39000 pes | Velocidade=489 nos | SeqID=2
+Enviado SeqID=4
+PACOTE(S) PERDIDO(S): esperado 3, recebido 4
+NACK SIMULADO: solicitar pacote 3
+Recebido: ICAO=E4953A | Altitude=39000 pes | Velocidade=489 nos | SeqID=4

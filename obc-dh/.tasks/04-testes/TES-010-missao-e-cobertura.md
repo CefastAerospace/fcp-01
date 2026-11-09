@@ -13,7 +13,7 @@ Executar a missão contínua de dez minutos com registros, TC/TM e operação au
 
 ## Pré-requisitos
 
-- **Tarefas:** [INT-008](../03-integracao/INT-008-supervisao-e-retomada.md), [TES-001](done/TES-001-escalonamento-i2c.md), [TES-002](TES-002-executor-i2c.md), [TES-003](TES-003-i2c-hardware.md), [TES-004](TES-004-uart-software.md), [TES-005](TES-005-uart-hardware.md), [TES-006](TES-006-sd-hardware.md), [TES-007](TES-007-dados-e-tempo.md), [TES-008](TES-008-integracao.md), [TES-009](TES-009-falhas-e-recuperacao.md)
+- **Tarefas:** [INT-008](../03-integracao/INT-008-supervisao-e-retomada.md), [TES-001](done/TES-001-escalonamento-i2c.md), [TES-002](TES-002-executor-i2c.md), [TES-003](TES-003-i2c-hardware.md), [TES-004](done/TES-004-uart-software.md), [TES-005](TES-005-uart-hardware.md), [TES-006](TES-006-sd-hardware.md), [TES-007](done/TES-007-dados-e-tempo.md), [TES-008](TES-008-integracao.md), [TES-009](TES-009-falhas-e-recuperacao.md)
 - **Condições externas:** Obter referências vigentes e limites de missão com coordenação e setores.
 
 ## Definições e condições

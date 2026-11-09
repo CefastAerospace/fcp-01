@@ -10,6 +10,13 @@ Este repositório é **privado** e contém o código de desenvolvimento do saté
 
 O Design Package e os ICDs/ConOps vigentes são as referências de engenharia. A versão `FCP-01_Design_Package_CubeDesign_2026.md` citada pelos módulos não está presente neste checkout; as seções indicadas abaixo seguem as referências registradas no remoto. Este README distingue decisões de projeto do estado implementado.
 
+**Atualização de 09/11/2026:** desenvolvimento local de UART, armazenamento,
+modelos e codecs, além das verificações portáteis correspondentes, foi
+encerrado em COM-004/COM-005, DAD-001/DAD-003 e TES-004/TES-007. Aceites
+externos, montagem e ponta Pi continuam na integração e nos ensaios
+vinculados no [painel OBC](obc-dh/.agents/TODO.md). Os registros datados
+abaixo são histórico e não declaram o fluxo de missão integrado.
+
 ## Arquitetura e estado da integração
 
 O FCP-01 tem arquitetura centralizada planejada: um ESP32 executará o firmware integrado do OBC, incluindo ADCS, sobre Arduino/FreeRTOS. O Payload executa em Raspberry Pi Zero W e se comunica com o OBC por UART. O firmware atual tem boot de bancada: Serial a 115200 baud, reserva de boot/NVS, controlador/executor I2C e tentativa de montagem SD, com relatório de falhas independentes. `loop()` cede execução com `delay(100)`. A integração de missão abaixo continua prevista, sem comprovação física por essas verificações locais.

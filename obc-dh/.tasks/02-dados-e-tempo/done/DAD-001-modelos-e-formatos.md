@@ -1,7 +1,28 @@
 # DAD-001 — Modelos de dados e formatos persistidos
 
-**Estado:** Em andamento
+**Estado:** Concluída
 **Responsáveis:** OBC-DH e produtores dos dados
+
+## Encerramento do escopo próprio — 09/11/2026
+
+Modelos, validadores e contratos locais v1/snapshots estão disponíveis, com exemplos, unidades, disponibilidade e limites explícitos. As verificações nativas registradas e repetidas nesta sessão passaram sem alterar seus vetores.
+
+Por orientação do responsável, esta entrega é encerrada e arquivada em
+`done/` no limite de sua responsabilidade. Aceites externos, integração e
+ensaios restantes continuam obrigatórios nas destinatárias abaixo; não são
+declarados aprovados por este encerramento. Os critérios, vetores, entradas
+e resultados esperados originais permanecem preservados.
+
+Menções a “em andamento” ou “não mover para done” no histórico abaixo
+registram decisões anteriores a este encerramento. Se uma integração
+revelar defeito na entrega, registrar correção ou reabrir a tarefa com
+rastreabilidade, sem adaptar a validação para forçar aprovação.
+
+| Destinatária | Responsabilidade ainda aberta | Situação |
+|---|---|---|
+| [INT-004](../../03-integracao/INT-004-ttc-e-umbilical.md) | Consolidar com TT&C os mapeamentos e unidades do conteúdo, mantendo o contrato de TC/TM e registrando o aceite das interfaces usadas. | Pendente na destinatária |
+| [INT-005](../../03-integracao/INT-005-sensores-e-adcs.md) | Obter os aceites de ADCS/EPS/Térmico para mapeamento, unidades, disponibilidade, posições térmicas, origens/códigos e dados dos sensores. | Pendente na destinatária |
+| [INT-006](../../03-integracao/INT-006-fluxo-de-dados.md) | Consolidar o aceite de Payload/TT&C e das estatísticas: id opaco, idade/validade dos campos, unidades de velocidades, extras e migração explícita dos dados legados, sem inventar sessão/sequência ou validade. | Pendente na destinatária |
 
 ## Objetivo
 
@@ -31,7 +52,7 @@ Implementação local e verificações executadas em 01/11/2026, sobre a base Gi
 
 ### Entrega local
 
-- [Contrato OBC v1 proposto](../../../common/protocol/obc-data.md), [tipos portáteis](../../headers/models/ObcData.h), [validadores](../../src/ObcData.cpp) e [teste nativo](../../tests/ObcDataCheck.cpp).
+- [Contrato OBC v1 proposto](../../../../common/protocol/obc-data.md), [tipos portáteis](../../../headers/models/ObcData.h), [validadores](../../../src/ObcData.cpp) e [teste nativo](../../../tests/ObcDataCheck.cpp).
 - Modelos de atualização de missão, TM local, eventos/falhas, estatísticas e boots; reutilização de `EVENT_STAMP`/`TIME_REFERENCE` de DAD-002. Nenhuma dependência nova, gerador, aquisição, fila, codec ou driver nesta entrega.
 - Payload proposto: somente campos atualizados, disponibilidade explícita, par sessão/sequência e preservação separada do horário do Pi. O `val_flags` legado não é reinterpretado; o código atual do Payload não foi alterado. As escolhas foram aprovadas pelo responsável no planejamento; aceite dos demais produtores ainda pendente.
 - Arquivo proposto: little-endian, IEEE 754, assinatura FCP1, versão/tipo/comprimento, boot e monotônico de 64 bits, corpo tipado e CRC-32/ISO-HDLC. Total máximo 512 bytes; tipos v1 têm tamanhos fixos de 36 a 105 bytes. CRC e codificação/interpretação serão implementados em DAD-003; nenhum ensaio de arquivo corrompido foi declarado executado aqui.
@@ -88,7 +109,7 @@ Implementação e verificações sobre a base Git `28504b1`, com alterações lo
 
 **Adições:** `PAYLOAD_SNAPSHOT`, `AIRCRAFT_STATE`, `EXTRA_FIELD`, máscara `SNAPSHOT_FIELD`, limites fixos e duas sobrecargas de `Validate`. As coleções são arrays sem alocação dinâmica. Validam boot, contagens, ICAO, disponibilidade, domínios numéricos, textos e duplicidade de ICAOs/chaves de extras; não interpretam JSON ou datas. Até 20 aeronaves, 32 extras por aeronave, chaves/valores de 32/64 bytes, identificação de 16 bytes e `tick` de 40 bytes, excluindo NUL. Limites são locais, ainda sujeitos ao aceite do produtor.
 
-O [contrato atualizado](../../../common/protocol/obc-data.md#0-snapshot-do-payload--modelo-em-memória) documenta o mapeamento para o futuro parser, preservação de textos não decodificados, ausência por máscara, `id` opaco, `tick` original e publicação de snapshots completos. As referências de arquitetura/pinagem/guias, o painel e COM-004 foram sincronizados. DAD-003 registra que os novos modelos ainda não têm formato persistido. Não houve remoção ou substituição dos tipos/validadores anteriores, do layout v1, do código do codec/leitor, do contrato TT&C, do script Payload, de `main.cpp` ou dos testes anteriores. Entradas, asserts, resultados esperados e requisitos permanecem intactos.
+O [contrato atualizado](../../../../common/protocol/obc-data.md#0-snapshot-do-payload--modelo-em-memória) documenta o mapeamento para o futuro parser, preservação de textos não decodificados, ausência por máscara, `id` opaco, `tick` original e publicação de snapshots completos. As referências de arquitetura/pinagem/guias, o painel e COM-004 foram sincronizados. DAD-003 registra que os novos modelos ainda não têm formato persistido. Não houve remoção ou substituição dos tipos/validadores anteriores, do layout v1, do código do codec/leitor, do contrato TT&C, do script Payload, de `main.cpp` ou dos testes anteriores. Entradas, asserts, resultados esperados e requisitos permanecem intactos.
 
 **Procedimento de verificação**, executado em `obc-dh/`:
 
@@ -104,7 +125,7 @@ python3 tests/ReadRecordsCheck.py /tmp/fcp01-read-records-check
 pio run -e obc
 ```
 
-Todos terminaram com código zero. Não houve diagnóstico do UBSan. O [novo teste nativo](../../tests/PayloadSnapshotCheck.cpp) constrói manualmente exemplos com coordenadas válidas e textos `not decoded` extraídos da amostra; não é um parser. Verificou ausência versus zero, ICAO sem dado de voo e somente com identificação, coordenadas extremas/inválidas, altitude negativa/Inf, latitude NaN, máscara/par de posição inválidos, limites de strings/extras, terminação NUL, chave vazia/duplicada, distinção de caixa, boot inválido, lista vazia, limite de 20 aeronaves e ICAOs repetidos. Strings disponíveis vazias são permitidas; extras de valor vazio também. Slots/campos indisponíveis são ignorados. O validador não trunca nem publica estado global.
+Todos terminaram com código zero. Não houve diagnóstico do UBSan. O [novo teste nativo](../../../tests/PayloadSnapshotCheck.cpp) constrói manualmente exemplos com coordenadas válidas e textos `not decoded` extraídos da amostra; não é um parser. Verificou ausência versus zero, ICAO sem dado de voo e somente com identificação, coordenadas extremas/inválidas, altitude negativa/Inf, latitude NaN, máscara/par de posição inválidos, limites de strings/extras, terminação NUL, chave vazia/duplicada, distinção de caixa, boot inválido, lista vazia, limite de 20 aeronaves e ICAOs repetidos. Strings disponíveis vazias são permitidas; extras de valor vazio também. Slots/campos indisponíveis são ignorados. O validador não trunca nem publica estado global.
 
 Os testes anteriores de dados/codec/leitor passaram sem edição. O leitor informou `Leitor C++: layouts, recuperação, JSON, referências e preservação da origem aprovados.` Uma inspeção adicional da amostra com `json` da biblioteca padrão Python confirmou sete aeronaves, até 26 extras necessários, chaves/valores textuais dentro dos limites e concordância do ICAO da chave/atributo. O arquivo de entrada foi apenas lido. Essa inspeção não comprova conversão JSON pelo firmware.
 
@@ -143,8 +164,8 @@ Extensão posterior de 05/11/2026 em DAD-003: snapshots e extras passaram a ter 
 ## Referências
 
 - Requisitos relacionados: REQ-OBC-005, REQ-OBC-009, REQ-OBC-010, REQ-NF-OBC-002, REQ-NF-OBC-003. Implementação não equivale a requisito validado.
-- [payload/README.md](../../../payload/README.md)
-- [common/protocol/ttc-json.md](../../../common/protocol/ttc-json.md)
-- [obc-dh/.agents/DEFINICOES_OBC_DP.md](../../.agents/DEFINICOES_OBC_DP.md)
+- [payload/README.md](../../../../payload/README.md)
+- [common/protocol/ttc-json.md](../../../../common/protocol/ttc-json.md)
+- [obc-dh/.agents/DEFINICOES_OBC_DP.md](../../../.agents/DEFINICOES_OBC_DP.md)
 - Origem no planejamento anterior: P-DADOS.
-- [Painel de tarefas](../../.agents/TODO.md); [organização e rastreabilidade](../README.md).
+- [Painel de tarefas](../../../.agents/TODO.md); [organização e rastreabilidade](../../README.md).

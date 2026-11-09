@@ -4,9 +4,9 @@ Base: Alocação de Pinos.pdf e decisões do responsável. As definições de 06
 
 ## Interfaces e alocação
 
-LoRa utiliza VSPI; SD utiliza HSPI; sensores/encoder compartilham I2C. Payload utiliza UART e bancada utiliza UART0/USB. Alocação SPI conciliada como decisão de projeto; conferir montagem, acesso e validação elétrica em [COM-005](../.tasks/01-comunicacao/COM-005-armazenamento-sd.md).
+LoRa utiliza VSPI; SD utiliza HSPI; sensores/encoder compartilham I2C. Payload utiliza UART e bancada utiliza UART0/USB. Alocação SPI conciliada como decisão de projeto; conferir montagem, acesso e validação elétrica em [COM-005](../.tasks/01-comunicacao/done/COM-005-armazenamento-sd.md).
 
-As direções são relativas ao ESP32. GPIOs 16/17 são a alocação de projeto para UART do Payload, já presente em `Pinout.h`; disponibilidade no módulo e montagem ainda precisam de conferência. O mapa compartilhado foi conciliado: LoRa/VSPI e SD/HSPI. [COM-005](../.tasks/01-comunicacao/COM-005-armazenamento-sd.md) agora trata montagem, acesso e validação elétrica.
+As direções são relativas ao ESP32. GPIOs 16/17 são a alocação de projeto para UART do Payload, já presente em `Pinout.h`; disponibilidade no módulo e montagem ainda precisam de conferência. O mapa compartilhado foi conciliado: LoRa/VSPI e SD/HSPI. [COM-005](../.tasks/01-comunicacao/done/COM-005-armazenamento-sd.md) agora trata montagem, acesso e validação elétrica.
 
 | Pino ESP32 / GPIO | Função / sinal     | Interface / barramento | Subsistema / destino   | Observações                                                                                             |
 | ----------------- | ------------------ | ---------------------- | ---------------------- | ------------------------------------------------------------------------------------------------------- |
@@ -45,7 +45,7 @@ As direções são relativas ao ESP32. GPIOs 16/17 são a alocação de projeto 
 | Motor | EN = 12; U/V/W = 25/26/27 | Integração ADCS; fases e estados dependem de confirmação. |
 | Burn Wire | Trigger = 33 | MOSFET de liberação física da antena. |
 
-UART exige níveis de 3,3 V, TX/RX cruzados e GND comum. Configuração dos dois lados e comportamento com um lado desligado dependem de [COM-004](../.tasks/01-comunicacao/COM-004-uart-payload.md). Confirmar circuito USB/UART e conector da placa; DevKit V1 não identifica sozinho o esquema real.
+UART exige níveis de 3,3 V, TX/RX cruzados e GND comum. Configuração dos dois lados e comportamento com um lado desligado dependem de [COM-004](../.tasks/01-comunicacao/done/COM-004-uart-payload.md). Confirmar circuito USB/UART e conector da placa; DevKit V1 não identifica sozinho o esquema real.
 
 ## Inventário I2C
 

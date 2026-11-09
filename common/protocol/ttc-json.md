@@ -93,6 +93,34 @@ Conteúdo mínimo do HLR-COMM-02 / DP §8.3.1: status, energia, atitude e missã
 
 Os campos do TT&C são preenchidos pelo próprio TT&C (`Ttc::SendTelemetry`).
 
+#### Disponibilidade no firmware de bancada OBC
+
+`BuildTelemetry(tm, out, capacity, available)` e
+`Ttc::SendTelemetry(tm, available)` aceitam uma máscara opcional de
+`ttc::TELEMETRY_FIELD`. O padrão `TELEMETRY_ALL` conserva as chamadas
+anteriores. Campos sem indicador na máscara conservam a chave e recebem
+`null`; `TM_TEMPS` representa o conjunto das cinco temperaturas.
+`SendTelemetry` continua preenchendo o enlace com as estatísticas reais,
+respeitando a máscara também nesses campos.
+
+A INT-004 publica `md:"bench"` e os contadores `rx`, `err` e `rst`.
+UTC, energia, temperaturas, atitude e dados do payload ficam `null` até
+suas integrações fornecerem dados válidos. RSSI/SNR ficam `null` até a
+aplicação receber um TC de origem RF. As tentativas de recuperação do
+rádio ausente incrementam `rst`; esse contador não indica que o rádio
+está presente ou saudável.
+
+`ping` recebe ACK. `get_status` e `request_tm` recebem ACK e uma TM sob
+demanda; o ACK `ok` confirma que a TM foi enfileirada. Falha ao enfileirar
+produz `state_rejected`. Esses três comandos aceitam ausência de `args`
+ou objeto vazio; objeto não vazio recebe `invalid_param`. Demais comandos
+catalogados recebem `invalid_cmd` nessa etapa. A deduplicação conserva o
+comportamento existente: uma retentativa recebe o ACK anterior, sem
+reexecutar o pedido de TM.
+
+O mapeamento local usa as unidades da tabela acima. O aceite conjunto
+dessas interfaces com o setor TT&C permanece registrado na INT-004.
+
 ### Aeronave
 
 Estado agregado por aeronave (DP §5.3); o log completo fica no microSD.

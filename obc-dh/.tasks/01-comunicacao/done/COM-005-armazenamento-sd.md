@@ -1,7 +1,30 @@
 # COM-005 — SD: gravação, leitura, extração e recuperação
 
-**Estado:** Em andamento
+**Estado:** Concluída
 **Responsáveis:** OBC-DH e EPS
+
+## Encerramento do escopo próprio — 09/11/2026
+
+Núcleo de arquivos, adaptador SD/HSPI, limites, repetição, sincronização e sinalização de falhas estão implementados e documentados. O teste POSIX com falhas injetadas passou novamente em 09/11/2026, com UBSan e -Werror.
+
+Por orientação do responsável, esta entrega é encerrada e arquivada em
+`done/` no limite de sua responsabilidade. Aceites externos, integração e
+ensaios restantes continuam obrigatórios nas destinatárias abaixo; não são
+declarados aprovados por este encerramento. Os critérios, vetores, entradas
+e resultados esperados originais permanecem preservados.
+
+Menções a “em andamento” ou “não mover para done” no histórico abaixo
+registram decisões anteriores a este encerramento. Se uma integração
+revelar defeito na entrega, registrar correção ou reabrir a tarefa com
+rastreabilidade, sem adaptar a validação para forçar aprovação.
+
+| Destinatária | Responsabilidade ainda aberta | Situação |
+|---|---|---|
+| [INT-003](../../03-integracao/INT-003-inicializacao-central.md) | Confirmar módulo/cartão, alimentação e condições de boot do SD com EPS antes do uso integrado; preservar indisponibilidade sem formatação/reparo automático. | Pendente na destinatária |
+| [INT-006](../../03-integracao/INT-006-fluxo-de-dados.md) | Ligar registros ao SD, nomes/rotação por boot e limite de arquivo, contabilização de perdas, encaminhamento de erros e extração pelo umbilical. | Pendente na destinatária |
+| [INT-008](../../03-integracao/INT-008-supervisao-e-retomada.md) | Integrar a política de retomada do escritor após falha/reset: preservar arquivos, End/Init e nome novo, sem apagar ou reutilizar conteúdo anterior. | Pendente na destinatária |
+| [TES-006](../../04-testes/TES-006-sd-hardware.md) | Conferir módulo, montagem e alimentação com EPS, frequência/latência e operações do SD na montagem real, incluindo cheio/indisponível e extração. | Pendente na destinatária |
+| [TES-009](../../04-testes/TES-009-falhas-e-recuperacao.md) | Exercitar interrupção durante escrita e avaliar arquivos incompletos e FAT32; fsync lógico não comprova integridade física. | Pendente na destinatária |
 
 ## Objetivo
 
@@ -9,7 +32,7 @@ Oferecer armazenamento de arquivos com acesso coordenado e falhas observáveis.
 
 ## Entrega
 
-Reutilizar SD e uma instância HSPI própria. Implementar abertura, escrita, leitura, extração, sincronização/fechamento e tratamento de cartão cheio/indisponível. Definir recuperação de arquivos incompletos e do sistema de arquivos. O formato do conteúdo pertence a [DAD-001](../02-dados-e-tempo/DAD-001-modelos-e-formatos.md)/[DAD-003](../02-dados-e-tempo/DAD-003-registros-e-interpretacao.md); não duplicar esse contrato no driver. O rádio é integrado em [INT-004](../03-integracao/INT-004-ttc-e-umbilical.md).
+Reutilizar SD e uma instância HSPI própria. Implementar abertura, escrita, leitura, extração, sincronização/fechamento e tratamento de cartão cheio/indisponível. Definir recuperação de arquivos incompletos e do sistema de arquivos. O formato do conteúdo pertence a [DAD-001](../../02-dados-e-tempo/done/DAD-001-modelos-e-formatos.md)/[DAD-003](../../02-dados-e-tempo/done/DAD-003-registros-e-interpretacao.md); não duplicar esse contrato no driver. O rádio é integrado em [INT-004](../../03-integracao/INT-004-ttc-e-umbilical.md).
 
 ## Pré-requisitos
 
@@ -36,7 +59,7 @@ Reutilizar SD e uma instância HSPI própria. Implementar abertura, escrita, lei
 
 ## Critérios de conclusão
 
-Operações e limites documentados e implementados, incluindo sinalização de perdas e recuperação. Compilar e conferir os caminhos de erro disponíveis. Integridade após interrupção de alimentação depende de [TES-006](../04-testes/TES-006-sd-hardware.md)/[TES-009](../04-testes/TES-009-falhas-e-recuperacao.md).
+Operações e limites documentados e implementados, incluindo sinalização de perdas e recuperação. Compilar e conferir os caminhos de erro disponíveis. Integridade após interrupção de alimentação depende de [TES-006](../../04-testes/TES-006-sd-hardware.md)/[TES-009](../../04-testes/TES-009-falhas-e-recuperacao.md).
 
 ## Evidências
 
@@ -44,8 +67,8 @@ Implementação local verificada em 05/11/2026, sobre a base Git `28504b1` e as 
 
 ### Entrega implementada
 
-- [ObcStorage.h](../../headers/ObcStorage.h) e [ObcStorage.cpp](../../src/ObcStorage.cpp): núcleo POSIX sem montagem, mutex, interpretação de conteúdo ou alocação dinâmica própria. `Storage` não copiável, com `Init`, `OpenNew`, `Append`, `Read`, `Close` e `End`. Diretório de até 127 bytes, permitindo teste com diretório temporário sem outro backend de produção.
-- [ObcStorageEsp32.h](../../headers/ObcStorageEsp32.h) e [ObcStorageEsp32.cpp](../../src/ObcStorageEsp32.cpp): SD/HSPI e mutex estático, seguindo o padrão de núcleo portátil/adaptador já usado em `ObcTime`. Reutiliza dependências instaladas; nenhuma alteração em `platformio.ini`, `main.cpp`, pinagem, codec, modelos ou contratos dos setores.
+- [ObcStorage.h](../../../headers/ObcStorage.h) e [ObcStorage.cpp](../../../src/ObcStorage.cpp): núcleo POSIX sem montagem, mutex, interpretação de conteúdo ou alocação dinâmica própria. `Storage` não copiável, com `Init`, `OpenNew`, `Append`, `Read`, `Close` e `End`. Diretório de até 127 bytes, permitindo teste com diretório temporário sem outro backend de produção.
+- [ObcStorageEsp32.h](../../../headers/ObcStorageEsp32.h) e [ObcStorageEsp32.cpp](../../../src/ObcStorageEsp32.cpp): SD/HSPI e mutex estático, seguindo o padrão de núcleo portátil/adaptador já usado em `ObcTime`. Reutiliza dependências instaladas; nenhuma alteração em `platformio.ini`, `main.cpp`, pinagem, codec, modelos ou contratos dos setores.
 - `RESULT` conserva `status`, `transferred`, `system_error` e `attempts`. Bytes transferidos são os da última tentativa, não a soma das reescritas; fora de `OK`, não comprovam persistência. `SYNC_FAILED` pode ter transferido o bloco inteiro. A integração deve contar registros somente após sucesso e conhece quantos registros existem em cada bloco; o driver não inventa contagem por conhecer apenas bytes.
 - Escrita curta/zero, erros de posicionamento/escrita e falha de sincronização repetem no mesmo offset, com limite de três. `ENOSPC` e `EFBIG` são preservados como `NO_SPACE` e `FILE_LIMIT`; escrita curta sem errno definido retorna falha de escrita, sem atribuir causa não comprovada. `Close`/`End` conferem sincronização/fechamento e não repetem `close`, que pode já ter liberado o descritor. Quando limpeza também falha, preservam o erro anterior da operação.
 - `Read` abre descritor próprio e lê por offset/capacidade em buffer do chamador; retorna tamanho total e bytes lidos. EOF retorna `OK` com zero bytes; offset acima do fim é inválido. Arquivo de escrita ativo retorna `BUSY`. A API permite extração futura sem carregar o arquivo inteiro; `request_log` e seu transporte ficam em INT-006.
@@ -60,7 +83,7 @@ g++ -std=c++11 -Wall -Wextra -Werror -fsanitize=undefined -fno-sanitize-recover=
 pio run -e obc
 ```
 
-Todos os comandos terminaram com código zero. O [teste nativo](../../tests/ObcStorageCheck.cpp) opera sobre arquivos reais em diretório temporário exclusivo; GNU ld injeta falhas somente nesse executável, sem interface alternativa ou simulação no código de produção. Resultado: `Armazenamento: arquivos, offsets, repetição, sincronização e falhas aprovados.` Não houve diagnóstico do UBSan.
+Todos os comandos terminaram com código zero. O [teste nativo](../../../tests/ObcStorageCheck.cpp) opera sobre arquivos reais em diretório temporário exclusivo; GNU ld injeta falhas somente nesse executável, sem interface alternativa ou simulação no código de produção. Resultado: `Armazenamento: arquivos, offsets, repetição, sincronização e falhas aprovados.` Não houve diagnóstico do UBSan.
 
 - Criação exclusiva não alterou `normal.bin` existente; leitura observou exatamente `ABCDEF`. Nomes inválidos, travessia de diretório, ausência de arquivo, serviço inativo, buffer nulo, limites de caminho/nome/bloco/arquivo e diretório que era arquivo produziram os estados esperados.
 - Leitura em offset 2 retornou `CD`; EOF em 6 retornou zero bytes; offset 7 foi rejeitado. Escritor ativo foi recusado para leitura. Leitura incompleta, erro de leitura e fechamento malsucedido foram sinalizados com quantidade/errno apropriados.
@@ -85,16 +108,16 @@ d33cb9f66c6f857c5e14d826628ae0c72e6b9460785362c75076ac689ff7caeb  obc-dh/tests/O
 
 `fsync` bem-sucedido significa confirmação pelo runtime, não garantia contra perda de alimentação ou falha do controlador/cartão. O serviço não detecta corrupção silenciosa por leitura de verificação; CRC e interpretação pertencem ao formato. As três tentativas preservam o prefixo do arquivo lógico, mas não reparam metadados FAT32 nem garantem o estado físico de setores após queda.
 
-Após reset, preservar os arquivos anteriores e criar nome novo a partir do boot na integração. Se a montagem falhar, manter indisponibilidade e comunicar o erro; investigar alimentação/conexões e preparar cópia/imagem em bancada antes de reparo do FAT32. Não formatar nem remover a cauda por tentativa de recuperação. Em arquivo v1 legível, trabalhar em cópia estável e usar o leitor documentado em [tools/README.md](../../tools/README.md).
+Após reset, preservar os arquivos anteriores e criar nome novo a partir do boot na integração. Se a montagem falhar, manter indisponibilidade e comunicar o erro; investigar alimentação/conexões e preparar cópia/imagem em bancada antes de reparo do FAT32. Não formatar nem remover a cauda por tentativa de recuperação. Em arquivo v1 legível, trabalhar em cópia estável e usar o leitor documentado em [tools/README.md](../../../tools/README.md).
 
 Faltam confirmar módulo/cartão, alimentação e condições elétricas com EPS, além de medir a frequência adequada e latência real. Boot e fluxo de dados permanecem em INT-003/INT-006; nomes por boot, contabilização de registros/perdas e encaminhamento dos erros serão ligados ali. A tarefa não foi movida para `done/`, nem os ensaios foram concluídos por compilação.
 
-Revisão posterior de 05/11/2026: a entrega parcial de [INT-003](../03-integracao/INT-003-inicializacao-central.md) passou a chamar `Init` no boot de bancada, com diagnóstico USB e continuidade quando o SD não estiver disponível. Não abre arquivos ou grava registros. A descrição anterior e os resultados de COM-005 acima identificam o estado de sua própria entrega; código do serviço e seus hashes não mudaram. Condições elétricas, integração de dados e ensaios físicos continuam pendentes.
+Revisão posterior de 05/11/2026: a entrega parcial de [INT-003](../../03-integracao/INT-003-inicializacao-central.md) passou a chamar `Init` no boot de bancada, com diagnóstico USB e continuidade quando o SD não estiver disponível. Não abre arquivos ou grava registros. A descrição anterior e os resultados de COM-005 acima identificam o estado de sua própria entrega; código do serviço e seus hashes não mudaram. Condições elétricas, integração de dados e ensaios físicos continuam pendentes.
 
 ## Referências
 
 - Requisitos relacionados: REQ-OBC-005, REQ-NF-OBC-004. Implementação não equivale a requisito validado.
-- [obc-dh/.agents/PINAGEM.md](../../.agents/PINAGEM.md)
-- [obc-dh/.agents/DEFINICOES_OBC_DP.md](../../.agents/DEFINICOES_OBC_DP.md)
+- [obc-dh/.agents/PINAGEM.md](../../../.agents/PINAGEM.md)
+- [obc-dh/.agents/DEFINICOES_OBC_DP.md](../../../.agents/DEFINICOES_OBC_DP.md)
 - Origem no planejamento anterior: P-REGISTROS, P-SPI.
-- [Painel de tarefas](../../.agents/TODO.md); [organização e rastreabilidade](../README.md).
+- [Painel de tarefas](../../../.agents/TODO.md); [organização e rastreabilidade](../../README.md).

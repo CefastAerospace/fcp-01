@@ -33,6 +33,17 @@ Validar argumentos, modo e condições antes de executar cada TC, responder com 
 
 Ações e recusas implementadas conforme contratos, estados persistentes tratados e verificações locais disponíveis. A atuação física e o atendimento energético/térmico exigem [TES-008](../04-testes/TES-008-integracao.md)/[TES-009](../04-testes/TES-009-falhas-e-recuperacao.md)/[TES-010](../04-testes/TES-010-missao-e-cobertura.md).
 
+## Encaminhamentos recebidos — 09/11/2026
+
+As origens abaixo encerraram seu escopo próprio. Estes itens continuam
+abertos nesta tarefa, com os setores responsáveis, antes do aceite da
+integração ou do ensaio correspondente. Não substituem os critérios e
+cenários originais e não mudam seu estado por conclusão da origem.
+
+| Origem concluída | Obrigação recebida | Situação |
+|---|---|---|
+| [DAD-003](../02-dados-e-tempo/done/DAD-003-registros-e-interpretacao.md) | Definir e implementar os estados duráveis de atuações/Burn Wire, autorização e confirmação; eventos existentes não substituem estado de retomada. Se precisar ampliar registros, versionar a extensão e verificar compatibilidade antes do uso. | Pendente |
+
 ## Evidências
 
 Nenhuma evidência de conclusão registrada. Ao executar, registrar versão, procedimento, entradas, resultados observados e limitações; não marcar esta tarefa por decisão documental.

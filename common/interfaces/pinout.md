@@ -9,7 +9,7 @@ Registro compartilhado de endereços, barramentos e pinos. Consolida a alocaçã
 | TX0 = 1 / RX0 = 3 | UART0, umbilical USB-C de bancada | TC/TM JSON, um objeto por linha; contrato TT&C §7.1. |
 | RX = 16 / TX = 17, 115,2 kbps 8N1 | UART dedicada OBC ↔ Raspberry Pi | Snapshots JSON completos, por decisão de 05/11/2026; enquadramento, integridade e perdas/repetição pendentes em COM-004. Capacidade serial teórica de 11,52 kB/s antes do protocolo. |
 
-O Payload não participa do I2C. Confirmar UART/porta no Pi, TX/RX cruzados, GND comum, níveis de 3,3 V, disponibilidade de 16/17 no módulo/flash/PSRAM e comportamento com um lado desligado. Parâmetros de projeto não comprovam o transporte no script nem validação da montagem; consultar [COM-004](../../obc-dh/.tasks/01-comunicacao/COM-004-uart-payload.md).
+O Payload não participa do I2C. Confirmar UART/porta no Pi, TX/RX cruzados, GND comum, níveis de 3,3 V, disponibilidade de 16/17 no módulo/flash/PSRAM e comportamento com um lado desligado. Parâmetros de projeto não comprovam o transporte no script nem validação da montagem; consultar [COM-004](../../obc-dh/.tasks/01-comunicacao/done/COM-004-uart-payload.md).
 
 ## SPI
 
@@ -18,7 +18,7 @@ O Payload não participa do I2C. Confirmar UART/porta no Pi, TX/RX cruzados, GND
 | VSPI | MOSI 23 / MISO 19 / SCK 18, CS 5, DIO0 4, RST 14 | LoRa SX1276, 921 MHz | TT&C |
 | HSPI | MOSI 32 / MISO 35 / SCK 15, CS 13 | microSD | OBC-DH |
 
-O mapa anterior VSPI/SD e HSPI/LoRa foi substituído como decisão de projeto. Conferência elétrica, montagem e validação permanecem em [COM-005](../../obc-dh/.tasks/01-comunicacao/COM-005-armazenamento-sd.md). O rádio usa `SPI` global/VSPI; o SD deverá utilizar instância própria de HSPI. DIO0 sinaliza RX/TX Done e RST permite reset físico; MISO do SD usa GPIO 35, somente entrada, por segurança de boot.
+O mapa anterior VSPI/SD e HSPI/LoRa foi substituído como decisão de projeto. Conferência elétrica, montagem e validação permanecem em [COM-005](../../obc-dh/.tasks/01-comunicacao/done/COM-005-armazenamento-sd.md). O rádio usa `SPI` global/VSPI; o SD deverá utilizar instância própria de HSPI. DIO0 sinaliza RX/TX Done e RST permite reset físico; MISO do SD usa GPIO 35, somente entrada, por segurança de boot.
 
 ## I2C de sensores e encoder
 

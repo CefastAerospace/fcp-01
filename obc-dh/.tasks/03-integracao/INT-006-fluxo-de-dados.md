@@ -13,7 +13,7 @@ Associar tempo aos dados/eventos, gravar missão/TM/estatísticas/falhas e persi
 
 ## Pré-requisitos
 
-- **Tarefas:** [COM-004](../01-comunicacao/COM-004-uart-payload.md), [COM-005](../01-comunicacao/COM-005-armazenamento-sd.md), [DAD-003](../02-dados-e-tempo/DAD-003-registros-e-interpretacao.md), [INT-004](INT-004-ttc-e-umbilical.md)
+- **Tarefas:** [COM-004](../01-comunicacao/done/COM-004-uart-payload.md), [COM-005](../01-comunicacao/done/COM-005-armazenamento-sd.md), [DAD-003](../02-dados-e-tempo/done/DAD-003-registros-e-interpretacao.md), [INT-004](INT-004-ttc-e-umbilical.md)
 - **Condições externas:** Acordar seleção/frequência de downlink e validade temporal com Payload e TT&C.
 
 ## Definições e condições
@@ -23,6 +23,21 @@ Associar tempo aos dados/eventos, gravar missão/TM/estatísticas/falhas e persi
 ## Critérios de conclusão
 
 Fluxo central e tratamento de erros implementados, contrato temporal preservado e verificações locais registradas. Demonstrar ADS-B simulado com timestamp na TM e extração reproduzível em [TES-008](../04-testes/TES-008-integracao.md).
+
+## Encaminhamentos recebidos — 09/11/2026
+
+As origens abaixo encerraram seu escopo próprio. Estes itens continuam
+abertos nesta tarefa, com os setores responsáveis, antes do aceite da
+integração ou do ensaio correspondente. Não substituem os critérios e
+cenários originais e não mudam seu estado por conclusão da origem.
+
+| Origem concluída | Obrigação recebida | Situação |
+|---|---|---|
+| [COM-004](../01-comunicacao/done/COM-004-uart-payload.md) | Acordar com Payload o FCPU v1, ponto focal/ponta Pi, porta/configuração, taxa nominal, rajadas e retenção; acompanhar o produtor e preservar a pendência de cada atualização ADS-B e a semântica dos campos. | Pendente |
+| [COM-005](../01-comunicacao/done/COM-005-armazenamento-sd.md) | Ligar registros ao SD, nomes/rotação por boot e limite de arquivo, contabilização de perdas, encaminhamento de erros e extração pelo umbilical. | Pendente |
+| [DAD-001](../02-dados-e-tempo/done/DAD-001-modelos-e-formatos.md) | Consolidar o aceite de Payload/TT&C e das estatísticas: id opaco, idade/validade dos campos, unidades de velocidades, extras e migração explícita dos dados legados, sem inventar sessão/sequência ou validade. | Pendente |
+| [DAD-003](../02-dados-e-tempo/done/DAD-003-registros-e-interpretacao.md) | Integrar criação, gravação e extração de registros e referências temporais por boot, preservando formatos v1/v2 e leitura retrocompatível. | Pendente |
+| [TES-004](../04-testes/done/TES-004-uart-software.md) | Consolidar o contrato com o produtor; qualquer adaptação acordada exige regressão explícita, sem alterar resultados esperados para acomodar falhas. | Pendente |
 
 ## Evidências
 

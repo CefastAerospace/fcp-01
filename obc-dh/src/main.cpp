@@ -3,6 +3,7 @@
 #include "ObcTimeEsp32.h" // Reserva de boot em NVS e timer monotônico.
 #include "I2cBus.h" // Inicialização do controlador e executor existentes.
 #include "ObcStorageEsp32.h" // Montagem SD/HSPI, sem abrir arquivos.
+#include "ObcTtc.h" // Enlace TT&C e atendimento dos comandos de bancada.
 
 // ─── ATENÇÃO ──────────────────────────────────────────────────────
 /*
@@ -45,7 +46,7 @@ namespace {
  */
 void setup(
 ) {
-    // Não aguarda conexão do computador nem inicia rádio, missão ou atuadores.
+    // Não aguarda conexão do computador nem inicia missão ou atuadores.
     Serial.begin(115200);
     Serial.println("[OBC] Boot de bancada: tempo/NVS, I2C e SD");
     const obc_startup::INITIALIZERS initializers = {
@@ -55,12 +56,13 @@ void setup(
     };
     const obc_startup::STARTUP_REPORT report = obc_startup::Initialize(initializers);
     LogStartup(report);
+    obc_ttc::Init();
 }
 
 /**
- * @brief Cede execução às tarefas FreeRTOS sem iniciar fluxo de missão.
+ * @brief Atende telecomandos de bancada sem iniciar fluxo de missão.
  */
 void loop(
 ) {
-    delay(100);
+    obc_ttc::Service();
 }

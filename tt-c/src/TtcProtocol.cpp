@@ -171,7 +171,8 @@ namespace ttc {
     size_t BuildTelemetry(
         const TELEMETRY_DATA& tm,
         char* out,
-        size_t capacity
+        size_t capacity,
+        uint32_t available
     ) {
         JsonDocument doc;
         doc["t"] = "tm";
@@ -200,6 +201,24 @@ namespace ttc {
         doc["rx"] = tm.rx_count;
         doc["err"] = tm.error_count;
         doc["rst"] = tm.radio_resets;
+
+        // Conserva as chaves e distingue indisponibilidade de zero medido.
+        if (!(available & TM_TIMESTAMP)) doc["ts"] = nullptr;
+        if (!(available & TM_MODE)) doc["md"] = nullptr;
+        if (!(available & TM_VBAT)) doc["vb"] = nullptr;
+        if (!(available & TM_IBAT)) doc["ib"] = nullptr;
+        if (!(available & TM_VSOLAR)) doc["vs"] = nullptr;
+        if (!(available & TM_ISOLAR)) doc["is"] = nullptr;
+        if (!(available & TM_TEMPS)) doc["tp"] = nullptr;
+        if (!(available & TM_RATE)) doc["w"] = nullptr;
+        if (!(available & TM_AZIMUTH)) doc["az"] = nullptr;
+        if (!(available & TM_AIRCRAFT)) doc["ac"] = nullptr;
+        if (!(available & TM_MESSAGES)) doc["msg"] = nullptr;
+        if (!(available & TM_RSSI)) doc["rssi"] = nullptr;
+        if (!(available & TM_SNR)) doc["snr"] = nullptr;
+        if (!(available & TM_RX_COUNT)) doc["rx"] = nullptr;
+        if (!(available & TM_ERROR_COUNT)) doc["err"] = nullptr;
+        if (!(available & TM_RADIO_RESETS)) doc["rst"] = nullptr;
 
         return Serialize(doc, out, capacity);
     }

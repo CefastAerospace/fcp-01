@@ -247,6 +247,49 @@ static void TestInsertCounterRespectsFrameLimit(
     TEST_ASSERT_FALSE(ttc::InsertCounter(json, len, sizeof(json), 65535));
 }
 
+// A máscara altera disponibilidade, sem mudar chaves, valores ou API antiga.
+static void TestTelemetryAvailability(
+) {
+    ttc::TELEMETRY_DATA tm = {};
+    tm.mode = ttc::MODE_BENCH;
+    char legacy[ttc::max_frame_len + 1];
+    char explicit_all[ttc::max_frame_len + 1];
+    TEST_ASSERT_GREATER_THAN(0, ttc::BuildTelemetry(tm, legacy, sizeof(legacy)));
+    TEST_ASSERT_GREATER_THAN(0, ttc::BuildTelemetry(tm, explicit_all,
+        sizeof(explicit_all), ttc::TELEMETRY_ALL));
+    TEST_ASSERT_EQUAL_STRING(legacy, explicit_all);
+
+    const char* keys[] = {"ts", "md", "vb", "ib", "vs", "is", "tp", "w",
+        "az", "ac", "msg", "rssi", "snr", "rx", "err", "rst"};
+    JsonDocument expected;
+    TEST_ASSERT_TRUE(deserializeJson(expected, legacy) == DeserializationError::Ok);
+    // Cada campo pode ser disponibilizado independentemente, incluindo zeros.
+    for (unsigned bit = 0; bit < 16; bit++) {
+        char out[ttc::max_frame_len + 1];
+        size_t len = ttc::BuildTelemetry(tm, out, sizeof(out), 1UL << bit);
+        TEST_ASSERT_GREATER_THAN(0, len);
+        JsonDocument actual;
+        TEST_ASSERT_TRUE(deserializeJson(actual, out) == DeserializationError::Ok);
+        TEST_ASSERT_EQUAL_STRING("tm", actual["t"]);
+        TEST_ASSERT_EQUAL(17, actual.size());
+        for (unsigned field = 0; field < 16; field++) {
+            if (field == bit) TEST_ASSERT_TRUE(actual[keys[field]] == expected[keys[field]]);
+            else TEST_ASSERT_TRUE(actual[keys[field]].isNull());
+        }
+        TEST_ASSERT_TRUE(ttc::InsertCounter(out, len, sizeof(out), 65535));
+        TEST_ASSERT_LESS_OR_EQUAL(ttc::max_frame_len, len);
+    }
+
+    char out[ttc::max_frame_len + 1];
+    TEST_ASSERT_GREATER_THAN(0, ttc::BuildTelemetry(tm, out, sizeof(out), 0));
+    JsonDocument unavailable;
+    TEST_ASSERT_TRUE(deserializeJson(unavailable, out) == DeserializationError::Ok);
+    for (const char* key : keys) TEST_ASSERT_TRUE(unavailable[key].isNull());
+    char small[16];
+    TEST_ASSERT_EQUAL_size_t(0, ttc::BuildTelemetry(tm, small, sizeof(small), 0));
+    TEST_ASSERT_EQUAL_STRING("", small);
+}
+
 int main(
     int argc,
     char** argv
@@ -267,5 +310,6 @@ int main(
     RUN_TEST(TestBuildEventAndBeacon);
     RUN_TEST(TestInsertCounter);
     RUN_TEST(TestInsertCounterRespectsFrameLimit);
+    RUN_TEST(TestTelemetryAvailability);
     return UNITY_END();
 }

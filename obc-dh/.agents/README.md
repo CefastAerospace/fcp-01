@@ -2,6 +2,12 @@
 
 Software de bordo em C++ para o ESP32, com Arduino/FreeRTOS. O OBC-DH integra os módulos dos setores, organiza telecomandos (TC), telemetria (TM), referência temporal e registros da missão. O Payload executa no Raspberry Pi e se comunica por UART; o ADCS será integrado ao mesmo ESP32 do OBC.
 
+**Estado em 09/11/2026:** COM-004/COM-005, DAD-001/DAD-003 e
+TES-004/TES-007 estão concluídas em seu escopo próprio. Aceites, montagem,
+ponta Pi, fluxo integrado e estados duráveis continuam nas INT/TES
+destinatárias vinculadas no [painel](TODO.md). As descrições datadas
+abaixo preservam o histórico; conclusão local não declara missão validada.
+
 ## Mapa dos documentos
 
 | Documento | Fonte principal de informação |
@@ -78,8 +84,22 @@ DAD-003 acrescenta `ObcRecordCodec` e o [leitor nativo](../tools/README.md), sob
 
 Revisão de 05/11/2026: DAD-001 acrescenta modelos em memória e validadores de snapshots completos, com extras textuais, reutilizando tempo/status/bits de posição existentes. A nova verificação nativa é `tests/PayloadSnapshotCheck.cpp`. Não há parser ou persistência de snapshots; codec v1, testes anteriores e script do Payload permanecem preservados. Limites e lacunas de contrato estão em [obc-data.md](../../common/protocol/obc-data.md#0-snapshot-do-payload--modelo-em-memória).
 
-COM-005 acrescenta `ObcStorage` e `ObcStorageEsp32`, com arquivos exclusivos, sincronização por bloco, até três tentativas no mesmo offset, leitura por blocos e erros explícitos. Teste nativo e build ESP32 aprovados; módulo/alimentação com EPS e ensaios físicos permanecem pendentes. INT-003 chama a montagem na bancada, sem geração de registros ou transporte de extração. Contrato operacional e evidências estão na [tarefa](../.tasks/01-comunicacao/COM-005-armazenamento-sd.md); uso e verificações no [guia de ferramentas](../tools/README.md#serviço-de-arquivos-sdhspi).
+COM-005 acrescenta `ObcStorage` e `ObcStorageEsp32`, com arquivos exclusivos, sincronização por bloco, até três tentativas no mesmo offset, leitura por blocos e erros explícitos. Teste nativo e build ESP32 aprovados; módulo/alimentação com EPS e ensaios físicos permanecem pendentes. INT-003 chama a montagem na bancada, sem geração de registros ou transporte de extração. Contrato operacional e evidências estão na [tarefa](../.tasks/01-comunicacao/done/COM-005-armazenamento-sd.md); uso e verificações no [guia de ferramentas](../tools/README.md#serviço-de-arquivos-sdhspi).
 
 Entrega posterior de 05/11/2026: INT-003 liga os inicializadores existentes ao `setup()` por meio de `ObcStartup`. USB/Serial começa em 115200 baud; tempo/NVS, I2C e SD são tentados nessa ordem, com diagnóstico das falhas e sem repetição/reset. `loop()` cede execução a cada 100 ms. A montagem SD não abre arquivos ou grava registros. Teste nativo do coordenador e build ESP32 aprovados; INT-003 permanece em andamento pelas definições do boot integrado. As revisões anteriores acima descrevem o estado de suas próprias entregas; a integração atual de bancada está documentada na [INT-003](../.tasks/03-integracao/INT-003-inicializacao-central.md).
 
 Extensão posterior de 05/11/2026: DAD-003 acrescenta formato persistido v2 dos snapshots e extras, de 37–64497 bytes, com APIs no codec existente e leitura nativa v1/v2/mista. O v1, modelos, drivers e testes anteriores foram preservados. Novos testes independentes e build ESP32 aprovados; consolidação de DAD-001 e estados duráveis de retomada continuam pendentes. Contrato e limites de memória estão em [obc-data.md](../../common/protocol/obc-data.md#persistência-de-snapshots--v2); comandos e uso no [guia](../tools/README.md#snapshots-v2). Esta extensão resolve a ausência de codec de snapshots descrita nas entregas anteriores, sem implementar UART ou gravação automática.
+
+Entrega de 09/11/2026: COM-004 acrescenta `PayloadReceiver`,
+`PayloadReceiverEsp32`, testes nativos independentes e autoverificação ESP32
+para [FCPU v1](../../common/protocol/payload-uart.md). O JSON existente é o
+corpo; controle de transporte é externo. O contexto reserva uma vez dois
+blocos no heap e publica somente após validação integral. Amostra, limites,
+erros, repetição, CRC e timeouts passaram nos testes; a amostra foi executada
+na placa com medição de memória/pilha. O beta de loopback permanece intacto,
+isolado no ambiente `uart-loopback`. Os ambientes, comandos, logs e retorno
+ao firmware normal estão em [examples/README.md](../examples/README.md).
+O boot normal não inicia o receptor e o produtor Pi não foi alterado.
+COM-004 e TES-004 tiveram seu escopo próprio encerrado na auditoria posterior
+de 09/11. Aceite/parâmetros/ponta Pi ficam em INT-006 e ensaios físicos em
+TES-005/TES-009. TES-005 permanece em andamento; critérios foram preservados.

@@ -3,7 +3,7 @@
 **Estado:** Pendente
 **Responsáveis:** OBC-DH, ADCS, EPS e Térmico
 
-A execução dos novos ensaios será encaminhada ao setor de testes; os responsáveis técnicos acima apoiam interfaces, condições e diagnóstico.
+A execução e o relato dos ensaios cabem ao setor de testes; a análise e as correções de firmware cabem ao responsável OBC-DH, com apoio dos setores envolvidos. Seguir as [responsabilidades e regras de reexecução](../README.md#responsabilidades-correção-e-reexecução).
 
 ## Objetivo
 

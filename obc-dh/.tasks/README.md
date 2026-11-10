@@ -60,9 +60,17 @@ Antes do ensaio, preencher condições, entrada/procedimento e resultado esperad
 
 Marcar `[x]` somente quando o caso tiver evidência de aprovação. Rejeição prevista de entrada inválida pode ser sucesso do caso; falha inesperada não é aprovação por ser um teste de erro. Um limite ainda não acordado impede o aceite correspondente, sem justificar inventar um valor. Resultados parciais não concluem TES-008/TES-009/TES-010.
 
-Os roteiros arquivados conservam suas entradas e expectativas. No firmware atual, `ObcDataFlowCheck.py` substitui o uso operacional do roteiro da versão INT-004, sem modificar `ObcTtcCheck.py`. Mudança de código após divergência exige diagnóstico e discussão, conforme AGENTS.md.
+Os roteiros arquivados conservam suas entradas e expectativas. No firmware atual, `ObcDataFlowCheck.py` substitui o uso operacional do roteiro da versão INT-004, sem modificar `ObcTtcCheck.py`.
 
-Ao encerrar: registrar versão, procedimento, entradas, resultados e limitações; marcar o estado; mover o arquivo para `done/`; corrigir seus links relativos e todos os links que apontam para ele; atualizar a linha no TODO. Não renumerar tarefas, nem marcar tarefas dependentes automaticamente. Se uma tarefa precisar ser reaberta, fazer o percurso inverso mantendo o histórico das evidências.
+### Responsabilidades, correção e reexecução
+
+- **Setor de testes:** executar os procedimentos e registrar todos os acertos, falhas e impedimentos por cenário, com versão, entradas, resultado esperado, observado e evidências. Encaminhar o relatório completo ao responsável OBC-DH, incluindo os casos aprovados. Não corrigir firmware nem alterar entradas, critérios ou resultados esperados para obter aprovação. Dúvidas ou problemas no roteiro também devem ser relatados, sem ajuste unilateral.
+- **Responsável OBC-DH:** analisar os resultados, diagnosticar os problemas e realizar as correções de firmware necessárias, conforme as regras de discussão de AGENTS.md. Informar a nova versão e os casos afetados para reexecução. Questões de contrato ou de outros subsistemas devem ser tratadas com os responsáveis correspondentes.
+- **Setor de testes, após a correção:** repetir os casos afetados e as regressões necessárias na versão indicada, conservando os critérios aprovados. Acrescentar os novos resultados sem apagar ou substituir relatórios, falhas e evidências anteriores. Aprovação de uma versão anterior não comprova o comportamento de um trecho alterado.
+
+Executar todos os casos ou entregar o relatório não conclui automaticamente uma TES. Falhas, impedimentos e casos não executados que impeçam os critérios do próprio escopo mantêm a tarefa aberta; o arquivo não deve ser movido para `done/`. Após as correções, registrar a aprovação dos casos necessários antes do encerramento. Obrigações de outro escopo continuam nas destinatárias, conforme a regra de encerramento por responsabilidade.
+
+Ao encerrar, somente após atender todos os critérios do próprio escopo: registrar versão, procedimento, entradas, resultados e limitações; marcar o estado; mover o arquivo para `done/`; corrigir seus links relativos e todos os links que apontam para ele; atualizar a linha no TODO. Não renumerar tarefas, nem marcar tarefas dependentes automaticamente. Se uma tarefa precisar ser reaberta, fazer o percurso inverso mantendo o histórico das evidências.
 
 Implementação, integração e validação física são estados distintos. Na
 reorganização de 27/10/2026 havia cinco tarefas em `done/`; DAD-002

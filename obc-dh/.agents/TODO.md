@@ -73,6 +73,8 @@ O engenheiro OBC-DH pode preparar interfaces e evidências; a execução dos nov
 
 Predecessoras concluídas e condições externas são verificações separadas. Os checklists completos ficam nas tarefas da seção 4; usar o [registro por cenário](../.tasks/README.md#registro-por-cenário).
 
+O setor de testes executa e encaminha acertos, falhas, impedimentos e evidências ao responsável OBC-DH; não corrige firmware nem altera entradas, critérios ou resultados esperados. Análise e correção ficam com OBC-DH, seguidas de reexecução pelo setor de testes. Falhas do próprio escopo mantêm a tarefa aberta, conforme o [fluxo de correção e encerramento](../.tasks/README.md#responsabilidades-correção-e-reexecução).
+
 | Task/cenário | Predecessoras | Encaminhamento atual | Recurso/definição que falta |
 |---|---|---|---|
 | TES-001/004/007 | Concluídas no escopo próprio | Reutilizar evidências; não reabrir por esta revisão. | As verificações portáteis não substituem seus ensaios físicos destinatários. |

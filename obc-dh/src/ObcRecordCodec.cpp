@@ -17,9 +17,56 @@ namespace obc_record {
         struct CURSOR {
             uint8_t* output;
             const uint8_t* input;
+            uint8_t* output_end;
+            uint8_t* next_output;
+
+            CURSOR(
+                uint8_t* destination,
+                const uint8_t* source,
+                uint8_t* end = nullptr,
+                uint8_t* next = nullptr
+            ) : output(destination), input(source), output_end(end), next_output(next) {}
         };
 
         // ─── HELPERS ──────────────────────────────────────────────────────
+
+        // Uma única fronteira permite usar RAM fragmentada, inclusive em textos/reais/CRC.
+        void WriteBytes(
+            CURSOR& cursor,
+            const uint8_t* bytes,
+            size_t size
+        ) {
+            while (size != 0) {
+                if (cursor.output_end != nullptr && cursor.output == cursor.output_end) {
+                    cursor.output = cursor.next_output;
+                    cursor.output_end = nullptr;
+                }
+                size_t count = size;
+                if (cursor.output_end != nullptr) {
+                    const size_t remaining = static_cast<size_t>(cursor.output_end - cursor.output);
+                    if (count > remaining) count = remaining;
+                }
+                std::memcpy(cursor.output, bytes, count);
+                cursor.output += count;
+                bytes += count;
+                size -= count;
+            }
+        }
+
+        // Estado intermediário do CRC, compartilhado por buffers contínuos ou partidos.
+        uint32_t UpdateCrc32(
+            uint32_t crc,
+            const uint8_t* data,
+            size_t size
+        ) {
+            for (size_t index = 0; index < size; ++index) {
+                crc ^= data[index];
+                for (unsigned bit = 0; bit < 8; ++bit) {
+                    crc = (crc >> 1) ^ ((crc & 1U) ? obc_data::crc32_polynomial : 0);
+                }
+            }
+            return crc;
+        }
 
         // Serializa larguras de 1/2/3/4/8 bytes; o maior deslocamento é 56.
         template<typename INTEGER>
@@ -31,7 +78,8 @@ namespace obc_record {
             uint64_t bits = cursor.output ? static_cast<uint64_t>(value) : 0;
             for (size_t index = 0; index < width; ++index) {
                 if (cursor.output) {
-                    *cursor.output++ = static_cast<uint8_t>(bits >> (index * 8));
+                    const uint8_t byte = static_cast<uint8_t>(bits >> (index * 8));
+                    WriteBytes(cursor, &byte, 1);
                 } else {
                     bits |= static_cast<uint64_t>(*cursor.input++) << (index * 8);
                 }
@@ -85,9 +133,9 @@ namespace obc_record {
             if (cursor.output) {
                 size_t length = 0;
                 while (length < width && value[length] != '\0') ++length;
-                std::memset(cursor.output, 0, width);
-                std::memcpy(cursor.output, value, length);
-                cursor.output += width;
+                WriteBytes(cursor, reinterpret_cast<const uint8_t*>(value), length);
+                const uint8_t zero = 0;
+                for (size_t index = length; index < width; ++index) WriteBytes(cursor, &zero, 1);
             } else {
                 std::memcpy(value, cursor.input, width);
                 value[width] = '\0';
@@ -269,8 +317,7 @@ namespace obc_record {
         ) {
             uint8_t size = static_cast<uint8_t>(std::strlen(text));
             TransferUnsigned(cursor, size);
-            std::memcpy(cursor.output, text, size);
-            cursor.output += size;
+            WriteBytes(cursor, reinterpret_cast<const uint8_t*>(text), size);
         }
 
         // Compartilha primitivas v1, copiando somente uma aeronave por vez.
@@ -398,14 +445,7 @@ namespace obc_record {
         const uint8_t* data,
         size_t size
     ) {
-        uint32_t crc = obc_data::crc32_initial;
-        for (size_t index = 0; index < size; ++index) {
-            crc ^= data[index];
-            for (unsigned bit = 0; bit < 8; ++bit) {
-                crc = (crc >> 1) ^ ((crc & 1U) ? obc_data::crc32_polynomial : 0);
-            }
-        }
-        return crc ^ obc_data::crc32_final_xor;
+        return UpdateCrc32(obc_data::crc32_initial, data, size) ^ obc_data::crc32_final_xor;
     }
 
     STATUS Encode(
@@ -470,6 +510,92 @@ namespace obc_record {
         return STATUS::OK;
     }
 
+    // Validação v3 reutiliza os domínios v1 sem alterar seus bits reservados.
+    static STATUS ValidateTelemetryV3(
+        const obc_time::EVENT_STAMP& stamp,
+        const obc_data::TELEMETRY_DATA& telemetry
+    ) {
+        if (telemetry.available_fields & ~0x7FFFFUL) return STATUS::INVALID_DATA;
+        obc_data::TELEMETRY_DATA legacy = telemetry;
+        legacy.available_fields &= 0x3FFFUL;
+        const obc_data::RECORD_HEADER header = {1, obc_data::RECORD_TYPE::TELEMETRY, 99, stamp};
+        return MapStatus(obc_data::Validate(header, legacy));
+    }
+
+    // Ausência zera bytes de contadores somente na nova versão.
+    static void NormalizeTelemetryV3(
+        RECORD& record
+    ) {
+        record.header.type = obc_data::RECORD_TYPE::TELEMETRY;
+        Normalize(record);
+        obc_data::TELEMETRY_DATA& data = record.body.telemetry;
+        if (!(data.available_fields & obc_data::TM_AIRCRAFT)) data.aircraft_count = 0;
+        if (!(data.available_fields & obc_data::TM_MESSAGES)) data.message_count = 0;
+        if (!(data.available_fields & obc_data::TM_RX_COUNT)) data.rx_count = 0;
+        if (!(data.available_fields & obc_data::TM_ERROR_COUNT)) data.error_count = 0;
+        if (!(data.available_fields & obc_data::TM_RADIO_RESETS)) data.radio_resets = 0;
+        record.header.type = static_cast<obc_data::RECORD_TYPE>(telemetry_type);
+    }
+
+    STATUS EncodeTelemetryV3(
+        const obc_time::EVENT_STAMP& stamp,
+        const obc_data::TELEMETRY_DATA& telemetry,
+        uint8_t* buffer,
+        size_t capacity,
+        size_t& written
+    ) {
+        written = 0;
+        if (buffer == nullptr) return STATUS::INVALID_ARGUMENT;
+        const STATUS status = ValidateTelemetryV3(stamp, telemetry);
+        if (status != STATUS::OK) return status;
+        if (capacity < telemetry_record_bytes) return STATUS::BUFFER_TOO_SMALL;
+        RECORD copy = {};
+        copy.header = {telemetry_version, static_cast<obc_data::RECORD_TYPE>(telemetry_type),
+            static_cast<uint16_t>(telemetry_record_bytes), stamp};
+        copy.body.telemetry = telemetry;
+        NormalizeTelemetryV3(copy);
+        std::memcpy(buffer, telemetry_magic, 4);
+        CURSOR cursor = {buffer + 4, nullptr};
+        TransferHeader(cursor, copy.header);
+        copy.header.type = obc_data::RECORD_TYPE::TELEMETRY;
+        TransferBody(cursor, copy);
+        uint32_t crc = ComputeCrc32(buffer, telemetry_record_bytes - 4);
+        TransferUnsigned(cursor, crc);
+        written = telemetry_record_bytes;
+        return STATUS::OK;
+    }
+
+    STATUS DecodeTelemetryV3(
+        const uint8_t* buffer,
+        size_t available,
+        RECORD& record,
+        size_t& consumed
+    ) {
+        consumed = 0;
+        if (buffer == nullptr) return STATUS::INVALID_ARGUMENT;
+        if (available < obc_data::header_bytes) return STATUS::INCOMPLETE;
+        if (std::memcmp(buffer, telemetry_magic, 4) != 0) return STATUS::BAD_MAGIC;
+        RECORD decoded = {};
+        CURSOR cursor = {nullptr, buffer + 4};
+        TransferHeader(cursor, decoded.header);
+        if (decoded.header.version != telemetry_version) return STATUS::UNSUPPORTED_VERSION;
+        if (static_cast<uint8_t>(decoded.header.type) != telemetry_type) return STATUS::UNSUPPORTED_TYPE;
+        if (decoded.header.total_bytes != telemetry_record_bytes) return STATUS::INVALID_LENGTH;
+        if (available < telemetry_record_bytes) return STATUS::INCOMPLETE;
+        CURSOR crc_cursor = {nullptr, buffer + telemetry_record_bytes - 4};
+        uint32_t crc = 0;
+        TransferUnsigned(crc_cursor, crc);
+        if (crc != ComputeCrc32(buffer, telemetry_record_bytes - 4)) return STATUS::CRC_MISMATCH;
+        decoded.header.type = obc_data::RECORD_TYPE::TELEMETRY;
+        TransferBody(cursor, decoded);
+        const STATUS status = ValidateTelemetryV3(decoded.header.stamp, decoded.body.telemetry);
+        if (status != STATUS::OK) return status;
+        NormalizeTelemetryV3(decoded);
+        record = decoded;
+        consumed = telemetry_record_bytes;
+        return STATUS::OK;
+    }
+
     STATUS GetSnapshotSize(
         const obc_data::PAYLOAD_SNAPSHOT& snapshot,
         size_t& total_bytes
@@ -489,15 +615,26 @@ namespace obc_record {
         size_t capacity,
         size_t& written
     ) {
+        return EncodeSnapshotParts(snapshot, buffer, capacity, nullptr, 0, written);
+    }
+
+    STATUS EncodeSnapshotParts(
+        const obc_data::PAYLOAD_SNAPSHOT& snapshot,
+        uint8_t* first,
+        size_t first_capacity,
+        uint8_t* second,
+        size_t second_capacity,
+        size_t& written
+    ) {
         written = 0;
-        if (buffer == nullptr) return STATUS::INVALID_ARGUMENT;
+        if (first == nullptr || (second == nullptr && second_capacity != 0)) return STATUS::INVALID_ARGUMENT;
         size_t size = 0;
         const STATUS status = GetSnapshotSize(snapshot, size);
         if (status != STATUS::OK) return status;
-        if (capacity < size) return STATUS::BUFFER_TOO_SMALL;
+        if (first_capacity < size && second_capacity < size - first_capacity) return STATUS::BUFFER_TOO_SMALL;
 
-        std::memcpy(buffer, snapshot_magic, 4);
-        CURSOR cursor = {buffer + 4, nullptr};
+        CURSOR cursor = {first, nullptr, first + first_capacity, second};
+        WriteBytes(cursor, reinterpret_cast<const uint8_t*>(snapshot_magic), 4);
         uint8_t version = snapshot_version;
         uint8_t type = snapshot_type;
         uint16_t total = static_cast<uint16_t>(size);
@@ -513,7 +650,11 @@ namespace obc_record {
         TransferUnsigned(cursor, id);
         TransferUnsigned(cursor, count);
         for (size_t index = 0; index < count; ++index) WriteAircraft(cursor, snapshot.aircraft[index]);
-        uint32_t crc = ComputeCrc32(buffer, size - obc_data::crc_bytes);
+        const size_t protected_size = size - obc_data::crc_bytes;
+        const size_t first_size = protected_size < first_capacity ? protected_size : first_capacity;
+        uint32_t crc = UpdateCrc32(obc_data::crc32_initial, first, first_size);
+        if (protected_size > first_size) crc = UpdateCrc32(crc, second, protected_size - first_size);
+        crc ^= obc_data::crc32_final_xor;
         TransferUnsigned(cursor, crc);
         written = size;
         return STATUS::OK;

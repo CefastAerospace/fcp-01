@@ -9,6 +9,7 @@
 #include "Pinout.h" // GPIOs do rádio, distintos do SD/HSPI.
 #include "Ttc.h" // Ttc, TC_FRAME e contrato de TC/TM.
 #include "UmbilicalLink.h" // Transporte pela UART0/USB.
+#include "ObcDataFlowEsp32.h" // Estado integrado, referência UTC e registro da TM.
 
 namespace obc_ttc {
 
@@ -25,7 +26,8 @@ namespace obc_ttc {
     /**
      * @brief Atende um TC por chamada, esperando até 20 ms pela recepção.
      * @details ping recebe ACK; get_status/request_tm recebem ACK e TM
-     * de bancada, com null para dados indisponíveis. Outros comandos
+     * integrada, com null para dados indisponíveis. set_time aplica UTC
+     * em RAM e tenta persistir a referência no fluxo. Outros comandos
      * conhecidos recebem invalid_cmd. Não executa Update() nem ações de
      * missão. Quando inativo, cede execução por 20 ms.
      */

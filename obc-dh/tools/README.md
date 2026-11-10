@@ -139,6 +139,55 @@ python3 tests/SnapshotRecordsCheck.py /tmp/fcp01-snapshot-codec-check /tmp/fcp01
 
 O script gera quatro vetores independentes com `struct`/`zlib` em diretório temporário e invoca o teste C++ real. Confere lista vazia, ICAO isolado, dados/extras opcionais e limite máximo, comparação byte a byte, buffers insuficientes, prefixos truncados, CRC e corpo inválidos com saída preservada. Em seguida executa o leitor real com arquivos v1/v2/mistos, referências v1 para snapshots v2, corrupção/truncamento, fronteira da janela, textos não UTF-8 e origem intacta. Os testes v1 anteriores permanecem sem alteração.
 
+## Primeira etapa INT-006: fluxo, TM v3 e snapshot partido
+
+O leitor atual aceita v1/v2/v3 no mesmo arquivo. TM v3 acrescenta
+disponibilidade aos contadores, sem reescrever arquivos antigos ou alargar
+os bits aceitos no v1. Usar o leitor atualizado também ao reverter o firmware.
+
+Executar dentro de `obc-dh/`, com as dependências do ambiente `obc` instaladas:
+
+```bash
+python3 tools/PatchArduinoJson.py
+g++ -std=c++11 -Wall -Wextra -Werror -O1 -g \
+    -fsanitize=address,undefined -fno-sanitize-recover=undefined \
+    -fno-omit-frame-pointer -Iheaders -I.pio/libdeps/obc/ArduinoJson/src \
+    src/ObcData.cpp src/ObcTime.cpp src/ObcRecordCodec.cpp \
+    src/ObcStorage.cpp src/PayloadReceiver.cpp src/ObcDataFlow.cpp \
+    tests/ObcDataFlowCheck.cpp -o /tmp/fcp01-data-flow-check
+/tmp/fcp01-data-flow-check
+
+g++ -std=c++11 -Wall -Wextra -Werror \
+    -fsanitize=undefined -fno-sanitize-recover=undefined -Iheaders \
+    src/ObcData.cpp src/ObcTime.cpp src/ObcRecordCodec.cpp \
+    tests/TelemetryV3Check.cpp -o /tmp/fcp01-telemetry-v3-check
+g++ -std=c++11 -Wall -Wextra -Werror \
+    -fsanitize=undefined -fno-sanitize-recover=undefined -Iheaders \
+    src/ObcData.cpp src/ObcTime.cpp src/ObcRecordCodec.cpp \
+    src/ObcStorage.cpp src/ObcDataFlow.cpp \
+    tests/SnapshotPartsCheck.cpp -o /tmp/fcp01-snapshot-parts-check
+g++ -std=c++11 -Wall -Wextra -Werror \
+    -fsanitize=undefined -fno-sanitize-recover=undefined -Iheaders \
+    src/ObcData.cpp src/ObcTime.cpp src/ObcRecordCodec.cpp \
+    tools/ReadRecords.cpp -o /tmp/fcp01-read-records
+python3 tests/TelemetryV3Check.py /tmp/fcp01-telemetry-v3-check /tmp/fcp01-read-records
+python3 tests/SnapshotPartsCheck.py /tmp/fcp01-snapshot-parts-check /tmp/fcp01-read-records
+```
+
+Os vetores usam `struct`/`zlib`; o teste partido verifica fronteiras de
+campos/CRC, snapshot máximo de 64.497 bytes, escrita integral e falha na
+segunda parte. Um registro parcial não incrementa `records_written` nem
+é publicado pelo leitor. O teste do fluxo verifica época zero, volta do
+contador de 32 bits, referências entre boots, fila cheia, saturação,
+rotação com BOOT/referência e falhas de escrita. O teste do receptor
+anterior permanece separado e inalterado. Executar ASan/LeakSanitizer
+fora de ambientes com ptrace, sem desabilitar os sanitizadores.
+
+As observações de arquivo/SD são distintas: arquivos POSIX e falhas simuladas
+comprovam a lógica local; o cartão e a ponta Pi conservam seus ensaios.
+Para a verificação USB e a bancada com SD lento, consultar
+[examples/README.md](../examples/README.md#bancada-integrada-int-006).
+
 ## Pendências
 
 DAD-003 e TES-007 foram concluídas em 09/11/2026 no escopo dos codecs,

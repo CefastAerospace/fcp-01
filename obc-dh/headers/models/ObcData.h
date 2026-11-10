@@ -99,6 +99,15 @@ namespace obc_data {
         TM_SNR = 1UL << 13
     };
 
+    /** @brief Disponibilidade exclusiva da TM v3; v1 continua rejeitando esses bits. */
+    enum TELEMETRY_V3_FIELD : uint32_t {
+        TM_AIRCRAFT = 1UL << 14,
+        TM_MESSAGES = 1UL << 15,
+        TM_RX_COUNT = 1UL << 16,
+        TM_ERROR_COUNT = 1UL << 17,
+        TM_RADIO_RESETS = 1UL << 18
+    };
+
     /** @brief Valores correspondentes aos modos atuais de ttc::OP_MODE. */
     enum class MODE : uint8_t {
         BENCH = 0,
@@ -115,7 +124,7 @@ namespace obc_data {
         PAYLOAD = 2,
         TTC = 3,
         ADCS = 4,
-        EPS = 5,
+        EPS_SUBSYSTEM = 5,
         THERMAL = 6,
         SD = 7,
         I2C = 8

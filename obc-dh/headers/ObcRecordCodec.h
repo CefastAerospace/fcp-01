@@ -1,6 +1,6 @@
 /**
  * @file ObcRecordCodec.h
- * @brief Codec portátil de registros v1 e snapshots v2, sem I/O ou alocação.
+ * @brief Codec portátil de registros v1, snapshots v2 e TM v3, sem I/O ou alocação.
  */
 
 #pragma once
@@ -14,6 +14,10 @@ namespace obc_record {
     constexpr char snapshot_magic[4] = {'F', 'C', 'P', '2'};
     constexpr uint8_t snapshot_version = 2;
     constexpr uint8_t snapshot_type = 8;
+    constexpr char telemetry_magic[4] = {'F', 'C', 'P', '3'};
+    constexpr uint8_t telemetry_version = 3;
+    constexpr uint8_t telemetry_type = 9;
+    constexpr size_t telemetry_record_bytes = 99;
     constexpr size_t min_snapshot_record_bytes = obc_data::header_bytes + 8 + 1 + obc_data::crc_bytes;
     constexpr size_t max_snapshot_record_bytes = min_snapshot_record_bytes
         + obc_data::max_snapshot_aircraft * (3 + 1 + 3 * 8
@@ -24,7 +28,7 @@ namespace obc_record {
 
     // ─── STRUCTS ──────────────────────────────────────────────────────
 
-    /** @brief Corpo ativo determinado exclusivamente por RECORD_HEADER::type. */
+    /** @brief Corpos v1; a API dedicada v3 também usa o membro telemetry. */
     union RECORD_BODY {
         obc_data::PAYLOAD_DATA mission;
         obc_data::TELEMETRY_DATA telemetry;
@@ -142,6 +146,21 @@ namespace obc_record {
     );
 
     /**
+     * @brief Mesmo registro v2 em dois blocos distintos, sem cópia intermediária.
+     * @details Capacidades somadas devem comportar o registro. Blocos e modelo
+     * não se sobrepõem. Erro preserva ambos os blocos e zera written. O segundo
+     * bloco pode ser nulo quando sua capacidade é zero.
+     */
+    STATUS EncodeSnapshotParts(
+        const obc_data::PAYLOAD_SNAPSHOT& snapshot,
+        uint8_t* first,
+        size_t first_capacity,
+        uint8_t* second,
+        size_t second_capacity,
+        size_t& written
+    );
+
+    /**
      * @brief Decodifica snapshot v2 completo, preservando saída em falha.
      * @details Verifica limites/CRC e faz uma passagem de validação antes de
      * publicar. Espaço temporário limitado a uma aeronave e seus identificadores;
@@ -159,6 +178,31 @@ namespace obc_record {
         const uint8_t* buffer,
         size_t available,
         obc_data::PAYLOAD_SNAPSHOT& snapshot,
+        size_t& consumed
+    );
+
+    /**
+     * @brief Codifica TM v3 com os bits 0–18 de disponibilidade e modo obrigatório.
+     * @details Reutiliza os valores de TELEMETRY_DATA, sem ampliar o validador v1.
+     * Fonte/destino não se sobrepõem; falha preserva destino e zera written.
+     */
+    STATUS EncodeTelemetryV3(
+        const obc_time::EVENT_STAMP& stamp,
+        const obc_data::TELEMETRY_DATA& telemetry,
+        uint8_t* buffer,
+        size_t capacity,
+        size_t& written
+    );
+
+    /**
+     * @brief Decodifica TM v3 integralmente validada, sem modificar saída em falha.
+     * @details RECORD conserva version=3/type=9 do arquivo; seu corpo ativo é
+     * telemetry. Encode/Decode v1 continuam recusando esse cabeçalho.
+     */
+    STATUS DecodeTelemetryV3(
+        const uint8_t* buffer,
+        size_t available,
+        RECORD& record,
         size_t& consumed
     );
 

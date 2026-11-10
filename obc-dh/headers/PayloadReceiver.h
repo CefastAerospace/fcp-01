@@ -57,6 +57,8 @@ namespace obc_payload {
         uint64_t gaps;
         uint64_t session_changes;
         size_t parser_peak_bytes;
+        uint64_t complete_candidates; // Inclui CRC/conteúdo inválido e repetição.
+        uint64_t missing_positions; // Posições distintas; gaps conserva ocorrências.
     };
 
     /**
@@ -142,6 +144,7 @@ namespace obc_payload {
         uint64_t session_ = 0;
         uint32_t sequence_ = 0;
         uint32_t accepted_crc_ = 0;
+        uint32_t missing_high_ = 0;
         bool published_ = false;
 
         // Procura assinatura posterior ou conserva seu prefixo final.

@@ -57,6 +57,7 @@ void setup(
     const obc_startup::STARTUP_REPORT report = obc_startup::Initialize(initializers);
     LogStartup(report);
     obc_ttc::Init();
+    obc_flow::esp32::Init(report);
 }
 
 /**
@@ -65,4 +66,5 @@ void setup(
 void loop(
 ) {
     obc_ttc::Service();
+    obc_flow::esp32::ReportDiagnostics();
 }

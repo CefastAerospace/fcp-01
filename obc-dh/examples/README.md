@@ -147,6 +147,46 @@ amostra de sete aeronaves, sem garantir o consumo do firmware integrado.
 - [Reserva dividida](uart-receiver-check-split-heap-2026-11-09.txt): amostra,
   repetição e CRC aprovados na placa, com medições de memória/pilha.
 
-O firmware atualmente gravado durante esta entrega é `uart-receiver-check`.
-Para retornar ao firmware normal, use o comando de upload `-e obc` descrito
-acima. Essa entrega não declara conclusão do ensaio ESP32–Pi ou de TES-005.
+Na entrega COM-004 foi usado `uart-receiver-check`. Após a primeira etapa
+INT-006, a placa foi devolvida ao firmware normal `obc`. A bancada UART
+continua disponível e não declara conclusão do ensaio ESP32–Pi ou TES-005.
+
+## Bancada integrada INT-006
+
+Requer somente ESP e USB, sem jumper. `int006-check` reserva boot real em
+NVS e inicia TT&C e as tarefas do fluxo. O backend de arquivos é simulado:
+cada escrita espera 100 ms e confere estabilidade dos bytes antes/depois.
+Não monta ou confirma persistência em cartão.
+
+`BuildFlowFixtures.py` gera em `.pio/flow-fixtures.fcpu` os quadros FCPU
+independentes `struct`/`zlib`, usando a amostra original de sete aeronaves.
+Inclui repetição, rajada, CRC inválido e lista vazia. Os bytes ficam na
+flash e, após o primeiro `set_time` válido, atravessam o ring e o receptor
+reais. A fonte simulada retém bytes quando o ring está cheio; sua rajada
+não representa taxa física de UART ou taxa nominal de missão.
+
+```bash
+pio run -e int006-check -t upload --upload-port /dev/ttyUSB0
+python3 tests/ObcDataFlowCheck.py /dev/ttyUSB0 --bench
+pio run -e obc -t upload --upload-port /dev/ttyUSB0
+python3 tests/ObcDataFlowCheck.py /dev/ttyUSB0
+```
+
+Usar Python com pyserial, inclusive o Python do PlatformIO. Executar os
+roteiros após boot novo; a aplicação não recupera UTC de um boot anterior.
+O primeiro roteiro cobre 77 cenários; o segundo cobre 75 no firmware normal
+sem cartão/Pi. O roteiro INT-004 fica preservado para a versão anterior,
+na qual `set_time` ainda recebia `invalid_cmd`.
+
+Os relatórios temporários completos são `/tmp/fcp01-int006-bench.json` e
+`/tmp/fcp01-int006-obc.json`. Conferem estado inicial, argumentos inválidos,
+UTC/timestamp na TM com ADS-B simulado, época Unix zero, comandos ainda
+rejeitados, 50 pedidos de latência, contadores, estabilidade e perdas
+explicitamente contabilizadas. Os critérios são `q <=200 ms`, resposta
+`<=2 s` e atendimento do transporte `<=10 ms`; os valores observados e
+limitações estão na [INT-006](../.tasks/03-integracao/INT-006-fluxo-de-dados.md).
+
+`poll_gap_ms` é a cadência do transporte; `process_gap_ms` mostra o custo
+do consumidor sem esconder parse/codificação demorados. `uart_full` conta
+observações de ring cheio, não perda de quadros. Pilhas livres são medidas
+de cada amostra, não garantia de todos os cenários de voo.

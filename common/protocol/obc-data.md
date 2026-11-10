@@ -207,7 +207,68 @@ Exemplo, máscara local `0x3FFF`:
 {"version":1,"type":"telemetry","boot_id":1,"monotonic_ms":5000,"data":{"ts":1760000123,"md":"mission","vb":7.81,"ib":420,"vs":9.1,"is":310,"tp":[21.5,22,23.1,20.9,24.3],"w":12.4,"az":37,"ac":3,"msg":1200,"rssi":-81,"snr":9.5,"rx":10,"err":0,"rst":0}}
 ```
 
-Uma temperatura ausente vira `null` na posição correspondente do exemplo JSON e tem seu bit desmarcado. EPS fornece corrente em A: a integração deve converter explicitamente para mA. Não escolher aqui o significado de VIN+/VIN−, sinal da bateria, posições térmicas ou eixo ADCS. Representação de UTC desconhecido no envio TT&C continua sendo assunto de integração: `SendTelemetry()` atual usa timestamp inteiro e não foi alterado para transmitir `null`.
+Uma temperatura ausente vira `null` na posição correspondente do exemplo JSON e tem seu bit desmarcado. EPS fornece corrente em A: a integração deve converter explicitamente para mA. Não escolher aqui o significado de VIN+/VIN−, sinal da bateria, posições térmicas ou eixo ADCS. No envio TT&C, a máscara de disponibilidade acrescentada na INT-004 representa UTC desconhecido como `ts:null`.
+
+### TM persistida com disponibilidade de contadores — v3
+
+A primeira etapa da INT-006 acrescenta `FCP3`, versão **3**, tipo **9**,
+para registrar a TM sem fabricar contagens indisponíveis. O cabeçalho de
+24 bytes, a ordem/largura dos campos do corpo de 71 bytes e o CRC são os
+mesmos mecanismos existentes; o total continua **99 bytes**. Não é um
+novo pacote de rádio e não altera o formato v1 de telemetria.
+
+Bits 0–13 mantêm o significado local. Os novos bits são:
+
+| Bit | Campo disponível |
+|---|---|
+| 14 | `aircraft_count/ac` |
+| 15 | `message_count/msg` |
+| 16 | `rx_count/rx` |
+| 17 | `error_count/err` |
+| 18 | `radio_resets/rst` |
+
+Bits 19–31 são rejeitados. Modo continua obrigatório. Valor zero com bit
+marcado é válido; sem o bit, os bytes persistidos são zerados e o leitor
+exporta `null`. Temperaturas conservam disponibilidade individual.
+O validador v1 continua rejeitando seus bits reservados 14–31.
+
+`EncodeTelemetryV3` e `DecodeTelemetryV3` são APIs dedicadas. Na saída do
+decoder, `RECORD` conserva versão 3/tipo 9, com corpo `telemetry`. O leitor
+atual aceita arquivos mistos v1/v2/v3, preservando a origem. Leitores antigos
+não interpretam v3; para reverter o firmware, conservar o leitor atualizado
+e os arquivos existentes. Não há migração ou reescrita automática.
+
+No fluxo atual, `ac` só fica disponível após snapshot válido; lista vazia
+produz zero disponível. `msg` permanece indisponível, pois `id` é opaco e
+o produtor não informa a quantidade de mensagens ADS-B. A TM persistida
+usa a mesma amostra de enlace devolvida por `SendTelemetry`; o JSON de
+rádio conserva seus arredondamentos existentes.
+
+### Gravação integrada e buffers partidos
+
+`EncodeSnapshotParts` produz o mesmo registro v2 em dois blocos, sem cópia
+intermediária. No ESP são 32.768 + 31.729 bytes, mantendo o máximo de
+64.497 bytes. `EncodeSnapshot` contínuo e seus testes permanecem válidos.
+Modelo e blocos devem permanecer estáveis e não se sobrepor.
+
+O diário cria `boot_<boot hexadecimal de 16 posições>_<segmento de 8 posições>.bin`
+exclusivamente, sem sobrescrever. Cada segmento começa com BOOT e, quando
+existir, a última referência temporal confirmada, com metadados originais.
+Rotaciona entre registros no limite `INT32_MAX`. Colisão ou falha terminal
+desativa o escritor; recuperação automática pertence à INT-008.
+
+O bloco de snapshot é exclusivo até terminar a escrita. A fila separada
+tem oito registros pequenos de até 105 bytes, o maior tamanho canônico v1;
+essa capacidade interna não muda o limite do formato v1. Cada operação
+`Append` mantém suas tentativas/sincronização existentes. Um snapshot em
+duas partes só incrementa `records_written` após confirmar ambas. Falha na
+segunda parte pode preservar uma cauda incompleta; ela é contabilizada como
+perda, o escritor para e o leitor relata o trecho sem publicar o snapshot.
+
+SD indisponível, fila cheia ou bloco ocupado não bloqueiam recepção/TM:
+os registros não gravados são contabilizados. ACK UART continua confirmando
+RAM. `set_time` confirma aplicação em RAM; a falta de persistência é
+diagnosticada separadamente. Não há retenção ilimitada nem confirmação de solo.
 
 ## 5. Operação, falhas, estatísticas e tempo
 
@@ -258,6 +319,6 @@ Reutilizar `obc_time::TIME_REFERENCE`. Sua recepção deve coincidir exatamente 
 
 ## 6. Validação local e pendências de aceite
 
-[ObcDataCheck.cpp](../../obc-dh/tests/ObcDataCheck.cpp) verifica os exemplos, disponibilidade, limites de campos, tipos/tamanhos, datas e referências de boots. DAD-003 acrescentou [testes do codec](../../obc-dh/tests/ObcRecordCodecCheck.cpp) e [verificação do leitor C++](../../obc-dh/tests/ReadRecordsCheck.py), incluindo vetores independentes, CRC, truncamento, corrupção, recuperação e reconstrução temporal. Não há parser JSON de entrada, agregação ou acesso físico ao SD. O [guia do leitor](../../obc-dh/tools/README.md) registra uso, limitações e verificações; COM-005 conserva a responsabilidade de armazenamento físico.
+[ObcDataCheck.cpp](../../obc-dh/tests/ObcDataCheck.cpp) verifica os exemplos, disponibilidade, limites de campos, tipos/tamanhos, datas e referências de boots. DAD-003 acrescentou [testes do codec](../../obc-dh/tests/ObcRecordCodecCheck.cpp) e [verificação do leitor C++](../../obc-dh/tests/ReadRecordsCheck.py), incluindo vetores independentes, CRC, truncamento, corrupção, recuperação e reconstrução temporal. Modelos/codecs não fazem I/O; o parser é implementado em PayloadReceiver e a primeira etapa INT-006 liga recepção, tempo e registros. Aceites e ensaios físicos continuam separados. O [guia do leitor](../../obc-dh/tools/README.md) registra uso, limitações e verificações; COM-005 conserva a responsabilidade de armazenamento físico.
 
-Antes de encerrar DAD-001: Payload deve aceitar sessão/sequência, atualização sem cache, campos opcionais e adaptação explícita do legado; TT&C/ADCS/EPS/Térmico devem confirmar disponibilidade, unidades, origem das leituras e códigos. Confirmar também a definição das métricas e os códigos de origem. OBC poderá manter sua implementação local enquanto isso, mas não declarar compatibilidade entre setores por compilação ou por existência deste documento.
+Nos aceites encaminhados às integrações após o encerramento do escopo local DAD-001, Payload deve confirmar sessão/sequência, atualização sem cache, campos opcionais e adaptação explícita do legado; TT&C/ADCS/EPS/Térmico devem confirmar disponibilidade, unidades, origem das leituras e códigos. Confirmar também a definição das métricas e os códigos de origem. OBC poderá manter sua implementação local enquanto isso, mas não declarar compatibilidade entre setores por compilação ou por existência deste documento.

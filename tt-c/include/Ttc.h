@@ -179,11 +179,13 @@ public:
      *
      * @param available Máscara de campos publicáveis; os demais ficam null.
      * Os campos de enlace também respeitam a máscara.
+     * @param queued_tm Saída opcional dos valores usados; preservada se não enfileirar.
      * @return true se enfileirada.
      */
     bool SendTelemetry(
         const ttc::TELEMETRY_DATA& tm,
-        uint32_t available = ttc::TELEMETRY_ALL
+        uint32_t available = ttc::TELEMETRY_ALL,
+        ttc::TELEMETRY_DATA* queued_tm = nullptr
     );
 
     /**

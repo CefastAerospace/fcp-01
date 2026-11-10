@@ -83,11 +83,14 @@ namespace {
                 obc_data::record_magic, obc_data::record_magic + 4);
             const uint8_t* current = std::search(buffer, buffer + count,
                 obc_record::snapshot_magic, obc_record::snapshot_magic + 4);
-            const uint8_t* found = std::min(legacy, current);
+            const uint8_t* telemetry = std::search(buffer, buffer + count,
+                obc_record::telemetry_magic, obc_record::telemetry_magic + 4);
+            const uint8_t* found = std::min(std::min(legacy, current), telemetry);
             if (found == buffer + count) {
                 discarded = true;
                 if (count < 4 && (std::memcmp(buffer, obc_data::record_magic, count) == 0
-                        || std::memcmp(buffer, obc_record::snapshot_magic, count) == 0)) {
+                        || std::memcmp(buffer, obc_record::snapshot_magic, count) == 0
+                        || std::memcmp(buffer, obc_record::telemetry_magic, count) == 0)) {
                     incomplete = true;
                     reason = obc_record::STATUS::INCOMPLETE;
                 }
@@ -104,7 +107,9 @@ namespace {
             const bool candidate_snapshot = buffer[3] == '2';
             const obc_record::STATUS status = candidate_snapshot
                 ? obc_record::DecodeSnapshot(buffer, count, snapshot, consumed)
-                : obc_record::Decode(buffer, count, record, consumed);
+                : buffer[3] == '3'
+                    ? obc_record::DecodeTelemetryV3(buffer, count, record, consumed)
+                    : obc_record::Decode(buffer, count, record, consumed);
             if (status == obc_record::STATUS::OK) {
                 if (discarded) DiscardRange(begin, offset, reason, incomplete, summary, report);
                 record_offset = offset;
@@ -263,7 +268,8 @@ namespace {
 
     // Não aplica arredondamentos do rádio ao dado armazenado no SD.
     void WriteTelemetry(
-        const obc_data::TELEMETRY_DATA& data
+        const obc_data::TELEMETRY_DATA& data,
+        bool version_three = false
     ) {
         const char* modes[] = {"bench", "safe", "detumb", "sun", "mission", "lowpwr"};
         std::cout << "{\"ts\":";
@@ -283,12 +289,26 @@ namespace {
         }
         std::cout << "],\"w\":"; WriteReal(data.rate_dps, (data.available_fields & obc_data::TM_RATE) != 0);
         std::cout << ",\"az\":"; WriteReal(data.azimuth_deg, (data.available_fields & obc_data::TM_AZIMUTH) != 0);
-        std::cout << ",\"ac\":" << data.aircraft_count << ",\"msg\":" << data.message_count << ",\"rssi\":";
+        std::cout << ",\"ac\":";
+        if (!version_three || (data.available_fields & obc_data::TM_AIRCRAFT)) std::cout << data.aircraft_count;
+        else std::cout << "null";
+        std::cout << ",\"msg\":";
+        if (!version_three || (data.available_fields & obc_data::TM_MESSAGES)) std::cout << data.message_count;
+        else std::cout << "null";
+        std::cout << ",\"rssi\":";
         if (data.available_fields & obc_data::TM_RSSI) std::cout << data.rssi;
         else std::cout << "null";
         std::cout << ",\"snr\":"; WriteReal(data.snr, (data.available_fields & obc_data::TM_SNR) != 0);
-        std::cout << ",\"rx\":" << data.rx_count << ",\"err\":" << data.error_count
-            << ",\"rst\":" << data.radio_resets << '}';
+        std::cout << ",\"rx\":";
+        if (!version_three || (data.available_fields & obc_data::TM_RX_COUNT)) std::cout << data.rx_count;
+        else std::cout << "null";
+        std::cout << ",\"err\":";
+        if (!version_three || (data.available_fields & obc_data::TM_ERROR_COUNT)) std::cout << data.error_count;
+        else std::cout << "null";
+        std::cout << ",\"rst\":";
+        if (!version_three || (data.available_fields & obc_data::TM_RADIO_RESETS)) std::cout << data.radio_resets;
+        else std::cout << "null";
+        std::cout << '}';
     }
 
     // Texto inválido em UTF-8 não invalida o registro binário: exporta
@@ -404,6 +424,12 @@ namespace {
         const std::vector<REFERENCE>& references
     ) {
         const char* types[] = {"mission", "telemetry", "event", "fault", "statistics", "boot", "time_reference"};
+        if (record.header.version == obc_record::telemetry_version) {
+            WriteEnvelope(record.header.version, "telemetry", record.header.stamp, offset, references);
+            WriteTelemetry(record.body.telemetry, true);
+            std::cout << "}\n";
+            return;
+        }
         WriteEnvelope(record.header.version, types[static_cast<uint8_t>(record.header.type) - 1],
             record.header.stamp, offset, references);
         WriteBody(record);

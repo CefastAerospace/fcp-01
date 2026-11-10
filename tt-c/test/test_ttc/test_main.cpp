@@ -341,6 +341,28 @@ static void TestTelemetryQueueFullKeepsAckQueueAvailable(
     TEST_ASSERT_TRUE(Contains(radio.sent[0], "\"st\":\"state_rejected\""));
 }
 
+// A saída opcional é a mesma amostra enfileirada e permanece intacta em falha.
+static void TestTelemetryQueuedOutput(
+) {
+    FakeTransport radio;
+    Ttc link(radio);
+    TEST_ASSERT_TRUE(link.Init());
+    radio.inbox.push_back(Tc(60, "ping"));
+    link.Update();
+    ttc::TELEMETRY_DATA tm = {};
+    tm.timestamp = 42;
+    tm.mode = ttc::MODE_BENCH;
+    ttc::TELEMETRY_DATA queued = {};
+    TEST_ASSERT_TRUE(link.SendTelemetry(tm, ttc::TELEMETRY_ALL, &queued));
+    TEST_ASSERT_EQUAL_UINT32(42, queued.timestamp);
+    TEST_ASSERT_EQUAL_INT16(-80, queued.rssi);
+    TEST_ASSERT_EQUAL_UINT16(1, queued.rx_count);
+    for (unsigned index = 0; index < 15; ++index) TEST_ASSERT_TRUE(link.SendTelemetry(tm));
+    queued.timestamp = 123456;
+    TEST_ASSERT_FALSE(link.SendTelemetry(tm, ttc::TELEMETRY_ALL, &queued));
+    TEST_ASSERT_EQUAL_UINT32(123456, queued.timestamp);
+}
+
 // setup() e loop() são funções obrigatórias do framework Arduino.
 
 void setup(
@@ -358,6 +380,7 @@ void setup(
     RUN_TEST(TestTelemetryFillsLinkFields);
     RUN_TEST(TestWiredWithoutRadioAndUnavailableTelemetry);
     RUN_TEST(TestTelemetryQueueFullKeepsAckQueueAvailable);
+    RUN_TEST(TestTelemetryQueuedOutput);
     UNITY_END();
 }
 

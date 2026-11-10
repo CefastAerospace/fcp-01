@@ -395,6 +395,7 @@ bool Receiver::Init(
     session_ = 0;
     sequence_ = 0;
     accepted_crc_ = 0;
+    missing_high_ = 0;
     published_ = false;
     statistics_ = {};
     return true;
@@ -442,6 +443,7 @@ STATUS Receiver::Examine(
     }
     const size_t total = header_bytes + length + crc_bytes;
     if (received_ < total) return STATUS::WAITING;
+    Increment(statistics_.complete_candidates);
     const uint32_t crc = static_cast<uint32_t>(ReadUnsigned(frame_.get() + total - crc_bytes, crc_bytes));
     if (crc != obc_record::ComputeCrc32(frame_.get(), total - crc_bytes)) {
         Resynchronize(now_ms);
@@ -456,12 +458,27 @@ STATUS Receiver::Examine(
         status = STATUS::DUPLICATE;
     } else if (session_ != 0 && ((session != session_ && sequence != 1)
             || (session == session_ && (sequence_ == UINT32_MAX || sequence != sequence_ + 1)))) {
-        if (session == session_ && sequence_ != UINT32_MAX && sequence > sequence_ + 1) Increment(statistics_.gaps);
+        if (session == session_ && sequence_ != UINT32_MAX && sequence > sequence_ + 1) {
+            Increment(statistics_.gaps);
+            const uint64_t expected = static_cast<uint64_t>(sequence_) + 1;
+            const uint64_t unseen = static_cast<uint64_t>(missing_high_) + 1;
+            const uint64_t begin = expected > unseen ? expected : unseen;
+            if (sequence > begin) {
+                const uint64_t count = sequence - begin;
+                const uint64_t maximum = std::numeric_limits<uint64_t>::max();
+                statistics_.missing_positions = maximum - statistics_.missing_positions < count
+                    ? maximum : statistics_.missing_positions + count;
+            }
+            if (sequence - 1 > missing_high_) missing_high_ = sequence - 1;
+        }
         status = STATUS::SEQUENCE_ERROR;
     } else {
         status = ParseSnapshot(length, now_ms);
         if (status == STATUS::READY) {
-            if (session_ != 0 && session_ != session) Increment(statistics_.session_changes);
+            if (session_ != session) {
+                if (session_ != 0) Increment(statistics_.session_changes);
+                missing_high_ = sequence;
+            }
             session_ = session;
             sequence_ = sequence;
             accepted_crc_ = crc;

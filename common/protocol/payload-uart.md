@@ -158,10 +158,38 @@ fragmentação, mensagens consecutivas, erros, CRC, timeout, repetição e reset
 O teste ESP32 injeta a amostra em RAM e mede memória/pilha; o loopback antigo
 comprova somente a UART2 local, preservando seus vetores originais.
 
-O firmware normal não inicia o receptor. `main`, SD, TT&C, modelos, codecs e
-script do Pi permanecem preservados. ArduinoJson fica fixado em 7.0.4, com
+Na primeira etapa da INT-006, o firmware normal inicia o receptor após os
+serviços do boot e TT&C. O script do Pi e o protocolo FCPU permanecem
+preservados. ArduinoJson fica fixado em 7.0.4, com
 patch reproduzível de inicialização de `nextId_`, guardado por versão e SHA256.
 Esse patch não reduz avisos nem altera entradas/resultados dos testes.
+
+### Atendimento separado no fluxo integrado
+
+`StartTransportTask()` é chamado após `Init` e antes do consumidor. A tarefa
+`payload_uart` é a única proprietária de Serial2: Core 1, prioridade 3,
+pilha de 3 KiB e atendimento a cada 1 ms ocioso. Transfere bytes por um ring
+fixo de 1 KiB e envia respostas sem esperar espaço de TX. A tarefa de
+processamento, prioridade 2/pilha de 8 KiB, é a única que chama `Poll`,
+acessa `Receiver` e consome o snapshot. O escritor SD usa tarefa separada.
+
+Sem `StartTransportTask`, `Init/Poll` conservam o caminho sequencial das
+bancadas anteriores. Não misturar inicialização/consumo concorrentes nem
+acessar Serial2 por outro código após transferir sua propriedade.
+
+`poll_gap_ms` observa o atendimento do transporte; `process_gap_ms` observa
+as chamadas do consumidor e inclui o custo de validação/codificação. Um
+parser mais demorado não redefine o limite de 10 ms da UART. Ring cheio
+faz o transporte esperar espaço e é diagnosticado em `uart_full`; essa
+observação não é uma contagem de mensagens perdidas. Sobrefluxo físico e
+tráfego nominal continuam exigindo os ensaios com a ponta Pi.
+
+As estatísticas antigas são preservadas. `complete_candidates` conta
+candidatos completos, inclusive CRC/conteúdo inválido e repetição;
+`missing_positions` conta posições ausentes distintas observadas na sessão,
+sem descontar recuperação posterior. O antigo `gaps` continua contando
+ocorrências. A integração usa as observações corretas para o registro de
+estatísticas, sem reinterpretar os contadores antigos.
 
 Na preparação de INT-006, registrar aceite do Payload, responsável pela
 ponta Pi, sua porta/configuração, implementação e parâmetros nominais de

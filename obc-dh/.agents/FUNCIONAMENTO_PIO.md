@@ -112,27 +112,22 @@ A extensão de DAD-003 acrescenta `tests/SnapshotCodecCheck.cpp` e `tests/Snapsh
 
 O firmware atual inicia Serial em 115200 baud, reserva o boot na NVS, inicializa o controlador/executor I2C e tenta montar o SD. Emite uma vez o relatório com prefixo `[OBC]`; esses logs são distintos dos pacotes JSON. Não espera o computador conectar. Após esse boot, a INT-004 inicia `ObcTtc` e `loop()` atende um TC por chamada, esperando até 20 ms pela fila existente. SD ausente produz indisponibilidade no diagnóstico; I2C inicializado não comprova sensores. O tempo impresso é monotônico, com `UTC=desconhecido`.
 
-A sequência de INT-003 continua de bancada. A INT-004 acrescenta a inicialização do rádio e do umbilical e inicia a tarefa TT&C no Core 0, prioridade 10. O firmware não inicia Payload, aquisição, atuadores ou missão, nem abre arquivos ou grava registros. O USB funciona sem rádio/SD; o TT&C mantém sua tentativa periódica de recuperação do rádio ausente. Falhas de inicialização dos serviços de boot não causam reset ou repetição desses serviços. Em 09/11/2026, o firmware central foi gravado e verificado no ESP por USB; o ensaio integrado TES-008 permanece separado.
+A sequência de INT-003 continua de bancada. INT-004 inicia TT&C no Core 0, prioridade 10. A primeira etapa INT-006 inicia recepção, processamento e diário em tarefas distintas, conservando os drivers e o coordenador de boot. Sem SD, a recepção e UTC em RAM continuam ativas; descartes de registros aparecem nos diagnósticos. Não são iniciados sensores, atuadores ou missão. Ensaios integrados TES-008 permanecem separados.
 
-`ping` retorna ACK; `get_status` e `request_tm` retornam ACK e TM sob demanda.
-A TM publica `bench` e os contadores reais do enlace, com `null` para UTC,
-sensores e payload indisponíveis; RSSI/SNR ficam `null` até receber TC RF.
-Comandos catalogados ainda não implementados retornam `invalid_cmd`.
-As dependências do OBC são a biblioteca local `tt-c`, LoRa 0.8.0 e
-ArduinoJson 7.0.4 com o patch controlado existente. Os ambientes UART
-mantêm suas dependências anteriores, sem consumir TT&C.
+`set_time` valida segundos Unix u32 e aplica uma referência em RAM, tentando persistir seus metadados. `get_status`/`request_tm` publicam o estado integrado: UTC desconhecido vira `null`, `ac` vem do último snapshot válido e `msg` continua `null`. O modo permanece `bench`. Dependências do OBC: `tt-c` local, LoRa 0.8.0 e ArduinoJson 7.0.4 com o patch controlado existente; ambientes UART preservam as dependências anteriores.
 
-Verificação USB, dentro de `obc-dh/`, com Python contendo pyserial:
+Verificação da INT-006, após boot novo, dentro de `obc-dh/`, com Python contendo pyserial:
 
 ```bash
+pio run -e int006-check -t upload --upload-port /dev/ttyUSB0
+python3 tests/ObcDataFlowCheck.py /dev/ttyUSB0 --bench
 pio run -e obc -t upload --upload-port /dev/ttyUSB0
-python3 tests/ObcTtcCheck.py /dev/ttyUSB0 --report /tmp/fcp01-int004-usb.json
+python3 tests/ObcDataFlowCheck.py /dev/ttyUSB0
 ```
 
-O roteiro reutiliza a abertura serial da estação terrena, executa 77
-cenários e registra entradas, pacotes e latências. Requer somente ESP e
-USB, sem TC RF concorrente. As evidências e o aceite conjunto pendente
-estão na [INT-004](../.tasks/03-integracao/INT-004-ttc-e-umbilical.md).
+A bancada usa os mesmos quadros FCPU gerados por `struct`/`zlib` e faz seus bytes atravessarem o ring e o processador reais. Substitui a entrada física por dados em flash e simula escrita de 100 ms; não comprova UART entre placas ou cartão. O segundo roteiro verifica o firmware normal sem Pi/SD. Relatórios temporários: `/tmp/fcp01-int006-bench.json` e `/tmp/fcp01-int006-obc.json`. O Python do PlatformIO também contém pyserial.
+
+`ObcTtcCheck.py` permanece intacto e vinculado à entrega INT-004, que rejeitava `set_time`; não deve ser aplicado ao firmware INT-006 esperando o mesmo resultado. A evolução recebeu roteiro separado, por decisão do responsável. As evidências atuais estão na [INT-006](../.tasks/03-integracao/INT-006-fluxo-de-dados.md).
 
 Verificação portátil do coordenador, dentro de `obc-dh/`:
 

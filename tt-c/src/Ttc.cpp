@@ -468,7 +468,8 @@ bool Ttc::Send(
 // Público:
 bool Ttc::SendTelemetry(
     const ttc::TELEMETRY_DATA& tm,
-    uint32_t available
+    uint32_t available,
+    ttc::TELEMETRY_DATA* queued_tm
 ) {
     // Campos do enlace vêm do próprio TT&C; contadores em 16 bits com volta.
     LINK_STATS link = GetLinkStats();
@@ -485,7 +486,9 @@ bool Ttc::SendTelemetry(
         Serial.println("[TT&C] TM excede o limite do quadro.");
         return false;
     }
-    return Send(json, len);
+    if (!Send(json, len)) return false;
+    if (queued_tm != nullptr) *queued_tm = filled;
+    return true;
 }
 
 // Público:

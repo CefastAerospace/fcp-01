@@ -48,7 +48,7 @@ Detalhes e histórico: [regras e rastreabilidade](../.tasks/README.md). Requisit
 | INT-003 | [Inicialização central e organização da execução](../.tasks/03-integracao/INT-003-inicializacao-central.md) | INT-001 | Bancada implementada; confirmar placa, ConOps e estados seguros de voo | Em andamento |
 | INT-004 | [Integração de TT&C e umbilical](../.tasks/03-integracao/INT-004-ttc-e-umbilical.md) | INT-003 | Aceite conjunto TT&C; implementação e USB verificados | Em andamento |
 | INT-005 | [Integração de sensores, encoder e ADCS](../.tasks/03-integracao/INT-005-sensores-e-adcs.md) | COM-001, COM-002, INT-002, INT-003 | Inventário e limites dos setores | Pendente |
-| INT-006 | [Fluxo Payload–tempo–SD–telemetria](../.tasks/03-integracao/INT-006-fluxo-de-dados.md) | COM-004, COM-005, DAD-003, INT-004 | Política de downlink | Pendente |
+| INT-006 | [Fluxo Payload–tempo–SD–telemetria](../.tasks/03-integracao/INT-006-fluxo-de-dados.md) | COM-004, COM-005, DAD-003, INT-004 | Etapa 1 local verificada; downlink/extração e aceites pendentes | Em andamento |
 | INT-007 | [Comandos, modos e proteções operacionais](../.tasks/03-integracao/INT-007-comandos-modos-e-protecoes.md) | INT-004, INT-005, INT-006 | ConOps e condições de atuação | Pendente |
 | INT-008 | [Supervisão, watchdog e retomada após falhas](../.tasks/03-integracao/INT-008-supervisao-e-retomada.md) | COM-003, INT-007 | Limites de recuperação | Pendente |
 

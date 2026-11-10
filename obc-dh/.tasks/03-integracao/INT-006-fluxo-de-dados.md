@@ -1,6 +1,6 @@
 # INT-006 — Fluxo Payload–tempo–SD–telemetria
 
-**Estado:** Pendente
+**Estado:** Em andamento — primeira etapa implementada e verificada localmente; segunda etapa e aceites pendentes
 **Responsáveis:** OBC-DH, Payload e TT&C
 
 ## Objetivo
@@ -34,14 +34,113 @@ cenários originais e não mudam seu estado por conclusão da origem.
 | Origem concluída | Obrigação recebida | Situação |
 |---|---|---|
 | [COM-004](../01-comunicacao/done/COM-004-uart-payload.md) | Acordar com Payload o FCPU v1, ponto focal/ponta Pi, porta/configuração, taxa nominal, rajadas e retenção; acompanhar o produtor e preservar a pendência de cada atualização ADS-B e a semântica dos campos. | Pendente |
-| [COM-005](../01-comunicacao/done/COM-005-armazenamento-sd.md) | Ligar registros ao SD, nomes/rotação por boot e limite de arquivo, contabilização de perdas, encaminhamento de erros e extração pelo umbilical. | Pendente |
+| [COM-005](../01-comunicacao/done/COM-005-armazenamento-sd.md) | Ligar registros ao SD, nomes/rotação por boot e limite de arquivo, contabilização de perdas, encaminhamento de erros e extração pelo umbilical. | Fluxo/nomes/rotação/perdas verificados localmente; extração e cartão físico pendentes |
 | [DAD-001](../02-dados-e-tempo/done/DAD-001-modelos-e-formatos.md) | Consolidar o aceite de Payload/TT&C e das estatísticas: id opaco, idade/validade dos campos, unidades de velocidades, extras e migração explícita dos dados legados, sem inventar sessão/sequência ou validade. | Pendente |
-| [DAD-003](../02-dados-e-tempo/done/DAD-003-registros-e-interpretacao.md) | Integrar criação, gravação e extração de registros e referências temporais por boot, preservando formatos v1/v2 e leitura retrocompatível. | Pendente |
+| [DAD-003](../02-dados-e-tempo/done/DAD-003-registros-e-interpretacao.md) | Integrar criação, gravação e extração de registros e referências temporais por boot, preservando formatos v1/v2 e leitura retrocompatível. | Criação/gravação/referências ligadas e leitura v1/v2 preservada; extração pendente |
 | [TES-004](../04-testes/done/TES-004-uart-software.md) | Consolidar o contrato com o produtor; qualquer adaptação acordada exige regressão explícita, sem alterar resultados esperados para acomodar falhas. | Pendente |
 
 ## Evidências
 
-Nenhuma evidência de conclusão registrada. Ao executar, registrar versão, procedimento, entradas, resultados observados e limitações; não marcar esta tarefa por decisão documental.
+### Primeira etapa — decisões do responsável
+
+Implementar recepção, tempo, registros e TM primeiro; manter envio agregado
+de aeronaves e extração para a segunda etapa. Acrescentar formato versionado
+para TM com contagens indisponíveis. Continuar recepção/TM em falha ou
+ocupação do SD, com perdas explícitas e sem retenção ilimitada. Preservar
+`ObcTtcCheck.py` para a versão INT-004 e criar roteiro próprio INT-006,
+pois `set_time` deixa de ser comando rejeitado. Nenhum critério original
+desta tarefa ou resultado esperado de teste anterior foi alterado.
+
+### Implementação local — 09/11/2026
+
+- `ObcDataFlow` fornece estado portátil, fila de oito registros de até
+  105 bytes e diário exclusivo por boot/segmento. O adaptador ESP32 liga
+  o receptor e o SD existentes, sem alterar o coordenador portátil do boot.
+- UART2 usa tarefa Core 1/prioridade 3/pilha 3 KiB e ring de 1 KiB;
+  processamento usa prioridade 2/pilha 8 KiB; escritor usa prioridade 1/
+  pilha 8 KiB. TT&C conserva Core 0/prioridade 10, filas e ACK por origem.
+  O transporte e o processador possuem métricas distintas de cadência.
+- O bloco de snapshot usa duas reservas de 32768 + 31729 bytes. A nova
+  API do codec mantém exatamente o registro v2, com fonte/blocos estáveis.
+  Gravação parcial é diagnosticada e não confirma um registro completo.
+- O diário registra BOOT/motivo de reset, referências, snapshots v2, TM
+  v3, estatísticas e eventos/falhas. Cria arquivos exclusivamente, rotaciona
+  entre registros e desativa o escritor em falha terminal. Não há remontagem
+  ou recuperação automática. SD ausente não impede o restante do fluxo.
+- `set_time` valida u32, inclusive época zero, expande `rx_ms` no mesmo
+  boot e aplica UTC em RAM; persistência é separada. Compensações conservadas:
+  cabo 0 ms, RF 162 ms, sem afirmar precisão física. TM publica timestamp
+  reconstruído e `ac` do snapshot válido, conservando `msg:null` e os demais
+  campos ausentes. A mesma amostra de enlace enfileirada é usada no registro.
+- TM v3 (`FCP3`, versão 3/tipo 9, 99 bytes) acrescenta disponibilidade dos
+  cinco contadores. Formatos v1/v2 e seus validadores permanecem preservados;
+  o leitor aceita arquivos mistos. Não há migração automática dos arquivos.
+- Os contadores antigos do receptor conservam seu significado. Observações
+  aditivas permitem registrar candidatos completos e posições ausentes
+  distintas, sem confundir estas últimas com ocorrências de gap.
+
+Os ajustes de nome `EPS_SUBSYSTEM` (valor 5 preservado), inicialização do
+evento, linhas de log atômicas, separação UART/parser e reservas partidas
+foram discutidos e autorizados após os diagnósticos. O dimensionamento final
+de pilha usa as medições, sem reduzir limites de quadro ou mudar critérios.
+
+### Procedimentos e resultados
+
+Ambiente: ESP32-D0WD-V3 revisão 3.1, USB `/dev/ttyUSB0`, Espressif32 6.6.0,
+Arduino ESP32 2.0.14/GCC Xtensa 8.4.0, ArduinoJson 7.0.4 com patch controlado
+existente e LoRa 0.8.0. Os testes nativos PIO do TT&C conservaram sua resolução
+existente ArduinoJson 7.4.3; a suíte do fluxo usa o 7.0.4 do consumidor.
+
+| Verificação | Procedimento | Resultado |
+|---|---|---|
+| Regressões e fluxo nativo | 12 grupos, recompilados com C++11, `-Wall -Wextra -Werror`, ASan e UBSan; comandos base em `tools/README.md` e nos testes | Aprovados: modelos, tempo, boot, armazenamento, v1, snapshots, receptor, leitor, v3, diário/filas e buffer partido |
+| Compatibilidade de arquivo | Vetores independentes `struct`/`zlib`, arquivos mistos e falhas/truncamentos | Bytes antigos preservados; snapshot máximo 64497 bytes; cauda parcial não publicada |
+| TT&C | `pio test -e native -e esp32 --upload-port /dev/ttyUSB0 --test-port /dev/ttyUSB0` em `tt-c/` | 14 testes nativos + 12 no ESP aprovados; saída opcional da TM preservada em falha |
+| Builds | `pio run -e obc -e uart-loopback -e uart-receiver-check`; `pio run -e int006-check` em `obc-dh/` | Quatro ambientes aprovados; bancadas UART e suas dependências isoladas |
+| Bancada integrada | Upload `int006-check`; `tests/ObcDataFlowCheck.py /dev/ttyUSB0 --bench` com Python/pyserial | 77 cenários aprovados; `q` máximo 18 ms; resposta máxima 64,785 ms |
+| Firmware normal sem SD/Pi | Upload `obc`; `tests/ObcDataFlowCheck.py /dev/ttyUSB0` com Python/pyserial | 75 cenários aprovados; `q` máximo 11 ms; resposta máxima 61,985 ms |
+
+A bancada usa os mesmos bytes FCPU independentes através do ring e do
+receptor reais. A fonte em flash e o backend de SD lento são exclusivos
+desse ambiente. Escritas aguardam 100 ms e verificam estabilidade dos bytes.
+Houve 24 candidatos, um CRC inválido e uma repetição; 53 registros confirmados
+pelo backend simulado e 25 descartes contabilizados sob pressão. `uart_full=604`
+conta observações de ring cheio; a fonte simulada retém bytes, não representando
+taxa física ou promessa de ausência de perdas em missão.
+
+O maior intervalo do transporte foi 1 ms, enquanto o consumidor chegou a
+21 ms, sem redefinir o limite de 10 ms da UART. Pilha mínima livre observada:
+processador 3156 bytes, escritor simulado 6144 bytes e transporte 1332 bytes.
+As reservas partidas foram concluídas; o parser mantém teto de 98304 bytes,
+com falta de memória explícita. Heap total inclui regiões com capacidades
+distintas: as medições de RAM por byte aparecem nos logs. A amostra não
+garante toda combinação de tráfego, parse e driver SD físico.
+
+Sem cartão/Pi, o firmware normal manteve USB e UTC em RAM: transporte máximo
+1 ms, SD indisponível/status 11, nenhum registro confirmado e descartes
+explícitos. A placa foi devolvida ao firmware **obc** após os ensaios.
+
+Relatórios locais temporários, regeneráveis pelos roteiros:
+`/tmp/fcp01-int006-native.log`, `/tmp/fcp01-int006-bench.json` e
+`/tmp/fcp01-int006-obc.json`. Entradas e resultados anteriores permanecem
+nos testes originais; o roteiro INT-004 não foi usado para declarar o novo
+comportamento de `set_time` aprovado.
+
+Binários verificados (SHA-256):
+
+- `obc`: `ab3fedeb049dcae244dedf63b58ba074d5c6cc822a9c4b318eebdff8e95f8c10`.
+- `int006-check`: `a0963b7a9f3634c8c12d5d04e520b0ff2e93f39d3785c64ea40970e8f355f7c5`.
+
+### Pendências que mantêm a tarefa aberta
+
+- Segunda etapa: seleção/frequência/validade do envio de aeronaves e contrato
+  de extração por `request_log`, incluindo ferramenta de solo e reprodução.
+- Aceites Payload/TT&C e ponta Pi: FCPU, tráfego, rajadas, retenção, unidades,
+  idade dos campos, estatísticas e preservação de cada atualização ADS-B.
+- Ensaios físicos com Pi/cartão, recuperação após interrupção e comprovação
+  integrada em TES-005/TES-006/TES-008/TES-009. A bancada simulada não os encerra.
+- Boot de voo, sensores, modos/atuações e recuperação continuam em suas
+  tarefas próprias. Manter esta tarefa fora de `done/`: a entrega é parcial.
 
 ## Referências
 

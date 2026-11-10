@@ -121,6 +121,32 @@ reexecutar o pedido de TM.
 O mapeamento local usa as unidades da tabela acima. O aceite conjunto
 dessas interfaces com o setor TT&C permanece registrado na INT-004.
 
+#### Evolução na primeira etapa INT-006
+
+O firmware integrado implementa `set_time`: `args` contém somente `unix`,
+inteiro u32, inclusive zero. Valores ausentes, booleanos, negativos,
+fracionários, textuais ou fora da faixa recebem `invalid_param`. O ACK
+`ok` confirma aplicação em RAM; o registro da referência no SD é uma
+operação separada, com falhas e descartes diagnosticados. Sem boot/fluxo
+confirmado, a resposta é `state_rejected`.
+
+A referência usa o instante `rx_ms` do TC expandido no boot monotônico de
+64 bits. Compensação: 0 ms no cabo e os 162 ms existentes no RF; ambos
+são estimativas, sem garantia física de precisão. Antes da referência,
+`ts` fica `null`; depois, informa segundos Unix no instante da composição
+da TM, inclusive zero válido. Resultado fora de u32 volta a ser indisponível.
+
+`ac` passa a refletir a quantidade do último snapshot válido; lista vazia
+produz zero e ausência de snapshot produz `null`. `msg` continua `null`,
+pois `id` não fornece uma contagem ADS-B. Sensores seguem indisponíveis
+até suas integrações. Não há TM periódica nova: o envio continua sob demanda.
+
+`SendTelemetry(tm, available, queued_tm)` aceita saída opcional dos valores
+efetivamente enfileirados, preservada em falha. Isso permite persistir a
+mesma amostra de enlace sem segunda leitura. `request_log` e envio agregado
+de aeronaves permanecem para a segunda etapa da INT-006; `request_log`
+continua recebendo `invalid_cmd` neste firmware.
+
 ### Aeronave
 
 Estado agregado por aeronave (DP §5.3); o log completo fica no microSD.

@@ -2,7 +2,7 @@
 
 Núcleo de processamento do FCP-01: um ESP32 DevKit V1 coordena todos os subsistemas via FreeRTOS e organiza comandos, telemetria e registros da missão (§§3.4, 7.2).
 
-## Estado local — 09/11/2026
+## Estado local — revisão documental de 10/11/2026
 
 O firmware central inicializa tempo/NVS, I2C e SD com o coordenador de bancada existente; depois inicia TT&C e a primeira etapa do fluxo Payload–tempo–registros. Boot de voo, sensores, missão e atuadores conservam suas integrações próprias.
 
@@ -16,11 +16,11 @@ As verificações locais incluem regressões nativas com sanitizadores, TT&C no 
 
 INT-006 permanece em andamento: envio agregado de aeronaves e extração pelo umbilical são da segunda etapa; `request_log` continua não implementado. Os aceites de Payload/TT&C e a preservação de cada atualização ADS-B intermediária permanecem explícitos. INT-003 continua aberta pelo boot de voo; INT-004 conserva o aceite conjunto TT&C pendente. DAD-001, DAD-002, DAD-003, COM-004 e COM-005 encerraram seus escopos locais, com encaminhamentos nas integrações e ensaios.
 
-## Barramentos (resumo — oficial em `../common/interfaces/pinout.md`)
+## Barramentos (resumo — referência compartilhada em `../common/interfaces/pinout.md`)
 
 | Interface | Pinos | Uso |
 |---|---|---|
-| UART0 | 1 / 3 | Umbilical USB-C de bancada |
+| UART0 | 1 / 3 | Umbilical de bancada pelo USB da placa; conferir conector |
 | UART payload | 16 / 17, 115,2 kbps | Snapshots JSON completos em FCPU; aceite e ensaios com Pi pendentes |
 | I2C sensores | 21 / 22 | INA219, LM75A, MPU-9250, AS5600, BH1750 |
 | VSPI | 23/19/18, CS 5, DIO0 4, RST 14 | LoRa SX1276 |
@@ -41,7 +41,7 @@ INT-006 permanece em andamento: envio agregado de aeronaves e extração pelo um
 
 Abrir `obc-dh/` no PlatformIO, compilar o env `obc` (`esp32doit-devkit-v1`, Arduino). Deps de terceiros em `lib_deps` com versão fixada.
 
-O ambiente `obc` consome a biblioteca local `tt-c`, LoRa 0.8.0 e ArduinoJson 7.0.4 com o patch controlado existente. Os ambientes UART conservam suas dependências isoladas. Os testes nativos são executados pelos comandos registrados nas tasks; a compilação do codec/leitor e sua verificação estão no [guia de ferramentas](tools/README.md). O ambiente `obc` não configura esses testes automaticamente por `pio test`. A verificação USB da INT-004 usa `python3 tests/ObcTtcCheck.py /dev/ttyUSB0`, com pyserial; entradas, respostas e tempos são gravados em `/tmp/fcp01-int004-usb.json`.
+O ambiente `obc` consome a biblioteca local `tt-c`, LoRa 0.8.0 e ArduinoJson 7.0.4 com o patch controlado existente. As bibliotecas de terceiros têm versão fixada, mas `platform = espressif32` não fixa a plataforma; as evidências registram Espressif32 6.6.0/Arduino ESP32 2.0.14. A biblioteca local acompanha o checkout. Consultar o [guia PlatformIO](.agents/FUNCIONAMENTO_PIO.md) para distinguir configuração e versão observada. Os ambientes UART conservam dependências isoladas; `pio test` no ambiente `obc` não executa automaticamente as verificações nativas.
 
 ## Aprofundar
 
@@ -49,3 +49,9 @@ O ambiente `obc` consome a biblioteca local `tt-c`, LoRa 0.8.0 e ArduinoJson 7.0
 - [.agents/TODO.md](.agents/TODO.md) — estado, dependências e links para evidências das tarefas.
 - [Arquitetura](.agents/ARCHITECTURE.md), [requisitos](.agents/REQUISITOS.md) e [pinagem](.agents/PINAGEM.md).
 - Design Package §§3.1, 3.4, 7.2, 7.3 + Apêndice A (REQ-OBC), conforme as referências da equipe; a versão Markdown citada não está neste checkout.
+
+## Verificação compatível com o firmware
+
+Usar `tests/ObcDataFlowCheck.py PORTA` com o firmware normal `obc`, após boot novo e sem Pi/cartão, conforme o [procedimento](examples/README.md#bancada-integrada-int-006). O modo `--bench` exige upload de `int006-check`, que simula entrada e SD lento. O roteiro `ObcTtcCheck.py` pertence à versão INT-004, anterior ao suporte a `set_time`; não usá-lo para exigir os resultados antigos do firmware atual. Os relatórios em `/tmp` são saídas locais regeneráveis, não anexos permanentes.
+
+O enquadramento FCPU é transmitido pelo cabo ao Payload e ainda precisa de aceite desse setor. O armazenamento binário no SD é uma representação interna distinta. Melhorias documentais não validam Pi, cartão, RF ou estados seguros de voo.

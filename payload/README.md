@@ -8,10 +8,10 @@ Cadeia de voo (Design Package §6): antena fita 1090 MHz (face sul) → **RTL-SD
 
 ## Visão geral
 
-O script `telemetry.py` consome o fluxo BaseStation do `dump1090` na porta `30003` e extrai os parâmetros de voo. Hoje loga JSON de bancada e não implementa transporte UART. Em **05/11/2026**, o responsável OBC confirmou snapshots JSON completos diretamente pela UART, conforme [a amostra recebida](../obc-dh/payload.json), substituindo a decisão anterior de binário compacto de ~25–35 B com Sequence ID + NACK (§6.4). O script foi preservado; a migração do produtor, enquadramento, integridade e tratamento de perdas ainda precisam de acordo com Payload em COM-004. Os [modelos OBC](../common/protocol/obc-data.md#0-snapshot-do-payload--modelo-em-memória) não comprovam essa implementação.
+O script `telemetry.py` consome o fluxo BaseStation do `dump1090` na porta `30003` e extrai os parâmetros de voo. Hoje loga JSON de bancada e não implementa transporte UART. Em **05/11/2026**, o responsável OBC confirmou snapshots JSON completos diretamente pela UART, conforme [a amostra recebida](../obc-dh/payload.json), substituindo a decisão anterior de binário compacto de ~25–35 B com Sequence ID + NACK (§6.4). O script foi preservado; a migração do produtor e o aceite dos parâmetros/enquadramento ainda precisam de acordo com Payload na INT-006. Os [modelos OBC](../common/protocol/obc-data.md#0-snapshot-do-payload--modelo-em-memória) não comprovam essa implementação.
 **Atualização OBC — 09/11/2026:** o receptor e o adaptador ESP32 estão
 implementados e verificados localmente conforme o [contrato FCPU v1](../common/protocol/payload-uart.md).
-O corpo conserva o snapshot JSON; controle de transporte fica fora dele.
+O corpo conserva o snapshot JSON; cabeçalho, CRC e controles binários ficam fora dele, mas também atravessam fisicamente a UART. Não é somente representação interna do OBC.
 Aceite do Payload, porta/configuração, tráfego e implementação da ponta Pi
 continuam pendentes. `telemetry.py` e o runbook foram preservados; não houve
 ensaio direto ESP32–Pi.
@@ -24,6 +24,8 @@ Só dado processado voa para o OBC e para o solo; I/Q cru nunca sai do Pi (§6.3
 ---
 
 ## Parâmetros de missão (HLR-ADS-02)
+
+A tabela registra o modelo individual legado de `telemetry.py` e as referências de missão do DP. Não é o esquema do snapshot atual `id`/`messages`, que conserva velocidades e outros campos nos extras até aceite de suas unidades. `seq_id` legado não é o `id` opaco do snapshot nem a sequência externa FCPU. A migração deve preservar os critérios por mensagem ADS-B, ainda pendentes de conciliação.
 
 | Parâmetro | Descrição |
 | :--- | :--- |
@@ -39,9 +41,11 @@ Só dado processado voa para o OBC e para o solo; I/Q cru nunca sai do Pi (§6.3
 
 ## Log de missão e enlace
 
+O exemplo abaixo é o log legado de bancada, não o snapshot JSON completo nem um quadro FCPU. O OBC já inicia recepção e diário na primeira etapa INT-006; isso não implementa o transmissor Pi.
+
 - **Bancada:** JSON Lines em `/mnt/data/mission_log.json` (exemplo abaixo) — formato de debug, não é o formato de voo.
-- **Voo (Payload → OBC):** snapshots JSON completos por UART, conforme decisão de 05/11/2026; implementação e validação pendentes. Enquadramento e retorno OBC → Payload ainda a definir em COM-004.
-- **Voo (satélite → solo):** TM LoRa agregada por aeronave (JSON ~150 B, §7.1); log completo fica no microSD do OBC para extração via umbilical (§5.3).
+- **Voo (Payload → OBC):** snapshots JSON completos por UART, conforme decisão de 05/11/2026; implementação e validação pendentes. Receptor/enquadramento FCPU têm implementação local no OBC; aceite, retorno compatível e produtor Pi continuam na INT-006. O antigo payload binário compacto foi descartado pelo responsável OBC, reafirmado em 10/11/2026.
+- **Voo (satélite → solo, previsto):** estados agregados por aeronave em JSON (~150 B como estimativa, §7.1); conservação completa e extração via umbilical são objetivos de missão (§5.3). Envio agregado/extração ainda estão na segunda etapa INT-006. A gravação atual pode contabilizar descartes e não comprova conservação de cada atualização ADS-B.
 
 ```json
 {"icao":"E4953A","timestamp":"2026-09-08T00:21:44Z","lat":-19.95438,"lon":-43.6116,"alt":39000.0,"vel":489.0,"heading":37.0,"msg_type":"3","val_flags":true,"seq_id":12}

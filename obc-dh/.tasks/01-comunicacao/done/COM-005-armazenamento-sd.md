@@ -18,6 +18,10 @@ registram decisões anteriores a este encerramento. Se uma integração
 revelar defeito na entrega, registrar correção ou reabrir a tarefa com
 rastreabilidade, sem adaptar a validação para forçar aprovação.
 
+### Encaminhamentos registrados no encerramento — 09/11/2026
+
+A tabela conserva as obrigações e a situação registradas no encerramento. O andamento posterior é acompanhado nas destinatárias e contextualizado na seção de situação atual abaixo.
+
 | Destinatária | Responsabilidade ainda aberta | Situação |
 |---|---|---|
 | [INT-003](../../03-integracao/INT-003-inicializacao-central.md) | Confirmar módulo/cartão, alimentação e condições de boot do SD com EPS antes do uso integrado; preservar indisponibilidade sem formatação/reparo automático. | Pendente na destinatária |
@@ -25,6 +29,10 @@ rastreabilidade, sem adaptar a validação para forçar aprovação.
 | [INT-008](../../03-integracao/INT-008-supervisao-e-retomada.md) | Integrar a política de retomada do escritor após falha/reset: preservar arquivos, End/Init e nome novo, sem apagar ou reutilizar conteúdo anterior. | Pendente na destinatária |
 | [TES-006](../../04-testes/TES-006-sd-hardware.md) | Conferir módulo, montagem e alimentação com EPS, frequência/latência e operações do SD na montagem real, incluindo cheio/indisponível e extração. | Pendente na destinatária |
 | [TES-009](../../04-testes/TES-009-falhas-e-recuperacao.md) | Exercitar interrupção durante escrita e avaliar arquivos incompletos e FAT32; fsync lógico não comprova integridade física. | Pendente na destinatária |
+
+## Situação atual da integração — 10/11/2026
+
+Montagem é chamada pelo boot e o diário INT-006 já cria nomes/segmentos, grava e contabiliza perdas. Extração por `request_log`, retomada automática e ensaios de cartão permanecem pendentes nas destinatárias. “Sem fila/cache” descreve o serviço de arquivos; o fluxo integrado possui sua própria fila limitada. Relatos abaixo de ausência de montagem/consumidores são históricos. [Situação da integração](../../03-integracao/INT-006-fluxo-de-dados.md).
 
 ## Objetivo
 
@@ -62,6 +70,8 @@ Reutilizar SD e uma instância HSPI própria. Implementar abertura, escrita, lei
 Operações e limites documentados e implementados, incluindo sinalização de perdas e recuperação. Compilar e conferir os caminhos de erro disponíveis. Integridade após interrupção de alimentação depende de [TES-006](../../04-testes/TES-006-sd-hardware.md)/[TES-009](../../04-testes/TES-009-falhas-e-recuperacao.md).
 
 ## Evidências
+
+Os relatos, comandos, hashes e resultados a seguir descrevem as revisões datadas de cada entrega. Afirmações de ausência de integração ou de estado ainda em andamento nesse histórico não substituem o encerramento e os encaminhamentos atuais acima.
 
 Implementação local verificada em 05/11/2026, sobre a base Git `28504b1` e as alterações locais anteriores de DAD-001. Sem commit, upload ou execução física. A tarefa permanece **Em andamento**, pois confirmação de módulo, alimentação e condições elétricas com EPS continuam pendentes. A política de software foi aprovada pelo responsável; os ensaios físicos conservam suas tarefas e critérios.
 

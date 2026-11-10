@@ -3,6 +3,12 @@
 **Estado:** Em andamento
 **Responsáveis:** OBC-DH e setores responsáveis pelas saídas
 
+## Estado vigente — 10/11/2026
+
+O coordenador de bancada continua responsável apenas por tempo/NVS, I2C e montagem SD. Depois dele, `main.cpp` já inicia TT&C e o fluxo INT-006; o diário pode criar/gravar arquivos. `loop()` atende comandos/diagnósticos, sem o `delay(100)` original. O escopo aprovado em 05/11 e os resultados abaixo descrevem a entrega inicial, não limitam as integrações posteriores.
+
+As bancadas posteriores identificaram WROOM-32/ESP32-D0WD-V3 e exercitaram firmware por USB, mas não confirmam o circuito completo ou estados seguros de EN/PWM/Burn Wire. A tarefa permanece aberta pelo próprio boot de voo. Com ESP32/USB, preparar o levantamento de esquema e condições com EPS/ADCS/Estruturas; não declarar segurança de reset apenas por observar logs. Ver [INT-006](INT-006-fluxo-de-dados.md) para o fluxo atual e TES-008 para o aceite físico.
+
 ## Objetivo
 
 Inicializar automaticamente os recursos disponíveis, mantendo estados seguros e falhas observáveis.

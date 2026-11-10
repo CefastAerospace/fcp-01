@@ -18,12 +18,20 @@ registram decisões anteriores a este encerramento. Se uma integração
 revelar defeito na entrega, registrar correção ou reabrir a tarefa com
 rastreabilidade, sem adaptar a validação para forçar aprovação.
 
+### Encaminhamentos registrados no encerramento — 09/11/2026
+
+A tabela conserva as obrigações e a situação registradas no encerramento. O andamento posterior é acompanhado nas destinatárias e contextualizado na seção de situação atual abaixo.
+
 | Destinatária | Responsabilidade ainda aberta | Situação |
 |---|---|---|
 | [INT-006](../../03-integracao/INT-006-fluxo-de-dados.md) | Integrar criação, gravação e extração de registros e referências temporais por boot, preservando formatos v1/v2 e leitura retrocompatível. | Pendente na destinatária |
 | [INT-007](../../03-integracao/INT-007-comandos-modos-e-protecoes.md) | Definir e implementar os estados duráveis de atuações/Burn Wire, autorização e confirmação; eventos existentes não substituem estado de retomada. Se precisar ampliar registros, versionar a extensão e verificar compatibilidade antes do uso. | Pendente na destinatária |
 | [INT-008](../../03-integracao/INT-008-supervisao-e-retomada.md) | Integrar retomada persistente por boot e falhas com os estados definidos em INT-007, sem deduzir autorização de atuação de eventos ou flags voláteis. | Pendente na destinatária |
 | [TES-009](../../04-testes/TES-009-falhas-e-recuperacao.md) | Comprovar retomada e integridade sob reset/interrupção real, incluindo estados operacionais; recuperação lógica do leitor não é reparo de FAT32. | Pendente na destinatária |
+
+## Situação atual da integração — 10/11/2026
+
+O leitor atual aceita v1/v2/v3. A TM v3 e a codificação de snapshot em blocos partidos foram acrescentadas pela INT-006, que também já liga recepção, tempo e gravação. O encerramento DAD-003 e seus hashes abaixo identificam o escopo/revisão da entrega, não ausência de extensões posteriores. Extração pelo umbilical, estados duráveis e recuperação física continuam nas destinatárias. [Extensão e evidências](../../03-integracao/INT-006-fluxo-de-dados.md).
 
 ## Objetivo
 
@@ -49,6 +57,8 @@ Implementar codificação/decodificação conforme o formato acordado, com ident
 Registros e interpretação disponíveis, unidades e versões documentadas, tratamento de limites implementado e verificação local reprodutível. Os cenários detalhados estão em [TES-007](../../04-testes/done/TES-007-dados-e-tempo.md).
 
 ## Evidências
+
+Os relatos, comandos, hashes e resultados a seguir descrevem as revisões datadas de cada entrega. Afirmações de ausência de integração ou de estado ainda em andamento nesse histórico não substituem o encerramento e os encaminhamentos atuais acima.
 
 Implementação local verificada em 01/11/2026, sobre a base Git `e734ebb` e os trabalhos locais de DAD-001/DAD-002. Alterações ainda não commitadas. A tarefa permanece **Em andamento**, sem antecipar o aceite de DAD-001 ou a definição dos estados duráveis de retomada do Burn Wire.
 

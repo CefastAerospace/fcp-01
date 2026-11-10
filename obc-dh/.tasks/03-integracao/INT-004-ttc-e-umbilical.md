@@ -3,6 +3,12 @@
 **Estado:** Em andamento — implementação e bancada USB verificadas; aceite TT&C pendente
 **Responsáveis:** OBC-DH e TT&C
 
+## Estado vigente e uso dos roteiros — 10/11/2026
+
+A biblioteca TT&C já está ligada ao firmware central. O histórico abaixo registra a versão INT-004, na qual `set_time` era rejeitado. A INT-006 posterior implementou esse comando e a TM integrada; usar `ObcDataFlowCheck.py` para o firmware atual, conforme o [guia](../../examples/README.md#bancada-integrada-int-006). Preservar `ObcTtcCheck.py` e suas expectativas para a versão anterior.
+
+O aceite conjunto TT&C ainda mantém esta tarefa aberta; a bancada parcial não encerra o boot de voo da INT-003 ou ensaios RF. É possível preparar o aceite com contratos/mapeamentos e evidências existentes sem novos dispositivos. As versões Espressif32/Arduino registradas abaixo são as observadas naquela execução: `platform = espressif32` permanece sem fixação. ArduinoJson/LoRa estão fixados no consumidor OBC; `tt-c` acompanha o checkout local.
+
 ## Objetivo
 
 Conectar o OBC ao transporte existente de telecomandos e telemetria.

@@ -3,6 +3,10 @@
 **Estado:** Concluída
 **Responsáveis:** OBC-DH
 
+## Situação atual da integração — 10/11/2026
+
+O ambiente atual já declara ArduinoJson 7.0.4, LoRa 0.8.0 e biblioteca local `tt-c`, com ambientes de bancada adicionais. A frase histórica sobre ausência de `lib_deps` descreve a configuração original. A plataforma `espressif32` continua sem versão fixada; os números das evidências não são um lock de dependências. A tarefa permanece concluída no escopo de configuração base. [Integração consumidora](../INT-004-ttc-e-umbilical.md).
+
 ## Objetivo
 
 Disponibilizar a configuração base de compilação e organização do firmware.
@@ -21,6 +25,8 @@ Ambiente obc para ESP32/Arduino, diretórios de fontes/headers/testes, entrada m
 Configuração base presente e documentada; não implica placa confirmada, funcionalidades integradas ou dependências de periféricos instaladas.
 
 ## Evidências
+
+Os relatos, comandos, hashes e resultados a seguir descrevem as revisões datadas de cada entrega. Afirmações de ausência de integração ou de estado ainda em andamento nesse histórico não substituem o encerramento e os encaminhamentos atuais acima.
 
 Configuração inventariada em 07/10/2026; reorganização documental em 11/10/2026 e contratos consolidados em 14/10/2026. O commit bdfa48f, de 20/10/2026, registra build e geração da base do editor. Não houve nova compilação ESP32 nesta reorganização. Versões ainda não estão fixadas e não há lib_deps de periféricos no ambiente OBC.
 

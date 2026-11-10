@@ -41,6 +41,27 @@ têm entregas próprias não executadas. Não houve alteração de código ou te
 
 Cada arquivo contém estado/responsáveis, objetivo, entrega, pré-requisitos, critérios de conclusão, evidências e referências. Definições e condições detalham somente o trabalho correspondente. Testes integrados incluem sua tabela de cenários.
 
+### Registro por cenário
+
+Os checklists das TES abertas são roteiros para o setor de testes; seus responsáveis técnicos continuam apoiando interfaces, montagem e diagnóstico. OBC-DH conserva suas verificações locais de implementação, sem que isso substitua o aceite dos ensaios. A revisão documental de 10/11/2026 não executa os casos nem altera os estados das tarefas.
+
+Antes do ensaio, preencher condições, entrada/procedimento e resultado esperado com base no contrato/requisito vigente. Depois, registrar observado e evidência. Usar uma linha/ficha por caso do checklist:
+
+| Campo | Conteúdo necessário |
+|---|---|
+| Caso e motivo | Task/caso, comportamento e requisito/contrato que justificam o teste. |
+| Versão e ambiente | Revisão Git/artefato, roteiro, plataforma/dependências resolvidas, placa e identificação dos dispositivos. |
+| Condições iniciais | Montagem, alimentação, configuração, estado temporal, arquivos e pré-requisitos do cenário. |
+| Entrada e procedimento | Dados exatos, sequência de ações, método de falha e pontos de medição. |
+| Esperado | Saída/status, dados que devem ser preservados, limites e referência que os define. |
+| Observado | Saída real, tempos, bytes/contadores e divergências. |
+| Evidência | Logs/arquivos/imagens preservados e procedimento de reprodução; não apenas caminho temporário de outro computador. |
+| Resultado e limitações | Não executado, aprovado, reprovado ou impedido; responsável e condição de desbloqueio quando faltar recurso/definição. Esses rótulos são por caso, não novos estados de task. |
+
+Marcar `[x]` somente quando o caso tiver evidência de aprovação. Rejeição prevista de entrada inválida pode ser sucesso do caso; falha inesperada não é aprovação por ser um teste de erro. Um limite ainda não acordado impede o aceite correspondente, sem justificar inventar um valor. Resultados parciais não concluem TES-008/TES-009/TES-010.
+
+Os roteiros arquivados conservam suas entradas e expectativas. No firmware atual, `ObcDataFlowCheck.py` substitui o uso operacional do roteiro da versão INT-004, sem modificar `ObcTtcCheck.py`. Mudança de código após divergência exige diagnóstico e discussão, conforme AGENTS.md.
+
 Ao encerrar: registrar versão, procedimento, entradas, resultados e limitações; marcar o estado; mover o arquivo para `done/`; corrigir seus links relativos e todos os links que apontam para ele; atualizar a linha no TODO. Não renumerar tarefas, nem marcar tarefas dependentes automaticamente. Se uma tarefa precisar ser reaberta, fazer o percurso inverso mantendo o histórico das evidências.
 
 Implementação, integração e validação física são estados distintos. Na

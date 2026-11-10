@@ -3,6 +3,18 @@
 **Estado:** Pendente
 **Responsáveis:** OBC-DH, ADCS, EPS e Térmico
 
+## Preparação com poucos dispositivos
+
+COM-001 está concluída, mas a recuperação ainda não foi implementada. É possível adiantar a política com computador/ESP32, sem declarar recuperação física. Antes de programar, fechar com ADCS/EPS/Térmico:
+
+- [ ] Sinais de falha e como distinguir ausência de dispositivo, transferência expirada, callback que demora e SDA/SCL presos.
+- [ ] Limites de detecção, tentativas, duração total e estado final após esgotamento, com referência e unidades.
+- [ ] Tratamento de pedidos ativos e pendentes e resultado entregue a cada chamador, preservando contextos em uso.
+- [ ] Responsável exclusivo por interromper/reinicializar o barramento e condições para voltar a aceitar pedidos; não reinicializar `Wire` concorrentemente ao executor.
+- [ ] Método de verificação local e de injeção física aprovado para TES-009, com critérios de retorno e falha permanente.
+
+Os 20 ms configurados limitam uma transferência, não o callback inteiro. Uma fila ou um novo timeout no chamador não resolve com segurança um callback que continua usando seu contexto. Os valores da política permanecem pendentes de acordo, sem novos limites impostos por esta documentação.
+
 ## Objetivo
 
 Restabelecer o serviço após falhas recuperáveis sem acesso concorrente ao barramento.

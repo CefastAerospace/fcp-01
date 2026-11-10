@@ -6,8 +6,8 @@ Registro compartilhado de endereços, barramentos e pinos. Consolida a alocaçã
 
 | Pinos ESP32 | Uso | Observação |
 |---|---|---|
-| TX0 = 1 / RX0 = 3 | UART0, umbilical USB-C de bancada | TC/TM JSON, um objeto por linha; contrato TT&C §7.1. |
-| RX = 16 / TX = 17, 115,2 kbps 8N1 | UART dedicada OBC ↔ Raspberry Pi | Snapshots JSON completos, por decisão de 05/11/2026; enquadramento, integridade e perdas/repetição pendentes em COM-004. Capacidade serial teórica de 11,52 kB/s antes do protocolo. |
+| TX0 = 1 / RX0 = 3 | UART0, umbilical pelo USB da placa; conferir conector | TC/TM JSON, um objeto por linha; contrato TT&C §7.1. |
+| RX = 16 / TX = 17, 115,2 kbps 8N1 | UART dedicada OBC ↔ Raspberry Pi | Snapshots JSON completos, por decisão de 05/11/2026; FCPU implementado localmente; aceite, produtor Pi e tráfego pendentes em INT-006. Capacidade serial teórica de 11,52 kB/s antes do protocolo. |
 
 O Payload não participa do I2C. Confirmar UART/porta no Pi, TX/RX cruzados, GND comum, níveis de 3,3 V, disponibilidade de 16/17 no módulo/flash/PSRAM e comportamento com um lado desligado. Parâmetros de projeto não comprovam o transporte no script nem validação da montagem; consultar [COM-004](../../obc-dh/.tasks/01-comunicacao/done/COM-004-uart-payload.md).
 
@@ -18,7 +18,7 @@ O Payload não participa do I2C. Confirmar UART/porta no Pi, TX/RX cruzados, GND
 | VSPI | MOSI 23 / MISO 19 / SCK 18, CS 5, DIO0 4, RST 14 | LoRa SX1276, 921 MHz | TT&C |
 | HSPI | MOSI 32 / MISO 35 / SCK 15, CS 13 | microSD | OBC-DH |
 
-O mapa anterior VSPI/SD e HSPI/LoRa foi substituído como decisão de projeto. Conferência elétrica, montagem e validação permanecem em [COM-005](../../obc-dh/.tasks/01-comunicacao/done/COM-005-armazenamento-sd.md). O rádio usa `SPI` global/VSPI; o SD deverá utilizar instância própria de HSPI. DIO0 sinaliza RX/TX Done e RST permite reset físico; MISO do SD usa GPIO 35, somente entrada, por segurança de boot.
+O mapa anterior VSPI/SD e HSPI/LoRa foi substituído como decisão de projeto. O serviço local foi encerrado em [COM-005](../../obc-dh/.tasks/01-comunicacao/done/COM-005-armazenamento-sd.md); montagem/alimentação e ensaios continuam em INT-003/TES-006/TES-009 do painel OBC. O rádio usa `SPI` global/VSPI; o SD já utiliza instância própria de HSPI. DIO0 sinaliza RX/TX Done e RST permite reset físico; MISO do SD usa GPIO 35, somente entrada, por segurança de boot.
 
 ## I2C de sensores e encoder
 
@@ -35,7 +35,7 @@ SDA = GPIO 21; SCL = GPIO 22. Endereços em sete bits:
 | A definir, se houver interface | BMS | EPS | Conferir aquisição prevista com EPS; não presumir endereço I2C. |
 | Fora da configuração atual | RTC externo | OBC-DH | DS3231 histórico; reconsiderar apenas se o método de tempo monotônico/referências LoRa não atender à validação. Seu `0x68` conflita com a IMU no mesmo barramento. |
 
-Conferir [INT-005](../../obc-dh/.tasks/03-integracao/INT-005-sensores-e-adcs.md), [COM-003](../../obc-dh/.tasks/01-comunicacao/COM-003-recuperacao-i2c.md) e [DAD-002](../../obc-dh/.tasks/02-dados-e-tempo/DAD-002-tempo-e-boots.md). Não alterar endereços confirmados por suposição. O Payload utiliza UART e não recebe endereço I2C; a antiga proposta `0x80` e a decisão substituída constam do [histórico](../../obc-dh/.agents/REQUISITOS.md#histórico-de-decisões-de-interface).
+Conferir [INT-005](../../obc-dh/.tasks/03-integracao/INT-005-sensores-e-adcs.md), [COM-003](../../obc-dh/.tasks/01-comunicacao/COM-003-recuperacao-i2c.md) e [DAD-002](../../obc-dh/.tasks/02-dados-e-tempo/done/DAD-002-tempo-e-boots.md). Não alterar endereços confirmados por suposição. O Payload utiliza UART e não recebe endereço I2C; a antiga proposta `0x80` e a decisão substituída constam do [histórico](../../obc-dh/.agents/REQUISITOS.md#histórico-de-decisões-de-interface).
 
 ## Atuação e restrições
 
@@ -44,7 +44,7 @@ Conferir [INT-005](../../obc-dh/.tasks/03-integracao/INT-005-sensores-e-adcs.md)
 | Motor — ADCS | EN = 12; U/V/W = 25/26/27 | ADCS no mesmo ESP32; EN confirmado, fases/encoder/estados ainda dependem de [INT-005](../../obc-dh/.tasks/03-integracao/INT-005-sensores-e-adcs.md). |
 | Burn Wire das antenas | Trigger = 33, MOSFET compartilhado | Dois circuitos nichrome, referência remota de 5 V / 4 Ω cada, 2,5 A / 12,5 W transitório; acionar fora de TX. Confirmar autorização, duração, montagem e estados em reset com os responsáveis. |
 
-Detalhes em [INT-005](../../obc-dh/.tasks/03-integracao/INT-005-sensores-e-adcs.md) e [INT-007](../../obc-dh/.tasks/03-integracao/INT-007-comandos-modos-e-protecoes.md). Motor GM2804 com SimpleFOC Mini: desabilitar fora do detumbling é a decisão de operação; consumo residual precisa de medição. EN/fases do código de bancada ainda divergem da alocação acima.
+Detalhes em [INT-005](../../obc-dh/.tasks/03-integracao/INT-005-sensores-e-adcs.md) e [INT-007](../../obc-dh/.tasks/03-integracao/INT-007-comandos-modos-e-protecoes.md). Motor GM2804 com SimpleFOC Mini: desabilitar fora do detumbling é a decisão de operação; consumo residual precisa de medição. EN já coincide no GPIO 12; a ordem das fases continua divergente: ADCS 27/26/25 e OBC 25/26/27. A conciliação permanece na INT-005.
 
 GPIOs 5, 12 e 15 são strapping pins; conferir níveis durante boot/reset. GPIO 35 não tem pulls internos. GPIOs 34/36/39 estão sem alocação no mapa e são somente entrada, sem pulls internos; confirmar disponibilidade física antes de reservá-los. Burn Wire substitui menções históricas a servo.
 

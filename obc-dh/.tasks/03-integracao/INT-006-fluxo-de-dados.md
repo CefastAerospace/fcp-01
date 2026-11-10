@@ -3,6 +3,18 @@
 **Estado:** Em andamento — primeira etapa implementada e verificada localmente; segunda etapa e aceites pendentes
 **Responsáveis:** OBC-DH, Payload e TT&C
 
+## Preparação da segunda etapa — 10/11/2026
+
+A primeira etapa abaixo já está implementada e verificada nos recortes registrados. Com computador/ESP32/USB, priorizar os contratos e o desenvolvimento local da segunda etapa, conservando as predecessoras e os aceites pendentes.
+
+- [ ] **Com Payload/TT&C:** definir quais campos podem compor aeronaves agregadas, unidades, idade/validade, seleção/frequência e comportamento de fila cheia/serialização recusada, respeitando o limite do TT&C e sem converter `id` em contagem ADS-B.
+- [ ] **Extração `request_log`:** acordar argumentos, seleção de arquivo fechado, respostas em blocos, término/erro, controle de avanço e ferramenta de solo. A API `Read` já existe; o contrato do comando não está definido apenas por seu nome no catálogo. Não inventar fragmentação RF ou resposta aceita por outro setor.
+- [ ] **Após o acordo:** reutilizar modelos, `BuildAircraft`/`Send`, armazenamento e leitor existentes; verificar a lógica local antes dos ensaios físicos. Nenhuma implementação da segunda etapa é declarada por esta revisão.
+- [ ] **Ponta Pi:** obter responsável, porta/configuração, produtor de snapshots, aceite do enquadramento e perfil nominal/rajadas/backlog. Snapshots JSON são o conteúdo confirmado; FCPU também transmite cabeçalho e controles binários pelo cabo, sujeitos ao aceite externo.
+- [ ] **Critério por mensagem:** manter a pendência de cada atualização ADS-B intermediária com Payload/coordenação. O snapshot acumulado ou seu `id` não prova conservação individual.
+
+A representação interna do SD permanece binária versionada, conforme a escolha reafirmada pelo responsável em 10/11. Isso não define os bytes aceitos pelo Payload ou pela estação. Relatórios em `/tmp` citados nas evidências são saídas locais regeneráveis; para encaminhar novos ensaios, preservar os arquivos efetivamente produzidos junto da versão/procedimento.
+
 ## Objetivo
 
 Conectar recepção, referência temporal, registro e envio dos dados da missão.

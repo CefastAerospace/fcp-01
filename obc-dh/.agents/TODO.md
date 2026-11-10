@@ -1,25 +1,14 @@
 # TODO — OBC-DH
 
-**Atualização de 09/11/2026 — encerramento por responsabilidade:** COM-004,
-COM-005, DAD-001, DAD-003, TES-004 e TES-007 estão concluídas no escopo próprio
-com evidências registradas e arquivos em `done/`. Aceites, montagem, ponta Pi,
-integração, estados duráveis e ensaios físicos continuam pendentes nas INT/TES
-destinatárias, vinculadas em ambas as pontas. INT-003 permanece em andamento
-por trabalho próprio do boot de voo. As revisões anteriores abaixo são histórico.
+**Revisão documental: 10/11/2026, sobre `839a186`.** O firmware central inicia boot de bancada, TT&C e a primeira etapa Payload–tempo–registros. Codecs/leitor suportam v1/v2/v3. Envio agregado, extração pelo umbilical, boot de voo, sensores, modos e supervisão completa continuam nas integrações abertas. A revisão não executa novos ensaios nem altera estados por melhoria documental.
 
-Painel unificado das tarefas em quatro grupos. Revisão: 05/11/2026. O serviço I2C e sua política estão implementados; o teste nativo passou. DAD-002 acrescenta lógica temporal e reserva de boots em NVS, com teste nativo e build ESP32 aprovados. DAD-001 tem modelos/validadores v1 e de snapshots JSON completos do Payload, com extras textuais e teste nativo/build aprovados; DAD-003 tem codec v1/v2 e leitor nativo de arquivos mistos, incluindo snapshots e extras. Permanecem pendentes o aceite dos produtores e os estados duráveis de retomada. INT-003 inicializa tempo/boots, I2C e tenta montar SD no boot de bancada, com diagnóstico USB; não inicia missão ou grava registros.
+Cada entrega aparece uma vez no cadastro das seções 1–4. **Pendente** = não iniciada; **Em andamento** = execução iniciada; **Bloqueada** = impedimento registrado durante a execução; **Concluída** = escopo comprovado e arquivo em `done/`. As matrizes de trabalho/prontidão das seções 5–6 orientam encaminhamentos, sem criar estados novos. Pendente não significa automaticamente disponível.
 
-Cada entrega aparece uma única vez. O link abre escopo, condições, conclusão e evidências. **Pendente** = não iniciada; **Em andamento** = execução iniciada; **Bloqueada** = impedimento registrado durante a execução; **Concluída** = escopo comprovado e arquivo em `done/`. Pendente não significa automaticamente disponível.
+O encerramento por responsabilidade de 09/11 manteve COM-004/005, DAD-001/003 e TES-004/007 em `done/`, com obrigações externas encaminhadas às INT/TES. As evidências históricas de cada entrega ficam nas próprias tarefas. INT-003 permanece aberta pelo boot de voo; a bancada já foi usada nas integrações posteriores.
 
-**Histórico de 05/11/2026:** COM-005 tem núcleo de arquivos e adaptador SD/HSPI implementados localmente, com teste nativo de falhas e build ESP32 aprovados em 05/11/2026. Sincroniza cada bloco, repete até três vezes no mesmo offset e preserva arquivos. Permanece em andamento até confirmação de módulo/alimentação com EPS. INT-003 passou a chamar sua montagem na bancada, sem comprovação física; TES-006/TES-009 conservam os ensaios.
+**Para escolher trabalho:** conferir tarefas predecessoras e condições externas separadamente. Com ambas atendidas, a tarefa pode avançar independentemente das demais. Resolver definições externas pode começar antes da implementação. Em TES-008/TES-009, conferir cada cenário. Números identificam tarefas, não fases obrigatoriamente sequenciais.
 
-INT-003 tem entrega parcial de bancada, teste nativo das oito combinações de resultados e build ESP32 aprovados. Falhas não interrompem os serviços independentes; diagnóstico não provoca repetição/reset. Permanecem pendentes placa, ConOps e níveis elétricos do boot integrado; não há upload ou ensaio físico declarado.
-
-**Histórico de 05/11/2026:** DAD-003 acrescentou persistência de snapshots/extras v2 em registros variáveis de 37–64497 bytes, sem alterar o v1. Novos vetores independentes, leitor misto, testes anteriores e build ESP32 aprovados. A pendência de codec dos snapshots foi resolvida; consolidação de DAD-001 e estados duráveis de retomada permanecem abertos. O boot de bancada não codifica ou grava snapshots.
-
-**Para escolher trabalho:** conferir tarefas predecessoras e condições externas separadamente. Com ambas atendidas, a tarefa pode avançar em paralelo às demais disponíveis. Resolver definições externas pode começar antes da implementação. Em TES-008/TES-009, conferir cada cenário. Números identificam tarefas, não fases obrigatoriamente sequenciais.
-
-Detalhes e histórico: [regras e rastreabilidade](../.tasks/README.md). Requisitos e validação: [REQUISITOS.md](REQUISITOS.md). Guias de aprendizado permanecem na documentação, fora deste painel.
+Detalhes e histórico: [regras e rastreabilidade](../.tasks/README.md). Requisitos e validação: [REQUISITOS.md](REQUISITOS.md).
 
 ## 1. Comunicação e armazenamento
 
@@ -57,12 +46,44 @@ Detalhes e histórico: [regras e rastreabilidade](../.tasks/README.md). Requisit
 | ID | Entrega | Tarefas prévias | Condições externas | Estado |
 |---|---|---|---|---|
 | TES-001 | [Teste nativo do escalonamento I2C](../.tasks/04-testes/done/TES-001-escalonamento-i2c.md) | COM-002 | — | Concluída |
-| TES-002 | [Executor I2C: concorrência, fila e erros](../.tasks/04-testes/TES-002-executor-i2c.md) | COM-001, COM-002 | Ambiente FreeRTOS de teste | Pendente |
+| TES-002 | [Executor I2C: concorrência, fila e erros](../.tasks/04-testes/TES-002-executor-i2c.md) | COM-001, COM-002 | Preparar roteiro FreeRTOS; dispensa sensores | Pendente |
 | TES-003 | [Comunicação I2C em hardware](../.tasks/04-testes/TES-003-i2c-hardware.md) | COM-001, COM-002 | Dispositivos e montagem | Pendente |
 | TES-004 | [Recepção UART: validação e limites](../.tasks/04-testes/done/TES-004-uart-software.md) | COM-004 | Contrato local verificado; interoperabilidade em TES-005 e excesso físico em TES-009 | Concluída |
-| TES-005 | [UART entre ESP32 e Raspberry Pi](../.tasks/04-testes/TES-005-uart-hardware.md) | COM-004 | Loopback local aprovado; ponta Pi e montagem pendentes | Em andamento |
+| TES-005 | [UART entre ESP32 e Raspberry Pi](../.tasks/04-testes/TES-005-uart-hardware.md) | COM-004 | JSON confirmado; aceite do enquadramento, ponta Pi, tráfego e montagem pendentes | Em andamento |
 | TES-006 | [SD: operações e falhas em hardware](../.tasks/04-testes/TES-006-sd-hardware.md) | COM-005 | Cartão e montagem | Pendente |
 | TES-007 | [Formatos e tempo: interpretação e limites](../.tasks/04-testes/done/TES-007-dados-e-tempo.md) | DAD-003 | Lógica e formatos verificados; precisão/retomada física em TES-008/TES-009 | Concluída |
 | TES-008 | [Boot, comandos, telemetria e convivência](../.tasks/04-testes/TES-008-integracao.md) | Por cenário no arquivo | Por cenário | Pendente |
 | TES-009 | [Falhas, recuperação e integridade](../.tasks/04-testes/TES-009-falhas-e-recuperacao.md) | Por cenário no arquivo | Por cenário | Pendente |
 | TES-010 | [Missão completa e cobertura dos requisitos](../.tasks/04-testes/TES-010-missao-e-cobertura.md) | INT-008; TES-001 a TES-009 | Referências e limites vigentes | Pendente |
+
+## 5. Trabalho OBC-DH com ESP32 e USB
+
+Ordem sugerida para avançar engenharia com poucos dispositivos. “Pode avançar” não significa que a tarefa inteira está liberada: o levantamento de definições pode anteceder predecessoras, mas implementação/aceite mantêm suas dependências.
+
+| Prioridade | Task | Trabalho possível agora | Condição para concluir |
+|---|---|---|---|
+| 1 | INT-006 | Definir seleção/frequência/idade dos dados de aeronaves e contrato de extração `request_log` com Payload/TT&C; depois desenvolver a segunda etapa e verificar lógica no computador/USB. A recepção e gravação da etapa 1 já existem. | Aceites e contratos da etapa 2, produtor Pi, integração e verificações do escopo; ensaios físicos conservam suas TES. |
+| 2 | INT-004 | Preparar o aceite TT&C usando contratos, mapeamentos e evidências USB existentes. | Aceite conjunto pendente; não encerrar automaticamente INT-003 ou ensaios RF. |
+| 3 | COM-003 | Propor política de detecção, tentativas, tratamento de pedidos e retorno ao serviço; distinguir transferência, callback longo e falha física. | Acordo ADCS/EPS/Térmico, implementação e verificação local; SDA/SCL físicos ficam na TES-009. |
+| 4 | INT-003/005/007/008 | Levantar esquema da placa, ConOps, inventário, limites FOC/energia/térmico e estados seguros/duráveis com os setores. | Não são concluíveis somente por ESP32/USB; preservam predecessoras, decisões e integrações próprias. |
+
+O engenheiro OBC-DH pode preparar interfaces e evidências; a execução dos novos ensaios é encaminhada ao setor de testes. Roteiros atuais e retorno ao firmware normal estão em [examples/README.md](../examples/README.md#bancada-integrada-int-006). Abertura de contrato não autoriza escolher parâmetros dos outros setores unilateralmente.
+
+## 6. Encaminhamento ao setor de testes
+
+Predecessoras concluídas e condições externas são verificações separadas. Os checklists completos ficam nas tarefas da seção 4; usar o [registro por cenário](../.tasks/README.md#registro-por-cenário).
+
+| Task/cenário | Predecessoras | Encaminhamento atual | Recurso/definição que falta |
+|---|---|---|---|
+| TES-001/004/007 | Concluídas no escopo próprio | Reutilizar evidências; não reabrir por esta revisão. | As verificações portáteis não substituem seus ensaios físicos destinatários. |
+| TES-002 | COM-001/002 concluídas | Encaminhar agora para preparar e executar bancada FreeRTOS real; sensores dispensados. | Roteiro/entrada isolada ainda precisa ser preparado pelo setor de testes. |
+| TES-003 | COM-001/002 concluídas | Encaminhar preparação; executar por dispositivo disponível e montagem aprovada. | Dispositivos, pull-ups, instrumentação e critérios dos setores. |
+| TES-005 | COM-004 concluída | Encaminhar preparação do ensaio ESP32–Pi. | Produtor/porta Pi, aceite FCPU ou conciliação de interface, taxas/rajadas/retenção e montagem. JSON é o conteúdo vigente. |
+| TES-006 | COM-005 concluída | Encaminhar preparação das operações/extração por cartão ou API de arquivo fechado. | Cartão/módulo, alimentação/montagem e critérios com EPS. |
+| TES-008: USB e simulação de fluxo/tempo | INT-003/004/006 têm entregas parciais verificadas | Recortes de bancada disponíveis com ESP32/USB e roteiro compatível; registrar evidência parcial. | Aceites e dependências formais continuam para os cenários completos; não aprovar reset seguro, RF ou SD físico por esses recortes. |
+| TES-008: demais cenários | Dependências por cenário ainda abertas | Preparar procedimento e limites. | Boot de voo, FOC/sensores, RF, cartão, modos/energia/térmico/atuações e respectivas aprovações. |
+| TES-009: UART e interrupção SD | COM-004/005 concluídas | Preparar separadamente os ensaios físicos. | Ponta/gerador compatível, taxas e montagem UART; cartão, corte aprovado e critérios EPS. |
+| TES-009: recuperação I2C, watchdog e retomada | COM-003/INT-007/INT-008 pendentes; INT-006 parcial | Levantar procedimentos e critérios; execução completa ainda depende de implementação. | Mecanismos de recuperação, estados duráveis e montagem. |
+| TES-010 | INT-008 e parte de TES-001 a TES-009 ainda abertas | Preparar rastreabilidade e procedimento; missão completa ainda não liberada. | Predecessoras, referências/limites vigentes e montagem integrada. |
+
+Nenhuma linha desta matriz é evidência de novo ensaio. A auditoria de links e consistência documental é distinta da validação funcional ou física.

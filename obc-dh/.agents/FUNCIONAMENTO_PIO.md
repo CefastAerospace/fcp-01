@@ -84,7 +84,7 @@ Confira também as pastas `headers/`, `src/` e `tests/`; crie somente as que est
 
 Bibliotecas adicionais devem ser declaradas em `lib_deps` no ambiente `[env:obc]`, conforme os periféricos forem integrados. O PlatformIO baixa as dependências durante a preparação da compilação; não é necessário instalar antecipadamente bibliotecas para todos os periféricos.
 
-Para padronizar os computadores da equipe, mantenha as versões validadas da plataforma e das bibliotecas fixadas no `platformio.ini`. A configuração base acima não fixa versões; se o arquivo do projeto já contiver versões específicas, preserve-as.
+Para padronizar os computadores da equipe, mantenha as versões validadas da plataforma e das bibliotecas fixadas no `platformio.ini`. A configuração base acima é ilustrativa. No arquivo atual, ArduinoJson 7.0.4 e LoRa 0.8.0 estão fixados; `tt-c` vem do checkout local. `platform = espressif32` não fixa a plataforma. As evidências de 09/11 usaram Espressif32 6.6.0, Arduino ESP32 2.0.14 e GCC Xtensa 8.4.0; isso não garante a mesma resolução em uma instalação nova. Fixação adicional de plataforma exige alteração de configuração própria, não é executada nesta revisão documental.
 
 ## Comandos de uso diário
 
@@ -106,7 +106,7 @@ As verificações atuais de escalonamento I2C, tempo, modelos, snapshots e codec
 
 COM-005 acrescenta `tests/ObcStorageCheck.cpp`, teste nativo do núcleo POSIX com arquivos temporários e falhas de I/O injetadas por GNU ld. Seu comando está no [guia de armazenamento](../tools/README.md#serviço-de-arquivos-sdhspi). O adaptador SD/HSPI compila no ambiente `obc` com as bibliotecas já instaladas do framework, sem dependência nova; compilação não monta o cartão nem executa os ensaios de hardware.
 
-A extensão de DAD-003 acrescenta `tests/SnapshotCodecCheck.cpp` e `tests/SnapshotRecordsCheck.py`. O script gera vetores independentes com `struct`/`zlib` da biblioteca padrão Python, invoca o teste C++ do codec v2 e o leitor real sobre arquivos v1/v2/mistos. Compilar ambos antes de executar o script; comandos no [guia de snapshots](../tools/README.md#snapshots-v2). O codec usa buffers do chamador, sem reserva do modelo/buffer máximo no boot de bancada; o build não demonstra ainda a memória do fluxo integrado.
+A extensão de DAD-003 acrescenta `tests/SnapshotCodecCheck.cpp` e `tests/SnapshotRecordsCheck.py`. O script gera vetores independentes com `struct`/`zlib` da biblioteca padrão Python, invoca o teste C++ do codec v2 e o leitor real sobre arquivos v1/v2/mistos. Compilar ambos antes de executar o script; comandos no [guia de snapshots](../tools/README.md#snapshots-v2). O codec usa buffers do chamador. O fluxo integrado já reserva o modelo e os blocos de saída fora da pilha; as medições da INT-006 cobrem as amostras registradas, não todos os cenários de tráfego/cartão.
 
 ### Boot de bancada vigente
 
@@ -125,7 +125,7 @@ pio run -e obc -t upload --upload-port /dev/ttyUSB0
 python3 tests/ObcDataFlowCheck.py /dev/ttyUSB0
 ```
 
-A bancada usa os mesmos quadros FCPU gerados por `struct`/`zlib` e faz seus bytes atravessarem o ring e o processador reais. Substitui a entrada física por dados em flash e simula escrita de 100 ms; não comprova UART entre placas ou cartão. O segundo roteiro verifica o firmware normal sem Pi/SD. Relatórios temporários: `/tmp/fcp01-int006-bench.json` e `/tmp/fcp01-int006-obc.json`. O Python do PlatformIO também contém pyserial.
+A bancada usa os mesmos quadros FCPU gerados por `struct`/`zlib` e faz seus bytes atravessarem o ring e o processador reais. Substitui a entrada física por dados em flash e simula escrita de 100 ms; não comprova UART entre placas ou cartão. O segundo roteiro verifica o firmware normal sem Pi/SD. Relatórios locais regeneráveis: `/tmp/fcp01-int006-bench.json` e `/tmp/fcp01-int006-obc.json`; esses caminhos não são anexos permanentes disponíveis em outro computador. O Python do PlatformIO também contém pyserial.
 
 `ObcTtcCheck.py` permanece intacto e vinculado à entrega INT-004, que rejeitava `set_time`; não deve ser aplicado ao firmware INT-006 esperando o mesmo resultado. A evolução recebeu roteiro separado, por decisão do responsável. As evidências atuais estão na [INT-006](../.tasks/03-integracao/INT-006-fluxo-de-dados.md).
 
@@ -145,7 +145,7 @@ O teste conserva a ordem e exercita as oito combinações de resultados com inic
 Em 09/11/2026 foram acrescentados `uart-loopback`, para o beta original com
 G17–G16, e `uart-receiver-check`, para injeção da amostra em RAM e medição de
 heap/pilha no ESP32. `obc` permanece padrão e exclui as entradas de bancada;
-seu `main` não inicia o receptor. Cada ambiente tem firmware próprio: depois
+o firmware normal já inicia o receptor e o diário na primeira etapa INT-006. Cada ambiente tem firmware próprio: depois
 do ensaio, fazer upload explícito de `obc` para retornar ao boot normal.
 
 O receptor usa ArduinoJson 7.0.4, fixado em `lib_deps`, com hook automático
@@ -251,7 +251,7 @@ Use `Ctrl+C` para fechar o monitor serial antes de transferir outro firmware. Pe
 
 Conferir a variante da placa, a alimentação e o mapeamento em [PINAGEM.md](PINAGEM.md). A configuração do PlatformIO não define os estados seguros das saídas nem resolve as pendências de motor, Burn Wire e strapping pins. Essas definições continuam dependendo dos contratos e do esquema elétrico do projeto.
 
-Consultar hardware, interfaces e tempo em [TODO.md](TODO.md) e as decisões em [ARCHITECTURE.md](ARCHITECTURE.md). Payload usa UART TX 17 / RX 16, 115,2 kbps 8N1, com snapshots JSON completos por decisão de 05/11/2026; disponibilidade no módulo, montagem, enquadramento, integridade e perdas/repetição exigem definição/validação. TT&C usa seu próprio contrato JSON compartilhado; seus limites não são os do Payload. `Pinout.h` registra alocações, sem configurar periféricos. Configuração PlatformIO não comprova comunicação, temporização, estados em boot/reset ou precisão do método monotônico/referências LoRa; RTC externo fica fora da configuração atual.
+Consultar hardware, interfaces e tempo em [TODO.md](TODO.md) e as decisões em [ARCHITECTURE.md](ARCHITECTURE.md). Payload usa UART TX 17 / RX 16, 115,2 kbps 8N1, com snapshots JSON completos por decisão de 05/11/2026; o receptor FCPU local já define enquadramento, integridade e repetição. Aceite do Payload, produtor/porta Pi, tráfego e montagem permanecem em INT-006 e TES-005/TES-009. TT&C usa seu próprio contrato JSON compartilhado; seus limites não são os do Payload. `Pinout.h` registra alocações, sem configurar periféricos. Configuração PlatformIO não comprova comunicação, temporização, estados em boot/reset ou precisão do método monotônico/referências LoRa; RTC externo fica fora da configuração atual.
 
 ## Referências
 

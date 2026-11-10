@@ -3,6 +3,10 @@
 **Estado:** Concluída
 **Responsáveis:** OBC-DH, Payload, TT&C e coordenação
 
+## Situação atual da integração — 10/11/2026
+
+Boot/NVS já é chamado pelo coordenador e `set_time` já aplica referências no fluxo INT-006, inclusive pelo USB. As conexões descritas abaixo como futuras foram feitas posteriormente. Precisão LoRa, limites temporais e persistência sob interrupção continuam nos ensaios correspondentes; lógica simulada e teste USB não comprovam essas propriedades. [Situação da integração](../../03-integracao/INT-006-fluxo-de-dados.md).
+
 ## Objetivo
 
 Representar e reconstruir o horário dos dados e eventos sem inventar horário absoluto.
@@ -43,6 +47,8 @@ Plano aprovado pelo responsável na sessão de implementação: resolução inte
 Lógica e contrato temporal implementados, com verificações locais para ausência de referência, referências sucessivas, resets e estouro do contador. Precisão física continua dependente de medição em [TES-008](../../04-testes/TES-008-integracao.md).
 
 ## Evidências
+
+Os relatos, comandos, hashes e resultados a seguir descrevem as revisões datadas de cada entrega. Afirmações de ausência de integração ou de estado ainda em andamento nesse histórico não substituem o encerramento e os encaminhamentos atuais acima.
 
 Verificação executada em 01/11/2026. Base Git: `e734ebb`, com a implementação local desta tarefa ainda não commitada. Versão dos arquivos identificada pelos SHA-256 abaixo:
 

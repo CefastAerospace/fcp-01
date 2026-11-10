@@ -10,7 +10,7 @@ As direções são relativas ao ESP32. GPIOs 16/17 são a alocação de projeto 
 
 | Pino ESP32 / GPIO | Função / sinal     | Interface / barramento | Subsistema / destino   | Observações                                                                                             |
 | ----------------- | ------------------ | ---------------------- | ---------------------- | ------------------------------------------------------------------------------------------------------- |
-| 1 - TX0           | Transmissão (TX)   | UART0 / USB            | Bancada / solo         | Porta umbilical para telecomandos e telemetria no nível básico. Conexão USB-C.                          |
+| 1 - TX0           | Transmissão (TX)   | UART0 / USB            | Bancada / solo         | Porta umbilical para telecomandos e telemetria no nível básico. Conector USB a conferir na placa real.                          |
 | 3 - RX0           | Recepção (RX)      | UART0 / USB            | Bancada / solo         | Recepção da interface umbilical, em conjunto com TX0.                                                   |
 | 21                | SDA - dados        | I2C de sensores        | Térmico, EPS e ADCS    | LM75A, INA219, MPU9250, BH1750 e AS5600. Inventário/montagem dependem de [INT-005](../.tasks/03-integracao/INT-005-sensores-e-adcs.md); interface do BMS a conferir. |
 | 22                | SCL - clock        | I2C de sensores        | Térmico, EPS e ADCS    | Clock dos sensores; parâmetros e acesso coordenado dependem de [COM-003](../.tasks/01-comunicacao/COM-003-recuperacao-i2c.md).                      |
@@ -37,7 +37,7 @@ As direções são relativas ao ESP32. GPIOs 16/17 são a alocação de projeto 
 | Interface | Sinais e GPIOs | Uso |
 |---|---|---|
 | UART0 | TX = 1; RX = 3 | Bancada / solo pela interface USB da placa. |
-| UART do Payload | UART2: TX = 17; RX = 16, 115,2 kbps 8N1 | Snapshots JSON completos, por decisão de 05/11/2026; conferir módulo, montagem, porta Pi, enquadramento, integridade e perdas/repetição. |
+| UART do Payload | UART2: TX = 17; RX = 16, 115,2 kbps 8N1 | Snapshots JSON completos, por decisão de 05/11/2026; FCPU implementado localmente; conferir aceite, produtor/porta Pi, tráfego e montagem em INT-006/TES-005. |
 | I2C | SDA = 21; SCL = 22 | Sensores de ADCS, EPS, Térmico e encoder conforme montagem. |
 | VSPI | MOSI = 23; MISO = 19; SCK = 18; CS = 5 | LoRa SX1276, 921 MHz SF7; usa SPI global. |
 | Rádio | DIO0 = 4; RST = 14 | Eventos e recuperação do rádio. |
@@ -45,7 +45,7 @@ As direções são relativas ao ESP32. GPIOs 16/17 são a alocação de projeto 
 | Motor | EN = 12; U/V/W = 25/26/27 | Integração ADCS; fases e estados dependem de confirmação. |
 | Burn Wire | Trigger = 33 | MOSFET de liberação física da antena. |
 
-UART exige níveis de 3,3 V, TX/RX cruzados e GND comum. Configuração dos dois lados e comportamento com um lado desligado dependem de [COM-004](../.tasks/01-comunicacao/done/COM-004-uart-payload.md). Confirmar circuito USB/UART e conector da placa; DevKit V1 não identifica sozinho o esquema real.
+UART exige níveis de 3,3 V, TX/RX cruzados e GND comum. Configuração dos dois lados e comportamento com um lado desligado têm contrato local em [COM-004](../.tasks/01-comunicacao/done/COM-004-uart-payload.md) e aceite/montagem pendentes em [INT-006](../.tasks/03-integracao/INT-006-fluxo-de-dados.md)/[TES-005](../.tasks/04-testes/TES-005-uart-hardware.md). Confirmar circuito USB/UART e conector da placa; DevKit V1 não identifica sozinho o esquema real.
 
 ## Inventário I2C
 

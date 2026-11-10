@@ -9,6 +9,8 @@ não declara interoperabilidade nem altera critérios de validação anteriores.
 
 ## Conteúdo e enlace
 
+**Fronteira da interface:** o enquadramento abaixo é enviado fisicamente entre OBC e Pi. DATA contém JSON, mas cabeçalho, CRC e ACK/NACK são binários; não são apenas estruturas internas do OBC. O uso de JSON pelo produtor não comprova aceitação desse enquadramento. O aceite do Payload permanece na INT-006. A representação binária do SD é um contrato separado.
+
 UART2 do ESP32: **115200 baud, 8N1, RX GPIO16 e TX GPIO17**, níveis de 3,3 V.
 Na ligação ao Pi, cruzar TX/RX e compartilhar GND; porta, GPIOs e console
 serial da ponta Pi devem ser conferidos pelo Payload.
@@ -202,5 +204,4 @@ e confirmação.
 A preservação de toda atualização ADS-B intermediária permanece como pendência
 explícita acordada com o responsável: snapshots acumulados não a demonstram.
 Não alterar requisitos ou resultados esperados para declarar esse atendimento.
-TES-005 ainda contém o cenário histórico de binário compacto; sua conciliação
-com este transporte precisa ser discutida, sem reescrever o critério antigo.
+Em 10/11/2026, o responsável reafirmou snapshots JSON e descartou o payload binário compacto. A TES-005 registra a substituição documental e preserva seus cenários de perdas/repetição/falhas. Isso não presume aceite do enquadramento FCPU pelo Payload nem modifica os testes existentes.

@@ -56,30 +56,24 @@ os resultados esperados.
 
 Loopback comprova apenas a UART2 local com os vetores do beta. Não comprova
 comunicação com o Pi, snapshots completos, integridade, timeout ou NACK real.
-Não encerra TES-004/TES-005. O conflito histórico de formato em TES-005
-continua pendente, sem alteração de seus critérios.
+Não substitui a verificação de software arquivada em TES-004 nem encerra TES-005. A TES-005 atual exige snapshots JSON; o beta preserva seus próprios vetores históricos.
 
-Para restaurar o firmware normal, feche o monitor e execute:
+Para restaurar o firmware normal, feche o monitor, desligue a placa, remova o jumper G17–G16 e reconecte somente o USB. Depois execute:
 
 ```bash
 pio run -d obc-dh -e obc -t upload --upload-port /dev/ttyUSB0
 ```
 
-Com a placa desligada, remova o jumper ao encerrar a bancada.
-
 ## Receptor de snapshots — FCPU v1
 
 O receptor final fica em `PayloadReceiver`/`PayloadReceiverEsp32`, separado
 do beta. O [contrato FCPU v1](../../common/protocol/payload-uart.md) preserva
-o JSON e define o controle externo. `obc` compila os novos módulos e exclui
-o beta; seu `main.cpp` ainda não inicia a recepção. Não há integração com
-SD/downlink ou alteração de `payload/telemetry.py`.
+o JSON como conteúdo e define cabeçalho/controles binários transmitidos pelo cabo ao Pi. `obc` exclui o beta e já inicia a recepção e o diário na primeira etapa INT-006. Downlink agregado e extração continuam pendentes; `payload/telemetry.py` não foi alterado e não implementa a ponta UART.
 
 O contexto possui dois blocos internos no heap, reservados uma única vez por
 `Init`: quadro de 65562 bytes e snapshot de 64672 bytes. Verificar o retorno
 de `Init`. Contexto e acesso ao snapshot devem permanecer estáveis na mesma
-tarefa. A integração chama `Poll()` ao menos a cada 10 ms e consome READY
-antes da próxima chamada. Não usar UART2 pelo beta e pelo receptor ao mesmo
+tarefa consumidora. No caminho sequencial das bancadas, chamar `Poll()` ao menos a cada 10 ms e consumir READY antes da próxima chamada. No firmware integrado, `StartTransportTask()` transfere a propriedade da UART à tarefa de transporte, enquanto `Poll()`/parser ficam no consumidor. O limite de 10 ms refere-se ao atendimento do transporte; o custo do parser aparece separado em `process_gap_ms`. Não usar UART2 pelo beta e pelo receptor ao mesmo
 tempo. Consumo e pilha precisam ser medidos novamente na integração real.
 
 ### Teste nativo sem Raspberry Pi
@@ -153,7 +147,7 @@ continua disponível e não declara conclusão do ensaio ESP32–Pi ou TES-005.
 
 ## Bancada integrada INT-006
 
-Requer somente ESP e USB, sem jumper. `int006-check` reserva boot real em
+Execute os comandos desta seção dentro de `obc-dh/`. Requer somente ESP e USB, sem jumper e sem dispositivos externos em UART2. `int006-check` reserva boot real em
 NVS e inicia TT&C e as tarefas do fluxo. O backend de arquivos é simulado:
 cada escrita espera 100 ms e confere estabilidade dos bytes antes/depois.
 Não monta ou confirma persistência em cartão.
@@ -178,7 +172,7 @@ O primeiro roteiro cobre 77 cenários; o segundo cobre 75 no firmware normal
 sem cartão/Pi. O roteiro INT-004 fica preservado para a versão anterior,
 na qual `set_time` ainda recebia `invalid_cmd`.
 
-Os relatórios temporários completos são `/tmp/fcp01-int006-bench.json` e
+Os relatórios são saídas locais regeneráveis, não anexos permanentes. Seus destinos padrão são `/tmp/fcp01-int006-bench.json` e
 `/tmp/fcp01-int006-obc.json`. Conferem estado inicial, argumentos inválidos,
 UTC/timestamp na TM com ADS-B simulado, época Unix zero, comandos ainda
 rejeitados, 50 pedidos de latência, contadores, estabilidade e perdas

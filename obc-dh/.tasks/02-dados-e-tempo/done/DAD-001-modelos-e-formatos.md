@@ -18,11 +18,19 @@ registram decisões anteriores a este encerramento. Se uma integração
 revelar defeito na entrega, registrar correção ou reabrir a tarefa com
 rastreabilidade, sem adaptar a validação para forçar aprovação.
 
+### Encaminhamentos registrados no encerramento — 09/11/2026
+
+A tabela conserva as obrigações e a situação registradas no encerramento. O andamento posterior é acompanhado nas destinatárias e contextualizado na seção de situação atual abaixo.
+
 | Destinatária | Responsabilidade ainda aberta | Situação |
 |---|---|---|
 | [INT-004](../../03-integracao/INT-004-ttc-e-umbilical.md) | Consolidar com TT&C os mapeamentos e unidades do conteúdo, mantendo o contrato de TC/TM e registrando o aceite das interfaces usadas. | Pendente na destinatária |
 | [INT-005](../../03-integracao/INT-005-sensores-e-adcs.md) | Obter os aceites de ADCS/EPS/Térmico para mapeamento, unidades, disponibilidade, posições térmicas, origens/códigos e dados dos sensores. | Pendente na destinatária |
 | [INT-006](../../03-integracao/INT-006-fluxo-de-dados.md) | Consolidar o aceite de Payload/TT&C e das estatísticas: id opaco, idade/validade dos campos, unidades de velocidades, extras e migração explícita dos dados legados, sem inventar sessão/sequência ou validade. | Pendente na destinatária |
+
+## Situação atual da integração — 10/11/2026
+
+Modelos e validadores estão ligados ao receptor e fluxo INT-006. O formato individual v1 é legado preservado; o snapshot é o conteúdo atual, com `id` opaco. Persistência de snapshots v2 e TM v3 existe, sem transformar campos acumulados em atualizações individuais. Pendências atuais são os aceites/mapeamentos nas destinatárias, não ausência de modelos/parser/codec. [Situação da integração](../../03-integracao/INT-006-fluxo-de-dados.md).
 
 ## Objetivo
 
@@ -47,6 +55,8 @@ Definir tipos concretos, unidades, validade, versão, tamanho máximo, enquadram
 Contrato e tipos necessários disponíveis, com exemplos e limites explícitos. Formato de transporte UART, representação interna e formato do arquivo têm responsabilidades distintas; nenhuma decisão sobre JSON/binário persistido será presumida.
 
 ## Evidências
+
+Os relatos, comandos, hashes e resultados a seguir descrevem as revisões datadas de cada entrega. Afirmações de ausência de integração ou de estado ainda em andamento nesse histórico não substituem o encerramento e os encaminhamentos atuais acima.
 
 Implementação local e verificações executadas em 01/11/2026, sobre a base Git `e734ebb` e o trabalho local de DAD-002. Alterações ainda não commitadas. A tarefa permanece **Em andamento**, pois os produtores ainda não deram aceite ao contrato proposto.
 

@@ -1,13 +1,12 @@
 # Definições do OBC-DH para o Design Package
 
-**Data:** 11/10/2026.
-**Finalidade:** consolidar as seis definições solicitadas para a documentação da competição, com justificativas, fontes, estimativas e limites de atendimento.
+**Origem:** definições de 11/10/2026, consolidadas em 14/10. **Revisão documental:** 10/11/2026 sobre `839a186`.
 
-**Consolidação:** 14/10/2026, incorporando o contrato JSON e os parâmetros atuais de `tt-c/include/TtcProtocol.h`. Critérios de missão/validação e definições financeiras permanecem; as premissas antigas de enquadramento binário TT&C e SF9 foram substituídas pelo contrato implementado. Referências ao DP seguem os materiais citados nesta síntese e pelos setores; a versão Markdown indicada no remoto não está presente neste checkout.
+Este documento reúne custos, decisões e hipóteses de dimensionamento para o Design Package. As referências ao DP seguem os materiais citados pelos setores; a versão Markdown indicada no remoto não está neste checkout. Custos e estimativas não constituem medição da montagem ou aceite de requisitos.
 
-**Atualização OBC — 01/11/2026:** modelos, tempo/boots, codec e leitor nativo possuem implementação local e verificações registradas nas tarefas. O contrato v1 ainda aguarda aceite; integração, precisão física e integridade do SD continuam pendentes. O orçamento de armazenamento abaixo usa os tamanhos desse contrato proposto, sem alterar requisitos ou parâmetros do rádio.
+O estado atual inclui receptor UART local, codecs/leitor v1/v2/v3 e a primeira etapa do fluxo integrado. Persistência binária interna está implementada; o conteúdo externo conserva JSON nos contratos correspondentes. Aceites, produtor Pi, montagem do cartão, precisão física, downlink agregado e extração permanecem nas integrações/ensaios do [painel](TODO.md).
 
-**Atualização OBC — 05/11/2026:** o responsável confirmou snapshots JSON completos diretamente pela UART do Payload. DAD-001 acrescenta modelos em memória com extras; codec v1 e valores calculados abaixo permanecem preservados. As estimativas de tráfego por atualização individual não dimensionam os novos snapshots. Recalcular UART/armazenamento em COM-004/DAD-003 após confirmar frequência, tamanho máximo e persistência. Não alterar critérios de latência, perdas ou registro por mensagem para acomodar o novo formato.
+Os cálculos de atualizações individuais v1 abaixo são hipóteses históricas de dimensionamento. Não representam automaticamente os snapshots completos adotados em 05/11. Os valores financeiros, parâmetros de rádio e critérios de validação foram preservados.
 
 ## 1. Custos e sobressalentes
 
@@ -77,13 +76,15 @@ O OBC armazenará mensagens ADS-B já decodificadas, referências de tempo, iden
 
 ### 2.2 Premissas de dimensionamento
 
+**Cálculo legado de atualizações individuais v1.** As taxas de mensagens ADS-B não são frequências medidas de snapshots. Os 105 bytes por atualização e a comparação com JSON de 256 bytes não dimensionam o fluxo atual. Preservam-se os valores para rastrear a estimativa original.
+
 | Parâmetro | Premissa | Fonte / motivo |
 |---|---|---|
 | Duração | 600 s | Missão contínua de dez minutos prevista no DP. |
 | Aeronaves simultâneas | Até 20 | Cenário da competição descrito no DP. |
 | Fluxo de mensagens | 40–120 mensagens/s; nominal 60/s | Estimativa da equipe no DP, seção 5.3, página 33; pendente de medição. |
-| Registro binário persistente | 105 bytes por atualização | Contrato OBC v1 proposto: sessão/sequência, dados opcionais, metadados e CRC; codec local implementado, integração SD pendente. |
-| Registro JSON compacto | 256 bytes por mensagem | Estimativa média de dimensionamento, com margem sobre o exemplo atual do Payload e espaço para metadados. |
+| Registro binário persistente | 105 bytes por atualização | Contrato OBC v1 proposto: sessão/sequência, dados opcionais, metadados e CRC; codec preservado; não é o tamanho de um snapshot v2. |
+| Registro JSON compacto | 256 bytes por mensagem | Estimativa média de dimensionamento, com margem sobre o exemplo legado do Payload e espaço para metadados. |
 | Reserva por missão | 25 MB | Volume superior estimado em JSON, acrescido de registros auxiliares e margem. |
 
 Os 105 bytes são o tamanho especificado do registro de missão em [obc-data.md](../../common/protocol/obc-data.md), proposta ainda sujeita ao aceite dos produtores. Substituem a provisão histórica de 64 bytes, não uma entrada ou um critério de teste. Não correspondem aos 25–35 bytes estimados para o enlace UART no DP: o arquivo inclui sessão, timestamp local opcional, metadados OBC e CRC. O formato UART continua em COM-004. Os 256 bytes de JSON são somente uma estimativa comparativa, sem máximo garantido e sem medição do novo contrato; o v1 escolhe persistência binária, sem exigir gravação duplicada.
@@ -104,7 +105,13 @@ Para a representação binária v1, o orçamento conserva **1 MB para eventos, e
 
 A reserva não autoriza descarte de mensagens ou encerramento de gravação ao atingir 25 MB. É um valor de dimensionamento; retenção e comportamento de SD cheio/indisponível continuam dependendo do contrato de registros. Nenhuma estimativa de capacidade substitui teste de integridade após queda de energia.
 
-O codec local serializa segundo o contrato v1, com ordem little-endian, larguras explícitas, versão e CRC-32; seu [leitor nativo](../tools/README.md) exporta JSON Lines sem reescrever a origem. A integração de gravação no SD ainda está pendente. “Bytes brutos” não significa persistir memória interna de estruturas C++. JSON permanece representação legível e formato dos setores que já o utilizam, sem criar gravação duplicada obrigatória no OBC.
+Os codecs atuais serializam v1/v2/v3 com ordem little-endian, larguras explícitas, versão e CRC-32. O [leitor nativo](../tools/README.md) exporta JSON Lines sem reescrever a origem; a INT-006 já liga codificação e escrita no fluxo. Isso não comprova cartão físico. “Bytes brutos” não significa persistir memória interna de structs C++. JSON conserva seus contratos de transporte e análise, sem exigir gravação duplicada do texto original.
+
+### Dimensionamento do fluxo atual de snapshots
+
+O volume lógico por missão é a soma dos tamanhos efetivamente codificados: snapshots v2 de 37–64497 bytes, TM v3 de 99 bytes, BOOT de 40 bytes, referências de 36 bytes, estatísticas de 84 bytes e eventos/falhas de 96 bytes. Contar também BOOT e referência repetidos por segmento; FAT32 e margens físicas são adicionais. Não assumir que todo snapshot ocupa o máximo ou o mesmo tamanho da amostra.
+
+Para 600 s, usar a quantidade acordada/medida de cada tipo de registro. Permanecem pendentes com Payload/TT&C a frequência nominal de snapshots, rajadas, backlog e seleção de downlink. Sem esses valores, a reserva histórica de 25 MB não é um orçamento validado do fluxo atual. As filas limitadas e os descartes contabilizados da INT-006 não autorizam reduzir requisitos de conservação ou perdas.
 
 ### 2.4 Volume e capacidade do downlink
 
@@ -214,7 +221,7 @@ Essa definição é uma condição para iniciar os ensaios, não um novo modo op
 | Rateio financeiro | Quantidade física dos kits/placas e correspondência do ESP32 adquirido com a placa de integração. |
 | Cartão e conexões | Cotação do cartão de 32 GB, composição das conexões e compatibilidade elétrica/software. |
 | Tempo | Validar ms monotônicos/referências LoRa, quantização e latência de `args.unix` em segundos, erro/deriva e resets. RTC externo só será reconsiderado se o método não atender aos critérios temporais acordados. Não inferir tempo desligado após reset. |
-| Formatos | Alinhar snapshots JSON UART com os produtores em COM-004 e definir sua persistência em DAD-003, preservando o codec/leitor v1 e o script atual até migração explícita. Medir tráfego e validar armazenamento integrado. Downlink mantém JSON TT&C, corpo ≤245 bytes/quadro ≤255 bytes, sem fragmentação. |
+| Formatos | Modelos, FCPU local, persistência v2/v3 e gravação integrada já existem. Consolidar aceites e produtor Pi na INT-006; medir tráfego e validar cartão/fluxo físico. Preservar compatibilidade v1 e o script existente até migração explícita. Downlink mantém JSON TT&C, corpo ≤245 bytes/quadro ≤255 bytes, sem fragmentação. |
 | Rádio | Validar parâmetros atuais SF7/BW125/CR4/6/preâmbulo32, capacidade útil, contato e filas. Orçamento recalculado não comprova entrega nem autoriza mudar decisões/limites TT&C. |
 | Critérios de missão | Confirmar compatibilidade entre transmissão agregada, latência e perdas sem modificar critérios existentes silenciosamente. |
 | Recuperação | Confirmar ou corrigir promessas de watchdog externo/partição de recuperação presentes no DP. |

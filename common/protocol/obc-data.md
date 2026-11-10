@@ -1,36 +1,22 @@
-# Dados OBC — registros v1 e snapshots v2 do Payload
+# Dados OBC — registros v1, snapshots v2 e TM v3
 
-**Estado:** desenvolvimento local de modelos e codecs concluído em
-DAD-001/DAD-003, com verificação portátil de TES-007. Aceites de Payload,
-TT&C, ADCS, EPS e Térmico continuam nas integrações INT-004/INT-005/INT-006;
-não são presumidos por este contrato. Referência C++: [ObcData.h](../../obc-dh/headers/models/ObcData.h);
-validação: [ObcData.cpp](../../obc-dh/src/ObcData.cpp). As revisões datadas
-abaixo preservam os estados históricos, anteriores ao encerramento local.
+**Estado atual — revisão documental de 10/11/2026:** modelos, validadores, codecs e leitor têm implementação local, com evidências nas tarefas DAD-001/DAD-003/TES-007. A primeira etapa INT-006 já liga recepção de snapshots, referência temporal, gravação e TM. Os aceites de Payload, TT&C, ADCS, EPS e Térmico continuam nas integrações correspondentes; ensaios físicos não são presumidos por este contrato.
 
-**Atualização de implementação — 01/11/2026:** DAD-003 acrescentou o [codec portátil](../../obc-dh/headers/ObcRecordCodec.h) e o [leitor nativo](../../obc-dh/tools/README.md), com testes locais e build ESP32 aprovados. Esta revisão documental atualiza estado e referências; versão, layouts, tamanhos e exemplos do contrato permanecem iguais aos da proposta inicial. DAD-001/DAD-003 continuam em andamento pelas pendências registradas nas tarefas; não há integração automática ao rádio ou SD.
+Referência C++: [ObcData.h](../../obc-dh/headers/models/ObcData.h), [ObcData.cpp](../../obc-dh/src/ObcData.cpp) e [ObcRecordCodec.h](../../obc-dh/headers/ObcRecordCodec.h). Procedimentos: [guia do leitor](../../obc-dh/tools/README.md). Estados históricos, hashes e decisões das entregas de 01/11 e 05/11 permanecem nas tarefas concluídas, não descrevem ausência de parser ou integração no firmware atual.
 
-**Decisão de 05/11/2026:** o responsável confirmou snapshots JSON completos diretamente pela UART do Payload, substituindo a decisão anterior de binário compacto. DAD-001 acrescenta modelos em memória e validação, sem parser ou transporte. Os registros v1 e seu codec continuam disponíveis com a semântica original; não representam automaticamente os snapshots e extras. O aceite dos produtores continua pendente.
+O contrato separa dados lógicos, transporte e persistência. O conteúdo previsto do Payload são snapshots JSON completos; o receptor local usa o [FCPU v1](payload-uart.md), com cabeçalho/CRC e ACK/NACK binários também transmitidos pelo cabo ao Pi. Aceite, implementação do produtor e tráfego permanecem na INT-006. Não confundir esses controles com o formato binário interno do SD.
 
-**Extensão de 05/11/2026:** DAD-003 implementa persistência de snapshots em registros v2 variáveis, com codec portátil e leitor v1/v2/misto. O formato v1 e os modelos em memória permanecem preservados. Não há recepção UART ou gravação automática de snapshots no boot; o aceite de DAD-001 e os estados duráveis de retomada continuam pendentes.
-
-O contrato separa dados lógicos, transporte e persistência. Enquadramento UART, integridade, confirmação/retransmissão, limites de tráfego/buffers e retomada pertencem a COM-004. Os registros binários v1 abaixo são preservados; snapshots têm formato v2 próprio. TT&C conserva seu [contrato JSON](ttc-json.md), incluindo unidades, `n` atribuído pelo enlace e limites de 245/255 bytes.
-
-**Implementação UART — 09/11/2026:** COM-004 acrescenta parser e publicação
-local de snapshots em `PayloadReceiver`, com adaptador ESP32 e
-[contrato FCPU v1](payload-uart.md). Reutiliza os modelos/validadores abaixo,
-sem alterar seus campos, limites ou a amostra. Os controles ficam fora do
-JSON; aceite do Payload e ponta Pi permanecem pendentes. O boot normal ainda
-não inicia o receptor ou grava snapshots automaticamente.
+Os registros individuais v1 são preservados para compatibilidade; não são uma conversão automática dos snapshots. Snapshots usam v2, e a TM integrada usa v3 para representar contagens indisponíveis. TT&C conserva seu [contrato JSON](ttc-json.md), com `n` atribuído pelo enlace e limites de 245/255 bytes. Não existe equivalência entre o tamanho de uma struct, um registro persistido e um quadro de transporte.
 
 ## 0. Snapshot do Payload — modelo em memória
 
-Referência recebida: [payload.json](../../obc-dh/payload.json), objeto com `id` e `messages`, indexado por ICAO. Não é uma atualização parcial: cada objeto completo descreve a lista inteira. A coleção pode crescer, diminuir ou permanecer com os mesmos ICAOs e valores atualizados. Ordem não define identidade. O arquivo de exemplo é preservado; esta entrega não implementa sua leitura.
+Referência recebida: [payload.json](../../obc-dh/payload.json), objeto com `id` e `messages`, indexado por ICAO. Não é uma atualização parcial: cada objeto completo descreve a lista inteira. A coleção pode crescer, diminuir ou permanecer com os mesmos ICAOs e valores atualizados. Ordem não define identidade. O arquivo de exemplo é preservado. Os modelos são independentes do parser, implementado em `PayloadReceiver`.
 
 ### Tipos e disponibilidade
 
-`PAYLOAD_SNAPSHOT` contém `id` u64 opaco (inclusive zero), `stamp` do tipo existente `EVENT_STAMP`, `aircraft_count` e array de `AIRCRAFT_STATE`. O boot deve ser não zero; ms monotônicos podem ser zero. Não interpretar `id` como sessão, sequência, contagem ADS-B ou garantia de ordenação. Ausência de `id` não pode ser convertida implicitamente em zero pelo futuro parser.
+`PAYLOAD_SNAPSHOT` contém `id` u64 opaco (inclusive zero), `stamp` do tipo existente `EVENT_STAMP`, `aircraft_count` e array de `AIRCRAFT_STATE`. O boot deve ser não zero; ms monotônicos podem ser zero. Não interpretar `id` como sessão, sequência, contagem ADS-B ou garantia de ordenação. Ausência de `id` não pode ser convertida implicitamente em zero pelo parser.
 
-| Origem JSON | Campo de AIRCRAFT_STATE | Representação e mapeamento previsto para COM-004 |
+| Origem JSON | Campo de AIRCRAFT_STATE | Representação e mapeamento implementado no receptor local |
 |---|---|---|
 | Chave em `messages` | `icao` | u32 limitado a 24 bits; interpretar seis hexadecimais sem distinção de caixa. Se `ICAO Address` existir, conferir concordância. |
 | `Identification` | `identification` | Texto original, até 16 bytes. |
@@ -41,7 +27,7 @@ Referência recebida: [payload.json](../../obc-dh/payload.json), objeto com `id`
 
 `available_fields` usa `SNAPSHOT_LATITUDE`, `SNAPSHOT_LONGITUDE`, `SNAPSHOT_ALTITUDE`, `SNAPSHOT_IDENTIFICATION` e `SNAPSHOT_TICK`. Os três primeiros reutilizam os bits existentes de posição/altitude; os dois últimos pertencem somente ao snapshot. Não confundir a máscara completa com `PAYLOAD_DATA`. Bits não definidos são rejeitados. Campo ausente ou `null` deixa seu bit desmarcado; bytes numéricos/textuais indisponíveis são ignorados, sem fabricar validade para zero. Strings disponíveis podem ser vazias; chaves de extras não podem. Validadores não verificam UTF-8 ou o calendário de `tick`.
 
-Uma aeronave com apenas ICAO, identificação ou extras é válida. `96298 (not decoded)` e `26514 (not decoded)` devem permanecer como textos nos extras, com posição indisponível. O futuro parser deve consumir o texto numérico inteiro, sem interpretar o prefixo de uma mensagem de diagnóstico como coordenada. Se somente uma coordenada for válida, conservar os textos recebidos nos extras e deixar o par indisponível. Textos conhecidos não interpretáveis também permanecem nos extras; não descartar informação silenciosamente.
+Uma aeronave com apenas ICAO, identificação ou extras é válida. `96298 (not decoded)` e `26514 (not decoded)` devem permanecer como textos nos extras, com posição indisponível. O parser deve consumir o texto numérico inteiro, sem interpretar o prefixo de uma mensagem de diagnóstico como coordenada. Se somente uma coordenada for válida, conservar os textos recebidos nos extras e deixar o par indisponível. Textos conhecidos não interpretáveis também permanecem nos extras; não descartar informação silenciosamente.
 
 ### Limites locais e validação
 
@@ -49,15 +35,15 @@ Uma aeronave com apenas ICAO, identificação ou extras é válida. `96298 (not 
 - Extras representam os valores string presentes no exemplo. Outros tipos JSON precisam de contrato explícito; não converter objetos, arrays, números ou `null` silenciosamente em texto. Não há preservação byte a byte da formatação do JSON original.
 - `Validate(AIRCRAFT_STATE)` verifica ICAO, máscara, par de coordenadas, domínios numéricos, terminação e limite dos textos ativos, contagem e unicidade das chaves dos extras (sensíveis a maiúsculas).
 - `Validate(PAYLOAD_SNAPSHOT)` verifica boot, contagem, aeronaves e unicidade dos ICAOs. Lista vazia é válida. Retorna o `STATUS` existente: `OK`, `INVALID_LENGTH` ou `INVALID_VALUE`, sem modificar a entrada.
-- O receptor deve verificar limites antes de converter contagens ou preencher arrays. Dados acima do limite exigem falha explícita; truncar uma aeronave ou um campo produziria um snapshot incompleto. O tamanho máximo do quadro UART **não** é `sizeof` dessas estruturas e continua pendente em COM-004.
+- O receptor deve verificar limites antes de converter contagens ou preencher arrays. Dados acima do limite exigem falha explícita; truncar uma aeronave ou um campo produziria um snapshot incompleto. O tamanho máximo UART **não** é `sizeof` dessas estruturas: o contrato FCPU local admite 65536 bytes de JSON e 65562 bytes por DATA completo; o aceite do produtor permanece pendente.
 
-Os arrays não usam alocação dinâmica. Na verificação de 05/11/2026, tanto no compilador nativo como na toolchain Xtensa ESP32: `EXTRA_FIELD` = 98 bytes, `AIRCRAFT_STATE` = 3232 bytes e `PAYLOAD_SNAPSHOT` = 64672 bytes. Não alocar o snapshot na pilha padrão de uma tarefa FreeRTOS, nem copiar toda a coleção sem necessidade. O proprietário futuro deve reservar armazenamento fora da pilha e definir publicação/concorrência em COM-004/INT-006. Ausência de parser significa que ainda não há buffer de recepção ou cópia dupla alocados pelo firmware.
+Os arrays do modelo têm capacidade fixa. Na verificação de 05/11/2026, no compilador nativo e na toolchain Xtensa ESP32: `EXTRA_FIELD` = 98 bytes, `AIRCRAFT_STATE` = 3232 bytes e `PAYLOAD_SNAPSHOT` = 64672 bytes. Não alocar o snapshot na pilha padrão de uma tarefa FreeRTOS. O receptor atual reserva o snapshot e o quadro em dois blocos do heap. O fluxo integrado coordena sua publicação e reserva outros dois blocos para codificação/escrita quando o SD está disponível. Tamanhos do modelo não são limites de consumo total do firmware.
 
 ### Substituição e limites de evidência
 
-O receptor futuro publica a nova lista somente após receber e validar o snapshot completo. ICAOs ausentes saem da lista ativa; os registros históricos não são apagados. `messages: {}` válido limpa a lista. Entrada inválida, incompleta ou acima dos limites conserva o estado anterior. `Validate` não gerencia essa substituição.
+O receptor publica a nova lista somente após receber e validar o snapshot completo. ICAOs ausentes saem da lista ativa; os registros históricos não são apagados. `messages: {}` válido limpa a lista. Entrada inválida, incompleta ou acima dos limites conserva o estado anterior. `Validate` não gerencia essa substituição.
 
-Os campos de uma aeronave podem ter idades diferentes. `tick` não comprova atualização de todos os campos. Snapshots podem omitir mensagens ADS-B intermediárias; não satisfazem, por si, o registro/timestamp de cada mensagem. Essa incompatibilidade deve ser resolvida com Payload e coordenação sem alterar os critérios de validação existentes. Significado de `id`, unidades das velocidades, idade dos campos e estratégia de perdas/repetição permanecem abertos.
+Os campos de uma aeronave podem ter idades diferentes. `tick` não comprova atualização de todos os campos. Snapshots podem omitir mensagens ADS-B intermediárias; não satisfazem, por si, o registro/timestamp de cada mensagem. Essa incompatibilidade deve ser resolvida com Payload e coordenação sem alterar os critérios de validação existentes. `id` é tratado localmente como opaco. Aceite do produtor, unidades das velocidades, idade dos campos e parâmetros de tráfego/retenção permanecem abertos na INT-006; sequência/repetição do enlace têm implementação local no FCPU.
 
 `PAYLOAD_DATA` continua sendo atualização individual com sessão/sequência.
 `ttc::AIRCRAFT_DATA` continua sendo conteúdo de downlink e depende do contrato
@@ -90,7 +76,7 @@ Cada aeronave contém, na ordem: ICAO u24, máscara u8, latitude/longitude/altit
 
 NUL dentro do comprimento declarado é inválido: o modelo C++ não representa sufixos significativos após esse byte. String disponível vazia é permitida; chave vazia continua inválida. Demais bytes são preservados, sem impor validação UTF-8 ou calendário que o modelo não possui. Chaves de extras e ICAOs precisam ser únicos dentro de suas coleções. Máscaras desconhecidas, campos fora do domínio e bytes sobrando no corpo são rejeitados.
 
-Registro vazio: **37 bytes**. Uma aeronave somente com ICAO: **42 bytes**. Maior aeronave: **3223 bytes**; maior snapshot: `37 + 20 × 3223 = 64497 bytes`, dentro do comprimento u16. Isso não altera o limite v1 de 512 bytes nem os tamanhos de UART/LoRa. Leitor v1 não reconhece `FCP2`; usar o leitor atualizado para arquivos v2 ou mistos. Não migrar ou reescrever arquivos antigos automaticamente. Os tipos 1–7 e a união `RECORD` permanecem exclusivos do v1; o tipo 8 é tratado pela API de snapshot.
+Registro vazio: **37 bytes**. Uma aeronave somente com ICAO: **42 bytes**. Maior aeronave: **3223 bytes**; maior snapshot: `37 + 20 × 3223 = 64497 bytes`, dentro do comprimento u16. Isso não altera o limite v1 de 512 bytes nem os tamanhos de UART/LoRa. Leitor v1 não reconhece `FCP2`; usar o leitor atualizado para arquivos v2 ou mistos. Não migrar ou reescrever arquivos antigos automaticamente. Os tipos 1–7 permanecem v1; o tipo 8 usa a API de snapshot. A API dedicada de TM v3 usa o membro `telemetry` da união `RECORD`, sem incorporar o snapshot nessa união.
 
 ### Codec, memória e publicação
 
@@ -98,15 +84,15 @@ Em `obc_record`, `GetSnapshotSize(snapshot, total_bytes)` valida o modelo e calc
 
 O codec não faz I/O ou alocação dinâmica e não amplia `RECORD` para conter snapshots. O chamador fornece modelo e buffer, fora da pilha padrão das tarefas. Codificação copia apenas uma aeronave por vez. Decodificação usa uma passagem de validação e outra de publicação, com uma aeronave temporária e até 20 ICAOs, sem outro snapshot completo. Ausências e slots inativos são zerados na saída. Falha preserva o destino, inclusive quando o registro tem CRC válido e conteúdo inválido.
 
-O objeto do modelo ocupa 64672 bytes; o buffer máximo codificado exige outros 64497 bytes. Provisionar ambos conscientemente na integração, sem criar reservas automáticas no boot. Com Xtensa `-Os -fstack-usage`, os quadros individuais medidos foram 3280 bytes em `WriteAircraft`, 3408 em `ReadSnapshotBody`, 80 em `EncodeSnapshot` e 96 em `DecodeSnapshot`. Esses valores não são o máximo total da cadeia de chamadas; dimensionar também a pilha da tarefa consumidora e o restante do firmware.
+O objeto do modelo ocupa 64672 bytes; o buffer máximo codificado exige outros 64497 bytes. O fluxo integrado provisiona modelo e saída fora da pilha, usando dois blocos para a saída; falhas de reserva são explícitas. Com Xtensa `-Os -fstack-usage`, os quadros individuais medidos foram 3280 bytes em `WriteAircraft`, 3408 em `ReadSnapshotBody`, 80 em `EncodeSnapshot` e 96 em `DecodeSnapshot`. Esses valores não são o máximo total da cadeia de chamadas; dimensionar também a pilha da tarefa consumidora e o restante do firmware.
 
 ### Leitura, compatibilidade e verificações
 
-O leitor aceita v1/v2 no mesmo arquivo, com janela máxima de 64497 bytes e um modelo de snapshot no programa nativo. Reutiliza referências temporais v1 por boot, inclusive recebidas depois do snapshot. Exporta `version: 2`, `type: "payload_snapshot"` e `data: {"id": ..., "aircraft": [...]}` no envelope existente. Cada aeronave tem `icao`, `identification`, `lat`, `lon`, `alt`, `tick` e `extras: [{"key": ..., "value": ...}]`; ausências viram `null`. Textos disponíveis inválidos em UTF-8 viram `null` com campos `<nome>_encoding: "invalid_utf8"` e `<nome>_hex`, preservando os bytes como já ocorria com descrições v1. `tick` original não é sobrescrito pela reconstrução temporal.
+O leitor atual aceita v1/v2/v3 no mesmo arquivo, com janela máxima de 64497 bytes e um modelo de snapshot no programa nativo. Reutiliza referências temporais v1 por boot, inclusive recebidas depois do snapshot. Exporta `version: 2`, `type: "payload_snapshot"` e `data: {"id": ..., "aircraft": [...]}` no envelope existente. Cada aeronave tem `icao`, `identification`, `lat`, `lon`, `alt`, `tick` e `extras: [{"key": ..., "value": ...}]`; ausências viram `null`. Textos disponíveis inválidos em UTF-8 viram `null` com campos `<nome>_encoding: "invalid_utf8"` e `<nome>_hex`, preservando os bytes como já ocorria com descrições v1. `tick` original não é sobrescrito pela reconstrução temporal.
 
-Lista vazia é um snapshot válido; lista incompleta não é publicada. CRC/comprimento/conteúdo inválido causa descarte relatado por offset e busca do próximo `FCP1` ou `FCP2`. Um candidato inválido não autoriza saltar seu comprimento declarado. Assinaturas dentro de um registro válido não produzem registros adicionais. A origem permanece intacta. Os códigos de saída continuam 0 para leitura íntegra, 1 para descarte/truncamento recuperável e 2 para erro de uso/I/O/recurso.
+Lista vazia é um snapshot válido; lista incompleta não é publicada. CRC/comprimento/conteúdo inválido causa descarte relatado por offset e busca do próximo `FCP1`, `FCP2` ou `FCP3`. Um candidato inválido não autoriza saltar seu comprimento declarado. Assinaturas dentro de um registro válido não produzem registros adicionais. A origem permanece intacta. Os códigos de saída continuam 0 para leitura íntegra, 1 para descarte/truncamento recuperável e 2 para erro de uso/I/O/recurso.
 
-[SnapshotCodecCheck.cpp](../../obc-dh/tests/SnapshotCodecCheck.cpp) e [SnapshotRecordsCheck.py](../../obc-dh/tests/SnapshotRecordsCheck.py) comparam vetores independentes `struct`/`zlib`, verificam limites e saídas preservadas e executam o leitor real sobre arquivos mistos, corrompidos e truncados. Os testes v1 foram mantidos e passaram sem alteração de entradas/asserts/resultados esperados. Comandos e limites estão no [guia](../../obc-dh/tools/README.md). Essa entrega não implementa UART, gravação automática no SD, estados duráveis do Burn Wire ou ensaios físicos.
+[SnapshotCodecCheck.cpp](../../obc-dh/tests/SnapshotCodecCheck.cpp) e [SnapshotRecordsCheck.py](../../obc-dh/tests/SnapshotRecordsCheck.py) comparam vetores independentes `struct`/`zlib`, verificam limites e saídas preservadas e executam o leitor real sobre arquivos mistos, corrompidos e truncados. Os testes v1 foram mantidos e passaram sem alteração de entradas/asserts/resultados esperados. Comandos e limites estão no [guia](../../obc-dh/tools/README.md). Os testes de codec/leitor não comprovam UART, cartão físico ou estados duráveis de atuação; a ligação UART–registros é responsabilidade da INT-006 e os estados operacionais ficam na INT-007/INT-008.
 
 ## 1. Convenções comuns
 
@@ -150,6 +136,8 @@ No v1, tamanho diferente do canônico é inválido, mesmo quando menor que 512. 
 
 ## 3. Atualização do Payload — mission
 
+**Formato individual v1 preservado:** esta seção não define o snapshot JSON atual nem obriga o produtor a emitir atualizações individuais. A integração não fabrica esse registro a partir de `id` ou de campos acumulados. A preservação de cada mensagem ADS-B continua pendente com Payload/coordenação.
+
 Uma mensagem transporta **somente os campos recém-atualizados**. Se chegar velocidade, a posição em cache não é copiada para essa atualização. A agregação por aeronave e a idade dos valores acumulados pertencem à integração OBC; presença não prova precisão física ou o instante de aquisição no receptor ADS-B.
 
 | Ordem no corpo | Campo C++ / JSON | Tipo persistido | Unidade/semântica |
@@ -168,7 +156,7 @@ Uma mensagem transporta **somente os campos recém-atualizados**. Se chegar velo
 
 Bits da máscara: 0 = latitude; 1 = longitude; 2 = altitude; 3 = velocidade; 4 = rumo; 5 = timestamp local. Bits 6/7 reservados e rejeitados. Latitude e longitude são um par: ambas disponíveis ou ambas indisponíveis. Exigir pelo menos um dado de voo disponível; timestamp sozinho não forma uma observação. A estrutura C++ usa 21 bytes para `timestamp`, incluindo NUL na RAM; o arquivo usa 20. Validar calendário gregoriano, anos 0001–9999 e segundos 00–59; sem frações, fusos alternativos ou segundos intercalares no v1.
 
-`session_id` é opaco ao OBC: não é seu boot nem um horário Unix. O produtor deve gerar nova sessão a cada execução e antes de esgotar `seq_id`; não dar volta na sequência dentro da sessão. Retransmitir preserva sessão, sequência e conteúdo. Métodos de geração sem reutilização, retenção de sessões, identificação de gaps e deduplicação precisam ser acordados em COM-004; os modelos não implementam essas operações. A validade do último `seq_id` é aceita pelo modelo para permitir fechar a sessão; não incrementar além dele.
+`session_id` é opaco ao OBC: não é seu boot nem um horário Unix. O produtor deve gerar nova sessão a cada execução e antes de esgotar `seq_id`; não dar volta na sequência dentro da sessão. Retransmitir preserva sessão, sequência e conteúdo. O modelo v1 não implementa geração de sessões, retenção ou deduplicação. Suas regras não substituem as do FCPU, cuja sequência de transporte começa em 1; adoção de um produtor legado exige acordo explícito na INT-006. A validade do último `seq_id` é aceita pelo modelo para permitir fechar a sessão; não incrementar além dele.
 
 Exemplo de posição, máscara binária `0x27`:
 
@@ -182,7 +170,7 @@ Exemplo de velocidade, máscara binária `0x18`, sem reutilizar posição anteri
 {"version":1,"type":"mission","boot_id":1,"monotonic_ms":5000,"data":{"session_id":42,"seq_id":13,"icao":"E4953A","msg_type":4,"lat":null,"lon":null,"alt":null,"vel":489,"heading":37,"timestamp":null}}
 ```
 
-**Migração ainda não executada:** o script atual conserva cache, usa `msg_type` textual e um `val_flags` booleano que fica verdadeiro após altitude positiva e posição. Isso não equivale à máscara desta proposta. Também não se pode deduzir disponibilidade dos zeros iniciais do script. Preservar o script/testes existentes e coordenar uma implementação explícita do produtor e do adaptador UART antes da adoção. O uso de f64 no OBC não aumenta a precisão de um formato UART quantizado: conversões e erro do enlace precisam ser definidos em COM-004. Os 105 bytes do arquivo não são o tamanho proposto para a UART.
+**Migração ainda não executada:** o script atual conserva cache, usa `msg_type` textual e um `val_flags` booleano que fica verdadeiro após altitude positiva e posição. Isso não equivale à máscara desta proposta. Também não se pode deduzir disponibilidade dos zeros iniciais do script. Preservar o script/testes existentes e coordenar uma implementação explícita do produtor e do adaptador UART antes da adoção. O uso de f64 no OBC não aumenta a precisão de um formato UART quantizado: conversões e erro de eventual migração do legado precisam de acordo na INT-006. Os 105 bytes do arquivo não são o tamanho proposto para a UART.
 
 ## 4. TM local — telemetry
 
@@ -285,7 +273,7 @@ Corpo: `source` u8, `code` u16, `severity` u8, `description` de 64 bytes. Origem
 
 ### statistics
 
-Sete u64, na ordem abaixo, cumulativos por boot OBC. Amostrar não zera contadores. Futura coleta deve saturar em `UINT64_MAX`, nunca voltar a zero; os validadores apenas verificam o modelo e não implementam incremento. O motivo da saturação pode ser registrado como evento. Não converter esses contadores nos contadores limitados do downlink por cast silencioso.
+Sete u64, na ordem abaixo, cumulativos por boot OBC. Amostrar não zera contadores. A coleta integrada satura em `UINT64_MAX`, sem voltar a zero; os validadores apenas verificam o modelo e não implementam incremento. O motivo da saturação pode ser registrado como evento. Não converter esses contadores nos contadores limitados do downlink por cast silencioso.
 
 | Campo | Definição proposta |
 |---|---|
@@ -321,4 +309,4 @@ Reutilizar `obc_time::TIME_REFERENCE`. Sua recepção deve coincidir exatamente 
 
 [ObcDataCheck.cpp](../../obc-dh/tests/ObcDataCheck.cpp) verifica os exemplos, disponibilidade, limites de campos, tipos/tamanhos, datas e referências de boots. DAD-003 acrescentou [testes do codec](../../obc-dh/tests/ObcRecordCodecCheck.cpp) e [verificação do leitor C++](../../obc-dh/tests/ReadRecordsCheck.py), incluindo vetores independentes, CRC, truncamento, corrupção, recuperação e reconstrução temporal. Modelos/codecs não fazem I/O; o parser é implementado em PayloadReceiver e a primeira etapa INT-006 liga recepção, tempo e registros. Aceites e ensaios físicos continuam separados. O [guia do leitor](../../obc-dh/tools/README.md) registra uso, limitações e verificações; COM-005 conserva a responsabilidade de armazenamento físico.
 
-Nos aceites encaminhados às integrações após o encerramento do escopo local DAD-001, Payload deve confirmar sessão/sequência, atualização sem cache, campos opcionais e adaptação explícita do legado; TT&C/ADCS/EPS/Térmico devem confirmar disponibilidade, unidades, origem das leituras e códigos. Confirmar também a definição das métricas e os códigos de origem. OBC poderá manter sua implementação local enquanto isso, mas não declarar compatibilidade entre setores por compilação ou por existência deste documento.
+Nos aceites encaminhados às integrações, Payload deve confirmar o mapeamento dos snapshots, limites/extras, semântica e idade dos campos, enquadramento e tráfego, preservando a pendência de cada atualização ADS-B intermediária. A descrição v1 de atualização individual é legado preservado, não uma exigência simultânea ao snapshot. TT&C/ADCS/EPS/Térmico devem confirmar disponibilidade, unidades, origem das leituras, estatísticas e códigos. A existência deste documento ou um build aprovado não declara compatibilidade entre setores.

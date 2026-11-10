@@ -18,11 +18,19 @@ registram decisões anteriores a este encerramento. Se uma integração
 revelar defeito na entrega, registrar correção ou reabrir a tarefa com
 rastreabilidade, sem adaptar a validação para forçar aprovação.
 
+### Encaminhamentos registrados no encerramento — 09/11/2026
+
+A tabela conserva as obrigações e a situação registradas no encerramento. O andamento posterior é acompanhado nas destinatárias e contextualizado na seção de situação atual abaixo.
+
 | Destinatária | Responsabilidade ainda aberta | Situação |
 |---|---|---|
 | [INT-006](../../03-integracao/INT-006-fluxo-de-dados.md) | Acordar com Payload o FCPU v1, ponto focal/ponta Pi, porta/configuração, taxa nominal, rajadas e retenção; acompanhar o produtor e preservar a pendência de cada atualização ADS-B e a semântica dos campos. | Pendente na destinatária |
 | [TES-005](../../04-testes/TES-005-uart-hardware.md) | Comprovar troca ESP32–Pi, GPIOs/console, desconexões, resets e alimentação unilateral; conciliar explicitamente o cenário binário histórico com FCPU sem reescrever entradas/resultados esperados. | Pendente na destinatária |
 | [TES-009](../../04-testes/TES-009-falhas-e-recuperacao.md) | Executar os cenários físicos de desconexão/excesso UART com taxas acordadas e verificar recuperação e perdas. | Pendente na destinatária |
+
+## Situação atual da integração — 10/11/2026
+
+A primeira etapa INT-006 já inicia o receptor e liga snapshots ao diário e à TM. O produtor Pi, aceite do enquadramento/tráfego e preservação de cada atualização ADS-B permanecem na destinatária. Em 10/11 o responsável reafirmou JSON e descartou payload binário compacto; a TES-005 registra a substituição documental e conserva os cenários de falha. FCPU inclui bytes binários no fio e ainda precisa de aceite do Payload. As descrições de firmware sem UART e as proibições de encerramento abaixo são histórico da entrega original. [Situação da integração](../../03-integracao/INT-006-fluxo-de-dados.md).
 
 ## Objetivo
 
@@ -52,6 +60,8 @@ Implementar transporte, delimitação, interpretação e validação no ESP32, c
 Contrato documentado e receptor implementado, com tratamento de mensagens parciais/consecutivas, inválidas e acima do limite. Verificar o comportamento de software. A troca física ESP32–Pi é comprovada em [TES-005](../../04-testes/TES-005-uart-hardware.md).
 
 ## Evidências
+
+Os relatos, comandos, hashes e resultados a seguir descrevem as revisões datadas de cada entrega. Afirmações de ausência de integração ou de estado ainda em andamento nesse histórico não substituem o encerramento e os encaminhamentos atuais acima.
 
 ### Entrega local — 09/11/2026
 

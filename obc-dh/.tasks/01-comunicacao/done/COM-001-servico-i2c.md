@@ -3,6 +3,10 @@
 **Estado:** Concluída
 **Responsáveis:** OBC-DH
 
+## Situação atual da integração — 10/11/2026
+
+O serviço já é chamado por `ObcStartup` no firmware atual. As menções abaixo a `main` vazio e serviço fora do boot são evidências do estado de 20–27/10, não pendências atuais. Sensores/ADCS continuam na INT-005; concorrência FreeRTOS e transações físicas permanecem nas TES-002/TES-003. [Integração atual](../../03-integracao/INT-003-inicializacao-central.md).
+
 ## Objetivo
 
 Disponibilizar acesso serializado ao I2C por uma tarefa exclusiva.
@@ -28,6 +32,8 @@ Inicializar Wire e oferecer i2c::Execute() com fila limitada, sincronização e 
 API e implementação disponíveis, com limites e restrições de uso documentados. Concorrência e comunicação física têm ensaios próprios.
 
 ## Evidências
+
+Os relatos, comandos, hashes e resultados a seguir descrevem as revisões datadas de cada entrega. Afirmações de ausência de integração ou de estado ainda em andamento nesse histórico não substituem o encerramento e os encaminhamentos atuais acima.
 
 Implementação no commit bdfa48f, de 20/10/2026, conferida na revisão de 27/10/2026. O commit registra compilação ESP32 e atualização da base do editor; esta reorganização não repete o build. setup()/loop() continuam vazios. Não há evidência de execução do serviço em hardware.
 

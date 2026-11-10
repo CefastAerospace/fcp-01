@@ -18,12 +18,11 @@ Reutilizar drivers dos setores, incluindo EPS_INA219_Standard, e encaminhar cons
 
 ## Definições e condições
 
-- Integrar inicialização no boot e todos os consumidores ao serviço; a bancada ADCS ainda usa `Wire` diretamente. Validar concorrência e falhas do executor, limites das operações e recuperação de SDA/SCL presos. Timeout de transferência não limita um callback completo nem recupera sozinho o barramento. Coordenar sensores e encoder sem interferir no atendimento FOC; limites dependem de [INT-005](INT-005-sensores-e-adcs.md).
+- Integrar inicialização no boot e todos os consumidores ao serviço; a bancada ADCS ainda usa `Wire` diretamente. Validar concorrência e falhas do executor, limites das operações e recuperação de SDA/SCL presos. Timeout de transferência não limita um callback completo nem recupera sozinho o barramento. Coordenar sensores e encoder sem interferir no atendimento FOC; limites dependem do acordo ADCS registrado nesta tarefa.
 - Conferir endereços de 7 bits e montagem: MPU9250 `0x68` com AD0 em GND; BH1750 #1 `0x23` com ADDR em GND e #2 `0x5C` com ADDR em VCC. Confirmar orientação e parâmetros de aquisição com ADCS.
 - Encoder AS5600/I2C `0x36` está definido no projeto e utilizado no código ADCS; conferir montagem e aquisição coordenada. Conferir endereços finais/configuração física dos 3x INA219 e 5x LM75A com EPS/Térmico; `0x40`/`0x41` e `0x48` são propostas anteriores, não mapa completo aprovado. Confirmar se o BMS oferece interface de aquisição e seus parâmetros, sem presumir endereço I2C.
 - Execução no mesmo ESP32 foi confirmada. Definir integração do firmware de bancada sem duplicar `setup()`/`loop()`, preservando algoritmos, comandos e responsabilidades; conferir papel da interface web na bancada e na missão.
 - Conciliar fases 27/26/25 do ADCS com U/V/W = 25/26/27 do OBC. Alterações de código serão feitas em implementação separada.
-- Encoder AS5600 por I2C `0x36` está definido; confirmar ligação/montagem e acesso coordenado. Referências antigas a SPI são históricas.
 - Definir frequência/latência FOC, aquisição e missão, prioridades/afinidade, sincronização do I2C, comandos, status, falhas e atuação por modo. Operações de rádio/SD não podem impedir atendimento do controle.
 - Resolver medição solar: ADC nos PDFs versus sensores digitais propostos. Definir responsável, grandezas e interface sem reservar ADC silenciosamente.
 

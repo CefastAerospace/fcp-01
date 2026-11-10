@@ -3,13 +3,15 @@
 **Estado:** Em andamento
 **Responsáveis:** OBC-DH e Payload
 
+A execução dos novos ensaios será encaminhada ao setor de testes; os responsáveis técnicos acima apoiam interfaces, condições e diagnóstico.
+
 ## Objetivo
 
 Comprovar troca física bidirecional e comportamento de falhas do enlace UART.
 
 ## Entrega
 
-Validar binário compacto com SeqID/NACK em 115,2 kbps 8N1. Conferir TX/RX cruzados, GND, 3,3 V, GPIOs e console/Bluetooth do Pi. Exercitar desconexão, reset de uma ponta, mensagens parciais e rajadas dentro dos parâmetros aprovados, incluindo comportamento com uma ponta desligada.
+Validar snapshots JSON completos com detecção de perdas e repetição conforme o contrato aceito, em 115,2 kbps 8N1. Conferir TX/RX cruzados, GND, 3,3 V, GPIOs e console/Bluetooth do Pi. Exercitar desconexão, reset de uma ponta, mensagens parciais e rajadas dentro dos parâmetros aprovados, incluindo comportamento com uma ponta desligada.
 
 ## Pré-requisitos
 
@@ -29,8 +31,33 @@ cenários originais e não mudam seu estado por conclusão da origem.
 
 | Origem concluída | Obrigação recebida | Situação |
 |---|---|---|
-| [COM-004](../01-comunicacao/done/COM-004-uart-payload.md) | Comprovar troca ESP32–Pi, GPIOs/console, desconexões, resets e alimentação unilateral; conciliar explicitamente o cenário binário histórico com FCPU sem reescrever entradas/resultados esperados. | Pendente |
+| [COM-004](../01-comunicacao/done/COM-004-uart-payload.md) | Comprovar troca ESP32–Pi, GPIOs/console, desconexões, resets e alimentação unilateral; usar snapshots JSON conforme a decisão de 10/11; preservar os cenários de falha e obter aceite do enquadramento com Payload antes do ensaio. | Pendente |
 | [TES-004](done/TES-004-uart-software.md) | Executar a interoperabilidade e falhas nas duas pontas reais; os casos nativos aprovados não encerram o ensaio físico. | Pendente |
+
+## Formato vigente e rastreabilidade — 10/11/2026
+
+O responsável reafirmou snapshots JSON completos para recebimento/reenvio e descartou o payload binário compacto. A frase anterior da entrega era: “Validar binário compacto com SeqID/NACK em 115,2 kbps 8N1.” Ela identifica o formato substituído, não um ensaio adicional a executar. Sequência, perdas, repetição, reset, mensagens parciais e rajadas continuam no escopo.
+
+O receptor local usa [FCPU v1](../../../common/protocol/payload-uart.md): JSON no corpo, com cabeçalho, CRC e ACK/NACK binários também transmitidos pelo cabo. Aceitar JSON como conteúdo não declara aceite desse enquadramento pelo Payload. A decisão de representação binária interna do SD não resolve a interface UART. Confirmar produtor, enquadramento e tráfego com Payload na INT-006 antes do ensaio conjunto. Não modificar os testes arquivados para adaptá-los a uma ponta incompatível.
+
+## Prontidão e preparação para o setor de testes
+
+COM-004 está concluída no escopo local. Pode-se encaminhar preparação de bancada, mas faltam ponta Pi, aceite, taxa/rajadas/retenção e montagem. O loopback já registrado testa somente UART2 local com o beta; a injeção em RAM e `int006-check` também não substituem a troca física do novo protocolo.
+
+## Checklist de execução
+
+- [ ] **Contrato e montagem:** registrar versões das duas pontas, porta Pi, console/Bluetooth, GPIOs, TX/RX cruzados, GND e 3,3 V. Confirmar ausência do jumper de loopback e método seguro de alimentação unilateral. Não iniciar aceitação enquanto o enquadramento estiver sem acordo.
+- [ ] **Snapshot nominal e retorno:** enviar conteúdo conhecido e comparar a lista aceita, campos/extras e resposta no fio. No FCPU local, ACK deve corresponder à sessão/sequência e confirmar apenas RAM; verificar que o transmissor interpreta essa resposta.
+- [ ] **Substituição e lista vazia:** aumentar/reduzir a lista e enviar `messages: {}` válido. Esperar substituição integral da lista ativa; nenhum campo ausente deve herdar validade. O histórico já gravado não deve ser apagado.
+- [ ] **Fragmentação e quadros consecutivos:** enviar o mesmo conteúdo em divisões diferentes e quadros consecutivos no perfil permitido; esperar a mesma interpretação e uma publicação por DATA novo aceito, sem tratar cada leitura ou quebra de linha como quadro completo.
+- [ ] **Inválidos e limites:** exercitar conteúdo inválido, CRC incorreto e excesso de capacidade, seguido de snapshot válido. Esperar preservação da lista anterior e recuperação para o próximo quadro válido. Sob FCPU, cabeçalho/CRC inválidos não devem gerar NACK com metadados não confiáveis; conteúdo recusado com quadro íntegro segue o motivo do contrato.
+- [ ] **Perdas, sequência e repetição:** perder DATA/ACK e provocar gap/reutilização incompatível. Sob FCPU, repetição idêntica do último aceito deve reenviar ACK sem republicar nem mudar timestamp; gap não avança a referência. Verificar timeout de ACK de 1000 ms após TX, três tentativas totais e falha explícita no esgotamento, sem avanço silencioso do produtor.
+- [ ] **Quadro parcial e silêncio:** interromper o envio e conferir expiração/ressincronização. Se FCPU aceito, usar fronteiras de 250 ms sem bytes atendidos e 8000 ms desde o início, preservando os resultados do contrato local.
+- [ ] **Desconexão e reset de cada ponta:** testar separadamente Pi, OBC e cabo. Esperar comportamento conforme o contrato aceito, sem aceitar lixo como snapshot ou usar referência temporal de outro boot. FCPU não promete deduplicação durável após reset do OBC.
+- [ ] **Rajadas e tamanho máximo:** usar taxas, tamanho e duração acordados; medir atendimento UART, memória, perdas e recuperação. No FCPU local, DATA admite até 65536 bytes de JSON/65562 bytes totais; não substituir o tráfego nominal pela frequência do beta.
+- [ ] **Uma ponta desligada:** executar somente a montagem aprovada e registrar efeitos elétricos e de comunicação. Retorno do enlace deve ser observável; dados simulados não comprovam aquisição ADS-B completa.
+
+As expectativas específicas de FCPU acima descrevem a implementação local. Mudança acordada do enquadramento exige análise e regressão próprias antes de atualizar esses casos. Registrar [evidências por cenário](../README.md#registro-por-cenário); resultados do beta ou simuladores não preenchem os casos físicos.
 
 ## Evidências
 
@@ -57,9 +84,7 @@ físico do protocolo novo: não há transmissor Pi ou quadros enviados pelo fio.
 Procedimentos e retorno ao firmware normal no [guia](../../examples/README.md).
 
 Permanecem sem execução a troca bidirecional ESP32–Pi, desconexões, reset de
-uma ponta, rajadas e alimentação unilateral. O cenário histórico de binário
-compacto da entrega acima diverge do JSON vigente; foi registrado para
-conciliação sem modificar suas entradas ou resultados esperados. A tarefa
+uma ponta, rajadas e alimentação unilateral. A divergência de conteúdo registrada na bancada foi resolvida documentalmente pela decisão de 10/11 em favor de snapshots JSON; o texto anterior está preservado na seção de rastreabilidade acima. O aceite do enquadramento FCPU continua pendente e os testes executáveis anteriores permanecem intactos. A tarefa
 continua em andamento e não foi movida para `done/`.
 
 ## Referências

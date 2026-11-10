@@ -18,10 +18,18 @@ registram decisões anteriores a este encerramento. Se uma integração
 revelar defeito na entrega, registrar correção ou reabrir a tarefa com
 rastreabilidade, sem adaptar a validação para forçar aprovação.
 
+### Encaminhamentos registrados no encerramento — 09/11/2026
+
+A tabela conserva as obrigações e a situação registradas no encerramento. O andamento posterior é acompanhado nas destinatárias e contextualizado na seção de situação atual abaixo.
+
 | Destinatária | Responsabilidade ainda aberta | Situação |
 |---|---|---|
 | [TES-008](../TES-008-integracao.md) | Medir precisão/resolução temporal real pelo LoRa e demonstrar timestamp no fluxo ADS-B–TM, além da coexistência dos recursos. | Pendente na destinatária |
 | [TES-009](../TES-009-falhas-e-recuperacao.md) | Comprovar boots, persistência temporal e integridade de registros/estados em resets e interrupções reais, preservando os cenários existentes. | Pendente na destinatária |
+
+## Situação atual da integração — 10/11/2026
+
+As evidências originais abaixo cobrem os formatos/revisões registrados. O leitor foi depois estendido para v3 e o fluxo recebeu snapshot em blocos partidos, com verificações próprias na INT-006. Isso não altera os vetores/expectativas desta tarefa nem declara precisão RF, persistência física ou retomada de atuações. [Evidências da extensão](../../03-integracao/INT-006-fluxo-de-dados.md).
 
 ## Objetivo
 
@@ -41,6 +49,8 @@ Exercitar registros válidos/incompletos/inválidos, unidades, tamanhos e interp
 Casos e resultados reproduzíveis respeitam os contratos. Tempo simulado verifica lógica; precisão real do horário recebido pelo rádio exige [TES-008](../TES-008-integracao.md).
 
 ## Evidências
+
+Os relatos, comandos, hashes e resultados a seguir descrevem as revisões datadas de cada entrega. Afirmações de ausência de integração ou de estado ainda em andamento nesse histórico não substituem o encerramento e os encaminhamentos atuais acima.
 
 Verificação portátil executada e aprovada; detalhes e limites abaixo.
 Não houve execução dos cenários físicos por esta evidência.

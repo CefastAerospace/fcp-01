@@ -3,6 +3,8 @@
 **Estado:** Pendente
 **Responsáveis:** OBC-DH, EPS e demais setores envolvidos
 
+A execução dos novos ensaios será encaminhada ao setor de testes; os responsáveis técnicos acima apoiam interfaces, condições e diagnóstico.
+
 ## Objetivo
 
 Comprovar recuperação e efeitos sobre dados/estados após falhas.
@@ -44,6 +46,34 @@ cenários originais e não mudam seu estado por conclusão da origem.
 | [DAD-003](../02-dados-e-tempo/done/DAD-003-registros-e-interpretacao.md) | Comprovar retomada e integridade sob reset/interrupção real, incluindo estados operacionais; recuperação lógica do leitor não é reparo de FAT32. | Pendente |
 | [TES-004](done/TES-004-uart-software.md) | Executar o cenário físico de excesso/desconexão UART; a saturação simulada não o substitui. | Pendente |
 | [TES-007](done/TES-007-dados-e-tempo.md) | Comprovar boots, persistência temporal e integridade de registros/estados em resets e interrupções reais, preservando os cenários existentes. | Pendente |
+
+## Prontidão por cenário — 10/11/2026
+
+| Cenário original | Implementação prévia | Condição ainda necessária |
+|---|---|---|
+| SDA/SCL presos | COM-003 ainda pendente | Política, implementação e injeção aprovada por EPS/ADCS |
+| Desconexão/excesso UART | COM-004 concluída localmente | Aceite do enquadramento, produtor/gerador compatível, taxas e montagem |
+| Interrupção durante escrita SD | COM-005 concluída; diário INT-006 parcial disponível | Cartão, alimentação, método de corte e critérios com EPS |
+| Travamento/perda de comunicação/reset | INT-008 ainda pendente | Supervisão, limites de saúde/recuperação e montagem |
+| Retomada de missão/tempo/atuações | INT-006 aberta; INT-007/INT-008 pendentes | Estados duráveis, autorização, integração e critérios de retomada |
+
+Encaminhar preparação dos cenários UART/SD. Simulações existentes ajudam a preparar o procedimento, mas não aprovam os casos físicos. Medições auxiliares de boot/NVS em ESP32 isolado não encerram retomada de missão ou segurança de atuações.
+
+## Checklist de execução por cenário
+
+- [ ] **Condições da injeção:** registrar falha aplicada, instante, duração, método seguro aprovado, limites de detecção/recuperação e efeito esperado sobre dados/saídas. Sem política ou limite aprovado, registrar impedimento e responsável; não inventar timeout de aceitação.
+- [ ] **I2C preso e liberado:** após COM-003, aplicar SDA/SCL presos pelo método acordado; conferir sinalização, pedidos ativos/pendentes, tentativas e estado após esgotamento. Liberar a falha e verificar retorno segundo a política, sem acesso concorrente a `Wire`. Timeout por transferência não comprova recuperação do barramento ou callback travado.
+- [ ] **UART desconectada:** interromper/reconectar o enlace com tráfego conhecido; conferir preservação da última lista válida, ressincronização e indicação de falha/perdas conforme o contrato aceito. Ausência de aeronaves ADS-B não deve ser classificada automaticamente como perda do enlace.
+- [ ] **Excesso UART:** exceder o perfil acordado com gerador/ponta compatível e medir transporte, buffers, perdas e retorno ao tráfego nominal. `uart_full` conta observações de ring cheio, não mensagens perdidas; a fonte simulada que retém bytes não comprova tolerância ao sobrefluxo físico.
+- [ ] **Corte durante escrita:** em cartão de ensaio e procedimento EPS aprovado, interromper em pontos identificados da gravação/sincronização. Preservar imagem/cópia antes de reparo; analisar arquivos, metadados FAT32 e prefixos recuperáveis. Um snapshot partido só é completo se ambas as partes e seu CRC forem válidos.
+- [ ] **Reinício após falha de armazenamento:** verificar preservação dos arquivos anteriores, nome novo por boot/segmento, caudas incertas e contagens. Não exigir recuperação automática inexistente na primeira etapa INT-006; o aceite dessa recuperação depende de INT-008. Não apagar caudas para forçar sucesso.
+- [ ] **Travamento e watchdog:** após INT-008, injetar o travamento acordado e medir detecção/ação/retorno. Esperar supervisão por progresso e estado previsto no ConOps; tarefa supervisora viva ou espera legítima por dados não devem ocultar ou fabricar falha.
+- [ ] **Perda de comunicação com subsistemas:** usar critérios de saúde definidos por setor e verificar registro, tempos, tentativas e ação final. Distinguir sem dados de missão, sem TC recente e transporte realmente indisponível.
+- [ ] **Boots e tempo:** conferir contagem NVS confirmada, novo boot e registros de falha. Não inferir intervalo desligado ou UTC do boot novo a partir da referência anterior; falha de reserva NVS deve ser explícita. Não confundir teste temporal simulado com resistência física da NVS ao corte.
+- [ ] **Retomada de missão e atuações:** após as integrações correspondentes, verificar estado durável, modo e saídas após reset/corte, inclusive interrupção de atuação e comando repetido. Esperar ausência de nova atuação indevida; evento histórico ou flag volátil não autorizam Burn Wire.
+- [ ] **Tentativas esgotadas:** para cada mecanismo implementado, conferir limite, diagnóstico, dados preservados e estado final definido, sem loop infinito de recuperação ou retorno fictício a saudável.
+
+Registrar [evidências](../README.md#registro-por-cenário) com tempos, arquivos/imagens, esperado e observado por falha. Rejeição ou indisponibilidade prevista pode aprovar um caso; divergência exige diagnóstico antes de alteração de firmware ou critérios. Resultados parciais não concluem a task.
 
 ## Evidências
 

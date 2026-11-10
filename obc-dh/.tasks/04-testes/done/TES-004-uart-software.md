@@ -18,11 +18,19 @@ registram decisões anteriores a este encerramento. Se uma integração
 revelar defeito na entrega, registrar correção ou reabrir a tarefa com
 rastreabilidade, sem adaptar a validação para forçar aprovação.
 
+### Encaminhamentos registrados no encerramento — 09/11/2026
+
+A tabela conserva as obrigações e a situação registradas no encerramento. O andamento posterior é acompanhado nas destinatárias e contextualizado na seção de situação atual abaixo.
+
 | Destinatária | Responsabilidade ainda aberta | Situação |
 |---|---|---|
 | [INT-006](../../03-integracao/INT-006-fluxo-de-dados.md) | Consolidar o contrato com o produtor; qualquer adaptação acordada exige regressão explícita, sem alterar resultados esperados para acomodar falhas. | Pendente na destinatária |
 | [TES-005](../TES-005-uart-hardware.md) | Executar a interoperabilidade e falhas nas duas pontas reais; os casos nativos aprovados não encerram o ensaio físico. | Pendente na destinatária |
 | [TES-009](../TES-009-falhas-e-recuperacao.md) | Executar o cenário físico de excesso/desconexão UART; a saturação simulada não o substitui. | Pendente na destinatária |
+
+## Situação atual da integração — 10/11/2026
+
+A implementação local continua FCPU e já é iniciada pela INT-006. Em 10/11, o responsável reafirmou snapshots JSON e descartou o payload binário compacto; a TES-005 preserva a rastreabilidade dessa substituição. Esse conteúdo JSON não comprova aceite dos controles binários FCPU no fio. Os testes e vetores desta tarefa permanecem preservados; interoperabilidade e falhas físicas continuam nas destinatárias.
 
 ## Objetivo
 
@@ -42,6 +50,8 @@ Injetar mensagens válidas, parciais, consecutivas, inválidas, acima do limite 
 Registrar casos, entradas, resultados esperados/observados e limites de buffer, sem adaptar critérios às falhas encontradas.
 
 ## Evidências
+
+Os relatos, comandos, hashes e resultados a seguir descrevem as revisões datadas de cada entrega. Afirmações de ausência de integração ou de estado ainda em andamento nesse histórico não substituem o encerramento e os encaminhamentos atuais acima.
 
 Verificação de software executada e aprovada conforme os casos abaixo.
 O encerramento refere-se ao contrato local FCPU v1; interoperabilidade e

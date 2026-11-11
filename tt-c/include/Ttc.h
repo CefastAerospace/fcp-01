@@ -8,7 +8,7 @@
  * telemetria e demais pacotes JSON sob demanda, assim que o rádio estiver
  * livre, também pelo umbilical quando habilitado. O contador "n" de cada
  * pacote de descida é inserido no momento do TX, com uma sequência estrita
- * por meio. Start() cria a task do enlace (DP §7.2: Core 0,
+ * por meio. Start() cria a task do enlace (DP §7.1: Core 0; DP §7.2:
  * prioridade alta), única a acessar o rádio; os demais métodos podem ser
  * chamados de qualquer task.
  */
@@ -107,7 +107,7 @@ struct TX_EVENT {
 // ─── ELEMENTOS STATIC ─────────────────────────────────────────────
 
 constexpr BaseType_t  ttc_task_core     = 0;  // DP §7.1: TT&C isolado no Core 0.
-constexpr UBaseType_t ttc_task_priority = 10; // Acima das tasks de aplicação.
+constexpr UBaseType_t ttc_task_priority = 10; // DP §7.2: acima das tasks de aplicação.
 constexpr size_t      ttc_dedup_slots   = 8;  // TCs lembrados para deduplicação.
 constexpr size_t      ttc_tracked_slots = 4;  // Entregas identificadas na fila ou com evento não lido.
 constexpr size_t      ttc_confirm_slots = 8;  // Confirmações do solo aguardando o OBC.

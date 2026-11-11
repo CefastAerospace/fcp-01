@@ -22,7 +22,7 @@ Executar os cenários abaixo separadamente, incluindo limites de detecção/recu
 
 | Cenário | Pré-requisitos | Condições e verificação | Estado |
 |---|---|---|---|
-| SDA/SCL presos e retorno do I2C | [COM-003](../01-comunicacao/COM-003-recuperacao-i2c.md) | Método de injeção aprovado com EPS/ADCS; conferir tentativas, timeouts, pedidos pendentes e retorno do serviço. | Pendente |
+| SDA/SCL presos e retorno do I2C | [COM-003](../01-comunicacao/done/COM-003-recuperacao-i2c.md) | Método de injeção aprovado com EPS/ADCS; conferir tentativas, timeouts, pedidos pendentes e retorno do serviço. | Pendente |
 | Desconexão e excesso UART | [COM-004](../01-comunicacao/done/COM-004-uart-payload.md) | Usar taxas e limites acordados; conferir recuperação do receptor e sinalização das perdas. | Pendente |
 | Interrupção durante escrita no SD | [COM-005](../01-comunicacao/done/COM-005-armazenamento-sd.md) | Método acordado com EPS; avaliar arquivos incompletos e FAT32, não apenas fechamento normal ou conteúdo de um registro. | Pendente |
 | Travamento, perda de comunicação e reinicialização | [INT-008](../03-integracao/INT-008-supervisao-e-retomada.md) | Medir detecção/recuperação, conferir falhas, horários e contagem de reinicializações; ausência ADS-B não significa enlace indisponível. | Pendente |
@@ -51,7 +51,7 @@ cenários originais e não mudam seu estado por conclusão da origem.
 
 | Cenário original | Implementação prévia | Condição ainda necessária |
 |---|---|---|
-| SDA/SCL presos | COM-003 ainda pendente | Política, implementação e injeção aprovada por EPS/ADCS |
+| SDA/SCL presos | COM-003 concluída no escopo lógico, com bancada ESP32 simulada | Acordo dos limites na INT-005, montagem e injeção aprovada por EPS/ADCS/Térmico |
 | Desconexão/excesso UART | COM-004 concluída localmente | Aceite do enquadramento, produtor/gerador compatível, taxas e montagem |
 | Interrupção durante escrita SD | COM-005 concluída; diário INT-006 parcial disponível | Cartão, alimentação, método de corte e critérios com EPS |
 | Travamento/perda de comunicação/reset | INT-008 ainda pendente | Supervisão, limites de saúde/recuperação e montagem |
@@ -74,6 +74,16 @@ Encaminhar preparação dos cenários UART/SD. Simulações existentes ajudam a 
 - [ ] **Tentativas esgotadas:** para cada mecanismo implementado, conferir limite, diagnóstico, dados preservados e estado final definido, sem loop infinito de recuperação ou retorno fictício a saudável.
 
 Registrar [evidências](../README.md#registro-por-cenário) com tempos, arquivos/imagens, esperado e observado por falha. Rejeição ou indisponibilidade prevista pode aprovar um caso; divergência exige diagnóstico antes de alteração de firmware ou critérios. Resultados parciais não concluem a task.
+
+## Encaminhamento recebido da COM-003 — 10/11/2026
+
+A [COM-003](../01-comunicacao/done/COM-003-recuperacao-i2c.md) encerrou a
+implementação lógica com verificações nativas e bancada ESP32 de falhas
+simuladas. Executar os cenários físicos de SDA/SCL presos, liberação e
+esgotamento, medindo tempo, pulsos, diagnóstico, efeitos sobre os pedidos e
+retorno ao serviço. A política inicial usa duas tentativas e orçamento
+cooperativo de 100 ms, com valores sujeitos ao acordo na INT-005 e à medição
+das chamadas do driver. O cenário físico permanece pendente nesta TES.
 
 ## Evidências
 

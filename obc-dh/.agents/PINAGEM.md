@@ -13,7 +13,7 @@ As direções são relativas ao ESP32. GPIOs 16/17 são a alocação de projeto 
 | 1 - TX0           | Transmissão (TX)   | UART0 / USB            | Bancada / solo         | Porta umbilical para telecomandos e telemetria no nível básico. Conector USB a conferir na placa real.                          |
 | 3 - RX0           | Recepção (RX)      | UART0 / USB            | Bancada / solo         | Recepção da interface umbilical, em conjunto com TX0.                                                   |
 | 21                | SDA - dados        | I2C de sensores        | Térmico, EPS e ADCS    | LM75A, INA219, MPU9250, BH1750 e AS5600. Inventário/montagem dependem de [INT-005](../.tasks/03-integracao/INT-005-sensores-e-adcs.md); interface do BMS a conferir. |
-| 22                | SCL - clock        | I2C de sensores        | Térmico, EPS e ADCS    | Clock dos sensores; parâmetros e acesso coordenado dependem de [COM-003](../.tasks/01-comunicacao/COM-003-recuperacao-i2c.md).                      |
+| 22                | SCL - clock        | I2C de sensores        | Térmico, EPS e ADCS    | Clock dos sensores; parâmetros e acesso coordenado dependem de [COM-003](../.tasks/01-comunicacao/done/COM-003-recuperacao-i2c.md).                      |
 | 23                | MOSI               | VSPI                   | TT&C - LoRa SX1276     | Envio de dados ao rádio.                                                                                |
 | 19                | MISO               | VSPI                   | TT&C - LoRa SX1276     | Recepção de dados do rádio.                                                                             |
 | 18                | SCK                | VSPI                   | TT&C - LoRa SX1276     | Clock SPI do rádio.                                                                                     |
@@ -58,7 +58,7 @@ UART exige níveis de 3,3 V, TX/RX cruzados e GND comum. Configuração dos dois
 | 5x LM75A | A confirmar | Bateria/pontos críticos; `0x48` é proposta anterior. Obter mapa final/configuração A0–A2. |
 | BMS | A definir, se houver interface | Conferir aquisição prevista com EPS; não presumir endereço I2C. |
 
-O projeto EPS/Térmico prevê sensores digitais INA219/LM75A; aquisição, endereços e proteção ainda dependem dos ICDs. Payload UART não possui endereço I2C e a proposta histórica `0x80` não se aplica. Tempo usa ms monotônicos por boot e referências LoRa, com reconstrução retroativa; RTC externo fica fora da configuração atual. DS3231 só será reconsiderado se esse método não atender à validação temporal acordada; seu `0x68` conflita com a IMU no mesmo barramento. Conferir [INT-005](../.tasks/03-integracao/INT-005-sensores-e-adcs.md), [COM-003](../.tasks/01-comunicacao/COM-003-recuperacao-i2c.md) e [DAD-002](../.tasks/02-dados-e-tempo/done/DAD-002-tempo-e-boots.md).
+O projeto EPS/Térmico prevê sensores digitais INA219/LM75A; aquisição, endereços e proteção ainda dependem dos ICDs. Payload UART não possui endereço I2C e a proposta histórica `0x80` não se aplica. Tempo usa ms monotônicos por boot e referências LoRa, com reconstrução retroativa; RTC externo fica fora da configuração atual. DS3231 só será reconsiderado se esse método não atender à validação temporal acordada; seu `0x68` conflita com a IMU no mesmo barramento. Conferir [INT-005](../.tasks/03-integracao/INT-005-sensores-e-adcs.md), [COM-003](../.tasks/01-comunicacao/done/COM-003-recuperacao-i2c.md) e [DAD-002](../.tasks/02-dados-e-tempo/done/DAD-002-tempo-e-boots.md).
 
 ## Boot, reset e restrições elétricas
 

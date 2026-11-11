@@ -259,6 +259,80 @@ comprovam a lógica local; o cartão e a ponta Pi conservam seus ensaios.
 Para a verificação USB e a bancada com SD lento, consultar
 [examples/README.md](../examples/README.md#bancada-integrada-int-006).
 
+## Recuperação I2C COM-003
+
+`I2cBus` oferece `ExecuteChecked` com classificação da falha e o callback
+booleano de `Execute` no mesmo executor. `GetDiagnostics` consulta estado,
+causas, contadores, fila e duração do callback. Após esgotamento,
+`RequestRecovery` solicita um ciclo ao worker e seu retorno indica aceitação.
+A conclusão pode ser observada no estado publicado por `GetDiagnostics`.
+
+A política provisória consta da
+[COM-003](../.tasks/01-comunicacao/done/COM-003-recuperacao-i2c.md). O núcleo usa
+duas tentativas por ciclo e orçamento cooperativo de 100 ms. Uma operação
+iniciada conserva seu contexto até retornar. Cada callback deve concluir
+as transações de Wire e liberar seus locks antes do retorno. A recuperação
+do controlador exige sua posse exclusiva e os pull-ups da montagem.
+
+O comando nativo abaixo executa o núcleo e o executor de produção. As
+primitivas FreeRTOS são substituídas por threads e semáforos nativos somente
+nesse executável. A bancada ESP32 usa as primitivas reais. Ambos simulam
+GPIOs, resultados do controlador e relógio da recuperação. A espera das
+barreiras é calculada como retenção do callback mais 1.000 ms e serve para
+diagnosticar falhas do roteiro.
+
+```bash
+g++ -std=c++11 -Wall -Wextra -Werror -pthread \
+    -fsanitize=address,undefined -fno-sanitize-recover=undefined \
+    -DOBC_I2C_RECOVERY_CHECK -Itests/native -Iheaders \
+    src/I2cRecovery.cpp src/I2cBus.cpp tests/native/NativeI2cRuntime.cpp \
+    src/bench/I2cRecoveryCheck.cpp -o /tmp/fcp01-i2c-recovery-check
+/tmp/fcp01-i2c-recovery-check
+g++ -std=c++11 -Wall -Wextra -Werror \
+    -fsanitize=undefined -fno-sanitize-recover=undefined \
+    tests/I2cSchedulingCheck.cpp -o /tmp/fcp01-i2c-scheduling-check
+/tmp/fcp01-i2c-scheduling-check
+```
+
+Os cenários verificam classificação, recuperação na primeira/segunda
+tentativa, SDA/SCL presos, até nove pulsos, falha de desativação/inicialização,
+orçamento inclusive wrap e suas fronteiras, fila concorrente, expiração,
+esgotamento e nova recuperação explícita. A revisão identificou intermitência
+no cenário de contexto com espera de fila de 1 ms. O responsável autorizou
+fila de 1.000 ms e retenção do callback iniciado por 1.005 ms. O diagnóstico,
+a autorização e a verificação estão registrados na COM-003.
+
+Os valores de bancada ficam nas constantes `context_queue_wait_ms` e
+`context_hold_ms`, no início de `src/bench/I2cRecoveryCheck.cpp`. A retenção
+é calculada como prazo de fila mais 5 ms. Alterar esses valores exige
+recompilar e carregar a bancada. O relatório imprime os valores usados e
+confere que a duração do callback alcançou o prazo da fila. No uso
+operacional, cada chamada de `Execute` ou `ExecuteChecked` pode fornecer
+seu próprio `max_queue_wait_ms`.
+
+Para executar no ESP32 com Python contendo pyserial, usar a sequência abaixo.
+O roteiro envia `g` para iniciar os cenários uma vez, espera PASS por até
+20 segundos e grava resultado, métricas e eventual falha em JSON. A coluna
+`stack` do relatório nativo é zero. Na placa, ela informa os bytes livres
+observados na pilha FreeRTOS do executor.
+
+```bash
+pio run -e obc -e i2c-recovery-check -e int006-check -e int006-delivery-check
+pio run -e i2c-recovery-check -t upload --upload-port /dev/ttyUSB0
+python3 tests/I2cRecoveryBenchCheck.py /dev/ttyUSB0
+pio run -e obc -t upload --upload-port /dev/ttyUSB0
+```
+
+Em 10/11/2026, o roteiro da bancada passou no ESP32 com 3 ciclos,
+5 tentativas, 2 recuperações, 1 esgotamento e 3.276 bytes livres na pilha.
+Com o ajuste aprovado, o callback máximo mediu 1.005.392 µs. O cenário
+nativo passou em cinco execuções consecutivas com ASan/UBSan, e os quatro
+builds passaram.
+O firmware normal foi restaurado e aprovou os 75 cenários do roteiro USB
+existente. A recuperação física e o tempo de execução do driver permanecem
+para a TES-009. Relatório da bancada em
+`/tmp/fcp01-i2c-recovery-bench.json`.
+
 ## Pendências
 
 DAD-003 e TES-007 foram concluídas em 09/11/2026 no escopo dos codecs,

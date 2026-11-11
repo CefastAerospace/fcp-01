@@ -13,7 +13,7 @@ Supervisionar tarefas críticas e recursos, distinguindo watchdog de tarefas de 
 
 ## Pré-requisitos
 
-- **Tarefas:** [COM-003](../01-comunicacao/COM-003-recuperacao-i2c.md), [INT-007](INT-007-comandos-modos-e-protecoes.md)
+- **Tarefas:** [COM-003](../01-comunicacao/done/COM-003-recuperacao-i2c.md), [INT-007](INT-007-comandos-modos-e-protecoes.md)
 - **Condições externas:** Definir saúde, tempos, tentativas e retomada com coordenação e setores.
 
 ## Definições e condições
@@ -36,6 +36,15 @@ cenários originais e não mudam seu estado por conclusão da origem.
 |---|---|---|
 | [COM-005](../01-comunicacao/done/COM-005-armazenamento-sd.md) | Integrar a política de retomada do escritor após falha/reset: preservar arquivos, End/Init e nome novo, sem apagar ou reutilizar conteúdo anterior. | Pendente |
 | [DAD-003](../02-dados-e-tempo/done/DAD-003-registros-e-interpretacao.md) | Integrar retomada persistente por boot e falhas com os estados definidos em INT-007, sem deduzir autorização de atuação de eventos ou flags voláteis. | Pendente |
+
+## Encaminhamento recebido da COM-003 — 10/11/2026
+
+A [COM-003](../01-comunicacao/done/COM-003-recuperacao-i2c.md) fornece recuperação
+no executor, estado `UNAVAILABLE` após esgotamento, `GetDiagnostics` e
+`RequestRecovery`. Integrar esses recursos à supervisão e definir detecção
+por progresso, limites e ações para callbacks ou chamadas internas do driver
+que permanecem executando. O contexto do callback pertence ao chamador até
+sua conclusão. Esse encaminhamento permanece pendente nesta integração.
 
 ## Evidências
 

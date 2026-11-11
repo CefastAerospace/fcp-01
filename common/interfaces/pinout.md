@@ -35,7 +35,7 @@ SDA = GPIO 21; SCL = GPIO 22. Endereços em sete bits:
 | A definir, se houver interface | BMS | EPS | Conferir aquisição prevista com EPS; não presumir endereço I2C. |
 | Fora da configuração atual | RTC externo | OBC-DH | DS3231 histórico; reconsiderar apenas se o método de tempo monotônico/referências LoRa não atender à validação. Seu `0x68` conflita com a IMU no mesmo barramento. |
 
-Conferir [INT-005](../../obc-dh/.tasks/03-integracao/INT-005-sensores-e-adcs.md), [COM-003](../../obc-dh/.tasks/01-comunicacao/COM-003-recuperacao-i2c.md) e [DAD-002](../../obc-dh/.tasks/02-dados-e-tempo/done/DAD-002-tempo-e-boots.md). Não alterar endereços confirmados por suposição. O Payload utiliza UART e não recebe endereço I2C; a antiga proposta `0x80` e a decisão substituída constam do [histórico](../../obc-dh/.agents/REQUISITOS.md#histórico-de-decisões-de-interface).
+Conferir [INT-005](../../obc-dh/.tasks/03-integracao/INT-005-sensores-e-adcs.md), [COM-003](../../obc-dh/.tasks/01-comunicacao/done/COM-003-recuperacao-i2c.md) e [DAD-002](../../obc-dh/.tasks/02-dados-e-tempo/done/DAD-002-tempo-e-boots.md). Não alterar endereços confirmados por suposição. O Payload utiliza UART e não recebe endereço I2C; a antiga proposta `0x80` e a decisão substituída constam do [histórico](../../obc-dh/.agents/REQUISITOS.md#histórico-de-decisões-de-interface).
 
 ## Atuação e restrições
 

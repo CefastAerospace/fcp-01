@@ -8,6 +8,7 @@
 #include "Pinout.h" // pinout::i2c_sda e pinout::i2c_scl.
 #include <Wire.h>   // Wire e tipos utilizados na configuração do I2C.
 #include "I2cScheduling.h" // Política de prioridade e expiração das solicitações.
+#include "I2cRecovery.h" // Resultados tipados e recuperação com orçamento.
 #include <freertos/FreeRTOS.h> // Tipos e constantes do FreeRTOS.
 #include <freertos/semphr.h> // Mutex e semáforos de conclusão.
 #include <freertos/task.h> // Tarefa responsável pelo I2C e notificações de trabalho.
@@ -44,7 +45,39 @@ namespace i2c {
         INVALID_CONTEXT,
         QUEUE_FULL,
         QUEUE_TIMEOUT,
-        OPERATION_FAILED
+        OPERATION_FAILED,
+        DEVICE_NACK,
+        TRANSFER_TIMEOUT,
+        BUS_ERROR,
+        READ_INCOMPLETE,
+        SERVICE_RECOVERING,
+        SERVICE_UNAVAILABLE
+    };
+
+    /** @brief Amostra cumulativa do serviço; contadores saturam em UINT64_MAX. */
+    struct DIAGNOSTICS {
+        SERVICE_STATE state;
+        RECOVERY_CAUSE trigger;
+        RECOVERY_CAUSE last_failure;
+        bool sda_high;
+        bool scl_high;
+        bool callback_running;
+        size_t queued_requests;
+        uint32_t callback_started_ms;
+        uint32_t last_callback_us;
+        uint32_t maximum_callback_us;
+        uint32_t last_recovery_us;
+        uint32_t worker_stack_free_bytes;
+        uint64_t recovery_cycles;
+        uint64_t recovery_attempt_count;
+        uint64_t recovery_pulses;
+        uint64_t recovered;
+        uint64_t exhausted;
+        uint64_t device_nacks;
+        uint64_t transfer_timeouts;
+        uint64_t bus_errors;
+        uint64_t incomplete_reads;
+        uint64_t operation_failures;
     };
 
     /**
@@ -54,8 +87,13 @@ namespace i2c {
      * recursão em Execute(). Não deve alterar a configuração de Wire nem
      * usar as notificações da tarefa I2C. Não há preempção de uma operação
      * pelo escalonador de solicitações.
+     * Toda transação iniciada deve terminar, incluindo repeated START e STOP,
+     * liberando os locks internos de Wire antes do retorno.
      */
     using OPERATION = bool (*)(TwoWire& wire, void* context);
+
+    /** @brief Callback com causa explícita, sujeito ao mesmo contrato de OPERATION. */
+    using CHECKED_OPERATION = OPERATION_RESULT (*)(TwoWire& wire, void* context);
 
     // ─── HELPERS ──────────────────────────────────────────────────────
 
@@ -68,6 +106,7 @@ namespace i2c {
      * inicializações concorrentes não são permitidas.
      *
      * @return true se o serviço está pronto; false em caso de falha.
+     * Com executor existente, consulta prontidão sem reinicializar Wire.
      */
     bool Init(
     );
@@ -101,5 +140,38 @@ namespace i2c {
         uint8_t priority = 0,
         uint32_t max_queue_wait_ms = default_queue_wait_ms
     );
+
+    /**
+     * @brief Enfileira callback tipado; espera, contexto e prioridades seguem Execute.
+     * @details Novos pedidos recebem SERVICE_RECOVERING durante recuperação.
+     * Após esgotamento recebem SERVICE_UNAVAILABLE. Um callback executa uma vez.
+     * O pedido ativo recebe sua causa original antes de iniciar recuperação.
+     * NACK/leitura incompleta com linhas liberadas são informados ao consumidor.
+     * requestFrom curto não identifica sozinho timeout ou ausência de dispositivo.
+     */
+    STATUS ExecuteChecked(
+        CHECKED_OPERATION operation,
+        void* context,
+        uint8_t priority = 0,
+        uint32_t max_queue_wait_ms = default_queue_wait_ms
+    );
+
+    /**
+     * @brief Solicita recuperação assíncrona de serviço UNAVAILABLE pelo próprio executor.
+     * @return true se aceitou o pedido; consultar GetDiagnostics para observar conclusão.
+     * Retorna false em ISR, no executor, antes de Init ou em outro estado.
+     */
+    bool RequestRecovery(
+    );
+
+    /** @brief Copia estado protegido; em ISR/antes de Init retorna UNINITIALIZED. */
+    DIAGNOSTICS GetDiagnostics(
+    );
+
+#ifdef OBC_I2C_RECOVERY_CHECK
+    /** @brief Backend exclusivo da bancada e dos testes nativos do executor. */
+    RECOVERY_IO GetRecoveryCheckIO(
+    );
+#endif
 
 } // namespace i2c

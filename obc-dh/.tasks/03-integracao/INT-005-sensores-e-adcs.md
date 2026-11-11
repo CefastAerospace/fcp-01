@@ -41,6 +41,16 @@ cenários originais e não mudam seu estado por conclusão da origem.
 |---|---|---|
 | [DAD-001](../02-dados-e-tempo/done/DAD-001-modelos-e-formatos.md) | Obter os aceites de ADCS/EPS/Térmico para mapeamento, unidades, disponibilidade, posições térmicas, origens/códigos e dados dos sensores. | Pendente |
 
+## Encaminhamento recebido da COM-003 — 10/11/2026
+
+A [COM-003](../01-comunicacao/done/COM-003-recuperacao-i2c.md) encerrou sua
+implementação lógica e verificações locais. Permanece nesta integração o
+acordo da política e dos limites com ADCS/EPS/Térmico, incluindo frequência,
+latência e efeito da recuperação nos consumidores e no encoder. Integrar o
+mapeamento de erros dos drivers em `ExecuteChecked`, os prazos por pedido,
+a conclusão das transações antes do retorno do callback e a reconfiguração
+dos sensores após a recuperação. Esse encaminhamento permanece pendente.
+
 ## Evidências
 
 Nenhuma evidência de conclusão registrada. Ao executar, registrar versão, procedimento, entradas, resultados observados e limitações; não marcar esta tarefa por decisão documental.

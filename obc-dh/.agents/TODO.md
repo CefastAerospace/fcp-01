@@ -6,6 +6,10 @@ Cada entrega aparece uma vez no cadastro das seções 1–4. **Pendente** = não
 
 O encerramento por responsabilidade de 09/11 manteve COM-004/005, DAD-001/003 e TES-004/007 em `done/`, com obrigações externas encaminhadas às INT/TES. As evidências históricas de cada entrega ficam nas próprias tarefas. INT-003 permanece aberta pelo boot de voo; a bancada já foi usada nas integrações posteriores.
 
+Em 10/11, a COM-003 foi concluída no escopo da implementação lógica, com
+verificações nativas e bancada ESP32 simulada. A política com os consumidores
+segue na INT-005, a supervisão na INT-008 e os ensaios físicos na TES-009.
+
 **Para escolher trabalho:** conferir tarefas predecessoras e condições externas separadamente. Com ambas atendidas, a tarefa pode avançar independentemente das demais. Resolver definições externas pode começar antes da implementação. Em TES-008/TES-009, conferir cada cenário. Números identificam tarefas, não fases obrigatoriamente sequenciais.
 
 Detalhes e histórico: [regras e rastreabilidade](../.tasks/README.md). Requisitos e validação: [REQUISITOS.md](REQUISITOS.md).
@@ -16,7 +20,7 @@ Detalhes e histórico: [regras e rastreabilidade](../.tasks/README.md). Requisit
 |---|---|---|---|---|
 | COM-001 | [Serviço I2C: inicialização, executor e fila](../.tasks/01-comunicacao/done/COM-001-servico-i2c.md) | — | — | Concluída |
 | COM-002 | [Prioridade dinâmica e ordenação I2C](../.tasks/01-comunicacao/done/COM-002-prioridade-dinamica-i2c.md) | COM-001 | — | Concluída |
-| COM-003 | [Recuperação do barramento I2C após falhas](../.tasks/01-comunicacao/COM-003-recuperacao-i2c.md) | COM-001 | Política de recuperação | Pendente |
+| COM-003 | [Recuperação do barramento I2C após falhas](../.tasks/01-comunicacao/done/COM-003-recuperacao-i2c.md) | COM-001 | Política dos consumidores em INT-005; supervisão em INT-008; ensaios físicos em TES-009 | Concluída |
 | COM-004 | [Transporte UART e recepção validada do Payload](../.tasks/01-comunicacao/done/COM-004-uart-payload.md) | — | Aceite, tráfego e ponta Pi em INT-006; ensaios em TES-005/TES-009 | Concluída |
 | COM-005 | [SD: gravação, leitura, extração e recuperação](../.tasks/01-comunicacao/done/COM-005-armazenamento-sd.md) | — | Montagem/EPS em INT-003/TES-006; fluxo e falhas em INT-006/INT-008/TES-009 | Concluída |
 
@@ -64,7 +68,7 @@ Ordem sugerida para avançar engenharia com poucos dispositivos. “Pode avança
 |---|---|---|---|
 | 1 | INT-006 | Definir seleção/frequência/idade dos dados de aeronaves e contrato de extração `request_log` com Payload/TT&C; depois desenvolver a segunda etapa e verificar lógica no computador/USB. A recepção e gravação da etapa 1 já existem. | Aceites e contratos da etapa 2, produtor Pi, integração e verificações do escopo; ensaios físicos conservam suas TES. |
 | 2 | INT-004 | Preparar o aceite TT&C usando contratos, mapeamentos e evidências USB existentes. | Aceite conjunto pendente; não encerrar automaticamente INT-003 ou ensaios RF. |
-| 3 | COM-003 | Propor política de detecção, tentativas, tratamento de pedidos e retorno ao serviço; distinguir transferência, callback longo e falha física. | Acordo ADCS/EPS/Térmico, implementação e verificação local; SDA/SCL físicos ficam na TES-009. |
+| 3 | INT-005 | Consolidar com ADCS/EPS/Térmico a política I2C recebida da COM-003 e integrar os consumidores ao executor. | Inventário, montagem e limites de aquisição/FOC acordados; ensaios físicos seguem nas TES correspondentes. |
 | 4 | INT-003/005/007/008 | Levantar esquema da placa, ConOps, inventário, limites FOC/energia/térmico e estados seguros/duráveis com os setores. | Não são concluíveis somente por ESP32/USB; preservam predecessoras, decisões e integrações próprias. |
 
 O engenheiro OBC-DH pode preparar interfaces e evidências; a execução dos novos ensaios é encaminhada ao setor de testes. Roteiros atuais e retorno ao firmware normal estão em [examples/README.md](../examples/README.md#bancada-integrada-int-006). Abertura de contrato não autoriza escolher parâmetros dos outros setores unilateralmente.
@@ -85,7 +89,7 @@ O setor de testes executa e encaminha acertos, falhas, impedimentos e evidência
 | TES-008: USB e simulação de fluxo/tempo | INT-003/004/006 têm entregas parciais verificadas | Recortes de bancada disponíveis com ESP32/USB e roteiro compatível; registrar evidência parcial. | Aceites e dependências formais continuam para os cenários completos; não aprovar reset seguro, RF ou SD físico por esses recortes. |
 | TES-008: demais cenários | Dependências por cenário ainda abertas | Preparar procedimento e limites. | Boot de voo, FOC/sensores, RF, cartão, modos/energia/térmico/atuações e respectivas aprovações. |
 | TES-009: UART e interrupção SD | COM-004/005 concluídas | Preparar separadamente os ensaios físicos. | Ponta/gerador compatível, taxas e montagem UART; cartão, corte aprovado e critérios EPS. |
-| TES-009: recuperação I2C, watchdog e retomada | COM-003/INT-007/INT-008 pendentes; INT-006 parcial | Levantar procedimentos e critérios; execução completa ainda depende de implementação. | Mecanismos de recuperação, estados duráveis e montagem. |
+| TES-009: recuperação I2C, watchdog e retomada | COM-003 concluída; INT-007/INT-008 pendentes; INT-006 parcial | Preparar o cenário físico I2C e levantar procedimentos dos demais cenários. | Acordo e montagem I2C; supervisão e estados duráveis das integrações. |
 | TES-010 | INT-008 e parte de TES-001 a TES-009 ainda abertas | Preparar rastreabilidade e procedimento; missão completa ainda não liberada. | Predecessoras, referências/limites vigentes e montagem integrada. |
 
 Nenhuma linha desta matriz é evidência de novo ensaio. A auditoria de links e consistência documental é distinta da validação funcional ou física.

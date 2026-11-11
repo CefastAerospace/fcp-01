@@ -25,6 +25,83 @@ namespace {
 
     // ─── HELPERS ──────────────────────────────────────────────────────
 
+    // Mantém diagnóstico de recusa separado da execução de cada comando.
+    void Acknowledge(
+        uint16_t sequence,
+        ttc::COMMAND_ID command,
+        ttc::ACK_STATUS status
+    ) {
+        if (!link.SendAck(sequence, command, status)) {
+            Serial.printf("[OBC] TT&C: falha ao enfileirar ACK; seq=%u; status=%s\n",
+                sequence, ttc::StatusName(status));
+        }
+    }
+
+    // ACK ok significa resposta efetivamente enfileirada, incluindo lg de erro.
+    void SendLogResponse(
+        obc_downlink::LOG_RESPONSE& response
+    ) {
+        if (!response.length) {
+            const uint16_t sequence = response.sequence;
+            const ttc::LOG_REQUEST request = response.request;
+            obc_downlink::BuildLogFailure(sequence, request, ttc::LOG_BUSY, response);
+        }
+        const bool queued = response.length
+            && link.Send(response.json, response.length, response.request.dest);
+        Acknowledge(response.sequence, ttc::CMD_REQUEST_LOG,
+            queued ? ttc::ACK_OK : ttc::ERR_STATE_REJECTED);
+    }
+
+    // O escritor recebe só argumentos validados; origem resolve o destino padrão.
+    void RequestLog(
+        const TC_FRAME& tc
+    ) {
+        ttc::LOG_REQUEST request = {};
+        const auto status = ttc::ParseLogRequest(tc.json, tc.len, request);
+        if (status != ttc::ACK_OK) {
+            Acknowledge(tc.seq, tc.cmd, status);
+            return;
+        }
+        if (request.dest == ttc::LOG_DEST_ORIGIN) request.dest = tc.origin;
+        const auto admission = obc_flow::esp32::RequestLog(tc.seq, request);
+        if (admission == obc_storage::STATUS::OK) return;
+        obc_downlink::LOG_RESPONSE response = {};
+        obc_downlink::BuildLogFailure(tc.seq, request,
+            admission == obc_storage::STATUS::BUSY ? ttc::LOG_BUSY : ttc::LOG_NO_MEDIA, response);
+        SendLogResponse(response);
+    }
+
+    // Consome resultado sem esperar pelo SD; expiração é resolvida pela caixa.
+    void ServiceLogResponse(
+    ) {
+        obc_downlink::LOG_RESPONSE response = {};
+        if (obc_flow::esp32::TakeLogResponse(response)) SendLogResponse(response);
+    }
+
+    // As bancadas históricas conservam o consumidor simulado exclusivo.
+    void ServiceDelivery(
+    ) {
+#if !defined(OBC_FLOW_BENCH) || defined(OBC_TTC_INTEGRATION_BENCH)
+        TX_EVENT event = {};
+        for (size_t index = 0; index < ttc_tracked_slots && link.ReceiveTransmitEvent(event, 0); ++index) {
+            obc_flow::esp32::FinishDeliveryTransmit({event.id.boot, event.id.sequence}, event.success);
+        }
+        ttc::DELIVERY_ID confirmed = {};
+        for (size_t index = 0; index < ttc_confirm_slots && link.ReceiveConfirmation(confirmed, 0); ++index) {
+            obc_flow::esp32::ConfirmDelivery({confirmed.boot, confirmed.sequence});
+        }
+        obc_delivery::DELIVERY delivery = {};
+        if (!obc_flow::esp32::BeginDeliveryTransmit(obc_downlink::confirmation_timeout_ms, delivery)) return;
+        ttc::AIRCRAFT_DATA aircraft = {};
+        uint32_t available = 0;
+        const ttc::DELIVERY_ID id = {delivery.id.boot, delivery.id.sequence};
+        const bool queued = obc_downlink::MapAircraft(delivery, aircraft, available)
+            && link.SendAircraft(aircraft, available, id);
+        // Uma recusa não reserva evento TX na biblioteca.
+        if (!queued) obc_flow::esp32::FinishDeliveryTransmit(delivery.id, false);
+#endif
+    }
+
     // Usa UTC/ac do fluxo e a mesma amostra de enlace para envio e registro.
     bool SendCurrentTelemetry(
     ) {
@@ -116,14 +193,15 @@ namespace {
             delay(service_wait_ms);
             return;
         }
-        TC_FRAME tc;
-        if (!link.ReceiveTelecommand(tc, pdMS_TO_TICKS(service_wait_ms))) return;
-        if (tc.origin == LINK_RF) rf_seen = true;
-        const ttc::ACK_STATUS status = ExecuteTelecommand(tc);
-        if (!link.SendAck(tc.seq, tc.cmd, status)) {
-            Serial.printf("[OBC] TT&C: falha ao enfileirar ACK; seq=%u; status=%s\n",
-                tc.seq, ttc::StatusName(status));
+        ServiceLogResponse();
+        TC_FRAME tc = {};
+        if (link.ReceiveTelecommand(tc, pdMS_TO_TICKS(service_wait_ms))) {
+            if (tc.origin == LINK_RF) rf_seen = true;
+            if (tc.cmd == ttc::CMD_REQUEST_LOG) RequestLog(tc);
+            else Acknowledge(tc.seq, tc.cmd, ExecuteTelecommand(tc));
         }
+        ServiceLogResponse();
+        ServiceDelivery();
     }
 
 } // namespace obc_ttc

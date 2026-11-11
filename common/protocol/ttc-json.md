@@ -146,9 +146,10 @@ até suas integrações. Não há TM periódica nova: o envio continua sob deman
 
 `SendTelemetry(tm, available, queued_tm)` aceita saída opcional dos valores
 efetivamente enfileirados, preservada em falha. Isso permite persistir a
-mesma amostra de enlace sem segunda leitura. `request_log` e envio agregado
-de aeronaves permanecem para a segunda etapa da INT-006; `request_log`
-continua recebendo `invalid_cmd` neste firmware.
+mesma amostra de enlace sem segunda leitura. Na versão histórica desta
+primeira etapa, `request_log` recebia `invalid_cmd`. A integração de
+11/11/2026 acrescenta seu despacho e o envio identificado de aeronaves;
+os roteiros históricos conservam as expectativas da versão correspondente.
 
 ### Aeronave
 
@@ -215,6 +216,14 @@ A estação responde a cada recepção com uma confirmação na subida:
 - A estação não retransmite `cf` por conta própria. Se a confirmação se
   perder, o OBC retransmite a entrega e recebe outra.
 
+**Garantia exigida e pendências da implementação:** conteúdo e ID precisam
+estar duráveis antes de `cf`. A revisão sobre `f7af605` constatou que o log
+da sessão usa `flush`, sem `fsync`, enquanto o registro de IDs é sincronizado.
+Também reproduziu perda do primeiro ID acrescentado após cauda truncada no
+segundo reinício e interrupção da recepção quando a escrita do log falha.
+Essas correções são do TT&C e não foram executadas pela integração OBC.
+O aceite do formato não declara essas garantias verificadas.
+
 #### Eventos de envio na biblioteca
 
 | Chamada | Uso pelo OBC |
@@ -237,7 +246,7 @@ tentativa antes de `FinishTransmit`. Com as reservas esgotadas,
 | Fila de ACK de TC | 4, prioritária | ACK de TC sai antes de qualquer pacote da fila comum. |
 | Entregas pendentes de evento | 4 | O OBC usa 1 por vez. |
 | Confirmações aguardando o OBC | 8 | Excesso é descartado e contado em `confirmations_dropped`. |
-| Timeout de confirmação (OBC) | proposta ≥ 10 s | Precisa cobrir a fila comum cheia (16 × ~0,45 s em SF7) e a ida e volta (~0,4 s de aeronave + ~0,16 s de `cf` + estação). O valor final deve sair da medição na bancada. |
+| Timeout de confirmação (OBC) | 10 s provisórios, aceitos para desenvolvimento | Conta desde a reserva da tentativa, incluindo fila TT&C. Precisa cobrir a fila comum cheia e a ida e volta. O valor operacional deve sair da medição na bancada. |
 | Retentativas | OBC, sem limite | A mesma entrega continua até ser confirmada. A estação só reconfirma. |
 
 Piores casos verificados nos testes nativos (`test/test_protocol`):
@@ -318,9 +327,19 @@ Respostas:
   com as ferramentas do OBC (`obc-dh/tools`), aplicadas ao arquivo
   reconstruído.
 
-O despacho do OBC ainda responde `invalid_cmd` a `request_log`. A execução no
-OBC (listagem, leitura e mapeamento de erros do SD) continua pendente na
-INT-006.
+O despacho OBC implementado em 11/11/2026 reutiliza esse contrato. O escritor
+existente atende uma caixa fixa de um pedido, enquanto o atendimento TC
+continua. Ocupação e prazo local de 1 s esgotado produzem `busy`; ausência
+do serviço de leitura produz `no_sd`. Resultado de I/O expirado é descartado
+antes de reutilizar a caixa. A listagem inclui até quatro candidatos por
+rodada, reduzidos pelo gerador ao limite do quadro, e consulta a existência
+do próximo nome para determinar `end`. Nomes incompatíveis não são truncados.
+
+O responsável OBC aceitou o formato, o bloco de 90 bytes, o offset seguinte
+derivado e a paginação com `end`. Testes portáteis e builds estão registrados
+na INT-006. A bancada USB passou com SD e solo simulados após corrigir a
+admissão de memória; cartão/RF físicos e interoperabilidade completa com
+a estação continuam pendentes. O roteiro é `tests/ObcDownlinkCheck.py`.
 
 ## Estação terrena
 

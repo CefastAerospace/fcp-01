@@ -6,6 +6,7 @@
 
 #include "ObcDataFlow.h" // Estado, fila e diário portáteis.
 #include "ObcDelivery.h" // Cache e recuperação de entregas com identificação estável.
+#include "ObcDownlink.h" // Caixa limitada de request_log e resposta por cópia.
 #include "ObcStartup.h" // Relatório já produzido pelo boot central.
 #include "PayloadReceiverEsp32.h" // Proprietário único de UART2 e Receiver.
 #include "ObcStorageEsp32.h" // Operações existentes sobre SD/HSPI.
@@ -66,7 +67,33 @@ namespace esp32 {
         obc_delivery::ID id
     );
 
+    /**
+     * @brief Solicita I/O ao escritor, sem bloquear o atendimento de TC.
+     * @return OK se reservado, BUSY se ocupado, NOT_INITIALIZED sem escritor.
+     */
+    obc_storage::STATUS RequestLog(
+        uint16_t sequence,
+        const ttc::LOG_REQUEST& request
+    );
+
+    /** @brief Retira resposta ou expiração; length zero pede lg busy fora do lock. */
+    bool TakeLogResponse(
+        obc_downlink::LOG_RESPONSE& out
+    );
+
 #ifdef OBC_FLOW_BENCH
+#if defined(OBC_CAPACITY_BENCH) || defined(OBC_MEMORY_BENCH)
+    /** @brief Observação pelo proprietário do receptor, após publicação e fora do lock. */
+    void ObserveLimitsPayload(
+        obc_payload::STATUS status,
+        const obc_data::PAYLOAD_SNAPSHOT* snapshot,
+        const obc_delivery::STATISTICS& statistics
+    );
+    /** @brief Cópia de diagnóstico; libera a última entrada após esvaziamento do cache. */
+    void ObserveLimitsDeliveries(
+        const obc_delivery::STATISTICS& statistics
+    );
+#endif
     /** @brief Escritor lento simulado; não confirma persistência física. */
     JOURNAL_IO GetBenchIO(
     );

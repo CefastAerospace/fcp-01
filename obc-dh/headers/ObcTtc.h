@@ -27,9 +27,11 @@ namespace obc_ttc {
      * @brief Atende um TC por chamada, esperando até 20 ms pela recepção.
      * @details ping recebe ACK; get_status/request_tm recebem ACK e TM
      * integrada, com null para dados indisponíveis. set_time aplica UTC
-     * em RAM e tenta persistir a referência no fluxo. Outros comandos
-     * conhecidos recebem invalid_cmd. Não executa Update() nem ações de
-     * missão. Quando inativo, cede execução por 20 ms.
+     * em RAM e tenta persistir a referência no fluxo. request_log encaminha
+     * I/O ao escritor com prazo de 1 s e responde lg antes de confirmar
+     * enfileiramento. Consome eventos TX e cf, e envia entregas com timeout
+     * provisório de 10 s. Outros comandos conhecidos recebem invalid_cmd.
+     * Não executa Update() nem ações de missão. Quando inativo, cede 20 ms.
      */
     void Service();
 

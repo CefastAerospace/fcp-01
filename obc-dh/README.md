@@ -2,7 +2,22 @@
 
 Núcleo de processamento do FCP-01: um ESP32 DevKit V1 coordena todos os subsistemas via FreeRTOS e organiza comandos, telemetria e registros da missão (§§3.4, 7.2).
 
-## Estado local — revisão documental de 10/11/2026
+## Estado local — atualização de 11/11/2026
+
+Espressif32 fixado em 6.6.0. As novas bancadas de capacidade/memória
+passaram com um ESP32/USB: saturação de 32 entregas, perdas explícitas,
+retomada após drenagem, JSON de 65.536 bytes, snapshot denso e NO_MEMORY
+preservando o estado anterior. Heap interno mínimo de 1.040 bytes no
+esgotamento; aprovação limitada à amostra. Dez builds e regressões
+nativas/USB passaram. Procedimentos e evidências no
+[guia](tools/README.md#limites-de-capacidade-e-memória--11112026).
+
+Estresse adicional aprovado com ESP32/USB: timeout e erros de leitura,
+confirmações desconhecida/duplicada/atrasada e falha de gravação simulada,
+em `int006-stress-check`. Os 17 testes TT&C existentes também passaram
+na placa com transportes falsos. obc restaurado e verificado. Procedimento
+e evidências no [guia](tools/README.md#estresse-em-um-esp32-e-usb--11112026).
+Não encerra ensaios com cartão, RF, Pi ou reinício da estação.
 
 O firmware central inicializa tempo/NVS, I2C e SD com o coordenador de bancada existente; depois inicia TT&C e a primeira etapa do fluxo Payload–tempo–registros. Boot de voo, sensores, missão e atuadores conservam suas integrações próprias.
 
@@ -14,7 +29,7 @@ O [contrato de dados](../common/protocol/obc-data.md) conserva v1 e snapshots v2
 
 As verificações locais incluem regressões nativas com sanitizadores, TT&C no computador/ESP e os roteiros USB da [INT-006](.tasks/03-integracao/INT-006-fluxo-de-dados.md). A bancada `int006-check` simula ADS-B e SD lento; o firmware normal foi verificado sem SD/Pi. Isso não confirma interoperabilidade com Payload, persistência física do cartão ou precisão RF.
 
-INT-006 permanece em andamento: envio agregado de aeronaves e extração pelo umbilical são da segunda etapa; `request_log` continua não implementado. Os aceites de Payload/TT&C e a preservação de cada atualização ADS-B intermediária permanecem explícitos. INT-003 continua aberta pelo boot de voo; INT-004 conserva o aceite conjunto TT&C pendente. DAD-001, DAD-002, DAD-003, COM-004 e COM-005 encerraram seus escopos locais, com encaminhamentos nas integrações e ensaios.
+INT-006 permanece em andamento: envio identificado de aeronaves, eventos TX, confirmações `cf` e extração `request_log` estão integrados no OBC. Após corrigir a admissão por memória acessível por byte, a bancada USB nova e o firmware normal passaram com o roteiro original; relatórios e reprovação anterior estão preservados na tarefa. Timeout de confirmação vale 10 s provisórios. Aceites Payload/TT&C, cartão/radio/Pi reais e preservação de cada atualização ADS-B intermediária continuam pendentes. INT-003 continua aberta pelo boot de voo; INT-004 conserva o aceite conjunto TT&C pendente. DAD-001, DAD-002, DAD-003, COM-004 e COM-005 encerraram seus escopos locais, com encaminhamentos nas integrações e ensaios.
 
 ## Barramentos (resumo — referência compartilhada em `../common/interfaces/pinout.md`)
 
@@ -41,17 +56,25 @@ INT-006 permanece em andamento: envio agregado de aeronaves e extração pelo um
 
 Abrir `obc-dh/` no PlatformIO, compilar o env `obc` (`esp32doit-devkit-v1`, Arduino). Deps de terceiros em `lib_deps` com versão fixada.
 
-O ambiente `obc` consome a biblioteca local `tt-c`, LoRa 0.8.0 e ArduinoJson 7.0.4 com o patch controlado existente. As bibliotecas de terceiros têm versão fixada, mas `platform = espressif32` não fixa a plataforma; as evidências registram Espressif32 6.6.0/Arduino ESP32 2.0.14. A biblioteca local acompanha o checkout. Consultar o [guia PlatformIO](.agents/FUNCIONAMENTO_PIO.md) para distinguir configuração e versão observada. Os ambientes UART conservam dependências isoladas; `pio test` no ambiente `obc` não executa automaticamente as verificações nativas.
+O ambiente `obc` consome a biblioteca local `tt-c`, LoRa 0.8.0 e ArduinoJson 7.0.4 com o patch controlado existente. Desde 11/11/2026, a plataforma também está fixada em `espressif32@6.6.0`, correspondente ao Arduino ESP32 2.0.14 validado. A biblioteca local acompanha o checkout. Consultar o [guia PlatformIO](.agents/FUNCIONAMENTO_PIO.md) para as versões e os procedimentos. Os ambientes UART conservam dependências isoladas; `pio test` no ambiente `obc` não executa automaticamente as verificações nativas.
 
 ## Aprofundar
 
 - [.agents/README.md](.agents/README.md) — mapa de documentação e organização do módulo.
 - [.agents/TODO.md](.agents/TODO.md) — estado, dependências e links para evidências das tarefas.
+- [Encaminhamentos de 11/11](encaminhamentos-2026-11-11.md) — mensagens preparadas para os outros setores, sem envio externo.
 - [Arquitetura](.agents/ARCHITECTURE.md), [requisitos](.agents/REQUISITOS.md) e [pinagem](.agents/PINAGEM.md).
 - Design Package §§3.1, 3.4, 7.2, 7.3 + Apêndice A (REQ-OBC), conforme as referências da equipe; a versão Markdown citada não está neste checkout.
 
 ## Verificação compatível com o firmware
 
-Usar `tests/ObcDataFlowCheck.py PORTA` com o firmware normal `obc`, após boot novo e sem Pi/cartão, conforme o [procedimento](examples/README.md#bancada-integrada-int-006). O modo `--bench` exige upload de `int006-check`, que simula entrada e SD lento. O roteiro `ObcTtcCheck.py` pertence à versão INT-004, anterior ao suporte a `set_time`; não usá-lo para exigir os resultados antigos do firmware atual. Os relatórios em `/tmp` são saídas locais regeneráveis, não anexos permanentes.
+O complemento `tests/ObcStationCheck.py PORTA --bench`, com
+`int006-ttc-check`, usa o cliente TT&C real para confirmar entregas e
+baixar arquivos, e verifica TM/tempo. Sem --bench usa `obc` sem periféricos.
+Os dois recortes passaram com um ESP32/USB; comandos e limitações estão
+no [guia](tools/README.md#cliente-real-da-estação-e-tmtempo--11112026).
+O roteiro de perda deliberada de confirmação abaixo permanece independente.
+
+Usar `tests/ObcDownlinkCheck.py PORTA` com o firmware atual `obc`, ou com `--bench` após upload de `int006-ttc-check`, conforme o [procedimento](tools/README.md#integração-ttc-e-request_log--11112026). O solo do roteiro é simulado, sem deduplicação persistente. Os roteiros `ObcTtcCheck.py` e `ObcDataFlowCheck.py` conservam suas versões históricas; o segundo espera `request_log = invalid_cmd` e não aceita quadros `ac`, portanto não é compatível com a integração nova. Suas entradas e expectativas não foram alteradas. A verificação nova é focada em entregas/extração e não substitui os demais critérios da TES-008. Os relatórios em `/tmp` são saídas locais regeneráveis, não anexos permanentes.
 
 O enquadramento FCPU é transmitido pelo cabo ao Payload e ainda precisa de aceite desse setor. O armazenamento binário no SD é uma representação interna distinta. Melhorias documentais não validam Pi, cartão, RF ou estados seguros de voo.

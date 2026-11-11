@@ -1,0 +1,35 @@
+Registro do resultado observado no terminal em 11/11/2026.
+Comando: pio test -d tt-c -e esp32 --upload-port /dev/ttyUSB0 --test-port /dev/ttyUSB0
+Montagem: ESP32-D0WD-V3 rev 3.1 + USB; sem radio, cartao ou Pi.
+Escopo: biblioteca TT&C no ESP32 com FakeTransport e Update manual.
+Dependencias resolvidas: Arduino ESP32 2.0.14; ArduinoJson 7.4.3; LoRa 0.8.0.
+Nenhum arquivo ou teste de tt-c/ foi alterado.
+
+Trecho de resultado retornado por PlatformIO:
+test/test_ttc/test_main.cpp:519: TestTelecommandAndAck [PASSED]
+test/test_ttc/test_main.cpp:520: TestAckHasPriority [PASSED]
+test/test_ttc/test_main.cpp:521: TestOneFramePerUpdate [PASSED]
+test/test_ttc/test_main.cpp:522: TestDuplicateTelecommand [PASSED]
+test/test_ttc/test_main.cpp:523: TestNackForBadEnvelope [PASSED]
+test/test_ttc/test_main.cpp:524: TestHoldTransmit [PASSED]
+test/test_ttc/test_main.cpp:525: TestWiredOriginAndCounters [PASSED]
+test/test_ttc/test_main.cpp:526: TestRadioHealthReset [PASSED]
+test/test_ttc/test_main.cpp:527: TestTelemetryFillsLinkFields [PASSED]
+test/test_ttc/test_main.cpp:528: TestWiredWithoutRadioAndUnavailableTelemetry [PASSED]
+test/test_ttc/test_main.cpp:529: TestTelemetryQueueFullKeepsAckQueueAvailable [PASSED]
+test/test_ttc/test_main.cpp:530: TestTelemetryQueuedOutput [PASSED]
+test/test_ttc/test_main.cpp:531: TestDeliveryEventCarriesId [PASSED]
+test/test_ttc/test_main.cpp:532: TestDeliveryLocalFailure [PASSED]
+test/test_ttc/test_main.cpp:533: TestDeliveryReservesEvents [PASSED]
+test/test_ttc/test_main.cpp:534: TestGroundConfirmation [PASSED]
+test/test_ttc/test_main.cpp:535: TestExplicitDestination [PASSED]
+esp32:test_ttc [PASSED] Took 17.12 seconds
+17 test cases: 17 succeeded in 00:00:17.122
+
+SHA-256 test/test_ttc/test_main.cpp:
+0cb51be92d19958ab07acc1973e73652f2eaf4c91b21ea9e637686560b6d5bfa
+SHA-256 firmware TT&C testado:
+99a0b694805a4347e5e78f8feb74dcea9743928e2bdf234074d215e972ef2fe8
+
+O firmware obc foi restaurado e verificado depois da bancada adicional.
+Relatorio: obc-stress-2026-11-11-obc.json.

@@ -1,5 +1,25 @@
 # Bancada UART2 — beta preservado
 
+Limites adicionais de capacidade/memória, 11/11/2026, ESP32/USB e
+Espressif32 fixado em 6.6.0: aprovados os relatórios de
+[capacidade](obc-limits-2026-11-11-capacity.json),
+[memória](obc-limits-2026-11-11-memory.json),
+[regressão USB original](obc-limits-2026-11-11-regression.json) e
+[obc restaurado](obc-limits-2026-11-11-obc.json).
+Os novos roteiros preservam evidências e vetores anteriores. Condições,
+resultados e limites de memória na
+[INT-006](../.tasks/03-integracao/INT-006-fluxo-de-dados.md#limites-de-capacidade-e-memória--11112026).
+
+Estresse adicional com ESP32/USB, 11/11/2026: ambiente separado
+`int006-stress-check` e roteiro `ObcStressCheck.py` aprovados.
+[Relatório da bancada](obc-stress-2026-11-11-bench.json) conserva log,
+comandos, pacotes e medições. [Relatório normal](obc-stress-2026-11-11-obc.json)
+confirma obc restaurado e no_sd esperado. Também passaram os
+[17 testes TT&C existentes na placa](obc-ttc-2026-11-11-esp32.txt), com
+transportes falsos. Procedimento e injeções no
+[guia](../tools/README.md#estresse-em-um-esp32-e-usb--11112026).
+Esses recortes não comprovam cartão, RF ou reinício da estação.
+
 O ambiente `uart-loopback` executa o código atual de `src/PayloadUart.cpp`
 com a entrada isolada `src/bench/UartLoopback.cpp`. O ambiente normal `obc`
 continua sendo o padrão e não compila a entrada de bancada. Não há alteração
@@ -68,7 +88,7 @@ pio run -d obc-dh -e obc -t upload --upload-port /dev/ttyUSB0
 
 O receptor final fica em `PayloadReceiver`/`PayloadReceiverEsp32`, separado
 do beta. O [contrato FCPU v1](../../common/protocol/payload-uart.md) preserva
-o JSON como conteúdo e define cabeçalho/controles binários transmitidos pelo cabo ao Pi. `obc` exclui o beta e já inicia a recepção e o diário na primeira etapa INT-006. Downlink agregado e extração continuam pendentes; `payload/telemetry.py` não foi alterado e não implementa a ponta UART.
+o JSON como conteúdo e define cabeçalho/controles binários transmitidos pelo cabo ao Pi. `obc` exclui o beta e inicia recepção, diário, downlink identificado e extração. A integração nova ainda não foi executada em placa; `payload/telemetry.py` não foi alterado e não implementa a ponta UART.
 
 O contexto possui dois blocos internos no heap, reservados uma única vez por
 `Init`: quadro de 65562 bytes e snapshot de 64672 bytes. Verificar o retorno
@@ -146,6 +166,46 @@ INT-006, a placa foi devolvida ao firmware normal `obc`. A bancada UART
 continua disponível e não declara conclusão do ensaio ESP32–Pi ou TES-005.
 
 ## Bancada integrada INT-006
+
+**Cliente real e TM/tempo — 11/11/2026:** `ObcStationCheck.py` passou em
+`int006-ttc-check` e em `obc` sem periféricos. Reutiliza o cliente TT&C
+para confirmações e downloads, e verifica UTC, época zero e TM com ADS-B
+simulado. Não substitui o teste de perda deliberada de cf abaixo.
+Comandos e limites estão no
+[guia](../tools/README.md#cliente-real-da-estação-e-tmtempo--11112026).
+Relatórios: [bancada](obc-station-2026-11-11-bench.json) e
+[normal](obc-station-2026-11-11-obc.json), com artefatos nos diretórios de
+mesmo nome. A placa ficou com `obc`; firmware e critérios não mudaram.
+
+**Reexecução após correção da admissão — 11/11/2026:** o roteiro original
+passou na bancada e no firmware normal, sem alterar entradas/expectativas.
+Relatórios: [bancada aprovada](obc-downlink-2026-11-11-bench-02.json) e
+[firmware normal aprovado](obc-downlink-2026-11-11-obc-02.json).
+A placa ficou com `obc`. A admissão usa memória por byte para pilhas/margem;
+o parser conserva teto de 98.304 bytes e NO_MEMORY. A aprovação é do recorte
+simulado, sem cartão/radio/Pi reais. Métricas e binários estão na INT-006.
+
+**Histórico da primeira execução USB de 11/11/2026:**
+`int006-ttc-check` reprovou na extração porque a reserva de memória recusou
+iniciar o escritor simulado. Retentativa identificada foi observada, mas
+não aprova o conjunto. `obc` passou sem periféricos e ficou restaurado na
+placa. Relatórios completos: [bancada](obc-downlink-2026-11-11-bench.json)
+e [firmware normal](obc-downlink-2026-11-11-obc.json). Diagnóstico e métricas
+na [INT-006](../.tasks/03-integracao/INT-006-fluxo-de-dados.md).
+
+**Firmware atual, desde 11/11/2026:** usar `int006-ttc-check` com
+`ObcDownlinkCheck.py PORTA --bench`, conforme o
+[procedimento atual](../tools/README.md#integração-ttc-e-request_log--11112026).
+Ele liga o adaptador TT&C real, mantendo entrada/SD/solo simulados, sem o
+segundo consumidor simulado da bancada anterior. O firmware normal `obc`
+usa o mesmo roteiro sem `--bench`. Os resultados e o histórico estão
+registrados acima. Ao terminar, fazer upload de `obc`.
+
+### Procedimento histórico da primeira etapa
+
+Os comandos e resultados abaixo pertencem à versão anterior ao despacho
+`request_log`. `ObcDataFlowCheck.py` foi preservado, mas não é compatível
+com a integração nova: espera `invalid_cmd` e rejeita pacotes `ac`.
 
 Execute os comandos desta seção dentro de `obc-dh/`. Requer somente ESP e USB, sem jumper e sem dispositivos externos em UART2. `int006-check` reserva boot real em
 NVS e inicia TT&C e as tarefas do fluxo. O backend de arquivos é simulado:

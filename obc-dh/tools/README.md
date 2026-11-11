@@ -1,5 +1,227 @@
 # Codec e leitura de registros OBC v1/v2/v3
 
+## Limites de capacidade e memória — 11/11/2026
+
+O consumidor OBC fixa `espressif32@6.6.0`. As bancadas adicionais
+`int006-capacity-check` e `int006-memory-check` herdam TT&C integrado,
+com entrada Payload e SD simulados. Exigem somente ESP32/USB, sem jumper.
+Não herdam a injeção NO_SPACE de `int006-stress-check` e não alteram os
+vetores dos ambientes anteriores.
+
+Executar dentro de `obc-dh/`, com Python contendo pyserial. Escolher
+relatórios novos: `ObcLimitsCheck.py` exige --report e recusa substituição.
+Sempre restaurar obc, inclusive em falha, e preservar o diagnóstico antes
+de alterar firmware ou critérios.
+
+```bash
+pio run -e int006-capacity-check -t upload --upload-port /dev/ttyUSB0
+python3 tests/ObcLimitsCheck.py /dev/ttyUSB0 --case capacity --report /tmp/obc-capacity.json
+pio run -e int006-memory-check -t upload --upload-port /dev/ttyUSB0
+python3 tests/ObcLimitsCheck.py /dev/ttyUSB0 --case memory --report /tmp/obc-memory.json
+pio run -e obc -t upload --upload-port /dev/ttyUSB0
+python3 tests/ObcDownlinkCheck.py /dev/ttyUSB0 --report /tmp/obc-limits-normal.json
+```
+
+Capacidade: 40 snapshots pequenos alteram a altitude de uma aeronave.
+O backend retém a primeira gravação DATA até os 40 resultados; a barreira
+cede CPU e expira em 8 s. Antes de confirmar pelo solo, o roteiro exige
+32 admissões, oito perdas e ocupação/pico 32. Depois libera confirmações
+pela USB, exige FIFO e esvaziamento e verifica uma 41ª atualização aceita.
+Somente esse ambiente reserva 66 arquivos FCD1, suficientes para os 33
+pares DATA/CONFIRM. A espera total para saturação e drenagem é de 180 s.
+
+Memória: cinco sessões FCPU independentes fornecem referência pequena,
+JSON válido de 65.536 bytes completado com espaços, snapshot denso de
+63.181 bytes (20 aeronaves/32 extras), vetor de 50.034 bytes que esgota
+o parser e referência pequena alterada. O caso denso admite READY ou
+NO_MEMORY; o vetor de esgotamento exige NO_MEMORY. Em rejeição, ID,
+contagem e CRC de toda a representação do snapshot devem permanecer
+iguais. A instrumentação lê o snapshot somente no contexto proprietário,
+após publicação, e não reserva outra cópia grande. As confirmações são
+retidas nesse cenário, com até 21 entregas distintas e 32 arquivos.
+
+`BuildFlowLimitsFixtures.py` usa JSON/struct/zlib e gera somente os novos
+artefatos em .pio. `BuildFlowFixtures.py` e flow-fixtures.fcpu permanecem
+preservados. Os hooks e barreiras dos limites são compilados somente nas
+duas novas bancadas; não há novos comandos ou APIs do firmware de produção.
+O roteiro intercala ping/TM/leitura, verifica limites de latência/cadência,
+pilhas e quadros e confere DATA extraído por CRC e conteúdo.
+
+Resultados e hashes ficam na
+[INT-006](../.tasks/03-integracao/INT-006-fluxo-de-dados.md).
+Esses ensaios não comprovam UART entre placas, SD físico, RF, persistência
+após reset, taxa de missão ou aceitação simultânea de todos os máximos.
+
+## Estresse em um ESP32 e USB — 11/11/2026
+
+`int006-stress-check` estende a bancada TT&C com injeções exclusivas do
+backend simulado. Preserva os bytes FCPU, a capacidade normal de 32 arquivos,
+os ambientes anteriores e o firmware de produção. Requer apenas placa/USB,
+sem jumper, rádio ou cartão. `ObcStressCheck.py` recusa relatório existente.
+
+Executar dentro de `obc-dh/`, com Python contendo pyserial e nomes novos de
+relatório. Restaurar `obc` também se o roteiro falhar; preservar a evidência
+e discutir o diagnóstico antes de alterar código ou critérios.
+
+```bash
+pio run -e int006-stress-check -t upload --upload-port /dev/ttyUSB0
+python3 tests/ObcStressCheck.py /dev/ttyUSB0 --report /tmp/obc-stress-bench.json
+pio run -e obc -t upload --upload-port /dev/ttyUSB0
+python3 tests/ObcDownlinkCheck.py /dev/ttyUSB0 --report /tmp/obc-stress-normal.json
+```
+
+O roteiro verifica leitura bloqueada por 1.500 ms com timeout local de
+1.000 ms, caixa ocupada inclusive após expiração, descarte da resposta
+tardia e leitura posterior correta. `busy.bin` injeta BUSY; `io.bin` devolve
+READ_FAILED com bytes parciais que não podem aparecer no pacote. `ok.bin`
+e `slow.bin` usam o mesmo conteúdo de dez bytes, somente nesse ambiente.
+Seis pings em rajada verificam atendimento durante o bloqueio.
+
+O solo de ensaio retém a primeira confirmação por 10 s e verifica o mesmo
+ID/conteúdo na retentativa. Injeta confirmação desconhecida, duplicada e
+atrasada, exige avanço FIFO das sete entregas e contabilização das falhas.
+Após oito arquivos FCD1, o backend injeta NO_SPACE na próxima gravação:
+é um limiar do ensaio, não a capacidade física ou normal. O diário fica
+inativo, mas USB, leitura e confirmações em RAM precisam continuar.
+
+O roteiro exige q ≤200 ms, ACK/lg ≤2 s, quadros ≤255 bytes, n consecutivo,
+transporte ≤10 ms e pilhas positivas. Passou com 59 ACKs, q máximo de
+32 ms, maior ACK em 1.060,223 ms (timeout de leitura) e retentativa em
+10.000,149 ms. Evidências e limites na
+[INT-006](../.tasks/03-integracao/INT-006-fluxo-de-dados.md).
+
+Separadamente, os 17 testes TT&C existentes passaram na placa com
+FakeTransport. Para reproduzir, a partir da raiz do repositório:
+
+```bash
+pio test -d tt-c -e esp32 --upload-port /dev/ttyUSB0 --test-port /dev/ttyUSB0
+pio run -d obc-dh -e obc -t upload --upload-port /dev/ttyUSB0
+```
+
+Essa suíte cobre fila comum cheia preservando ACK prioritário, falha local,
+reserva dos quatro eventos TX e confirmações repetidas. A bancada USB não
+afirma ter preenchido essa fila. Nenhum recorte comprova cartão físico,
+reinício da estação, RF, recuperação persistente após reset ou timeout
+operacional definitivo.
+
+## Cliente real da estação e TM/tempo — 11/11/2026
+
+`ObcStationCheck.py` complementa a bancada de entregas com as APIs reais
+`Link`, `SessionLog`, `DeliveryStore`, `list_files` e `download_file`.
+Não usa o demo da estação nem altera o código TT&C. Cada execução conserva
+log, IDs e downloads em um diretório OBC com o mesmo nome do relatório,
+sem .json. O roteiro recusa destinos existentes para preservar evidências.
+
+Compilar o leitor existente e executar dentro de `obc-dh/`, com Python
+contendo pyserial e somente ESP32/USB:
+
+```bash
+g++ -std=c++11 -Wall -Wextra -Werror \
+    -fsanitize=undefined -fno-sanitize-recover=undefined -Iheaders \
+    src/ObcData.cpp src/ObcTime.cpp src/ObcRecordCodec.cpp \
+    src/ObcDelivery.cpp tools/ReadRecords.cpp -o /tmp/fcp01-read-records
+pio run -e int006-ttc-check -t upload --upload-port /dev/ttyUSB0
+python3 tests/ObcStationCheck.py /dev/ttyUSB0 --bench \
+    --reader /tmp/fcp01-read-records --report /tmp/obc-station-bench.json
+pio run -e obc -t upload --upload-port /dev/ttyUSB0
+python3 tests/ObcStationCheck.py /dev/ttyUSB0 --report /tmp/obc-station-normal.json
+```
+
+Escolher nomes novos se os destinos já existirem. A bancada exige boot
+novo e conserva Payload/SD simulados. O cliente real confirma entregas,
+lista e baixa três arquivos fechados; CRC e interpretação são conferidos
+com `zlib` e `ReadRecords`. Downloads bem-sucedidos não conservam .part;
+tentativa de arquivo ausente pode deixar .part vazio, comportamento do
+cliente preservado como evidência. O normal sem periféricos exige no_sd.
+
+O mesmo roteiro verifica UTC desconhecido, argumentos inválidos de
+set_time, época zero, referência atual com tolerância de um segundo,
+ac=7/depois 0 na bancada e fontes ausentes em null. Repete os 50 pedidos
+alternados do roteiro histórico e mantém uma TM pendente por vez.
+Verifica q ≤200 ms, resposta ≤2 s, quadro ≤255 bytes, sequência n,
+transporte ≤10 ms e pilhas positivas nos serviços ativos.
+
+Passaram os dois recortes em 11/11, sem alterar firmware ou testes antigos:
+[cliente/bancada](../examples/obc-station-2026-11-11-bench.json) e
+[cliente/obc](../examples/obc-station-2026-11-11-obc.json). Downloads, IDs,
+logs e JSON Lines interpretados estão nos diretórios correspondentes.
+Procedimentos, versão, hashes e métricas estão na INT-006. Essa aprovação
+normal não demonstra durabilidade da estação sob falha, cartão físico,
+RF, produtor Pi ou precisão temporal externa. A placa ficou com `obc`.
+
+## Integração TT&C e request_log — 11/11/2026
+
+**Reexecução USB após correção da admissão:** o roteiro original passou
+em `int006-ttc-check` e em `obc` sem periféricos. A reprovação anterior foi
+preservada. Os relatórios, diagnóstico e estado final da placa estão na
+[INT-006](../.tasks/03-integracao/INT-006-fluxo-de-dados.md).
+A bancada aprovada extraiu três arquivos com CRC válido. Não substitui
+ensaios com cartão, rádio ou estação reais.
+
+A admissão considera 23.552 bytes de pilhas pendentes e margem em heap
+interno acessível por byte, além do maior bloco necessário. O parser mantém
+seu teto de 98.304 bytes e NO_MEMORY previsto pelo contrato, sem reserva
+exclusiva. O cenário não garante todos os máximos simultâneos. Os logs
+`[FLOW-MEMORY]` registram pico do parser, heap por byte, maior bloco e mínimo.
+
+O firmware atual conecta entregas identificadas e extração ao transporte
+TT&C existente. O responsável OBC aceitou o contrato de `ttc-json.md`.
+Timeout de confirmação de 10 s é provisório, incluindo fila de transmissão;
+o valor operacional exige medição. A caixa de `request_log` tem um pedido
+e prazo local de 1 s; expiração gera `busy` sem reutilizar trabalho em curso.
+
+Verificação portátil, dentro de `obc-dh/`, usando a dependência do consumidor:
+
+```bash
+g++ -std=c++11 -Wall -Wextra -Werror \
+    -fsanitize=address,undefined -fno-sanitize-recover=undefined \
+    -Iheaders -I../tt-c/include -I.pio/libdeps/obc/ArduinoJson/src \
+    src/ObcDownlink.cpp src/ObcStorage.cpp ../tt-c/src/TtcProtocol.cpp \
+    tests/ObcDownlinkCheck.cpp -o /tmp/fcp01-obc-downlink-check
+/tmp/fcp01-obc-downlink-check
+```
+
+O executável verifica mapeamento, null/zero, conteúdo estável, limites de
+representação, expiração da caixa, descarte de resultado tardio, destino,
+paginação e blocos de arquivos temporários reais, inclusive EOF e erros.
+ASan/UBSan e a regressão original `ObcDeliveryCheck` passaram em 11/11.
+LeakSanitizer exige execução sem ptrace; não reduzir as verificações do
+programa para contornar a restrição do ambiente.
+
+Os quatro ambientes abaixo compilaram; a execução USB posterior teve os
+resultados e o histórico registrados acima. Dentro de `obc-dh/`, com
+ESP32/USB e Python contendo pyserial:
+
+```bash
+pio run -e obc -e int006-check -e int006-delivery-check -e int006-ttc-check
+pio run -e int006-ttc-check -t upload --upload-port /dev/ttyUSB0
+python3 tests/ObcDownlinkCheck.py /dev/ttyUSB0 --bench
+pio run -e obc -t upload --upload-port /dev/ttyUSB0
+python3 tests/ObcDownlinkCheck.py /dev/ttyUSB0
+```
+
+A bancada nova usa TT&C/umbilical reais e mantém Payload, SD e solo simulados.
+O roteiro perde o primeiro `cf`, confere conteúdo e ID na retentativa,
+exercita ping durante extração e reconstrói arquivos FCD1 com CRC conferido
+por `zlib`. O firmware normal sem SD responde `no_sd`. A bancada antiga
+`int006-delivery-check` conserva exclusivamente seu transporte simulado.
+O relatório padrão é `/tmp/fcp01-obc-downlink.json`; preservar uma cópia
+associada ao binário e às condições para encaminhamento ao setor de testes.
+
+Na reexecução aprovada foram usados nomes novos, sem sobrescrever a falha:
+[bancada](../examples/obc-downlink-2026-11-11-bench-02.json) e
+[firmware normal](../examples/obc-downlink-2026-11-11-obc-02.json).
+
+`ObcTtcCheck.py` e `ObcDataFlowCheck.py` continuam associados às versões
+históricas, sem alteração de entradas/expectativas. O segundo espera
+`request_log = invalid_cmd` e não aceita `ac`. O roteiro novo cobre a
+evolução de entregas/extração, sem substituir todos os cenários temporais,
+de missão ou de concorrência da TES-008. RF, UART entre placas, cartão,
+persistência da estação, congestionamento e resets físicos exigem ensaios
+próprios. As APIs usadas por `python -m fcp_gs logs list|get` passaram com
+o SD simulado no roteiro complementar acima; extração com cartão físico
+e a montagem completa da estação continuam pendentes.
+
 ## Segunda etapa INT-006 — entregas FCD1
 
 O fluxo acrescenta controle de entregas, cache fixo de 32 posições e diário

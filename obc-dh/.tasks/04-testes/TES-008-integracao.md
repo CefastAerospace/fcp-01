@@ -3,6 +3,28 @@
 **Estado:** Pendente
 **Responsáveis:** OBC-DH e setores
 
+Complemento de limites em 11/11/2026: Espressif32 fixado em 6.6.0, dez
+builds aprovados e regressões originais nativas/USB preservadas. As duas
+bancadas novas passaram: 40 alterações saturaram o cache com 32 admissões
+e oito perdas; depois houve FIFO confirmado, esvaziamento e nova admissão.
+JSON de 65.536 bytes e snapshot denso foram aceitos na bancada de memória;
+esgotamento retornou NO_MEMORY, preservou estado e permitiu retomada.
+Maior q de 82/92 ms e resposta de 171,185/795,705 ms em capacidade/memória.
+obc restaurado e verificado. Evidências e limites na
+[INT-006](../03-integracao/INT-006-fluxo-de-dados.md#limites-de-capacidade-e-memória--11112026).
+Não aprova os cenários completos ou modifica critérios anteriores.
+
+Complemento local de 11/11/2026: `int006-stress-check`/`ObcStressCheck.py`
+passou com ESP32/USB, SD/Payload simulados, 59 ACKs, q máximo de 32 ms e
+resposta máxima de 1.060,223 ms no timeout de leitura. Exercitou leitura
+lenta, busy, erro parcial, sete entregas, confirmação desconhecida/
+duplicada/atrasada e continuidade sob NO_SPACE. Os 17 testes TT&C
+existentes também passaram na placa com FakeTransport, incluindo fila
+comum cheia e prioridade de ACK. Essa saturação não foi demonstrada pela
+USB integrada. Firmware obc restaurado e verificado sem periféricos.
+Evidências e limites na [INT-006](../03-integracao/INT-006-fluxo-de-dados.md#estresse-adicional-sem-periféricos--11112026).
+Critérios e casos anteriores preservados; a tarefa continua pendente.
+
 A execução e o relato dos ensaios cabem ao setor de testes; a análise e as correções de firmware cabem ao responsável OBC-DH, com apoio dos setores envolvidos. Seguir as [responsabilidades e regras de reexecução](../README.md#responsabilidades-correção-e-reexecução).
 
 ## Objetivo
@@ -70,16 +92,25 @@ atuais estão em [obc-delivery.md](../../../common/protocol/obc-delivery.md) e
 
 | Recorte | Firmware ou ferramenta disponível | Encaminhamento |
 |---|---|---|
-| USB, UTC e TM | `obc` e `int006-check`, com `ObcDataFlowCheck.py` | Reproduzir os cenários de bancada e registrar a configuração usada |
+| USB e comandos do firmware atual | `obc` e `int006-ttc-check`, com `ObcDownlinkCheck.py` | Executar a evolução de entregas/extração; os roteiros anteriores permanecem históricos e os demais critérios originais continuam exigidos |
 | Entregas com ID e retentativas | `int006-delivery-check`, com `ObcDeliveryBenchCheck.py` | Executar o roteiro preparado; transporte, ACK e arquivos usam simulação nessa bancada |
 | Extração local e recuperação de pendências | `DeliveryLogs`, `ReadRecords` e `DeliveryLogsCheck.py` | Exercitar arquivos fechados e segmentos mistos FCP1/FCP2/FCP3/FCD1 |
-| Enlace real e extração pela estação | APIs de entrega no OBC e proposta `request_log` | Integrar ID, ACK dos dados, deduplicação, eventos de TX e respostas USB com TT&C |
+| Entregas e extração por USB | Adaptador OBC ligado a TT&C, `request_log` implementado e nova bancada compilada | Executar `ObcDownlinkCheck.py PORTA --bench` com `int006-ttc-check`; entrada, SD e solo são simulados |
+| Enlace real e extração pela estação | APIs TT&C consumidas no OBC e cliente `logs list|get` disponível | Exercitar estação/radio/cartão reais, após correções da estação e montagem disponível |
 
 O roteiro da bancada de entregas está pronto e sua execução permanece
 pendente. A extração local usa os arquivos fechados obtidos pelo serviço ou
-copiados do cartão. `request_log` ainda recebe `invalid_cmd` no firmware
-atual. O contrato completo desse comando e as adaptações da biblioteca e
-da estação seguem com TT&C na INT-006.
+copiados do cartão. A integração OBC de `request_log`, eventos TX e `cf`
+foi implementada em 11/11; os testes nativos e builds passaram, sem execução
+da nova versão em placa. A revisão da estação encontrou falhas de
+durabilidade, cauda truncada e continuidade da recepção, encaminhadas ao
+TT&C. Os testes da estação não são substituídos pelo solo simulado da bancada.
+
+O roteiro atual `ObcDownlinkCheck.py` confere perda do primeiro `cf`,
+retentativa com ID/conteúdo preservados, atendimento de ping durante
+extração, paginação, EOF, erros e CRC FCD1. Os roteiros anteriores conservam
+entradas e expectativas e devem ser associados às versões históricas.
+O novo roteiro não substitui todos os cenários originais desta tarefa.
 
 Os cenários de convivência dependem da integração dos consumidores na
 INT-005. Modos, proteções e atuações dependem da INT-007. O cenário de boot
@@ -89,9 +120,64 @@ pelas integrações.
 
 ## Checklist de execução por cenário
 
+### Cliente real e TM/tempo por USB — 11/11/2026
+
+`ObcStationCheck.py` passou na bancada e no firmware normal sem
+periféricos, sem mudar os roteiros históricos. Usou as APIs reais da
+estação para confirmar sete entregas e baixar três arquivos, conferidos
+por tamanho, CRC e pelo leitor OBC existente. TM começou com UTC
+desconhecido em ambos os boots; rejeições de set_time, época zero,
+referência atual e ac=7/depois 0 foram aprovados no recorte simulado.
+
+Foram 75 TCs diretos e 48 TMs na bancada; 64 TCs diretos e 37 TMs no
+firmware normal. q máximo de 17/10 ms, RTT máximo de 83,4/49,9 ms e
+transporte UART máximo de 2 ms, com pilhas positivas nos serviços ativos.
+ACK/lg correlacionados nos logs do PC, incluindo extração, tiveram maior
+intervalo de 421 ms na bancada e 50 ms no normal, abaixo dos 2 s existentes.
+Procedimentos, hashes, relatórios e downloads estão na
+[INT-006](../03-integracao/INT-006-fluxo-de-dados.md#cliente-real-da-estação-e-tmtempo--11112026).
+A placa ficou com `obc`.
+
+Esse recorte complementa os casos originais de UTC/TM/extração. Não aprova
+produtores de energia/atitude, precisão LoRa, cartão, UART entre placas,
+boot seguro, persistência da estação, convivência FOC ou missão completa.
+Os critérios e checkboxes completos permanecem preservados.
+
+### Reexecução USB após correção da admissão — 11/11/2026
+
+O mesmo roteiro `ObcDownlinkCheck.py --bench` passou em `int006-ttc-check`,
+sem alteração de entradas/expectativas: escritor ativo, sete IDs,
+retentativa com ID/conteúdo preservados e três arquivos extraídos com CRC
+válido. Foram 46 ACKs, q máximo 32 ms, resposta máxima 486,945 ms e intervalo
+máximo do transporte de 2 ms. Todas as pilhas observadas permaneceram
+positivas. O firmware normal sem periféricos também passou e ficou na placa.
+
+Relatórios novos e métricas de memória estão na
+[INT-006](../03-integracao/INT-006-fluxo-de-dados.md#correção-da-admissão-e-reexecução-usb--11112026).
+A reprovação anterior permanece preservada. Este recorte aprovado não
+encerra os cenários completos de RF, cartão, Pi, estação, tempo, convivência
+ou missão, nem altera os critérios e checkboxes originais da TES-008.
+
+### Evidência parcial USB — 11/11/2026
+
+Histórico da execução anterior à correção da admissão.
+
+Com somente ESP32/USB, o roteiro atual passou no firmware normal sem
+periféricos: seis ACKs, q máximo 1 ms, resposta máxima 30,406 ms e `no_sd`
+esperado. A bancada `int006-ttc-check` reprovou: a reserva de memória
+impediu iniciar o escritor simulado e a listagem retornou `no_sd`. Antes
+da falha, foram observados 26 ACKs e retransmissão com ID/conteúdo
+preservados. Não houve extração FCD1 ou aprovação do cenário completo.
+
+Diagnóstico, binários e relatórios estão na
+[INT-006](../03-integracao/INT-006-fluxo-de-dados.md#execução-usb-em-esp32-isolado--11112026).
+O responsável OBC deve analisar a memória antes de nova versão e reexecução.
+Nenhum checkbox original foi aprovado por esse recorte. A placa voltou a
+`obc`; firmware, roteiro e critérios não foram alterados durante o ensaio.
+
 - [ ] **Boot e reset:** conferir inicialização automática e falhas independentes. Antes de autorizar o caso físico completo, obter estados elétricos e medir motor/Burn Wire antes de o firmware executar, durante reset e após inicialização. Ausência de comandos de atuação no código não comprova saída segura.
 - [ ] **TC/ACK e umbilical:** executar comandos suportados, argumentos inválidos e duplicatas; medir entrega e resposta contra ≤200 ms/≤2 s. Registrar origem e ACK correspondente. `q` mede o intervalo informado pelo transporte, não todo o tempo físico de RF/execução. Preservar o teste associado a REQ-OBC-001 e sua relação com REQ-OBC-002.
-- [ ] **Compatibilidade de roteiro:** no firmware atual, usar `ObcDataFlowCheck.py` conforme o guia; `ObcTtcCheck.py` exige a versão INT-004, anterior ao suporte a `set_time`. Não alterar o teste antigo para aprovar a evolução.
+- [ ] **Compatibilidade de roteiro:** no firmware atual, usar `ObcDownlinkCheck.py` conforme o guia. `ObcDataFlowCheck.py` exige a versão anterior a `request_log` e aos quadros `ac`; `ObcTtcCheck.py` exige a versão INT-004, anterior a `set_time`. Preservar entradas e expectativas desses testes históricos e todos os critérios originais da TES.
 - [ ] **Tempo e indisponibilidade:** após boot novo, verificar UTC desconhecido (`ts:null`); aplicar referência válida e demonstrar timestamp legível na TM com ADS-B simulado. Conferir época zero, segundos no TT&C e ms internos; novo boot não pode herdar UTC fictício. ACK de `set_time` não comprova persistência no SD.
 - [ ] **Fluxo e extração:** com as pontas disponíveis, comparar snapshots, registros v1/v2/v3, referências, TM e estatísticas extraídas. Esperar conteúdo reproduzível e perdas explícitas; ACK UART, enfileiramento de TM e recepção no solo são evidências diferentes. Snapshots não encerram a pendência de cada mensagem ADS-B intermediária.
 - [ ] **Inspeção de TM:** verificar estrutura, integridade e ordenação de status/energia/atitude conforme REQ-OBC-003; fontes indisponíveis devem permanecer identificadas. TM de bancada com `null` não comprova os produtores ainda não integrados.

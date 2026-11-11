@@ -11,9 +11,21 @@
 #endif
 
 namespace {
+#if defined(OBC_CAPACITY_BENCH)
+    extern const uint8_t fixture_start[] asm("_binary__pio_capacity_fixtures_fcpu_start");
+    extern const uint8_t fixture_end[] asm("_binary__pio_capacity_fixtures_fcpu_end");
+#elif defined(OBC_MEMORY_BENCH)
+    extern const uint8_t fixture_start[] asm("_binary__pio_memory_fixtures_fcpu_start");
+    extern const uint8_t fixture_end[] asm("_binary__pio_memory_fixtures_fcpu_end");
+#else
     extern const uint8_t fixture_start[] asm("_binary__pio_flow_fixtures_fcpu_start");
     extern const uint8_t fixture_end[] asm("_binary__pio_flow_fixtures_fcpu_end");
+#endif
     std::atomic<bool> bench_requested(false);
+#if defined(OBC_CAPACITY_BENCH) || defined(OBC_MEMORY_BENCH)
+    std::atomic<size_t> limits_processed(0);
+    std::atomic<bool> limits_drained(false);
+#endif
 }
 
 namespace obc_flow {
@@ -31,7 +43,12 @@ namespace {
         bool closed;
     };
     // Respostas de arquivo simuladas conservam apenas os registros FCD1.
-    SIMULATED_FILE delivery_files[32] = {};
+#ifdef OBC_CAPACITY_BENCH
+    constexpr size_t simulated_file_capacity = 66; // 32 pares e um par após retomada.
+#else
+    constexpr size_t simulated_file_capacity = 32;
+#endif
+    SIMULATED_FILE delivery_files[simulated_file_capacity] = {};
     size_t delivery_file_count = 0;
     SIMULATED_FILE current_delivery_file = {};
 #endif
@@ -66,7 +83,25 @@ namespace {
         }
 #ifdef OBC_DELIVERY_BENCH
         if (size >= 4 && !std::memcmp(bytes, "FCD1", 4)) {
-            if (delivery_file_count == 32 || size > sizeof(current_delivery_file.bytes)) {
+#ifdef OBC_CAPACITY_BENCH
+            // Sem DATA durável, as 40 alterações precisam disputar somente o cache.
+            const uint64_t started_ms = obc_time::esp32::GetMonotonicMs();
+            while (limits_processed.load() < 40) {
+                if (obc_time::esp32::GetMonotonicMs() - started_ms >= 8000) {
+                    Serial.printf("[LIMITS] FAIL: barreira de saturacao expirou\n");
+                    return {obc_storage::STATUS::WRITE_FAILED, 0, 0, 1};
+                }
+                vTaskDelay(pdMS_TO_TICKS(1));
+            }
+#endif
+#ifdef OBC_STRESS_BENCH
+            // Falha injetada após sete DATA e um CONFIRM; não altera a capacidade normal.
+            if (delivery_file_count >= 8) {
+                Serial.printf("[STRESS] append=NO_SPACE files=%u\n", static_cast<unsigned>(delivery_file_count));
+                return {obc_storage::STATUS::NO_SPACE, 0, 0, 1};
+            }
+#endif
+            if (delivery_file_count == simulated_file_capacity || size > sizeof(current_delivery_file.bytes)) {
                 return {obc_storage::STATUS::NO_SPACE, 0, 0, 1};
             }
             obc_delivery::RECORD record = {};
@@ -100,7 +135,7 @@ namespace {
     ) {
         opened = false;
 #ifdef OBC_DELIVERY_BENCH
-        if (current_delivery_file.size && delivery_file_count < 32) {
+        if (current_delivery_file.size && delivery_file_count < simulated_file_capacity) {
             current_delivery_file.closed = true;
             delivery_files[delivery_file_count++] = current_delivery_file;
             current_delivery_file = {};
@@ -138,6 +173,33 @@ namespace {
     ) {
         vTaskDelay(pdMS_TO_TICKS(1));
         total = 0;
+#ifdef OBC_STRESS_BENCH
+        // Nomes reservados somente neste ambiente, sem novos comandos no produto.
+        if (!std::strcmp(name, "busy.bin")) {
+            Serial.printf("[STRESS] read=busy\n");
+            return {obc_storage::STATUS::BUSY, 0, 0, 0};
+        }
+        if (!std::strcmp(name, "io.bin")) {
+            Serial.printf("[STRESS] read=io\n");
+            const size_t partial = capacity < 3 ? capacity : 3;
+            std::memset(bytes, 0xAA, partial);
+            total = 3;
+            return {obc_storage::STATUS::READ_FAILED, partial, 0, 0};
+        }
+        if (!std::strcmp(name, "slow.bin") || !std::strcmp(name, "ok.bin")) {
+            if (!std::strcmp(name, "slow.bin")) {
+                Serial.printf("[STRESS] slow=begin\n");
+                vTaskDelay(pdMS_TO_TICKS(1500));
+                Serial.printf("[STRESS] slow=end\n");
+            }
+            const uint8_t content[] = "OBC-STRESS";
+            total = sizeof(content) - 1;
+            if (offset > total) return {obc_storage::STATUS::INVALID_ARGUMENT, 0, 0, 0};
+            const size_t size = capacity < total - offset ? capacity : total - offset;
+            std::memcpy(bytes, content + offset, size);
+            return {obc_storage::STATUS::OK, size, 0, 0};
+        }
+#endif
         for (size_t index = 0; index < delivery_file_count; ++index) {
             const auto& file = delivery_files[index];
             if (std::strcmp(file.name, name)) continue;
@@ -152,6 +214,42 @@ namespace {
 #endif
 
 } // namespace
+
+#if defined(OBC_CAPACITY_BENCH) || defined(OBC_MEMORY_BENCH)
+void ObserveLimitsPayload(
+    obc_payload::STATUS status,
+    const obc_data::PAYLOAD_SNAPSHOT* snapshot,
+    const obc_delivery::STATISTICS& statistics
+) {
+    const size_t index = limits_processed.fetch_add(1) + 1;
+    const char* name = status == obc_payload::STATUS::READY ? "READY"
+        : status == obc_payload::STATUS::NO_MEMORY ? "NO_MEMORY" : "unexpected";
+    const uint32_t crc = snapshot ? obc_record::ComputeCrc32(
+        reinterpret_cast<const uint8_t*>(snapshot), sizeof(*snapshot)) : 0;
+    const bool valid = snapshot && obc_data::Validate(*snapshot) == obc_data::STATUS::OK;
+    Serial.printf("[LIMITS-PAYLOAD] case=%u status=%s id=%llu count=%u crc=%lu valid=%u extras=%u identification=%u tick=%u accepted=%llu lost=%llu occupied=%u peak=%u\n",
+        static_cast<unsigned>(index), name,
+        static_cast<unsigned long long>(snapshot ? snapshot->id : 0),
+        snapshot ? snapshot->aircraft_count : 0U, static_cast<unsigned long>(crc), valid ? 1U : 0U,
+        snapshot && snapshot->aircraft_count ? snapshot->aircraft[0].extra_count : 0U,
+        snapshot && snapshot->aircraft_count ? static_cast<unsigned>(std::strlen(snapshot->aircraft[0].identification)) : 0U,
+        snapshot && snapshot->aircraft_count ? static_cast<unsigned>(std::strlen(snapshot->aircraft[0].tick)) : 0U,
+        static_cast<unsigned long long>(statistics.accepted), static_cast<unsigned long long>(statistics.lost),
+        static_cast<unsigned>(statistics.occupied), static_cast<unsigned>(statistics.high_water));
+}
+
+void ObserveLimitsDeliveries(
+    const obc_delivery::STATISTICS& statistics
+) {
+#ifdef OBC_CAPACITY_BENCH
+    if (statistics.accepted == 32 && statistics.confirmed == 32 && statistics.occupied == 0) {
+        limits_drained.store(true);
+    }
+#else
+    (void)statistics;
+#endif
+}
+#endif
 
 JOURNAL_IO GetBenchIO(
 ) {
@@ -183,6 +281,9 @@ size_t ReadBenchInput(
     static uint64_t next_ms = 0;
     static size_t offset = 0;
     static size_t frame_end_offset = 0;
+#if defined(OBC_CAPACITY_BENCH) || defined(OBC_MEMORY_BENCH)
+    static size_t sent_frames = 0;
+#endif
     if (!bench_requested.load()) return 0;
     if (!started) {
         started = true;
@@ -192,6 +293,11 @@ size_t ReadBenchInput(
     const size_t length = reinterpret_cast<uintptr_t>(fixture_end) - reinterpret_cast<uintptr_t>(fixture_start);
     if (now_ms < next_ms || offset == length) return 0;
     if (frame_end_offset == offset) {
+#ifdef OBC_CAPACITY_BENCH
+        if (sent_frames == 40 && !limits_drained.load()) return 0;
+#elif defined(OBC_MEMORY_BENCH)
+        if (limits_processed.load() < sent_frames) return 0;
+#endif
         if (length - offset < obc_payload::header_bytes) {
             Serial.printf("[FLOW-CHECK] FAIL: fixture truncada\n");
             offset = length;
@@ -212,7 +318,16 @@ size_t ReadBenchInput(
     const size_t count = remaining < capacity ? remaining : capacity;
     std::memcpy(bytes, fixture_start + offset, count);
     offset += count;
-    if (offset == frame_end_offset) next_ms = now_ms + 20;
+    if (offset == frame_end_offset) {
+#if defined(OBC_CAPACITY_BENCH) || defined(OBC_MEMORY_BENCH)
+        ++sent_frames;
+#endif
+#ifdef OBC_MEMORY_BENCH
+        next_ms = now_ms + 1000;
+#else
+        next_ms = now_ms + 20;
+#endif
+    }
     return count;
 }
 
@@ -223,6 +338,14 @@ size_t ReadBenchInput(
 void setup(
 ) {
     Serial.begin(115200);
+#ifdef OBC_CAPACITY_BENCH
+    Serial.printf("[LIMITS] scenario=capacity files=66\n");
+#elif defined(OBC_MEMORY_BENCH)
+    Serial.printf("[LIMITS] scenario=memory files=32\n");
+#endif
+#ifdef OBC_STRESS_BENCH
+    Serial.printf("[STRESS] ativo: read lento/busy/io; NO_SPACE apos 8 arquivos FCD1\n");
+#endif
     Serial.printf("[FLOW-CHECK] ADS-B em RAM e SD lento simulados; sem ensaio ESP32-Pi/cartao\n");
     obc_startup::STARTUP_REPORT report = {};
     report.time_status = obc_time::esp32::StartBoot(report.boot_id);
@@ -236,7 +359,7 @@ void loop(
 ) {
     obc_ttc::Service();
     obc_flow::esp32::ReportDiagnostics();
-#ifdef OBC_DELIVERY_BENCH
+#if defined(OBC_DELIVERY_BENCH) && !defined(OBC_TTC_INTEGRATION_BENCH)
     // Transporte simulado no consumidor independente do escritor de 100 ms.
     static obc_delivery::DELIVERY delivery = {};
     static uint64_t complete_ms = 0;

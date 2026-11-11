@@ -3,11 +3,48 @@
 **Estado:** Em andamento — implementação e bancada USB verificadas; aceite TT&C pendente
 **Responsáveis:** OBC-DH e TT&C
 
-## Estado vigente e uso dos roteiros — 10/11/2026
+## Fixação do ambiente consumidor — 11/11/2026
+
+Implementada a fixação aprovada: `platform = espressif32@6.6.0` em obc,
+herdada pelos ambientes derivados. É a versão já observada nas evidências,
+com Arduino ESP32 2.0.14 e GCC Xtensa 8.4.0. ArduinoJson 7.0.4, LoRa 0.8.0,
+o checkout local TT&C e os contratos permanecem iguais. Nenhum arquivo de
+tt-c/ foi alterado. Essa fixação não imobiliza a biblioteca local em outro
+checkout; conservar o commit e as alterações locais junto das evidências.
+
+Os dez ambientes OBC compilaram, incluindo as duas novas bancadas de
+limites da INT-006. Regressões originais de receptor/entregas/downlink
+passaram com ASan/UBSan. A bancada USB anterior passou sem alterar seu
+roteiro, com 46 ACKs, q máximo de 31 ms e resposta máxima de 487,506 ms.
+Preservados retentativa identificada e três arquivos extraídos com CRC.
+Resultado em [obc-limits-2026-11-11-regression.json](../../examples/obc-limits-2026-11-11-regression.json).
+
+A fixação está concluída no escopo local; a INT-004 permanece em andamento
+pelo aceite TT&C e demais condições existentes. Os ensaios de capacidade/
+memória, firmware restaurado e hashes estão na
+[INT-006](INT-006-fluxo-de-dados.md#limites-de-capacidade-e-memória--11112026).
+
+## Aceite OBC e evolução do consumidor — 11/11/2026
+
+O responsável OBC aceitou os formatos `[boot,seq]`, `cf`, `request_log`
+com blocos de 90 bytes, offset seguinte derivado e paginação com `end`.
+O consumidor foi integrado na INT-006, com timeout de confirmação de 10 s
+provisórios. Os quatro builds OBC/bancadas passaram; a nova integração
+USB passou em placa após correção da admissão de memória, conforme a
+INT-006, mantendo a reprovação anterior registrada. O roteiro é `ObcDownlinkCheck.py`;
+`ObcTtcCheck.py` e `ObcDataFlowCheck.py` conservam suas versões históricas.
+
+Esse aceite pelo OBC não substitui o aceite conjunto TT&C das interfaces,
+unidades e condições operacionais, nem comprova persistência correta da
+estação ou RF físico. Manter a INT-004 em andamento. As três falhas da
+estação e os pedidos aos setores estão nos
+[encaminhamentos](../../encaminhamentos-2026-11-11.md).
+
+## Histórico do estado e uso dos roteiros — 10/11/2026
 
 A biblioteca TT&C já está ligada ao firmware central. O histórico abaixo registra a versão INT-004, na qual `set_time` era rejeitado. A INT-006 posterior implementou esse comando e a TM integrada; usar `ObcDataFlowCheck.py` para o firmware atual, conforme o [guia](../../examples/README.md#bancada-integrada-int-006). Preservar `ObcTtcCheck.py` e suas expectativas para a versão anterior.
 
-O aceite conjunto TT&C ainda mantém esta tarefa aberta; a bancada parcial não encerra o boot de voo da INT-003 ou ensaios RF. É possível preparar o aceite com contratos/mapeamentos e evidências existentes sem novos dispositivos. As versões Espressif32/Arduino registradas abaixo são as observadas naquela execução: `platform = espressif32` permanece sem fixação. ArduinoJson/LoRa estão fixados no consumidor OBC; `tt-c` acompanha o checkout local.
+O aceite conjunto TT&C ainda mantém esta tarefa aberta; a bancada parcial não encerra o boot de voo da INT-003 ou ensaios RF. É possível preparar o aceite com contratos/mapeamentos e evidências existentes sem novos dispositivos. As versões Espressif32/Arduino registradas abaixo são as observadas naquela execução, quando a plataforma ainda não estava fixada. A fixação posterior está registrada acima. ArduinoJson/LoRa estão fixados no consumidor OBC; `tt-c` acompanha o checkout local.
 
 ## Objetivo
 

@@ -16,8 +16,12 @@ O conteúdo disponível na interface de transmissão é uma cópia de valor.
 O cache tem 32 posições e atende por ID crescente. Uma entrega fica
 aguardando confirmação do solo por vez. O chamador escolhe o timeout e
 informa a conclusão local da tentativa. O ACK do solo tem operação própria.
-O firmware normal publica essas APIs em `ObcDataFlowEsp32.h`. A ligação ao
-enlace real depende da extensão da biblioteca TT&C.
+O firmware normal publica essas APIs em `ObcDataFlowEsp32.h`. Desde a
+integração de 11/11/2026, `ObcTtc` liga essas operações a `SendAircraft`,
+`ReceiveTransmitEvent` e `ReceiveConfirmation`. Recusa imediata do envio
+finaliza a tentativa local como falha; somente `cf` confirma a entrega.
+O timeout começa na reserva da tentativa e vale 10 s provisórios, incluindo
+a espera na fila TT&C. O valor operacional depende de medição conjunta.
 
 Enquanto houver consulta pendente, uma posição fica reservada à recuperação.
 A admissão usa até 31 posições e pode substituir cópias duráveis disponíveis,
@@ -78,10 +82,10 @@ valores finitos e os limites geográficos do modelo. Decodificação só publica
 após validação integral. Recuperação conserva registros legíveis posteriores
 a um trecho danificado.
 
-## Proposta request_log para acordo com TT&C
+## Proposta histórica request_log — 10/11/2026
 
-Esta especificação prepara a implementação conjunta da biblioteca e da
-estação. O despacho atual do OBC ainda responde `invalid_cmd` a request_log.
+Esta proposta antecede o contrato adotado de [ttc-json.md](ttc-json.md#request_log).
+Seu conteúdo é conservado para rastreabilidade; não descreve o despacho atual.
 
 - `list` recebe cursor de nome opcional e retorna próximo nome, tamanho,
   indicador de arquivo aberto e cursor seguinte. Nome vazio encerra a lista.
@@ -99,7 +103,7 @@ estação. O despacho atual do OBC ainda responde `invalid_cmd` a request_log.
 - A extração inicial usa arquivos fechados. O cliente confere tamanho,
   sequência dos offsets e CRC dos registros após reconstruir o arquivo.
 
-## Acordos necessários para o downlink real
+## Encaminhamentos históricos para TT&C — 10/11/2026
 
 - Transportar o ID estável de entrega, independente do contador `n` do enlace.
 - Definir ACK dos dados pelo solo, contendo esse ID e sua semântica de aceite.
@@ -114,15 +118,42 @@ estação. O despacho atual do OBC ainda responde `invalid_cmd` a request_log.
 - Medir o pior quadro incluindo ID e confirmações nos limites 245/255 bytes.
 - Acordar request_log completo e seleção USB nas respostas da biblioteca.
 
-Situação do TT&C em 11/11/2026: o contrato e a biblioteca cobrem o ID no
-pacote de aeronave, a confirmação `cf` com deduplicação persistente na
-estação, os eventos de envio por ID, os campos `null`, o destino explícito
-e o `request_log`, conforme [ttc-json.md](ttc-json.md). Do lado do OBC,
-continuam pendentes ligar `SendAircraft`, `ReceiveTransmitEvent` e
-`ReceiveConfirmation` às APIs de `ObcDataFlowEsp32.h`, adotar o timeout
-acordado e implementar o despacho do `request_log`. Diferença em relação à
-proposta acima: a resposta `read` não transmite o offset seguinte, que é
-derivável, e a listagem devolve vários nomes por quadro com `end`.
+## Integração OBC e aceite do contrato — 11/11/2026
+
+O responsável OBC aceitou `[boot,seq]`, `cf`, blocos de até 90 bytes e
+listagem paginada com `end`. A resposta `read` não transmite offset seguinte:
+ele é derivado dos bytes decodificados. O contrato da biblioteca e da estação
+está em [ttc-json.md](ttc-json.md); esse aceite não comprova ensaio físico nem
+encerra o aceite conjunto da INT-004.
+
+O OBC implementa o despacho de `request_log`, incluindo erros e seleção USB.
+O proprietário existente do SD executa as leituras/listagens por uma caixa
+fixa de um pedido. O atendimento TC não espera I/O. Ocupação ou prazo local
+de 1 s esgotado produzem `busy`; falta do serviço produz `no_sd`. Trabalho
+que expira em execução conserva a caixa até terminar e seu resultado é
+descartado. ACK `ok` confirma enfileiramento de `lg`, inclusive de erro;
+recusa da fila produz `state_rejected`. ACK retorna pela origem do TC e
+`lg` pelo destino solicitado.
+
+`ObcDownlink` adapta disponibilidade e unidades sem inventar UTC individual,
+velocidade, rumo ou contagem. ICAO acima de 24 bits e altitude não
+representável no `float` do TT&C recusam o envio; o DATA original não muda.
+Arquivo fora do limite de nomes do contrato não é truncado na listagem.
+
+Verificações portáteis, builds e roteiro de placa estão na
+[INT-006](../../obc-dh/.tasks/03-integracao/INT-006-fluxo-de-dados.md).
+`int006-ttc-check` exercita a integração real da biblioteca por USB com
+Payload, SD e solo simulados. As bancadas antigas conservam consumidor
+simulado próprio. Após corrigir a admissão de memória, o roteiro original
+passou na bancada USB e no firmware normal. Relatórios e histórico da
+reprovação estão na INT-006. O parser mantém teto de 98.304 bytes e pode
+rejeitar por NO_MEMORY; esse teto não é reserva permanente na inicialização.
+
+Na revisão da estação sobre `f7af605`, foram identificadas pendências de
+durabilidade do conteúdo antes de `cf`, continuação após cauda truncada no
+registro de IDs e continuidade da recepção em erro de log. A garantia do
+contrato continua exigida; correções pertencem ao TT&C. Mensagens preparadas,
+sem envio externo, estão nos [encaminhamentos OBC](../../obc-dh/encaminhamentos-2026-11-11.md).
 
 As condições do Payload incluem granularidade, unidades, validade, tráfego,
 rajadas e retenção. A conservação de atualizações ADS-B intermediárias exige

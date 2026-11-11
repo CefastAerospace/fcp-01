@@ -3,6 +3,27 @@
 **Estado:** Pendente
 **Responsáveis:** OBC-DH, EPS e demais setores envolvidos
 
+Complemento de limites em 11/11/2026: nova bancada comprovou NO_MEMORY,
+preservação integral do snapshot anterior por CRC no contexto proprietário
+e aceitação do próximo snapshot. Heap interno mínimo de 1.040 bytes e
+pico do parser de 22.220 bytes. Outra bancada saturou o cache, contabilizou
+oito perdas e retomou admissões após confirmar/esvaziar as 32 posições.
+Evidências na [INT-006](../03-integracao/INT-006-fluxo-de-dados.md#limites-de-capacidade-e-memória--11112026).
+Input/SD simulados, sem corte de energia ou recuperação persistente; a
+tarefa e os cenários originais permanecem pendentes.
+
+Complemento local de 11/11/2026: `int006-stress-check` passou no ESP32/USB
+com timeout, exclusividade após expiração, descarte de resultado tardio,
+BUSY, READ_FAILED parcial e NO_SPACE injetados no backend simulado. O
+diário desativou a gravação; falhas foram contabilizadas, mas USB e sete
+confirmações em RAM continuaram. Seis CONFIRM não persistidos podem voltar
+a gerar retransmissão após reset. Os testes existentes TT&C na placa
+também aprovaram falha local e reserva de eventos TX com transportes falsos.
+O firmware obc foi restaurado e verificado. Logs, métricas e limites na
+[INT-006](../03-integracao/INT-006-fluxo-de-dados.md#estresse-adicional-sem-periféricos--11112026).
+Esse recorte não injeta corte de energia, travamento físico, falha FAT32
+ou reinício da estação; não encerra os cenários originais desta tarefa.
+
 A execução e o relato dos ensaios cabem ao setor de testes; a análise e as correções de firmware cabem ao responsável OBC-DH, com apoio dos setores envolvidos. Seguir as [responsabilidades e regras de reexecução](../README.md#responsabilidades-correção-e-reexecução).
 
 ## Objetivo
@@ -81,6 +102,17 @@ retomada completa de missão/atuações seguem nas integrações INT-007/INT-008
 Os procedimentos das ferramentas estão em [tools/README.md](../../tools/README.md).
 
 ## Checklist de execução por cenário
+
+Complemento de preparação — 11/11/2026: o OBC já consome eventos TX e `cf`
+e atende `request_log`. A bancada `int006-ttc-check` passou na placa após
+correção da admissão de memória, sem alterar o roteiro. `ObcDownlinkCheck.py`
+perde um `cf` com solo simulado e verifica
+retentativa/extração; esse recorte não comprova os resets físicos abaixo.
+No cenário existente de pendências após reset, registrar ID, conteúdo e
+instante original antes/depois do TX, de `cf` e da persistência de CONFIRM,
+incluindo repetição após reinício da estação. As falhas da estação foram
+encaminhadas ao TT&C; ensaiar cauda truncada e erro de log na versão corrigida.
+Critérios, casos e resultados esperados anteriores permanecem preservados.
 
 - [ ] **Condições da injeção:** registrar falha aplicada, instante, duração, método seguro aprovado, limites de detecção/recuperação e efeito esperado sobre dados/saídas. Sem política ou limite aprovado, registrar impedimento e responsável; não inventar timeout de aceitação.
 - [ ] **I2C preso e liberado:** após COM-003, aplicar SDA/SCL presos pelo método acordado; conferir sinalização, pedidos ativos/pendentes, tentativas e estado após esgotamento. Liberar a falha e verificar retorno segundo a política, sem acesso concorrente a `Wire`. Timeout por transferência não comprova recuperação do barramento ou callback travado.

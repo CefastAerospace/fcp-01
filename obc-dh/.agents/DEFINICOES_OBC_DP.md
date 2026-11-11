@@ -4,7 +4,7 @@
 
 Este documento reúne custos, decisões e hipóteses de dimensionamento para o Design Package. As referências ao DP seguem os materiais citados pelos setores; a versão Markdown indicada no remoto não está neste checkout. Custos e estimativas não constituem medição da montagem ou aceite de requisitos.
 
-O estado atual inclui receptor UART local, codecs/leitor v1/v2/v3 e a primeira etapa do fluxo integrado. Persistência binária interna está implementada; o conteúdo externo conserva JSON nos contratos correspondentes. Aceites, produtor Pi, montagem do cartão, precisão física, downlink agregado e extração permanecem nas integrações/ensaios do [painel](TODO.md).
+O estado atual inclui receptor UART local, codecs/leitor v1/v2/v3/FCD1 e integração OBC de downlink identificado e extração `request_log` (11/11/2026). Persistência binária interna está implementada; o conteúdo externo conserva JSON nos contratos correspondentes. Aceites, produtor Pi, montagem do cartão, precisão física e execução integrada permanecem nas integrações/ensaios do [painel](TODO.md).
 
 Os cálculos de atualizações individuais v1 abaixo são hipóteses históricas de dimensionamento. Não representam automaticamente os snapshots completos adotados em 05/11. Os valores financeiros, parâmetros de rádio e critérios de validação foram preservados.
 
@@ -118,6 +118,17 @@ Para 600 s, usar a quantidade acordada/medida de cada tipo de registro. Permanec
 O SD conservará os registros completos recebidos pelo OBC. O downlink usa estados agregados por aeronave em JSON, conforme decisão de Payload/TT&C e [contrato compartilhado](../../common/protocol/ttc-json.md). `BuildAircraft()` inclui ICAO, posição, altitude, velocidade, rumo, horário e contagem; `Send()` enfileira o corpo sem `n`. `SendTelemetry()` gera TM de estado. Não existe fragmentação nem CRC16 de aplicação; a integridade RF usa CRC do LoRa.
 
 Mantêm-se **400 estados agregados de 150 bytes de corpo JSON** como hipótese de dimensionamento, não taxa operacional nem tamanho garantido. São 60 kB de corpos, mais até 4 kB do contador `n` inserido pelo TT&C. Para **sessenta TMs**, reserva-se o limite final de 255 bytes por quadro: **15,3 kB**. O total passa a **79,3 kB de JSON no ar**, incluindo `n` e excluindo ACKs, TCs, eventos e retransmissões. Metadados da ponte `gs`, terminadores de linha e logs do notebook não trafegam nesse payload RF.
+
+**Atualização de 11/11/2026:** o OBC usa `SendAircraft` com ID estável e
+confirmação `cf`, com timeout de 10 s provisórios. Os 79,3 kB continuam uma
+hipótese histórica, sem dimensionar as confirmações, retentativas ou cada
+alteração agora retida. O teste TT&C mede 186 bytes no quadro de aeronave
+com ID máximo e 59 bytes em `cf`; isso não é um perfil de tráfego medido.
+FCD1 acrescenta DATA de 68 bytes e CONFIRM de 36 bytes, com fechamento e
+abertura de segmentos por registro. Contar também BOOT/referências por
+segmento, metadados FAT32 e custo da recuperação. Reavaliar o orçamento com
+taxas, rajadas e medições acordadas, sem alterar os parâmetros ou critérios
+originais. A implementação de extração não comprova seu desempenho físico.
 
 O exemplo de aeronave do contrato tem 119 bytes já com `n`; o de TM tem 195 bytes. São exemplos, não máximos. A provisão de 160 bytes por estado agrega um corpo estimado de 150 bytes à reserva máxima de dez bytes para `n`. Valores/campos reais variam; medir serialização e ajustar o orçamento se os corpos superarem essa hipótese, preservando o limite de 245 bytes.
 

@@ -68,7 +68,7 @@ include_dir = headers
 test_dir = tests
 
 [env:obc]
-platform = espressif32
+platform = espressif32@6.6.0
 board = esp32doit-devkit-v1
 framework = arduino
 monitor_speed = 115200
@@ -84,7 +84,7 @@ Confira também as pastas `headers/`, `src/` e `tests/`; crie somente as que est
 
 Bibliotecas adicionais devem ser declaradas em `lib_deps` no ambiente `[env:obc]`, conforme os periféricos forem integrados. O PlatformIO baixa as dependências durante a preparação da compilação; não é necessário instalar antecipadamente bibliotecas para todos os periféricos.
 
-Para padronizar os computadores da equipe, mantenha as versões validadas da plataforma e das bibliotecas fixadas no `platformio.ini`. A configuração base acima é ilustrativa. No arquivo atual, ArduinoJson 7.0.4 e LoRa 0.8.0 estão fixados; `tt-c` vem do checkout local. `platform = espressif32` não fixa a plataforma. As evidências de 09/11 usaram Espressif32 6.6.0, Arduino ESP32 2.0.14 e GCC Xtensa 8.4.0; isso não garante a mesma resolução em uma instalação nova. Fixação adicional de plataforma exige alteração de configuração própria, não é executada nesta revisão documental.
+Para padronizar os computadores da equipe, mantenha as versões validadas da plataforma e das bibliotecas fixadas no `platformio.ini`. A configuração base acima é ilustrativa. Desde 11/11/2026, o consumidor OBC fixa Espressif32 6.6.0, ArduinoJson 7.0.4 e LoRa 0.8.0; `tt-c` vem do checkout local. Os ambientes derivados herdam a plataforma, que corresponde ao Arduino ESP32 2.0.14 e GCC Xtensa 8.4.0 das evidências existentes. O ambiente próprio do TT&C não foi alterado.
 
 ## Comandos de uso diário
 
@@ -116,7 +116,42 @@ A sequência de INT-003 continua de bancada. INT-004 inicia TT&C no Core 0, prio
 
 `set_time` valida segundos Unix u32 e aplica uma referência em RAM, tentando persistir seus metadados. `get_status`/`request_tm` publicam o estado integrado: UTC desconhecido vira `null`, `ac` vem do último snapshot válido e `msg` continua `null`. O modo permanece `bench`. Dependências do OBC: `tt-c` local, LoRa 0.8.0 e ArduinoJson 7.0.4 com o patch controlado existente; ambientes UART preservam as dependências anteriores.
 
-Verificação da INT-006, após boot novo, dentro de `obc-dh/`, com Python contendo pyserial:
+**Integração atual de entregas/request_log — 11/11/2026:** usar
+`ObcDownlinkCheck.py PORTA`, ou `--bench` com `int006-ttc-check`.
+Comandos, escopo e limitações estão no
+[guia de extração](../tools/README.md#integração-ttc-e-request_log--11112026).
+O ambiente novo passou na placa após corrigir a admissão de memória; a
+primeira reprovação e a reexecução estão preservadas na INT-006. O firmware
+normal também passou e ficou restaurado na placa. As bancadas antigas
+conservam seus consumidores simulados. O timeout de 10 s é provisório.
+
+**Complemento cliente real/TM/tempo:** `ObcStationCheck.py PORTA --bench`
+usa o mesmo `int006-ttc-check`, com o cliente TT&C real, SD/Payload
+simulados e leitor nativo existente. Sem --bench, verifica `obc` sem
+periféricos. Os dois recortes passaram; procedimento, artefatos isolados
+e resultados estão no
+[guia](../tools/README.md#cliente-real-da-estação-e-tmtempo--11112026).
+Esse roteiro acrescenta cobertura sem alterar os testes históricos.
+
+**Estresse adicional:** `int006-stress-check` acrescenta injeções exclusivas
+no backend simulado; `ObcStressCheck.py PORTA --report ARQUIVO_NOVO` passou
+na placa com timeout, busy, erro parcial, falha de gravação e confirmações
+desconhecida/duplicada/atrasada. Restaurar obc ao terminar. Comandos,
+limiares e limites no
+[guia](../tools/README.md#estresse-em-um-esp32-e-usb--11112026).
+
+**Limites de capacidade/memória:** `int006-capacity-check` e
+`int006-memory-check` usam `ObcLimitsCheck.py PORTA --case capacity|memory
+--report ARQUIVO_NOVO`. São cenários adicionais com artefatos próprios,
+sem alterar os vetores antigos. Ambos passaram na placa; procedimento,
+barreiras e limites no
+[guia](../tools/README.md#limites-de-capacidade-e-memória--11112026).
+O mínimo de heap interno foi 1.040 bytes durante esgotamento; não garante
+todos os máximos simultâneos. Ao terminar, restaurar e verificar obc.
+
+Verificação histórica da primeira etapa INT-006, após boot novo, dentro de
+`obc-dh/`, com Python contendo pyserial. O roteiro abaixo espera
+`request_log = invalid_cmd` e não aceita `ac`; não aplicá-lo ao firmware novo:
 
 ```bash
 pio run -e int006-check -t upload --upload-port /dev/ttyUSB0

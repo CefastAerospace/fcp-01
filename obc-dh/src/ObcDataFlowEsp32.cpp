@@ -16,6 +16,7 @@ namespace {
     RecordQueue records;
     Journal journal;
     obc_delivery::Queue deliveries;
+    obc_downlink::LogMailbox log_mailbox;
     bool delivery_reader_ready = false;
     obc_payload::Receiver receiver;
     std::unique_ptr<uint8_t[]> snapshot_first;
@@ -33,9 +34,11 @@ namespace {
     uint64_t startup_storage_failures = 0;
     uint64_t last_diagnostic_ms = 0;
     uint64_t maximum_poll_gap_ms = 0;
+    size_t parser_peak_bytes = 0;
     obc_storage::RESULT writer_result = {};
     constexpr uint32_t payload_stack_bytes = 8 * 1024;
     constexpr uint32_t writer_stack_bytes = 8 * 1024;
+    constexpr size_t startup_margin_bytes = 4096;
 
     // ─── HELPERS ──────────────────────────────────────────────────────
 
@@ -145,10 +148,19 @@ namespace {
             const uint64_t now_ms = obc_time::esp32::GetMonotonicMs();
             const obc_payload::STATUS status = obc_payload::esp32::Poll();
             if (status == obc_payload::STATUS::READY) PublishSnapshot(*receiver.GetSnapshot());
+#if defined(OBC_CAPACITY_BENCH) || defined(OBC_MEMORY_BENCH)
+            if (status != obc_payload::STATUS::WAITING) {
+                portENTER_CRITICAL(&state_lock);
+                const auto delivery_statistics = deliveries.GetStatistics();
+                portEXIT_CRITICAL(&state_lock);
+                ObserveLimitsPayload(status, receiver.GetSnapshot(), delivery_statistics);
+            }
+#endif
             const obc_payload::STATISTICS& observed = receiver.GetStatistics();
             portENTER_CRITICAL(&state_lock);
             state.SetPayloadStatistics(observed.complete_candidates, observed.rejected,
                 observed.missing_positions, observed.duplicates);
+            parser_peak_bytes = observed.parser_peak_bytes;
             const uint64_t gap = now_ms - previous_ms;
             if (gap > maximum_poll_gap_ms) maximum_poll_gap_ms = gap;
             portEXIT_CRITICAL(&state_lock);
@@ -177,14 +189,17 @@ namespace {
 #else
         const JOURNAL_IO io = {Open, Append, Close, nullptr};
 #endif
-        journal.Init(io, stamp, static_cast<uint32_t>(esp_reset_reason()));
-        UpdateWriterState();
-#if !defined(OBC_FLOW_BENCH) || defined(OBC_DELIVERY_BENCH)
-#ifdef OBC_DELIVERY_BENCH
+        // Os mesmos callbacks atendem recuperação e extração, sempre neste contexto.
+#if defined(OBC_FLOW_BENCH) && !defined(OBC_DELIVERY_BENCH)
+        const obc_delivery::READER_IO reader = {};
+#elif defined(OBC_DELIVERY_BENCH)
         const obc_delivery::READER_IO reader = GetBenchReaderIO();
 #else
         const obc_delivery::READER_IO reader = {ListDelivery, ReadDelivery, nullptr};
 #endif
+        journal.Init(io, stamp, static_cast<uint32_t>(esp_reset_reason()));
+        UpdateWriterState();
+#if !defined(OBC_FLOW_BENCH) || defined(OBC_DELIVERY_BENCH)
         obc_delivery::RECOVERY recovery = {};
         delivery_reader_ready = obc_delivery::Audit(reader, recovery);
         Serial.printf("[DELIVERY] recovery=%u data=%llu confirm=%llu corrupt=%llu tails=%llu orphan=%llu cache_bytes=%u\n",
@@ -205,6 +220,18 @@ namespace {
         }
         RECORD_BLOCK block = {};
         for (;;) {
+            uint16_t log_sequence = 0;
+            ttc::LOG_REQUEST log_request = {};
+            portENTER_CRITICAL(&state_lock);
+            const bool log_work = log_mailbox.Begin(log_sequence, log_request);
+            portEXIT_CRITICAL(&state_lock);
+            if (log_work) {
+                obc_downlink::LOG_RESPONSE response = {};
+                obc_downlink::BuildLogResponse(log_sequence, log_request, reader, response);
+                portENTER_CRITICAL(&state_lock);
+                log_mailbox.Complete(response);
+                portEXIT_CRITICAL(&state_lock);
+            }
 #if !defined(OBC_FLOW_BENCH) || defined(OBC_DELIVERY_BENCH)
             // Somente este contexto grava DATA/CONFIRM e lê segmentos fechados.
             obc_delivery::RECORD delivery_record = {};
@@ -289,17 +316,29 @@ bool Init(
     if (storage) {
         snapshot_first.reset(new (std::nothrow) uint8_t[snapshot_first_bytes]);
         snapshot_second.reset(new (std::nothrow) uint8_t[snapshot_second_bytes]);
-        // Orçamento do parser + pilhas + margem para estruturas FreeRTOS.
-        const size_t reserve = obc_payload::parser_memory_bytes + payload_stack_bytes + writer_stack_bytes
-            + obc_payload::esp32::transport_stack_bytes + 4096;
-        Serial.printf("[FLOW] RAM apos bloco SD: bloco=%u heap=%u byte_heap=%u reserva=%u\n",
+        // Admissão das tarefas ainda não criadas, em memória acessível por byte.
+        // O parser mantém seu teto por quadro e NO_MEMORY; não reserva 96 KiB.
+        const size_t stack_budget = payload_stack_bytes + writer_stack_bytes
+            + obc_payload::esp32::transport_stack_bytes;
+        const size_t reserve = stack_budget + startup_margin_bytes;
+        const size_t flow_stack = payload_stack_bytes > writer_stack_bytes
+            ? payload_stack_bytes : writer_stack_bytes;
+        const size_t largest_stack = flow_stack > obc_payload::esp32::transport_stack_bytes
+            ? flow_stack : obc_payload::esp32::transport_stack_bytes;
+        const size_t byte_heap = heap_caps_get_free_size(MALLOC_CAP_INTERNAL | MALLOC_CAP_8BIT);
+        const size_t byte_largest = heap_caps_get_largest_free_block(MALLOC_CAP_INTERNAL | MALLOC_CAP_8BIT);
+        Serial.printf("[FLOW] RAM apos bloco SD: bloco=%u heap=%u byte_heap=%u byte_largest=%u stack_budget=%u margin=%u reserva=%u parser_limit=%u\n",
             snapshot_first && snapshot_second ? 1U : 0U, ESP.getFreeHeap(),
-            heap_caps_get_free_size(MALLOC_CAP_INTERNAL | MALLOC_CAP_8BIT), static_cast<unsigned>(reserve));
-        if (!snapshot_first || !snapshot_second || ESP.getFreeHeap() < reserve) {
+            static_cast<unsigned>(byte_heap), static_cast<unsigned>(byte_largest),
+            static_cast<unsigned>(stack_budget), static_cast<unsigned>(startup_margin_bytes),
+            static_cast<unsigned>(reserve), static_cast<unsigned>(obc_payload::parser_memory_bytes));
+        // Fragmentação pode impedir uma pilha mesmo quando a soma cabe.
+        // A criação real das tarefas abaixo continua sendo verificada.
+        if (!snapshot_first || !snapshot_second || byte_heap < reserve || byte_largest < largest_stack) {
             storage = false;
             snapshot_first.reset();
             snapshot_second.reset();
-            Serial.printf("[FLOW] Escritor inativo: reserva insuficiente para parser e tarefas\n");
+            Serial.printf("[FLOW] Escritor inativo: memoria por byte insuficiente para tarefas e margem\n");
         }
     }
     startup_storage_failures = storage ? 0 : 1;
@@ -389,6 +428,7 @@ void ReportDiagnostics(
     const bool storage = writer_ready;
     const obc_storage::RESULT result = writer_result;
     const uint64_t poll_gap = maximum_poll_gap_ms;
+    const size_t parser_peak = parser_peak_bytes;
     portEXIT_CRITICAL(&state_lock);
     const auto transport = obc_payload::esp32::GetTransportStatistics();
     obc_record::RECORD record = {};
@@ -419,11 +459,20 @@ void ReportDiagnostics(
         payload_task ? static_cast<unsigned>(uxTaskGetStackHighWaterMark(payload_task)) : 0U,
         writer_task ? static_cast<unsigned>(uxTaskGetStackHighWaterMark(writer_task)) : 0U,
         static_cast<unsigned>(transport.stack_free_bytes), static_cast<unsigned long long>(transport.full_observations));
+    Serial.printf("[FLOW-MEMORY] heap=%u byte_heap=%u byte_largest=%u byte_min=%u parser_peak_bytes=%u parser_limit_bytes=%u\n",
+        ESP.getFreeHeap(),
+        static_cast<unsigned>(heap_caps_get_free_size(MALLOC_CAP_INTERNAL | MALLOC_CAP_8BIT)),
+        static_cast<unsigned>(heap_caps_get_largest_free_block(MALLOC_CAP_INTERNAL | MALLOC_CAP_8BIT)),
+        static_cast<unsigned>(heap_caps_get_minimum_free_size(MALLOC_CAP_INTERNAL | MALLOC_CAP_8BIT)),
+        static_cast<unsigned>(parser_peak), static_cast<unsigned>(obc_payload::parser_memory_bytes));
     previous = statistics;
 #if !defined(OBC_FLOW_BENCH) || defined(OBC_DELIVERY_BENCH)
     portENTER_CRITICAL(&state_lock);
     const auto delivery_statistics = deliveries.GetStatistics();
     portEXIT_CRITICAL(&state_lock);
+#if defined(OBC_CAPACITY_BENCH) || defined(OBC_MEMORY_BENCH)
+    ObserveLimitsDeliveries(delivery_statistics);
+#endif
     Serial.printf("[DELIVERY] occupied=%u peak=%u accepted=%llu repeated=%llu lost=%llu storage_failures=%llu attempts=%llu tx_failures=%llu confirmed=%llu unknown=%llu evicted=%llu\n",
         static_cast<unsigned>(delivery_statistics.occupied), static_cast<unsigned>(delivery_statistics.high_water),
         static_cast<unsigned long long>(delivery_statistics.accepted), static_cast<unsigned long long>(delivery_statistics.repeated),
@@ -464,6 +513,29 @@ bool ConfirmDelivery(
     portEXIT_CRITICAL(&state_lock);
     if (result && writer_task) xTaskNotifyGive(writer_task);
     return result;
+}
+
+obc_storage::STATUS RequestLog(
+    uint16_t sequence,
+    const ttc::LOG_REQUEST& request
+) {
+    if (!writer_task) return obc_storage::STATUS::NOT_INITIALIZED;
+    const uint64_t now_ms = obc_time::esp32::GetMonotonicMs();
+    portENTER_CRITICAL(&state_lock);
+    const bool reserved = log_mailbox.Submit(sequence, request, now_ms);
+    portEXIT_CRITICAL(&state_lock);
+    if (reserved) xTaskNotifyGive(writer_task);
+    return reserved ? obc_storage::STATUS::OK : obc_storage::STATUS::BUSY;
+}
+
+bool TakeLogResponse(
+    obc_downlink::LOG_RESPONSE& out
+) {
+    const uint64_t now_ms = obc_time::esp32::GetMonotonicMs();
+    portENTER_CRITICAL(&state_lock);
+    const bool ready = log_mailbox.Take(now_ms, out);
+    portEXIT_CRITICAL(&state_lock);
+    return ready;
 }
 
 } // namespace esp32

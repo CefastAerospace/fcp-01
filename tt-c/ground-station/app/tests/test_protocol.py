@@ -57,3 +57,9 @@ def test_loss_tracker_wraps_and_restarts():
     tracker.feed(0)  # Satélite reiniciou.
     assert tracker.restarts == 1
     assert tracker.lost == 498
+
+
+@pytest.mark.parametrize("constant", ["NaN", "Infinity", "-Infinity"])
+def test_parse_rejects_non_json_constants(constant):
+    received = parse_line('{"n":1,"t":"ac","icao":"X","alt":%s}' % constant)
+    assert received.kind == "log"

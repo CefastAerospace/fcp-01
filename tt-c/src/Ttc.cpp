@@ -322,8 +322,22 @@ int Ttc::FindDedupSlot(
 // Privado:
 void Ttc::TransmitNext(
 ) {
-    if (hold_tx) return;
+    // Teste de hold_tx e reserva de transmitting são atômicos com HoldTransmit():
+    // sem isso, HoldTransmit(true) poderia retornar true entre o teste e o
+    // início do TX, liberando a carga de alto consumo junto com o pico (DP §5.2).
+    portENTER_CRITICAL(&hold_lock);
+    bool blocked = hold_tx;
+    if (!blocked) transmitting = true;
+    portEXIT_CRITICAL(&hold_lock);
+    if (blocked) return;
 
+    TransmitFrame();
+    transmitting = false;
+}
+
+// Privado:
+void Ttc::TransmitFrame(
+) {
     // ACKs primeiro: uma rajada de telemetria não atrasa a confirmação de TC.
     TX_FRAME frame;
     bool has_frame = xQueueReceive(ack_queue, &frame, 0) == pdTRUE
@@ -343,9 +357,7 @@ void Ttc::TransmitNext(
         return;
     }
 
-    transmitting = true;
     bool sent = TransmitTo(radio, rf_counter, frame);
-    transmitting = false;
     if (sent) sent_mask |= LINK_RF;
 
     portENTER_CRITICAL(&stats_lock);
@@ -363,7 +375,10 @@ void Ttc::PublishTransmitEvent(
     if (!frame.tracked) return;
 
     // A vaga foi reservada em SendDelivery(); a fila comporta todas as reservas.
-    TX_EVENT event = {frame.id, sent != 0, frame.dest, sent};
+    // Com RF no destino, só o RF conta como sucesso: a cópia no cabo sempre
+    // "termina" em voo, mesmo sem nada ligado, e esconderia a falha de RF.
+    bool success = (frame.dest & LINK_RF) ? (sent & LINK_RF) != 0 : sent != 0;
+    TX_EVENT event = {frame.id, success, frame.dest, sent};
     if (xQueueSend(event_queue, &event, 0) != pdTRUE) {
         portENTER_CRITICAL(&stats_lock);
         if (tracked_pending > 0) tracked_pending--;
@@ -660,7 +675,9 @@ bool Ttc::HoldTransmit(
     bool hold,
     uint32_t wait_ms
 ) {
+    portENTER_CRITICAL(&hold_lock);
     hold_tx = hold;
+    portEXIT_CRITICAL(&hold_lock);
     if (!hold) {
         Notify();
         return !transmitting;

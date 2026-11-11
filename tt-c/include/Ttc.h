@@ -92,8 +92,10 @@ struct TX_FRAME {
 /**
  * @brief Conclusão local de uma entrega enviada por SendDelivery().
  *
- * @details success indica que ao menos um meio de destino terminou o TX;
- * não indica recepção pelo solo, que chega por ReceiveConfirmation().
+ * @details Com LINK_RF no destino, success indica que o TX de RF terminou;
+ * a cópia no cabo não conta, pois a UART "envia" mesmo sem nada ligado. Sem
+ * RF no destino, success indica que ao menos um meio terminou o TX. Não
+ * indica recepção pelo solo, que chega por ReceiveConfirmation().
  */
 struct TX_EVENT {
     ttc::DELIVERY_ID id;
@@ -362,7 +364,8 @@ private:
     uint16_t rf_counter = 0;    // Só a task do enlace usa.
     uint16_t wired_counter = 0; // Só a task do enlace usa.
     volatile bool hold_tx = false;
-    volatile bool transmitting = false;
+    volatile bool transmitting = false;          // Reservado sob hold_lock em TransmitNext().
+    portMUX_TYPE  hold_lock = portMUX_INITIALIZER_UNLOCKED; // hold_tx × início do TX.
     volatile bool radio_healthy = false;
     uint32_t last_health_ms = 0;  // Só a task do enlace usa.
     volatile uint32_t beacon_period_ms = 0;
@@ -446,6 +449,7 @@ private:
      * @brief Transmite o próximo pacote, ACKs primeiro, em cada meio de destino.
      */
     void TransmitNext();
+    void TransmitFrame(); // Corpo de TransmitNext(), com transmitting já reservado.
 
     /**
      * @brief Insere o contador do meio e transmite uma cópia do pacote.

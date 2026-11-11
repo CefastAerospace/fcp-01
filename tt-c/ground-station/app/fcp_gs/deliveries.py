@@ -16,6 +16,7 @@ import threading
 from pathlib import Path
 
 from .protocol import DeliveryId
+from .session_log import fsync_directory
 
 
 class DeliveryStore:
@@ -36,7 +37,9 @@ class DeliveryStore:
         path.parent.mkdir(parents=True, exist_ok=True)
         if path.exists():
             self._load(path)
+            self._repair_tail(path)
         self._file = path.open("a", encoding="utf-8")
+        fsync_directory(path.parent)
 
     def _load(self, path: Path) -> None:
         with path.open("r", encoding="utf-8", errors="replace") as source:
@@ -50,6 +53,21 @@ class DeliveryStore:
                     self._ids.add((boot, seq))
                 else:
                     self.ignored_lines += 1
+
+    @staticmethod
+    def _repair_tail(path: Path) -> None:
+        """Descarta uma última linha sem "\\n" (gravação cortada por queda de energia).
+
+        Sem isso, o próximo ID seria anexado colado à cauda e ficaria ilegível
+        no reinício seguinte, embora já tivesse sido confirmado ao satélite.
+        """
+        with path.open("rb+") as target:
+            data = target.read()
+            if not data or data.endswith(b"\n"):
+                return
+            target.truncate(data.rfind(b"\n") + 1)
+            target.flush()
+            os.fsync(target.fileno())
 
     def __contains__(self, delivery: DeliveryId) -> bool:
         with self._lock:

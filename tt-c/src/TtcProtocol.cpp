@@ -459,7 +459,13 @@ namespace ttc {
         if (measureJson(doc) > limit) return 0;
 
         for (size_t i = 0; i < count; i++) {
-            if (!ValidLogName(entries[i].name, false)) break;
+            // Nome fora do contrato (espaço, longo) não pode ser lido: é pulado e
+            // conta como consumido. Com break, a página sairia vazia com end:false
+            // e o cliente repetiria o mesmo cursor para sempre.
+            if (!ValidLogName(entries[i].name, false)) {
+                used++;
+                continue;
+            }
             JsonArray item = list.add<JsonArray>();
             item.add(entries[i].name);
             item.add(entries[i].size);

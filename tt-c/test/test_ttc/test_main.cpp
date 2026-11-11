@@ -428,6 +428,26 @@ static void TestDeliveryLocalFailure(
     TEST_ASSERT_EQUAL(1, link.GetLinkStats().tx_errors_count);
 }
 
+static void TestDeliveryRfFailureWithWiredCopy(
+) {
+    FakeTransport radio;
+    FakeTransport wired;
+    Ttc link(radio, &wired);
+    link.Init();
+
+    // O cabo "envia" mesmo sem nada ligado: não pode mascarar a falha de RF.
+    radio.fail_send = true;
+    ttc::DELIVERY_ID id = {1, 3};
+    TEST_ASSERT_TRUE(link.SendAircraft(Aircraft(), ttc::AIRCRAFT_ALL, id));
+    Drain(link);
+
+    TX_EVENT event;
+    TEST_ASSERT_TRUE(link.ReceiveTransmitEvent(event, 0));
+    TEST_ASSERT_FALSE(event.success);
+    TEST_ASSERT_EQUAL_UINT8(LINK_RF | LINK_WIRED, event.dest);
+    TEST_ASSERT_EQUAL_UINT8(LINK_WIRED, event.sent);
+}
+
 static void TestDeliveryReservesEvents(
 ) {
     FakeTransport radio;
@@ -530,6 +550,7 @@ void setup(
     RUN_TEST(TestTelemetryQueuedOutput);
     RUN_TEST(TestDeliveryEventCarriesId);
     RUN_TEST(TestDeliveryLocalFailure);
+    RUN_TEST(TestDeliveryRfFailureWithWiredCopy);
     RUN_TEST(TestDeliveryReservesEvents);
     RUN_TEST(TestGroundConfirmation);
     RUN_TEST(TestExplicitDestination);

@@ -77,8 +77,9 @@ def parse_line(line: str) -> Received:
         return Received("log", text=line)
 
     try:
-        obj = json.loads(line)
-    except json.JSONDecodeError:
+        # NaN/Infinity não são JSON: aceitos, travariam /api/state no navegador.
+        obj = json.loads(line, parse_constant=_reject_constant)
+    except (json.JSONDecodeError, ValueError):
         return Received("log", text=line)
     if not isinstance(obj, dict):
         return Received("log", text=line)
@@ -92,6 +93,10 @@ def parse_line(line: str) -> Received:
     if obj.get("err") == "crc":
         return Received("crc", meta=meta)
     return Received("raw", meta=meta, text=str(obj.get("raw", "")))
+
+
+def _reject_constant(name: str):
+    raise ValueError(f"constante não permitida em JSON: {name}")
 
 
 class LossTracker:

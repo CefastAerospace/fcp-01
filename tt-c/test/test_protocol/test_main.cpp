@@ -532,6 +532,19 @@ static void TestBuildLogList(
     ttc::BuildLogList(3, &entries[0], 1, true, out, sizeof(out), used);
     TEST_ASSERT_NOT_NULL(strstr(out, "\"end\":false"));
 
+    // Nome inválido é pulado sem interromper a listagem.
+    ttc::LOG_ENTRY mixed[3] = {};
+    strcpy(mixed[0].name, "com espaco.bin");
+    strcpy(mixed[1].name, "a.bin");
+    mixed[1].size = 1;
+    strcpy(mixed[2].name, "b.bin");
+    mixed[2].size = 2;
+    ttc::BuildLogList(5, mixed, 3, false, out, sizeof(out), used);
+    TEST_ASSERT_EQUAL_size_t(3, used);
+    TEST_ASSERT_EQUAL_STRING(
+        "{\"t\":\"lg\",\"rq\":5,\"op\":\"list\",\"ls\":[[\"a.bin\",1,0],[\"b.bin\",2,0]],\"end\":true}",
+        out);
+
     ttc::BuildLogList(4, nullptr, 0, false, out, sizeof(out), used);
     TEST_ASSERT_EQUAL_STRING("{\"t\":\"lg\",\"rq\":4,\"op\":\"list\",\"ls\":[],\"end\":true}", out);
 }

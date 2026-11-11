@@ -85,9 +85,10 @@ execução pendente, conforme encaminhamento à TES-008.
 | Arquivos fechados | Listagem, leitura por blocos, leitor FCP1/FCP2/FCP3/FCD1 e reconstrução local de pendências | Contrato final e implementação de `request_log` com respostas USB |
 
 O despacho atual aceita `ping`, `get_status`, `request_tm` e `set_time`.
-`request_log` permanece com resposta `invalid_cmd`. O pacote com ID estável,
-ACK de dados pelo solo, deduplicação na estação e eventos de TX precisam das
-adaptações descritas no [contrato de entregas](../../../common/protocol/obc-delivery.md).
+`request_log` permanece com resposta `invalid_cmd`. O TT&C já oferece o pacote
+com ID estável, a confirmação `cf` do solo, a deduplicação na estação e os
+eventos de TX ([contrato de entregas](../../../common/protocol/obc-delivery.md),
+[ttc-json.md](../../../common/protocol/ttc-json.md)); falta ligá-los no OBC.
 
 ## Histórico da preparação da segunda etapa — 10/11/2026
 
@@ -95,7 +96,7 @@ A primeira etapa abaixo já está implementada e verificada nos recortes registr
 
 - [ ] **Com Payload/TT&C:** definir quais campos podem compor aeronaves agregadas, unidades, idade/validade, seleção/frequência e comportamento de fila cheia/serialização recusada, respeitando o limite do TT&C e sem converter `id` em contagem ADS-B.
 - [ ] **Extração `request_log`:** acordar argumentos, seleção de arquivo fechado, respostas em blocos, término/erro, controle de avanço e ferramenta de solo. A API `Read` já existe; o contrato do comando não está definido apenas por seu nome no catálogo. Não inventar fragmentação RF ou resposta aceita por outro setor.
-- [ ] **Após o acordo:** reutilizar modelos, `BuildAircraft`/`Send`, armazenamento e leitor existentes; verificar a lógica local antes dos ensaios físicos. Nenhuma implementação da segunda etapa é declarada por esta revisão.
+- [ ] **Após o acordo:** reutilizar modelos, `SendAircraft`/`SendDelivery` (atualizado em 11/11; não `Send`), armazenamento e leitor existentes; verificar a lógica local antes dos ensaios físicos. Nenhuma implementação da segunda etapa é declarada por esta revisão.
 - [ ] **Ponta Pi:** obter responsável, porta/configuração, produtor de snapshots, aceite do enquadramento e perfil nominal/rajadas/backlog. Snapshots JSON são o conteúdo confirmado; FCPU também transmite cabeçalho e controles binários pelo cabo, sujeitos ao aceite externo.
 - [ ] **Critério por mensagem:** manter a pendência de cada atualização ADS-B intermediária com Payload/coordenação. O snapshot acumulado ou seu `id` não prova conservação individual.
 
@@ -107,7 +108,7 @@ Conectar recepção, referência temporal, registro e envio dos dados da missão
 
 ## Entrega
 
-Associar tempo aos dados/eventos, gravar missão/TM/estatísticas/falhas e persistir boots/referências. Tratar set_time validando args.unix em segundos Unix e correlacionando ao contador local em ms. Usar SendTelemetry() para estado e BuildAircraft()/Send() para aeronaves agregadas. Tratar falhas de serialização, filas e SD sem perdas silenciosas; implementar a extração pelo umbilical conforme contrato.
+Associar tempo aos dados/eventos, gravar missão/TM/estatísticas/falhas e persistir boots/referências. Tratar set_time validando args.unix em segundos Unix e correlacionando ao contador local em ms. Usar SendTelemetry() para estado e SendAircraft() (ou SendDelivery()) para aeronaves agregadas, consumindo ReceiveTransmitEvent() e ReceiveConfirmation(). Tratar falhas de serialização, filas e SD sem perdas silenciosas; implementar a extração pelo umbilical conforme contrato.
 
 ## Pré-requisitos
 
@@ -116,7 +117,7 @@ Associar tempo aos dados/eventos, gravar missão/TM/estatísticas/falhas e persi
 
 ## Definições e condições
 
-- TM via `SendTelemetry()` e aeronaves agregadas via `BuildAircraft()`/`Send()`. Corpo JSON ≤245 bytes sem `n`, quadro final ≤255 bytes, sem fragmentação e CRC de hardware LoRa. ACK prioritário e TX sob demanda já estão definidos; acordar frequência/seleção e tratar falhas de geração/enfileiramento. Não substituir demonstração de timestamp na TM por outro teste; preservar o critério e discutir evidência correspondente.
+- TM via `SendTelemetry()` e aeronaves agregadas via `SendAircraft()`/`SendDelivery()`, nunca `Send()`: só as entregas identificadas geram o evento de TX que encerra a tentativa em `Queue::BeginTransmit`; com `Send()`, um `cf` perdido trava a fila de entregas. Quando `SendAircraft()` retorna `false`, chamar `FinishDeliveryTransmit(id, false)`. Corpo JSON ≤245 bytes sem `n`, quadro final ≤255 bytes, sem fragmentação e CRC de hardware LoRa. ACK prioritário e TX sob demanda já estão definidos; acordar frequência/seleção e tratar falhas de geração/enfileiramento. Não substituir demonstração de timestamp na TM por outro teste; preservar o critério e discutir evidência correspondente.
 
 ## Critérios de conclusão
 

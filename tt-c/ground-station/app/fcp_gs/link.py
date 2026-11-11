@@ -119,8 +119,12 @@ class Link:
                 self._emit({"dir": "log", "kind": "error", "text": f"serial: {error}"})
                 time.sleep(1.0)
                 continue
-            if raw:
+            if not raw:
+                continue
+            try:
                 self.handle_line(raw.decode("utf-8", errors="replace"))
+            except Exception as error:  # A thread de leitura não pode morrer em silêncio.
+                print(f"[fcp_gs] falha ao tratar linha: {error!r}", flush=True)
 
     def handle_line(self, line: str) -> None:
         """Interpreta e distribui uma linha (público para testes e reprodução)."""
@@ -132,9 +136,14 @@ class Link:
         event = self._event(received)
         if delivery is not None:
             event["delivery"] = {"id": list(delivery), "repeated": repeated}
-        self._emit(event)  # Grava o pacote no log da sessão antes de confirmar.
+        # Entrega nova: o pacote precisa estar no disco (fsync) antes do "cf".
+        logged = self._emit(event, durable=delivery is not None and not repeated)
         if delivery is not None:
-            self._confirm_delivery(delivery, repeated)
+            if logged:
+                self._confirm_delivery(delivery, repeated)
+            else:
+                with self._cond:
+                    self.delivery_counts["confirm_errors"] += 1
         # O ACK só é entregue a send_tc() depois dos listeners: quem remove o
         # listener ao receber o ACK (ex.: tm-loss) ainda vê o "n" dele.
         self._deliver_ack(received)
@@ -229,13 +238,27 @@ class Link:
             event["text"] = received.text
         return event
 
-    def _emit(self, event: dict) -> None:
+    def _emit(self, event: dict, durable: bool = False) -> bool:
+        """Grava no log da sessão e avisa os listeners. Devolve False se a gravação falhou."""
+        logged = True
         if self.log is not None:
-            self.log.write(event)
+            try:
+                self.log.write(event, durable=durable)
+            except OSError as error:
+                logged = False
+                failure = {"dir": "log", "kind": "error", "text": f"log da sessão: {error}"}
+                self._notify(failure)
+        self._notify(event)
+        return logged
+
+    def _notify(self, event: dict) -> None:
         with self._cond:
             listeners = list(self._listeners)
         for listener in listeners:
-            listener(event)
+            try:
+                listener(event)
+            except Exception as error:  # Um listener com defeito não pode derrubar a recepção.
+                print(f"[fcp_gs] listener falhou: {error!r}", flush=True)
 
     # ─── Envio ────────────────────────────────────────────────────────
 

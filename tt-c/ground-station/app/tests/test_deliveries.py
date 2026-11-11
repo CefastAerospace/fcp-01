@@ -184,3 +184,64 @@ def test_download_rejects_inconsistent_response(tmp_path, make_link):
         download_file(link, name, tmp_path)
     assert error.value.code == "protocol"
     assert not (tmp_path / name).exists()
+
+
+def test_truncated_tail_does_not_corrupt_next_id(tmp_path, make_link):
+    path = tmp_path / "deliveries.jsonl"
+    first = make_link(deliveries=DeliveryStore(path))
+    first.handle_line(ac(1, (3, 5)))
+    first.deliveries.close()
+    with path.open("a") as file:
+        file.write('{"id":[3,')  # Gravação cortada por queda de energia.
+
+    second = make_link(deliveries=DeliveryStore(path))
+    second.handle_line(ac(2, (3, 6)))
+    second.deliveries.close()
+
+    third = DeliveryStore(path)
+    assert (3, 5) in third and (3, 6) in third
+    assert third.ignored_lines == 0
+    third.close()
+
+
+class FailingLog:
+    """Log da sessão cuja gravação durável falha (ex.: disco cheio)."""
+
+    path = "falha.jsonl"
+
+    def __init__(self) -> None:
+        self.durable_calls = 0
+
+    def write(self, event: dict, durable: bool = False) -> None:
+        if durable:
+            self.durable_calls += 1
+            raise OSError(28, "No space left on device")
+
+
+def test_no_confirmation_without_durable_session_log(make_link):
+    link = make_link()
+    log = FailingLog()
+    link.log = log
+    link.handle_line(ac(1, (3, 7)))
+
+    assert log.durable_calls == 1
+    assert link.stream.confirmations == []
+    assert (3, 7) not in link.deliveries
+    assert link.snapshot()["deliveries"]["confirm_errors"] == 1
+
+
+def test_new_delivery_is_logged_durably(make_link):
+    calls = []
+
+    class RecordingLog:
+        def write(self, event: dict, durable: bool = False) -> None:
+            calls.append((event.get("kind"), event.get("delivery"), durable))
+
+    link = make_link()
+    link.log = RecordingLog()
+    link.handle_line(ac(1, (3, 8)))
+    link.handle_line(ac(2, (3, 8)))  # Repetida: não precisa de fsync de novo.
+
+    packets = [(delivery, durable) for kind, delivery, durable in calls if kind == "packet"]
+    assert packets == [({"id": [3, 8], "repeated": False}, True), ({"id": [3, 8], "repeated": True}, False)]
+    assert link.stream.confirmations == [[3, 8], [3, 8]]

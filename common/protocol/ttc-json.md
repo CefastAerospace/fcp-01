@@ -219,8 +219,8 @@ A estação responde a cada recepção com uma confirmação na subida:
 
 | Chamada | Uso pelo OBC |
 |---|---|
-| `Ttc::SendAircraft(aircraft, available, id)` / `Ttc::SendDelivery(json, len, id)` | `true` indica que a entrega foi enfileirada. `false` é falha local imediata: ID inválido, pacote acima de 245 bytes, reservas esgotadas ou fila cheia. |
-| `Ttc::ReceiveTransmitEvent(event, wait)` | Uma conclusão por entrega aceita, com o mesmo `id`. `success` indica que ao menos um meio terminou o TX; `dest`/`sent` dizem quais. Corresponde a `FinishDeliveryTransmit(id, success)`. |
+| `Ttc::SendAircraft(aircraft, available, id)` / `Ttc::SendDelivery(json, len, id)` | `true` indica que a entrega foi enfileirada. `false` é falha local imediata: ID inválido, pacote acima de 245 bytes, reservas esgotadas ou fila cheia. Nesse caso não haverá evento, e o OBC chama `FinishDeliveryTransmit(id, false)` logo após `BeginDeliveryTransmit`; sem isso a fila de entregas fica presa na tentativa. |
+| `Ttc::ReceiveTransmitEvent(event, wait)` | Uma conclusão por entrega aceita, com o mesmo `id`. Com `rf` no destino, `success` indica que o TX de RF terminou; a cópia no umbilical não conta, porque a UART conclui a escrita mesmo sem nada ligado. Sem `rf` no destino, `success` indica que ao menos um meio terminou o TX. `dest`/`sent` dizem quais meios foram pedidos e concluídos. Corresponde a `FinishDeliveryTransmit(id, success)`. |
 | `Ttc::ReceiveConfirmation(id, wait)` | Confirmação do solo. Corresponde a `ConfirmDelivery(id)`. |
 
 O evento de conclusão nunca se perde: `SendDelivery` reserva uma vaga na fila
@@ -237,7 +237,7 @@ tentativa antes de `FinishTransmit`. Com as reservas esgotadas,
 | Fila de ACK de TC | 4, prioritária | ACK de TC sai antes de qualquer pacote da fila comum. |
 | Entregas pendentes de evento | 4 | O OBC usa 1 por vez. |
 | Confirmações aguardando o OBC | 8 | Excesso é descartado e contado em `confirmations_dropped`. |
-| Timeout de confirmação (OBC) | proposta ≥ 10 s | Precisa cobrir a fila comum cheia (16 × ~0,45 s em SF7) e a ida e volta (~0,4 s de aeronave + ~0,16 s de `cf` + estação). O valor final deve sair da medição na bancada. |
+| Timeout de confirmação (OBC) | proposta ≥ 10 s | Precisa cobrir a fila comum cheia (16 × ~0,50 s em SF7: 0,499968 s por quadro de 255 bytes, DP) e a ida e volta (~0,4 s de aeronave + ~0,16 s de `cf` + estação). O valor final deve sair da medição na bancada. |
 | Retentativas | OBC, sem limite | A mesma entrega continua até ser confirmada. A estação só reconfirma. |
 
 Piores casos verificados nos testes nativos (`test/test_protocol`):
@@ -282,7 +282,8 @@ Lista e lê arquivos fechados do SD do OBC. O TT&C valida os argumentos
 | `to` | ambas | Opcional. Destino das respostas: `rf` ou `wired` (USB/umbilical). Sem `to`, as respostas usam o meio do TC. |
 
 Nomes usam apenas `[A-Za-z0-9_.-]`, com até 39 caracteres, sem começar com `.`
-e sem `..`. Argumento ausente, de tipo errado, fora da faixa ou chave
+e sem `..`. Arquivos no SD com nome fora desse padrão não aparecem na listagem,
+pois não podem ser pedidos em `read`. Argumento ausente, de tipo errado, fora da faixa ou chave
 desconhecida recebe NACK `invalid_param`, sem resposta `lg`. Com `ok`, o OBC
 enfileira uma resposta `lg` com `rq` igual ao `seq` do TC. Falha ao
 enfileirar recebe `state_rejected`. Para responder pelo destino pedido, o OBC

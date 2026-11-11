@@ -16,6 +16,10 @@ const MAX_POINTS = 300;
 
 const $ = (id) => document.getElementById(id);
 const fmt = (value, digits = 1) => (typeof value === "number" ? value.toFixed(digits) : "—");
+// Texto vindo do enlace (qualquer transmissor na sync word) nunca entra cru em HTML.
+const escapeHtml = (value) => String(value).replace(/[&<>"']/g, (c) => ({
+  "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;",
+})[c]);
 const cssVar = (name) => getComputedStyle(document.documentElement).getPropertyValue(name).trim();
 
 let lastPacketAt = null;
@@ -217,7 +221,7 @@ class AircraftMap {
     const html = `<span class="ac-icon" style="color:${color}"><svg viewBox="0 0 24 24" width="20" height="20" style="transform:rotate(${heading}deg)"><path fill="currentColor" stroke="var(--bg)" stroke-width="0.8" d="M12 2c.8 0 1.4.8 1.4 1.8V9l7.6 4.6v2l-7.6-2.3v4.5l2.2 1.7V21L12 20l-3.6 1v-1.5l2.2-1.7v-4.5L3 15.6v-2L10.6 9V3.8C10.6 2.8 11.2 2 12 2z"/></svg></span>`;
     const icon = L.divIcon({ html, className: "", iconSize: [22, 22], iconAnchor: [11, 11] });
     const course = typeof ac.hdg === "number" ? `${fmt(heading, 0)}°` : "rumo —";
-    const tooltip = `<b class="ac-tip">${icao}</b> ${course}<br>alt ${fmt(ac.alt, 0)} ft · vel ${fmt(ac.vel, 0)} kt · ${ac.cnt ?? "—"} msgs`;
+    const tooltip = `<b class="ac-tip">${escapeHtml(icao)}</b> ${course}<br>alt ${fmt(ac.alt, 0)} ft · vel ${fmt(ac.vel, 0)} kt · ${escapeHtml(ac.cnt ?? "—")} msgs`;
     if (!entry.marker) {
       entry.marker = L.marker(point, { icon, zIndexOffset: 100 }).addTo(this.map)
         .bindTooltip(tooltip, { direction: "top", offset: [0, -12] });

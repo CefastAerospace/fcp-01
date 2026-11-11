@@ -49,7 +49,9 @@ struct LINK_STATS {
     uint32_t wired_rx_packets_count; // Parcela de rx_packets_count vinda do umbilical.
     uint32_t wired_tx_packets_count;
     uint32_t radio_resets_count;     // Reinicializações pela verificação de saúde.
-    uint32_t last_tc_ms;             // millis() do último TC válido; 0 = nenhum (REQ-OBC-011).
+    uint32_t last_tc_ms;             // millis() do último TC ou confirmação válida; 0 = nenhum (REQ-OBC-011).
+    uint32_t confirmations_count;    // Confirmações de entrega do solo repassadas ao OBC.
+    uint32_t confirmations_dropped;  // Confirmações perdidas por fila cheia.
 };
 
 /**
@@ -80,9 +82,24 @@ struct TC_FRAME {
  * @brief Pacote na fila de descida, ainda sem o contador "n".
  */
 struct TX_FRAME {
-    uint8_t dest; // Máscara de LINK_ORIGIN.
-    uint8_t len;
-    char    json[ttc::max_frame_len + 1];
+    uint8_t          dest;    // Máscara de LINK_ORIGIN.
+    bool             tracked; // Entrega identificada: gera TX_EVENT.
+    uint8_t          len;
+    ttc::DELIVERY_ID id;
+    char             json[ttc::max_frame_len + 1];
+};
+
+/**
+ * @brief Conclusão local de uma entrega enviada por SendDelivery().
+ *
+ * @details success indica que ao menos um meio de destino terminou o TX;
+ * não indica recepção pelo solo, que chega por ReceiveConfirmation().
+ */
+struct TX_EVENT {
+    ttc::DELIVERY_ID id;
+    bool             success;
+    uint8_t          dest; // Meios pedidos (LINK_ORIGIN).
+    uint8_t          sent; // Meios cujo TX terminou.
 };
 
 // ─── ELEMENTOS STATIC ─────────────────────────────────────────────
@@ -90,6 +107,11 @@ struct TX_FRAME {
 constexpr BaseType_t  ttc_task_core     = 0;  // DP §7.1: TT&C isolado no Core 0.
 constexpr UBaseType_t ttc_task_priority = 10; // Acima das tasks de aplicação.
 constexpr size_t      ttc_dedup_slots   = 8;  // TCs lembrados para deduplicação.
+constexpr size_t      ttc_tracked_slots = 4;  // Entregas identificadas na fila ou com evento não lido.
+constexpr size_t      ttc_confirm_slots = 8;  // Confirmações do solo aguardando o OBC.
+
+static_assert((uint8_t)LINK_RF == (uint8_t)ttc::LOG_DEST_RF && (uint8_t)LINK_WIRED == (uint8_t)ttc::LOG_DEST_WIRED,
+              "LOG_DEST deve usar os valores de LINK_ORIGIN");
 
 // ─── CLASSES ──────────────────────────────────────────────────────
 
@@ -172,6 +194,76 @@ public:
     bool Send(
         const char* json,
         size_t len
+    );
+
+    /**
+     * @brief Enfileira um pacote com destino explícito (ex.: respostas do
+     * request_log pelo umbilical).
+     *
+     * @param dest Máscara de LINK_ORIGIN; LINK_WIRED segue mesmo com a cópia
+     * da descida no umbilical desligada.
+     *
+     * @return true se enfileirado; false se dest está vazio ou pede o
+     * umbilical inexistente.
+     */
+    bool Send(
+        const char* json,
+        size_t len,
+        uint8_t dest
+    );
+
+    /**
+     * @brief Enfileira uma entrega identificada (INT-006).
+     *
+     * @details Retorno true é o evento de enfileiramento. Cada entrega aceita
+     * gera exatamente um TX_EVENT com o mesmo ID quando o TX termina ou
+     * falha localmente; o evento fica reservado até ReceiveTransmitEvent().
+     * O JSON precisa carregar o ID (ex.: BuildAircraft com id).
+     *
+     * @return false se o ID é inválido, o pacote excede max_body_len, há
+     * ttc_tracked_slots entregas pendentes ou a fila de descida está cheia.
+     */
+    bool SendDelivery(
+        const char* json,
+        size_t len,
+        const ttc::DELIVERY_ID& id
+    );
+
+    /**
+     * @brief Serializa a aeronave com o ID e chama SendDelivery().
+     *
+     * @param available Máscara de ttc::AIRCRAFT_FIELD; ausentes ficam null.
+     */
+    bool SendAircraft(
+        const ttc::AIRCRAFT_DATA& aircraft,
+        uint32_t available,
+        const ttc::DELIVERY_ID& id
+    );
+
+    /**
+     * @brief Retira a conclusão local de uma entrega identificada.
+     *
+     * @param wait Ticks de espera (0 = não bloqueia).
+     *
+     * @return true se um evento foi entregue.
+     */
+    bool ReceiveTransmitEvent(
+        TX_EVENT& out,
+        TickType_t wait
+    );
+
+    /**
+     * @brief Retira uma confirmação de entrega recebida do solo.
+     *
+     * @details Duplicatas são repassadas: a confirmação é idempotente no OBC.
+     *
+     * @param wait Ticks de espera (0 = não bloqueia).
+     *
+     * @return true se uma confirmação foi entregue.
+     */
+    bool ReceiveConfirmation(
+        ttc::DELIVERY_ID& out,
+        TickType_t wait
     );
 
     /**
@@ -258,6 +350,9 @@ private:
     QueueHandle_t rx_queue = nullptr;
     QueueHandle_t ack_queue = nullptr; // Descida prioritária.
     QueueHandle_t tx_queue = nullptr;
+    QueueHandle_t event_queue = nullptr;   // TX_EVENT das entregas identificadas.
+    QueueHandle_t confirm_queue = nullptr; // Confirmações do solo para o OBC.
+    size_t tracked_pending = 0;            // Protegido por stats_lock.
     TaskHandle_t task_handle = nullptr;
     SemaphoreHandle_t dedup_mutex = nullptr;
     DEDUP_SLOT dedup[ttc_dedup_slots] = {};
@@ -302,6 +397,29 @@ private:
     void PollTransport(
         LinkTransport& transport,
         LINK_ORIGIN origin
+    );
+
+    /**
+     * @brief Repassa ao OBC uma confirmação de entrega do solo.
+     */
+    void HandleConfirmation(
+        const ttc::DELIVERY_ID& id
+    );
+
+    /**
+     * @brief Publica a conclusão local de uma entrega identificada.
+     */
+    void PublishTransmitEvent(
+        const TX_FRAME& frame,
+        uint8_t sent
+    );
+
+    /**
+     * @brief Copia um pacote já validado para a fila indicada e acorda a task.
+     */
+    bool EnqueueItem(
+        QueueHandle_t queue,
+        const TX_FRAME& item
     );
 
     /**

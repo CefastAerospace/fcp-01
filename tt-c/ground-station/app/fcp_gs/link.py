@@ -8,7 +8,9 @@ from collections.abc import Callable
 
 import serial
 
-from .protocol import COUNTER_MODULO, LossTracker, Received, encode_tc, parse_line
+from .deliveries import DeliveryStore
+from .protocol import (COUNTER_MODULO, DeliveryId, LossTracker, Received, delivery_id, encode_confirmation,
+                       encode_tc, parse_line)
 from .session_log import SessionLog
 
 Listener = Callable[[dict], None]
@@ -18,6 +20,7 @@ OPEN_SETTLE_S = 1.5    # Boot do ESP32 até "[GS] Pronto." leva ~0,4 s.
 OPEN_QUIET_S = 1.0     # Serial sem bytes novos: boot terminado.
 OPEN_MAX_WAIT_S = 6.0
 TRACK_POINTS = 200     # Posições guardadas por aeronave para o rastro no mapa.
+LOG_RESPONSES_KEPT = 64  # Respostas "lg" guardadas à espera de request_log().
 
 
 def open_serial(port: str, baud: int = 115200, settle_s: float = OPEN_SETTLE_S,
@@ -57,12 +60,16 @@ class Link:
     """Lê pacotes em uma thread, envia TCs com retentativa e mantém o estado do enlace.
 
     source: "rf" (ponte ESP32 + SX1276) ou "wired" (USB do satélite, umbilical).
+    deliveries: IDs já processados; sem ele, um conjunto só na memória.
     """
 
-    def __init__(self, stream, source: str = "rf", log: SessionLog | None = None) -> None:
+    def __init__(self, stream, source: str = "rf", log: SessionLog | None = None,
+                 deliveries: DeliveryStore | None = None) -> None:
         self.stream = stream
         self.source = source
         self.log = log
+        self.deliveries = deliveries if deliveries is not None else DeliveryStore()
+        self.delivery_counts = {"new": 0, "repeated": 0, "confirmations": 0, "confirm_errors": 0}
         self.loss = LossTracker()
         self.counts: dict[str, int] = {}
         self.latest_tm: dict | None = None
@@ -72,6 +79,7 @@ class Link:
 
         self._listeners: list[Listener] = []
         self._acks: dict[int, dict] = {}
+        self._log_responses: dict[int, dict] = {}
         self._cond = threading.Condition()
         self._write_lock = threading.Lock()
         self._next_seq = int(time.time()) % COUNTER_MODULO  # Não repete seq entre sessões.
@@ -90,6 +98,7 @@ class Link:
         if self._thread is not None:
             self._thread.join(timeout=1.0)
         self.stream.close()
+        self.deliveries.close()
 
     def add_listener(self, listener: Listener) -> None:
         with self._cond:
@@ -118,13 +127,46 @@ class Link:
         received = parse_line(line)
         if received.kind == "log" and not received.text:
             return
-        self._update_state(received)
-        self._emit(self._event(received))
+        delivery, repeated = self._classify_delivery(received)
+        self._update_state(received, repeated)
+        event = self._event(received)
+        if delivery is not None:
+            event["delivery"] = {"id": list(delivery), "repeated": repeated}
+        self._emit(event)  # Grava o pacote no log da sessão antes de confirmar.
+        if delivery is not None:
+            self._confirm_delivery(delivery, repeated)
         # O ACK só é entregue a send_tc() depois dos listeners: quem remove o
         # listener ao receber o ACK (ex.: tm-loss) ainda vê o "n" dele.
         self._deliver_ack(received)
 
-    def _update_state(self, received: Received) -> None:
+    def _classify_delivery(self, received: Received) -> tuple[DeliveryId | None, bool]:
+        """ID da entrega de aeronave e se já foi processada (inclusive em sessão anterior)."""
+        packet = received.packet
+        if received.kind != "packet" or packet is None or packet.get("t") != "ac":
+            return None, False
+        delivery = delivery_id(packet)
+        if delivery is None:
+            return None, False
+        return delivery, delivery in self.deliveries
+
+    def _confirm_delivery(self, delivery: DeliveryId, repeated: bool) -> None:
+        """Registra o ID com fsync e confirma; repetida só recebe a confirmação de novo."""
+        try:
+            if not repeated and not self.deliveries.record(delivery):
+                repeated = True  # Outra thread (ex.: /api/inject) registrou antes.
+        except OSError as error:
+            # Sem registro durável, não confirma: o OBC retransmite depois.
+            with self._cond:
+                self.delivery_counts["confirm_errors"] += 1
+            self._emit({"dir": "log", "kind": "error", "text": f"registro de entregas: {error}"})
+            return
+        with self._cond:
+            self.delivery_counts["repeated" if repeated else "new"] += 1
+            self.delivery_counts["confirmations"] += 1
+        self._write(encode_confirmation(delivery),
+                    {"dir": "tx", "kind": "cf", "link": self.source, "pkt": {"t": "cf", "id": list(delivery)}})
+
+    def _update_state(self, received: Received, repeated: bool = False) -> None:
         with self._cond:
             self.counts[received.kind] = self.counts.get(received.kind, 0) + 1
             if received.meta:
@@ -137,6 +179,8 @@ class Link:
             self.counts[f"t:{kind}"] = self.counts.get(f"t:{kind}", 0) + 1
             if isinstance(packet.get("n"), int):
                 self.loss.feed(packet["n"])
+            if repeated:
+                return  # Entrega já processada: só a confirmação é repetida.
             if kind == "tm":
                 self.latest_tm = packet
             elif kind == "ac" and "icao" in packet:
@@ -159,9 +203,17 @@ class Link:
 
     def _deliver_ack(self, received: Received) -> None:
         packet = received.packet
-        if received.kind != "packet" or packet is None or packet.get("t") != "ack":
+        if received.kind != "packet" or packet is None:
             return
-        if not isinstance(packet.get("seq"), int):
+        if packet.get("t") == "lg" and isinstance(packet.get("rq"), int):
+            # A resposta pode chegar antes do ACK: guarda até request_log() pedir.
+            with self._cond:
+                self._log_responses[packet["rq"]] = packet
+                while len(self._log_responses) > LOG_RESPONSES_KEPT:
+                    self._log_responses.pop(next(iter(self._log_responses)))
+                self._cond.notify_all()
+            return
+        if packet.get("t") != "ack" or not isinstance(packet.get("seq"), int):
             return
         with self._cond:
             self._acks[packet["seq"]] = packet
@@ -196,6 +248,7 @@ class Link:
             seq = self._next_seq
             self._next_seq = (seq + 1) % COUNTER_MODULO
             self._acks.pop(seq, None)
+            self._log_responses.pop(seq, None)
         line = encode_tc(seq, cmd, args)
 
         first_send = time.monotonic()
@@ -210,6 +263,34 @@ class Link:
 
         return {"seq": seq, "cmd": cmd, "ok": False, "status": "timeout", "q": None,
                 "rtt_ms": None, "attempts": retries}
+
+    def request_log(self, args: dict, attempts: int = 3, timeout: float = 3.0) -> dict:
+        """Envia request_log e espera a resposta "lg" do mesmo pedido.
+
+        Resposta perdida (ACK sem "lg"): repete o mesmo pedido com seq novo,
+        pois o seq repetido só recebe o ACK guardado, sem nova execução.
+        Devolve {"ok": True, "response": {...}} ou {"ok": False, "status": ...}.
+        """
+        result: dict = {"ok": False, "status": "timeout"}
+        for _ in range(attempts):
+            ack = self.send_tc("request_log", args, timeout=timeout)
+            if not ack["ok"]:
+                return {"ok": False, "status": ack["status"], "seq": ack["seq"]}
+            response = self._wait_log_response(ack["seq"], timeout)
+            if response is not None:
+                return {"ok": True, "response": response, "seq": ack["seq"]}
+            result = {"ok": False, "status": "no_response", "seq": ack["seq"]}
+        return result
+
+    def _wait_log_response(self, seq: int, timeout: float) -> dict | None:
+        deadline = time.monotonic() + timeout
+        with self._cond:
+            while seq not in self._log_responses:
+                remaining = deadline - time.monotonic()
+                if remaining <= 0:
+                    return None
+                self._cond.wait(remaining)
+            return self._log_responses.pop(seq)
 
     def _write(self, data: bytes, event: dict) -> None:
         with self._write_lock:
@@ -241,6 +322,7 @@ class Link:
                 "loss": self.loss.as_dict(),
                 "latest_tm": self.latest_tm,
                 "aircraft": list(self.aircraft.values()),
+                "deliveries": {**self.delivery_counts, "known": len(self.deliveries)},
                 "last_meta": self.last_meta,
                 "log_file": str(self.log.path) if self.log else None,
             }

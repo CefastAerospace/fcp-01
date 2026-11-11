@@ -15,7 +15,10 @@ toda a interface:
   contador `n` (o painel conta como reinício);
 - em safe, beacon a cada BEACON_PERIOD_S;
 - no modo RF (padrão), cada quadro vem no envelope `gs` da ponte, com RSSI e
-  SNR variando; com wired=True, sem envelope, como no umbilical.
+  SNR variando; com wired=True, sem envelope, como no umbilical;
+- cada aeronave sai como entrega identificada ("id":[boot,seq]), sem
+  velocidade, rumo e contagem a cada PARTIAL_EVERY entregas (null); sem
+  confirmação "cf" em RETRY_S, a mesma entrega é retransmitida.
 """
 
 import json
@@ -34,6 +37,9 @@ ACTIVE_AIRCRAFT = 6
 KT_TO_DEG_S = 1.852 / 3600 / 111.32
 MODES = ("bench", "safe", "detumb", "sun", "mission", "lowpwr")
 COUNTER_MODULO = 65536
+RETRY_S = 6.0               # Retransmissão de entrega sem confirmação.
+PENDING_LIMIT = 32          # Como o cache do OBC.
+PARTIAL_EVERY = 5           # Entregas com campos indisponíveis (null).
 
 
 class _Aircraft:
@@ -101,6 +107,10 @@ class DemoSatellite:
         for aircraft in self.aircraft[1:]:
             aircraft.advance(self.rng.uniform(0, 400))
         self.t0 = time.monotonic()
+        self.boot = int(time.time())  # Boot novo a cada execução do demo.
+        self.sequence = 0
+        self.pending: dict[tuple[int, int], list] = {}  # ID -> [pacote, último envio].
+        self.confirmed = 0
         self._lock = threading.Lock()
         self._closed = threading.Event()
         self._thread = threading.Thread(target=self._loop, name="demo-satellite", daemon=True)
@@ -150,6 +160,7 @@ class DemoSatellite:
             if self.mode == "safe" and now - last_beacon >= BEACON_PERIOD_S:
                 last_beacon = now
                 self._downlink({"t": "bcn", "ts": self._now(), "md": "safe", "vb": 7.2})
+            self._retransmit(now)
             for index, aircraft in enumerate(self.aircraft):
                 aircraft.advance(dt)
                 if aircraft.outside(self.center):
@@ -157,12 +168,34 @@ class DemoSatellite:
                 received = self.rng.randrange(5, 30)
                 aircraft.cnt += received
                 self.messages += received
-                self._downlink({
-                    "t": "ac", "ts": self._now(), "icao": aircraft.icao,
-                    "lat": round(aircraft.lat, 5), "lon": round(aircraft.lon, 5),
-                    "alt": aircraft.alt, "vel": aircraft.vel, "hdg": round(aircraft.hdg),
-                    "cnt": aircraft.cnt,
-                })
+                self._deliver(aircraft, now)
+
+    def _deliver(self, aircraft: _Aircraft, now: float) -> None:
+        """Nova entrega identificada; algumas sem velocidade, rumo e contagem."""
+        with self._lock:
+            self.sequence += 1
+            delivery = (self.boot, self.sequence)
+        partial = delivery[1] % PARTIAL_EVERY == 0
+        packet = {
+            "t": "ac", "id": list(delivery), "ts": self._now(), "icao": aircraft.icao,
+            "lat": round(aircraft.lat, 5), "lon": round(aircraft.lon, 5), "alt": aircraft.alt,
+            "vel": None if partial else aircraft.vel, "hdg": None if partial else round(aircraft.hdg),
+            "cnt": None if partial else aircraft.cnt,
+        }
+        with self._lock:
+            self.pending[delivery] = [packet, now]
+            while len(self.pending) > PENDING_LIMIT:
+                self.pending.pop(next(iter(self.pending)))
+        self._downlink(packet)
+
+    def _retransmit(self, now: float) -> None:
+        """Mesmo ID, conteúdo e instante original, como o OBC."""
+        with self._lock:
+            due = [entry for entry in self.pending.values() if now - entry[1] >= RETRY_S]
+            for entry in due:
+                entry[1] = now
+        for packet, _ in due:
+            self._downlink(packet)
 
     # ─── Subida (TCs) ─────────────────────────────────────────────────
 
@@ -210,6 +243,11 @@ class DemoSatellite:
         except ValueError:
             return len(data)
         if not isinstance(command, dict):
+            return len(data)
+        if command.get("t") == "cf" and isinstance(command.get("id"), list) and len(command["id"]) == 2:
+            with self._lock:
+                if self.pending.pop(tuple(command["id"]), None) is not None:
+                    self.confirmed += 1
             return len(data)
         sequence = command.get("seq")
         name = command.get("cmd")

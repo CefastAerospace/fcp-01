@@ -114,6 +114,16 @@ estação. O despacho atual do OBC ainda responde `invalid_cmd` a request_log.
 - Medir o pior quadro incluindo ID e confirmações nos limites 245/255 bytes.
 - Acordar request_log completo e seleção USB nas respostas da biblioteca.
 
+Situação do TT&C em 11/11/2026: o contrato e a biblioteca cobrem o ID no
+pacote de aeronave, a confirmação `cf` com deduplicação persistente na
+estação, os eventos de envio por ID, os campos `null`, o destino explícito
+e o `request_log`, conforme [ttc-json.md](ttc-json.md). Do lado do OBC,
+continuam pendentes ligar `SendAircraft`, `ReceiveTransmitEvent` e
+`ReceiveConfirmation` às APIs de `ObcDataFlowEsp32.h`, adotar o timeout
+acordado e implementar o despacho do `request_log`. Diferença em relação à
+proposta acima: a resposta `read` não transmite o offset seguinte, que é
+derivável, e a listagem devolve vários nomes por quadro com `end`.
+
 As condições do Payload incluem granularidade, unidades, validade, tráfego,
 rajadas e retenção. A conservação de atualizações ADS-B intermediárias exige
 o contrato do produtor. A INT-006 conserva seus aceites e ensaios pendentes.

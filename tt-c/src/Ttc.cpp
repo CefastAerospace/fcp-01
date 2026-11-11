@@ -45,7 +45,7 @@ LINK_STATS Ttc::GetLinkStats(
 bool Ttc::IsHealthy(
 ) {
     return radio_healthy && rx_queue != nullptr && ack_queue != nullptr && tx_queue != nullptr
-        && dedup_mutex != nullptr;
+        && event_queue != nullptr && confirm_queue != nullptr && dedup_mutex != nullptr;
 }
 
 // Público:
@@ -62,8 +62,11 @@ bool Ttc::Init(
     if (rx_queue == nullptr) rx_queue = xQueueCreate(rx_queue_len, sizeof(TC_FRAME));
     if (ack_queue == nullptr) ack_queue = xQueueCreate(ack_queue_len, sizeof(TX_FRAME));
     if (tx_queue == nullptr) tx_queue = xQueueCreate(tx_queue_len, sizeof(TX_FRAME));
+    if (event_queue == nullptr) event_queue = xQueueCreate(ttc_tracked_slots, sizeof(TX_EVENT));
+    if (confirm_queue == nullptr) confirm_queue = xQueueCreate(ttc_confirm_slots, sizeof(ttc::DELIVERY_ID));
     if (dedup_mutex == nullptr) dedup_mutex = xSemaphoreCreateMutex();
-    if (rx_queue == nullptr || ack_queue == nullptr || tx_queue == nullptr || dedup_mutex == nullptr) {
+    if (rx_queue == nullptr || ack_queue == nullptr || tx_queue == nullptr || event_queue == nullptr
+            || confirm_queue == nullptr || dedup_mutex == nullptr) {
         Serial.println("[TT&C] ERRO: falha ao criar filas.");
         return false;
     }
@@ -192,6 +195,19 @@ void Ttc::PollTransport(
         portEXIT_CRITICAL(&stats_lock);
     }
 
+    // Confirmação de entrega do solo: não é TC, não tem seq nem ACK.
+    ttc::DELIVERY_ID confirmed;
+    ttc::CONFIRMATION_PARSE confirmation = ttc::ParseConfirmation(buffer, (size_t)len, confirmed);
+    if (confirmation == ttc::CF_VALID) {
+        HandleConfirmation(confirmed);
+        return;
+    }
+    if (confirmation == ttc::CF_INVALID) {
+        CountRxError();
+        Serial.printf("[TT&C] Confirmacao de entrega invalida descartada, %d bytes.\n", len);
+        return;
+    }
+
     // Envelope inválido: NACK se o seq é legível; senão, só descarta.
     ttc::TC_INFO info;
     if (!ttc::ParseTelecommand(buffer, (size_t)len, info)) {
@@ -205,6 +221,20 @@ void Ttc::PollTransport(
     }
 
     HandleTelecommand(info, buffer, (size_t)len, origin);
+}
+
+// Privado:
+void Ttc::HandleConfirmation(
+    const ttc::DELIVERY_ID& id
+) {
+    // Contato válido com o solo (REQ-OBC-011), mesmo que repetido.
+    bool queued = xQueueSend(confirm_queue, &id, 0) == pdTRUE;
+    portENTER_CRITICAL(&stats_lock);
+    stats.last_tc_ms = millis();
+    if (queued) stats.confirmations_count++;
+    else stats.confirmations_dropped++;
+    portEXIT_CRITICAL(&stats_lock);
+    if (!queued) Serial.println("[TT&C] Fila de confirmacoes cheia, confirmacao descartada.");
 }
 
 // Privado:
@@ -301,21 +331,45 @@ void Ttc::TransmitNext(
     if (!has_frame) return;
 
     // Cabo primeiro: é instantâneo e não espera o airtime do rádio.
+    uint8_t sent_mask = 0;
     if ((frame.dest & LINK_WIRED) && umbilical != nullptr && TransmitTo(*umbilical, wired_counter, frame)) {
+        sent_mask |= LINK_WIRED;
         portENTER_CRITICAL(&stats_lock);
         stats.wired_tx_packets_count++;
         portEXIT_CRITICAL(&stats_lock);
     }
-    if ((frame.dest & LINK_RF) == 0) return;
+    if ((frame.dest & LINK_RF) == 0) {
+        PublishTransmitEvent(frame, sent_mask);
+        return;
+    }
 
     transmitting = true;
     bool sent = TransmitTo(radio, rf_counter, frame);
     transmitting = false;
+    if (sent) sent_mask |= LINK_RF;
 
     portENTER_CRITICAL(&stats_lock);
     if (sent) stats.tx_packets_count++;
     else stats.tx_errors_count++;
     portEXIT_CRITICAL(&stats_lock);
+    PublishTransmitEvent(frame, sent_mask);
+}
+
+// Privado:
+void Ttc::PublishTransmitEvent(
+    const TX_FRAME& frame,
+    uint8_t sent
+) {
+    if (!frame.tracked) return;
+
+    // A vaga foi reservada em SendDelivery(); a fila comporta todas as reservas.
+    TX_EVENT event = {frame.id, sent != 0, frame.dest, sent};
+    if (xQueueSend(event_queue, &event, 0) != pdTRUE) {
+        portENTER_CRITICAL(&stats_lock);
+        if (tracked_pending > 0) tracked_pending--;
+        portEXIT_CRITICAL(&stats_lock);
+        Serial.println("[TT&C] ERRO: evento de entrega sem vaga reservada.");
+    }
 }
 
 // Privado:
@@ -424,13 +478,20 @@ bool Ttc::EnqueueFrame(
     size_t len,
     uint8_t dest
 ) {
-    if (queue == nullptr) return false;
-
-    TX_FRAME item;
+    TX_FRAME item = {};
     item.dest = dest;
     item.len = (uint8_t)len;
     memcpy(item.json, json, len);
     item.json[len] = '\0';
+    return EnqueueItem(queue, item);
+}
+
+// Privado:
+bool Ttc::EnqueueItem(
+    QueueHandle_t queue,
+    const TX_FRAME& item
+) {
+    if (queue == nullptr) return false;
     if (xQueueSend(queue, &item, enqueue_wait) != pdTRUE) {
         Serial.println("[TT&C] Fila de descida cheia, pacote descartado.");
         return false;
@@ -463,6 +524,99 @@ bool Ttc::Send(
         return false;
     }
     return EnqueueFrame(tx_queue, json, len, DownlinkDestinations());
+}
+
+// Público:
+bool Ttc::Send(
+    const char* json,
+    size_t len,
+    uint8_t dest
+) {
+    if (json == nullptr || len < 2 || len > ttc::max_body_len) {
+        Serial.printf("[TT&C] Pacote de %u bytes rejeitado (limite %u).\n", (unsigned)len, (unsigned)ttc::max_body_len);
+        return false;
+    }
+    bool valid = dest != 0 && (dest & ~(LINK_RF | LINK_WIRED)) == 0
+              && ((dest & LINK_WIRED) == 0 || umbilical != nullptr);
+    if (!valid) {
+        Serial.printf("[TT&C] Destino 0x%02x indisponivel.\n", (unsigned)dest);
+        return false;
+    }
+    return EnqueueFrame(tx_queue, json, len, dest);
+}
+
+// Público:
+bool Ttc::SendDelivery(
+    const char* json,
+    size_t len,
+    const ttc::DELIVERY_ID& id
+) {
+    if (json == nullptr || len < 2 || len > ttc::max_body_len || id.boot == 0 || id.sequence == 0) {
+        Serial.printf("[TT&C] Entrega de %u bytes rejeitada.\n", (unsigned)len);
+        return false;
+    }
+
+    // Reserva a vaga do evento antes de enfileirar: toda entrega aceita gera um evento.
+    bool reserved = false;
+    portENTER_CRITICAL(&stats_lock);
+    if (tracked_pending < ttc_tracked_slots) {
+        tracked_pending++;
+        reserved = true;
+    }
+    portEXIT_CRITICAL(&stats_lock);
+    if (!reserved) return false;
+
+    TX_FRAME item = {};
+    item.dest = DownlinkDestinations();
+    item.tracked = true;
+    item.id = id;
+    item.len = (uint8_t)len;
+    memcpy(item.json, json, len);
+    item.json[len] = '\0';
+    if (EnqueueItem(tx_queue, item)) return true;
+
+    portENTER_CRITICAL(&stats_lock);
+    tracked_pending--;
+    portEXIT_CRITICAL(&stats_lock);
+    return false;
+}
+
+// Público:
+bool Ttc::SendAircraft(
+    const ttc::AIRCRAFT_DATA& aircraft,
+    uint32_t available,
+    const ttc::DELIVERY_ID& id
+) {
+    char json[ttc::max_frame_len + 1];
+    size_t len = ttc::BuildAircraft(aircraft, json, sizeof(json), available, &id);
+    if (len == 0) {
+        Serial.println("[TT&C] Aeronave invalida ou acima do limite do quadro.");
+        return false;
+    }
+    return SendDelivery(json, len, id);
+}
+
+// Público:
+bool Ttc::ReceiveTransmitEvent(
+    TX_EVENT& out,
+    TickType_t wait
+) {
+    if (event_queue == nullptr) return false;
+    if (xQueueReceive(event_queue, &out, wait) != pdTRUE) return false;
+
+    portENTER_CRITICAL(&stats_lock);
+    if (tracked_pending > 0) tracked_pending--;
+    portEXIT_CRITICAL(&stats_lock);
+    return true;
+}
+
+// Público:
+bool Ttc::ReceiveConfirmation(
+    ttc::DELIVERY_ID& out,
+    TickType_t wait
+) {
+    if (confirm_queue == nullptr) return false;
+    return xQueueReceive(confirm_queue, &out, wait) == pdTRUE;
 }
 
 // Público:

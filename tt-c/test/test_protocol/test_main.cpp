@@ -1,5 +1,6 @@
 #include <unity.h>       // para TEST_ASSERT_*, RUN_TEST
-#include <string.h>      // para strlen, strstr, strcmp
+#include <stdio.h>       // para printf, snprintf
+#include <string.h>      // para strlen, strstr, strcmp, strcpy, memset
 #include <string>        // para std::string
 #include "TtcProtocol.h" // para o contrato JSON
 
@@ -290,6 +291,263 @@ static void TestTelemetryAvailability(
     TEST_ASSERT_EQUAL_STRING("", small);
 }
 
+// ID com a maior representação textual.
+static constexpr ttc::DELIVERY_ID worst_id = {18446744073709551615ULL, 18446744073709551615ULL};
+
+// Pior aeronave identificada: todos os campos com a maior representação.
+static void TestBuildAircraftWithIdWorstCaseFits(
+) {
+    ttc::AIRCRAFT_DATA aircraft = {};
+    aircraft.timestamp = 4294967295UL;
+    strcpy(aircraft.icao, "ABCDEF");
+    aircraft.latitude = -89.12345678;
+    aircraft.longitude = -179.12345678;
+    aircraft.altitude = -99999.0f;
+    aircraft.velocity = -9999.9f;
+    aircraft.heading = -359.9f;
+    aircraft.message_count = 65535;
+
+    char out[ttc::max_frame_len + 1];
+    size_t len = ttc::BuildAircraft(aircraft, out, sizeof(out), ttc::AIRCRAFT_ALL, &worst_id);
+    TEST_ASSERT_GREATER_THAN(0, len);
+    TEST_ASSERT_LESS_OR_EQUAL(ttc::max_body_len, len);
+    TEST_ASSERT_NOT_NULL(strstr(out, "\"id\":[18446744073709551615,18446744073709551615]"));
+
+    // Com o contador "n" no maior valor, o quadro cabe no FIFO.
+    TEST_ASSERT_TRUE(ttc::InsertCounter(out, len, sizeof(out), 65535));
+    TEST_ASSERT_LESS_OR_EQUAL(ttc::max_frame_len, len);
+    printf("Pior aeronave identificada: %u bytes no quadro.\n", (unsigned)len);
+}
+
+static void TestBuildAircraftUnavailableFields(
+) {
+    ttc::AIRCRAFT_DATA aircraft = {};
+    strcpy(aircraft.icao, "e4953a");
+    aircraft.latitude = -34.5;
+    aircraft.longitude = -58.25;
+    aircraft.altitude = 0.0f; // Zero medido continua número.
+    ttc::DELIVERY_ID id = {3, 41};
+
+    char out[ttc::max_frame_len + 1];
+    uint32_t available = ttc::AC_POSITION | ttc::AC_ALTITUDE;
+    TEST_ASSERT_GREATER_THAN(0, ttc::BuildAircraft(aircraft, out, sizeof(out), available, &id));
+    TEST_ASSERT_EQUAL_STRING(
+        "{\"t\":\"ac\",\"id\":[3,41],\"ts\":null,\"icao\":\"e4953a\",\"lat\":-34.5,\"lon\":-58.25,"
+        "\"alt\":0,\"vel\":null,\"hdg\":null,\"cnt\":null}", out);
+
+    // Sem ID e com máscara padrão: formato anterior.
+    TEST_ASSERT_GREATER_THAN(0, ttc::BuildAircraft(aircraft, out, sizeof(out)));
+    TEST_ASSERT_NULL(strstr(out, "\"id\""));
+    TEST_ASSERT_NULL(strstr(out, "null"));
+}
+
+static void TestBuildAircraftRejectsInvalidIdentity(
+) {
+    ttc::AIRCRAFT_DATA aircraft = {};
+    char out[ttc::max_frame_len + 1];
+    strcpy(aircraft.icao, "E4953");
+    TEST_ASSERT_EQUAL_size_t(0, ttc::BuildAircraft(aircraft, out, sizeof(out)));
+    strcpy(aircraft.icao, "E4953G");
+    TEST_ASSERT_EQUAL_size_t(0, ttc::BuildAircraft(aircraft, out, sizeof(out)));
+
+    strcpy(aircraft.icao, "E4953A");
+    ttc::DELIVERY_ID zero_boot = {0, 1};
+    ttc::DELIVERY_ID zero_sequence = {1, 0};
+    TEST_ASSERT_EQUAL_size_t(0, ttc::BuildAircraft(aircraft, out, sizeof(out), ttc::AIRCRAFT_ALL, &zero_boot));
+    TEST_ASSERT_EQUAL_size_t(0, ttc::BuildAircraft(aircraft, out, sizeof(out), ttc::AIRCRAFT_ALL, &zero_sequence));
+    TEST_ASSERT_EQUAL_STRING("", out);
+}
+
+static void TestConfirmationRoundTrip(
+) {
+    char out[ttc::max_frame_len + 1];
+    size_t len = ttc::BuildConfirmation(worst_id, out, sizeof(out));
+    TEST_ASSERT_EQUAL_STRING("{\"t\":\"cf\",\"id\":[18446744073709551615,18446744073709551615]}", out);
+    TEST_ASSERT_LESS_OR_EQUAL(ttc::max_frame_len, len);
+
+    ttc::DELIVERY_ID id = {};
+    TEST_ASSERT_EQUAL_UINT8(ttc::CF_VALID, ttc::ParseConfirmation(out, len, id));
+    TEST_ASSERT_TRUE(id.boot == worst_id.boot && id.sequence == worst_id.sequence);
+
+    ttc::DELIVERY_ID zero = {0, 5};
+    TEST_ASSERT_EQUAL_size_t(0, ttc::BuildConfirmation(zero, out, sizeof(out)));
+}
+
+static void TestConfirmationRejectsInvalid(
+) {
+    const char* invalid[] = {
+        "{\"t\":\"cf\"}",
+        "{\"t\":\"cf\",\"id\":[1]}",
+        "{\"t\":\"cf\",\"id\":[1,2,3]}",
+        "{\"t\":\"cf\",\"id\":[0,2]}",
+        "{\"t\":\"cf\",\"id\":[1,0]}",
+        "{\"t\":\"cf\",\"id\":[-1,2]}",
+        "{\"t\":\"cf\",\"id\":[1.5,2]}",
+        "{\"t\":\"cf\",\"id\":[\"1\",2]}",
+        "{\"t\":\"cf\",\"id\":[1,true]}",
+        "{\"t\":\"cf\",\"id\":[1,18446744073709551616]}",
+        "{\"t\":\"cf\",\"id\":{\"b\":1,\"s\":2}}",
+        "{\"t\":\"cf\",\"id\":[1,2],\"seq\":4}",
+    };
+    for (const char* json : invalid) {
+        ttc::DELIVERY_ID id = {9, 9};
+        TEST_ASSERT_EQUAL_UINT8_MESSAGE(ttc::CF_INVALID, ttc::ParseConfirmation(json, strlen(json), id), json);
+        TEST_ASSERT_TRUE(id.boot == 0 && id.sequence == 0);
+    }
+
+    // Outros quadros seguem para a validação de TC.
+    const char* others[] = {"{\"t\":\"tc\",\"seq\":1,\"cmd\":\"ping\"}", "{bad", "[1,2]"};
+    for (const char* json : others) {
+        ttc::DELIVERY_ID id;
+        TEST_ASSERT_EQUAL_UINT8(ttc::CF_NOT_CONFIRMATION, ttc::ParseConfirmation(json, strlen(json), id));
+    }
+}
+
+// Interpreta args de request_log escritos como literal.
+static ttc::ACK_STATUS ParseLog(
+    const char* args,
+    ttc::LOG_REQUEST& out
+) {
+    std::string json = std::string("{\"t\":\"tc\",\"seq\":7,\"cmd\":\"request_log\",\"args\":") + args + "}";
+    return ttc::ParseLogRequest(json.c_str(), json.size(), out);
+}
+
+static void TestParseLogRequestValid(
+) {
+    ttc::LOG_REQUEST request;
+    TEST_ASSERT_EQUAL_UINT8(ttc::ACK_OK, ParseLog("{\"op\":\"list\"}", request));
+    TEST_ASSERT_EQUAL_UINT8(ttc::LOG_LIST, request.op);
+    TEST_ASSERT_EQUAL_STRING("", request.name);
+    TEST_ASSERT_EQUAL_UINT8(ttc::LOG_DEST_ORIGIN, request.dest);
+
+    TEST_ASSERT_EQUAL_UINT8(ttc::ACK_OK,
+        ParseLog("{\"op\":\"list\",\"after\":\"boot_0000000000000001_00000002.bin\",\"to\":\"wired\"}", request));
+    TEST_ASSERT_EQUAL_STRING("boot_0000000000000001_00000002.bin", request.name);
+    TEST_ASSERT_EQUAL_UINT8(ttc::LOG_DEST_WIRED, request.dest);
+
+    TEST_ASSERT_EQUAL_UINT8(ttc::ACK_OK,
+        ParseLog("{\"op\":\"read\",\"name\":\"boot_01_02.bin\",\"off\":4294967295,\"len\":90,\"to\":\"rf\"}", request));
+    TEST_ASSERT_EQUAL_UINT8(ttc::LOG_READ, request.op);
+    TEST_ASSERT_EQUAL_STRING("boot_01_02.bin", request.name);
+    TEST_ASSERT_EQUAL_UINT32(4294967295UL, request.offset);
+    TEST_ASSERT_EQUAL_UINT16(90, request.length);
+    TEST_ASSERT_EQUAL_UINT8(ttc::LOG_DEST_RF, request.dest);
+}
+
+static void TestParseLogRequestInvalid(
+) {
+    const char* invalid[] = {
+        "{}",
+        "{\"op\":\"delete\"}",
+        "{\"op\":\"list\",\"name\":\"a.bin\"}",
+        "{\"op\":\"list\",\"after\":\"../a\"}",
+        "{\"op\":\"list\",\"to\":\"usb\"}",
+        "{\"op\":\"list\",\"to\":1}",
+        "{\"op\":\"read\",\"name\":\"\",\"off\":0,\"len\":1}",
+        "{\"op\":\"read\",\"name\":\"dir/a.bin\",\"off\":0,\"len\":1}",
+        "{\"op\":\"read\",\"name\":\".hidden\",\"off\":0,\"len\":1}",
+        "{\"op\":\"read\",\"name\":\"a.bin\",\"off\":-1,\"len\":1}",
+        "{\"op\":\"read\",\"name\":\"a.bin\",\"off\":4294967296,\"len\":1}",
+        "{\"op\":\"read\",\"name\":\"a.bin\",\"off\":1.5,\"len\":1}",
+        "{\"op\":\"read\",\"name\":\"a.bin\",\"off\":0,\"len\":0}",
+        "{\"op\":\"read\",\"name\":\"a.bin\",\"off\":0,\"len\":91}",
+        "{\"op\":\"read\",\"name\":\"a.bin\",\"len\":1}",
+        "{\"op\":\"read\",\"name\":\"a.bin\",\"off\":0,\"len\":1,\"after\":\"x\"}",
+        "{\"op\":\"read\",\"name\":\"0123456789012345678901234567890123456789\",\"off\":0,\"len\":1}",
+    };
+    for (const char* args : invalid) {
+        ttc::LOG_REQUEST request;
+        TEST_ASSERT_EQUAL_UINT8_MESSAGE(ttc::ERR_INVALID_PARAM, ParseLog(args, request), args);
+    }
+    ttc::LOG_REQUEST request;
+    const char* no_args = "{\"t\":\"tc\",\"seq\":7,\"cmd\":\"request_log\"}";
+    TEST_ASSERT_EQUAL_UINT8(ttc::ERR_INVALID_PARAM, ttc::ParseLogRequest(no_args, strlen(no_args), request));
+    TEST_ASSERT_EQUAL_UINT8(ttc::ERR_BAD_JSON, ttc::ParseLogRequest("{", 1, request));
+}
+
+static void TestBuildLogDataWorstCaseFits(
+) {
+    // Maior nome aceito, maiores offsets e bloco máximo.
+    char name[ttc::log_name_len];
+    memset(name, 'a', ttc::log_name_len - 1);
+    name[ttc::log_name_len - 1] = '\0';
+    uint8_t block[ttc::log_block_max];
+    for (size_t i = 0; i < sizeof(block); i++) block[i] = (uint8_t)(0xFF - i);
+
+    char out[ttc::max_frame_len + 1];
+    uint32_t total = 4294967295UL;
+    size_t len = ttc::BuildLogData(65535, name, total - ttc::log_block_max, total, block, sizeof(block), out, sizeof(out));
+    TEST_ASSERT_GREATER_THAN(0, len);
+    TEST_ASSERT_LESS_OR_EQUAL(ttc::max_body_len, len);
+    TEST_ASSERT_TRUE(ttc::InsertCounter(out, len, sizeof(out), 65535));
+    printf("Pior resposta read: %u bytes no quadro.\n", (unsigned)len);
+
+    // Um byte acima do bloco não é aceito.
+    uint8_t big[ttc::log_block_max + 1] = {};
+    TEST_ASSERT_EQUAL_size_t(0, ttc::BuildLogData(1, "a.bin", 0, 1000, big, sizeof(big), out, sizeof(out)));
+}
+
+static void TestBuildLogDataContent(
+) {
+    char out[ttc::max_frame_len + 1];
+    const uint8_t bytes[] = {'F', 'C', 'D', '1', 0x01};
+    ttc::BuildLogData(12, "boot_01.bin", 10, 20, bytes, sizeof(bytes), out, sizeof(out));
+    TEST_ASSERT_EQUAL_STRING(
+        "{\"t\":\"lg\",\"rq\":12,\"op\":\"read\",\"name\":\"boot_01.bin\",\"off\":10,\"tot\":20,\"d\":\"RkNEMQE=\"}", out);
+
+    // EOF: offset igual ao total e zero bytes.
+    TEST_ASSERT_GREATER_THAN(0, ttc::BuildLogData(12, "boot_01.bin", 20, 20, nullptr, 0, out, sizeof(out)));
+    TEST_ASSERT_NOT_NULL(strstr(out, "\"d\":\"\""));
+
+    // Bytes além do total ou offset maior que o total são erro do chamador.
+    TEST_ASSERT_EQUAL_size_t(0, ttc::BuildLogData(12, "boot_01.bin", 21, 20, nullptr, 0, out, sizeof(out)));
+    TEST_ASSERT_EQUAL_size_t(0, ttc::BuildLogData(12, "boot_01.bin", 18, 20, bytes, sizeof(bytes), out, sizeof(out)));
+}
+
+static void TestBuildLogList(
+) {
+    ttc::LOG_ENTRY entries[8] = {};
+    for (size_t i = 0; i < 8; i++) {
+        snprintf(entries[i].name, sizeof(entries[i].name), "boot_%016x_%08x.bin", (unsigned)i, (unsigned)i);
+        entries[i].size = 4294967295UL;
+    }
+    entries[7].open = true;
+
+    char out[ttc::max_frame_len + 1];
+    size_t used = 99;
+    size_t len = ttc::BuildLogList(65535, entries, 8, false, out, sizeof(out), used);
+    TEST_ASSERT_GREATER_THAN(0, len);
+    TEST_ASSERT_LESS_OR_EQUAL(ttc::max_body_len, len);
+    TEST_ASSERT_GREATER_THAN(0, used);
+    TEST_ASSERT_LESS_THAN(8, used);
+    TEST_ASSERT_NOT_NULL(strstr(out, "\"end\":false"));
+    printf("Listagem: %u nomes por resposta.\n", (unsigned)used);
+
+    ttc::BuildLogList(3, &entries[7], 1, false, out, sizeof(out), used);
+    TEST_ASSERT_EQUAL_size_t(1, used);
+    TEST_ASSERT_EQUAL_STRING(
+        "{\"t\":\"lg\",\"rq\":3,\"op\":\"list\",\"ls\":[[\"boot_0000000000000007_00000007.bin\",4294967295,1]],\"end\":true}",
+        out);
+
+    ttc::BuildLogList(3, &entries[0], 1, true, out, sizeof(out), used);
+    TEST_ASSERT_NOT_NULL(strstr(out, "\"end\":false"));
+
+    ttc::BuildLogList(4, nullptr, 0, false, out, sizeof(out), used);
+    TEST_ASSERT_EQUAL_STRING("{\"t\":\"lg\",\"rq\":4,\"op\":\"list\",\"ls\":[],\"end\":true}", out);
+}
+
+static void TestBuildLogError(
+) {
+    char out[ttc::max_frame_len + 1];
+    ttc::BuildLogError(5, ttc::LOG_READ, "boot_01.bin", 90, ttc::LOG_BUSY, out, sizeof(out));
+    TEST_ASSERT_EQUAL_STRING("{\"t\":\"lg\",\"rq\":5,\"op\":\"read\",\"name\":\"boot_01.bin\",\"off\":90,\"err\":\"busy\"}", out);
+    ttc::BuildLogError(6, ttc::LOG_LIST, nullptr, 0, ttc::LOG_NO_MEDIA, out, sizeof(out));
+    TEST_ASSERT_EQUAL_STRING("{\"t\":\"lg\",\"rq\":6,\"op\":\"list\",\"err\":\"no_sd\"}", out);
+    TEST_ASSERT_EQUAL_STRING("not_found", ttc::LogErrorName(ttc::LOG_NOT_FOUND));
+    TEST_ASSERT_EQUAL_STRING("range", ttc::LogErrorName(ttc::LOG_RANGE));
+    TEST_ASSERT_EQUAL_STRING("io", ttc::LogErrorName(ttc::LOG_IO));
+}
+
 int main(
     int argc,
     char** argv
@@ -311,5 +569,16 @@ int main(
     RUN_TEST(TestInsertCounter);
     RUN_TEST(TestInsertCounterRespectsFrameLimit);
     RUN_TEST(TestTelemetryAvailability);
+    RUN_TEST(TestBuildAircraftWithIdWorstCaseFits);
+    RUN_TEST(TestBuildAircraftUnavailableFields);
+    RUN_TEST(TestBuildAircraftRejectsInvalidIdentity);
+    RUN_TEST(TestConfirmationRoundTrip);
+    RUN_TEST(TestConfirmationRejectsInvalid);
+    RUN_TEST(TestParseLogRequestValid);
+    RUN_TEST(TestParseLogRequestInvalid);
+    RUN_TEST(TestBuildLogDataWorstCaseFits);
+    RUN_TEST(TestBuildLogDataContent);
+    RUN_TEST(TestBuildLogList);
+    RUN_TEST(TestBuildLogError);
     return UNITY_END();
 }

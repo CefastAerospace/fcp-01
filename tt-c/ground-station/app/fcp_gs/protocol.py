@@ -8,6 +8,10 @@ from dataclasses import dataclass, field
 
 MAX_FRAME_LEN = 255  # FIFO do SX1276.
 COUNTER_MODULO = 65536
+U64_MAX = (1 << 64) - 1
+LOG_BLOCK_MAX = 90   # ttc::log_block_max: bytes por resposta "read" do request_log.
+
+DeliveryId = tuple[int, int]  # (boot, sequence) da entrega do OBC.
 
 COMMANDS = (
     "ping", "set_mode", "start_mission", "stop_mission", "get_status",
@@ -40,6 +44,25 @@ def encode_tc(seq: int, cmd: str, args: dict | None = None) -> bytes:
     line = json.dumps(tc, separators=(",", ":"))
     if len(line.encode()) > MAX_FRAME_LEN:
         raise ValueError(f"TC com {len(line)} bytes excede {MAX_FRAME_LEN}")
+    return (line + "\n").encode()
+
+
+def delivery_id(packet: dict) -> DeliveryId | None:
+    """Lê "id":[boot,seq] de um pacote; None se ausente ou fora do domínio u64 > 0."""
+    value = packet.get("id")
+    if not isinstance(value, list) or len(value) != 2:
+        return None
+    if not all(isinstance(v, int) and not isinstance(v, bool) and 0 < v <= U64_MAX for v in value):
+        return None
+    return value[0], value[1]
+
+
+def encode_confirmation(delivery: DeliveryId) -> bytes:
+    """Monta a confirmação de entrega {"t":"cf","id":[boot,seq]}, terminada em '\\n'."""
+    boot, seq = delivery
+    if not (0 < boot <= U64_MAX and 0 < seq <= U64_MAX):
+        raise ValueError(f"ID de entrega inválido: {delivery}")
+    line = json.dumps({"t": "cf", "id": [boot, seq]}, separators=(",", ":"))
     return (line + "\n").encode()
 
 

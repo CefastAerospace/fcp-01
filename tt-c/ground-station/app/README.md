@@ -45,6 +45,20 @@ Abra `http://localhost:8080`. O painel mostra:
 - os roteiros de verificação;
 - o log ao vivo.
 
+## Entregas identificadas do OBC
+
+Pacote de aeronave com `"id":[boot,seq]` é uma entrega da INT-006. A estação grava o pacote no log da sessão, registra o ID com `fsync` em `state/deliveries.jsonl` e só então responde `{"t":"cf","id":[boot,seq]}`. Quando chega um ID já registrado, inclusive de uma sessão anterior, a estação reenvia a confirmação e não reaplica o conteúdo na tabela, no rastro ou no mapa; no log ao vivo a linha aparece como "entrega repetida". Campos indisponíveis chegam como `null` e aparecem como "—". O painel `/api/state` traz os contadores em `deliveries`. Para começar uma campanha nova sem histórico, mova ou apague `state/deliveries.jsonl` com a estação parada. O modo demo usa um registro só em memória.
+
+## Arquivos do SD (request_log)
+
+```sh
+.venv/bin/python -m fcp_gs logs list --port /dev/ttyUSB0             # nome, bytes, aberto/fechado
+.venv/bin/python -m fcp_gs logs get NOME --port /dev/ttyUSB0         # extrai para downloads/
+.venv/bin/python -m fcp_gs logs get --all --port ... --out pasta/    # todos os arquivos fechados
+```
+
+A extração pede blocos de 90 bytes e só avança depois de validar a resposta do mesmo pedido. Em `busy` ou resposta perdida, repete o mesmo offset com um `seq` novo. O arquivo é gravado como `NOME.part` e renomeado no fim. Para conferir os CRCs dos registros, use `obc-dh/tools` sobre o arquivo extraído. Esse comando depende de o OBC implementar o `request_log`; hoje o OBC responde `invalid_cmd`.
+
 A porta é aberta com DTR/RTS desligados, mas no Linux a placa ainda pode reiniciar na abertura. Por isso o app só envia o primeiro TC depois de a serial ficar 1 s sem bytes novos (no mínimo 1,5 s, no máximo 6 s); as mensagens do boot vão para o log da sessão.
 
 ## Mapa sem internet

@@ -60,6 +60,68 @@ namespace ttc {
         return serializeJson(doc, out, capacity);
     }
 
+    // Componentes de ID maiores que zero, como no diário FCD1 do OBC.
+    static bool ValidId(
+        const DELIVERY_ID& id
+    ) {
+        return id.boot > 0 && id.sequence > 0;
+    }
+
+    // ICAO de 6 hexadecimais.
+    static bool ValidIcao(
+        const char* icao
+    ) {
+        if (icao == nullptr) return false;
+        for (size_t i = 0; i < 6; i++) {
+            char c = icao[i];
+            bool hex = (c >= '0' && c <= '9') || (c >= 'A' && c <= 'F') || (c >= 'a' && c <= 'f');
+            if (!hex) return false;
+        }
+        return icao[6] == '\0';
+    }
+
+    // Nome de arquivo aceito pelo request_log: sem diretórios nem "..".
+    static bool ValidLogName(
+        const char* name,
+        bool allow_empty
+    ) {
+        if (name == nullptr) return false;
+        size_t len = strlen(name);
+        if (len == 0) return allow_empty;
+        if (len >= log_name_len || name[0] == '.' || strstr(name, "..") != nullptr) return false;
+        for (size_t i = 0; i < len; i++) {
+            char c = name[i];
+            bool ok = (c >= '0' && c <= '9') || (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z')
+                   || c == '_' || c == '.' || c == '-';
+            if (!ok) return false;
+        }
+        return true;
+    }
+
+    // Base64 padrão (RFC 4648), com preenchimento. out recebe '\0'.
+    static bool EncodeBase64(
+        const uint8_t* bytes,
+        size_t count,
+        char* out,
+        size_t capacity
+    ) {
+        static constexpr char alphabet[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+        size_t needed = ((count + 2) / 3) * 4;
+        if (needed + 1 > capacity) return false;
+        size_t o = 0;
+        for (size_t i = 0; i < count; i += 3) {
+            uint32_t chunk = (uint32_t)bytes[i] << 16;
+            if (i + 1 < count) chunk |= (uint32_t)bytes[i + 1] << 8;
+            if (i + 2 < count) chunk |= bytes[i + 2];
+            out[o++] = alphabet[(chunk >> 18) & 0x3F];
+            out[o++] = alphabet[(chunk >> 12) & 0x3F];
+            out[o++] = i + 1 < count ? alphabet[(chunk >> 6) & 0x3F] : '=';
+            out[o++] = i + 2 < count ? alphabet[chunk & 0x3F] : '=';
+        }
+        out[o] = '\0';
+        return true;
+    }
+
     // ─── HELPERS ──────────────────────────────────────────────────────
 
     const char* CommandName(
@@ -226,10 +288,21 @@ namespace ttc {
     size_t BuildAircraft(
         const AIRCRAFT_DATA& aircraft,
         char* out,
-        size_t capacity
+        size_t capacity,
+        uint32_t available,
+        const DELIVERY_ID* id
     ) {
+        if (out != nullptr && capacity > 0) out[0] = '\0';
+        if (!ValidIcao(aircraft.icao)) return 0;
+        if (id != nullptr && !ValidId(*id)) return 0;
+
         JsonDocument doc;
         doc["t"] = "ac";
+        if (id != nullptr) {
+            JsonArray pair = doc["id"].to<JsonArray>();
+            pair.add(id->boot);
+            pair.add(id->sequence);
+        }
         doc["ts"] = aircraft.timestamp;
         doc["icao"] = aircraft.icao;
         doc["lat"] = Round(aircraft.latitude, 5);
@@ -238,6 +311,219 @@ namespace ttc {
         doc["vel"] = Round(aircraft.velocity, 1);
         doc["hdg"] = Round(aircraft.heading, 1);
         doc["cnt"] = aircraft.message_count;
+
+        // Conserva as chaves e distingue indisponibilidade de zero medido.
+        if (!(available & AC_TIMESTAMP)) doc["ts"] = nullptr;
+        if (!(available & AC_POSITION)) {
+            doc["lat"] = nullptr;
+            doc["lon"] = nullptr;
+        }
+        if (!(available & AC_ALTITUDE)) doc["alt"] = nullptr;
+        if (!(available & AC_VELOCITY)) doc["vel"] = nullptr;
+        if (!(available & AC_HEADING)) doc["hdg"] = nullptr;
+        if (!(available & AC_COUNT)) doc["cnt"] = nullptr;
+
+        return Serialize(doc, out, capacity);
+    }
+
+    size_t BuildConfirmation(
+        const DELIVERY_ID& id,
+        char* out,
+        size_t capacity
+    ) {
+        if (out != nullptr && capacity > 0) out[0] = '\0';
+        if (!ValidId(id)) return 0;
+
+        JsonDocument doc;
+        doc["t"] = "cf";
+        JsonArray pair = doc["id"].to<JsonArray>();
+        pair.add(id.boot);
+        pair.add(id.sequence);
+        return Serialize(doc, out, capacity);
+    }
+
+    CONFIRMATION_PARSE ParseConfirmation(
+        const char* json,
+        size_t len,
+        DELIVERY_ID& out
+    ) {
+        out = {};
+        if (json == nullptr || len == 0 || len > max_frame_len) return CF_NOT_CONFIRMATION;
+
+        JsonDocument doc;
+        if (deserializeJson(doc, json, len) != DeserializationError::Ok) return CF_NOT_CONFIRMATION;
+        if (!doc.is<JsonObject>() || doc["t"] != "cf") return CF_NOT_CONFIRMATION;
+
+        // Somente "t" e "id"; o ID é um par de inteiros positivos de 64 bits.
+        JsonObject object = doc.as<JsonObject>();
+        JsonArray pair = object["id"];
+        if (object.size() != 2 || pair.isNull() || pair.size() != 2) return CF_INVALID;
+        if (!pair[0].is<uint64_t>() || !pair[1].is<uint64_t>()) return CF_INVALID;
+
+        DELIVERY_ID id = {pair[0].as<uint64_t>(), pair[1].as<uint64_t>()};
+        if (!ValidId(id)) return CF_INVALID;
+        out = id;
+        return CF_VALID;
+    }
+
+    const char* LogErrorName(
+        LOG_ERROR error
+    ) {
+        switch (error) {
+            case LOG_NOT_FOUND: return "not_found";
+            case LOG_BUSY:      return "busy";
+            case LOG_RANGE:     return "range";
+            case LOG_IO:        return "io";
+            case LOG_NO_MEDIA:  return "no_sd";
+        }
+        return "unknown";
+    }
+
+    ACK_STATUS ParseLogRequest(
+        const char* json,
+        size_t len,
+        LOG_REQUEST& out
+    ) {
+        out = {};
+        out.op = LOG_LIST;
+        out.dest = LOG_DEST_ORIGIN;
+        if (json == nullptr || len == 0 || len > max_frame_len) return ERR_BAD_JSON;
+
+        JsonDocument doc;
+        if (deserializeJson(doc, json, len) != DeserializationError::Ok) return ERR_BAD_JSON;
+        JsonObject args = doc["args"];
+        if (args.isNull()) return ERR_INVALID_PARAM;
+
+        const char* op = args["op"];
+        if (op == nullptr) return ERR_INVALID_PARAM;
+        bool read = strcmp(op, "read") == 0;
+        if (!read && strcmp(op, "list") != 0) return ERR_INVALID_PARAM;
+        out.op = read ? LOG_READ : LOG_LIST;
+
+        // Rejeita chaves desconhecidas: erro de digitação não vira pedido diferente.
+        for (JsonPair pair : args) {
+            const char* key = pair.key().c_str();
+            bool known = strcmp(key, "op") == 0 || strcmp(key, "to") == 0
+                      || (!read && strcmp(key, "after") == 0)
+                      || (read && (strcmp(key, "name") == 0 || strcmp(key, "off") == 0 || strcmp(key, "len") == 0));
+            if (!known) return ERR_INVALID_PARAM;
+        }
+
+        if (!args["to"].isNull()) {
+            const char* to = args["to"];
+            if (to == nullptr) return ERR_INVALID_PARAM;
+            if (strcmp(to, "rf") == 0) out.dest = LOG_DEST_RF;
+            else if (strcmp(to, "wired") == 0) out.dest = LOG_DEST_WIRED;
+            else return ERR_INVALID_PARAM;
+        }
+
+        if (!read) {
+            if (args["after"].isNull()) return ACK_OK;
+            const char* after = args["after"];
+            if (!ValidLogName(after, true)) return ERR_INVALID_PARAM;
+            strncpy(out.name, after, log_name_len - 1);
+            return ACK_OK;
+        }
+
+        const char* name = args["name"];
+        if (!ValidLogName(name, false)) return ERR_INVALID_PARAM;
+        if (!args["off"].is<uint32_t>() || !args["len"].is<uint16_t>()) return ERR_INVALID_PARAM;
+        uint16_t length = args["len"].as<uint16_t>();
+        if (length == 0 || length > log_block_max) return ERR_INVALID_PARAM;
+        strncpy(out.name, name, log_name_len - 1);
+        out.offset = args["off"].as<uint32_t>();
+        out.length = length;
+        return ACK_OK;
+    }
+
+    size_t BuildLogList(
+        uint16_t request_seq,
+        const LOG_ENTRY* entries,
+        size_t count,
+        bool more,
+        char* out,
+        size_t capacity,
+        size_t& used
+    ) {
+        used = 0;
+        if (out != nullptr && capacity > 0) out[0] = '\0';
+        if (out == nullptr || capacity == 0 || (count > 0 && entries == nullptr)) return 0;
+        size_t limit = capacity - 1 < max_body_len ? capacity - 1 : max_body_len;
+
+        JsonDocument doc;
+        doc["t"] = "lg";
+        doc["rq"] = request_seq;
+        doc["op"] = "list";
+        JsonArray list = doc["ls"].to<JsonArray>();
+        doc["end"] = false; // Forma mais longa durante a medição.
+        if (measureJson(doc) > limit) return 0;
+
+        for (size_t i = 0; i < count; i++) {
+            if (!ValidLogName(entries[i].name, false)) break;
+            JsonArray item = list.add<JsonArray>();
+            item.add(entries[i].name);
+            item.add(entries[i].size);
+            item.add(entries[i].open ? 1 : 0);
+            if (measureJson(doc) > limit) {
+                list.remove(list.size() - 1);
+                break;
+            }
+            used++;
+        }
+        doc["end"] = used == count && !more;
+        return Serialize(doc, out, capacity);
+    }
+
+    size_t BuildLogData(
+        uint16_t request_seq,
+        const char* name,
+        uint32_t offset,
+        uint32_t total,
+        const uint8_t* bytes,
+        size_t count,
+        char* out,
+        size_t capacity
+    ) {
+        if (out != nullptr && capacity > 0) out[0] = '\0';
+        if (!ValidLogName(name, false) || count > log_block_max) return 0;
+        if (count > 0 && bytes == nullptr) return 0;
+        if (offset > total || count > (size_t)(total - offset)) return 0;
+
+        char encoded[((log_block_max + 2) / 3) * 4 + 1];
+        if (!EncodeBase64(bytes, count, encoded, sizeof(encoded))) return 0;
+
+        JsonDocument doc;
+        doc["t"] = "lg";
+        doc["rq"] = request_seq;
+        doc["op"] = "read";
+        doc["name"] = name;
+        doc["off"] = offset;
+        doc["tot"] = total;
+        doc["d"] = (const char*)encoded;
+        return Serialize(doc, out, capacity);
+    }
+
+    size_t BuildLogError(
+        uint16_t request_seq,
+        LOG_OP op,
+        const char* name,
+        uint32_t offset,
+        LOG_ERROR error,
+        char* out,
+        size_t capacity
+    ) {
+        if (out != nullptr && capacity > 0) out[0] = '\0';
+        if (name != nullptr && !ValidLogName(name, false)) return 0;
+
+        JsonDocument doc;
+        doc["t"] = "lg";
+        doc["rq"] = request_seq;
+        doc["op"] = op == LOG_READ ? "read" : "list";
+        if (name != nullptr) {
+            doc["name"] = name;
+            doc["off"] = offset;
+        }
+        doc["err"] = LogErrorName(error);
         return Serialize(doc, out, capacity);
     }
 

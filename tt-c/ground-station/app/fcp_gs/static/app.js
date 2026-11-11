@@ -216,7 +216,8 @@ class AircraftMap {
     // Silhueta apontando para o norte, girada pelo rumo (o glifo ✈ varia com a fonte).
     const html = `<span class="ac-icon" style="color:${color}"><svg viewBox="0 0 24 24" width="20" height="20" style="transform:rotate(${heading}deg)"><path fill="currentColor" stroke="var(--bg)" stroke-width="0.8" d="M12 2c.8 0 1.4.8 1.4 1.8V9l7.6 4.6v2l-7.6-2.3v4.5l2.2 1.7V21L12 20l-3.6 1v-1.5l2.2-1.7v-4.5L3 15.6v-2L10.6 9V3.8C10.6 2.8 11.2 2 12 2z"/></svg></span>`;
     const icon = L.divIcon({ html, className: "", iconSize: [22, 22], iconAnchor: [11, 11] });
-    const tooltip = `<b class="ac-tip">${icao}</b> ${fmt(heading, 0)}°<br>alt ${fmt(ac.alt, 0)} ft · vel ${fmt(ac.vel, 0)} kt · ${ac.cnt ?? 0} msgs`;
+    const course = typeof ac.hdg === "number" ? `${fmt(heading, 0)}°` : "rumo —";
+    const tooltip = `<b class="ac-tip">${icao}</b> ${course}<br>alt ${fmt(ac.alt, 0)} ft · vel ${fmt(ac.vel, 0)} kt · ${ac.cnt ?? "—"} msgs`;
     if (!entry.marker) {
       entry.marker = L.marker(point, { icon, zIndexOffset: 100 }).addTo(this.map)
         .bindTooltip(tooltip, { direction: "top", offset: [0, -12] });
@@ -319,7 +320,8 @@ function describe(event) {
   if (event.kind === "crc") return ["quadro com CRC inválido descartado pelo rádio", "err"];
   if (event.kind === "raw") return [`quadro não-JSON: ${event.text}`, "err"];
   const signal = event.gs ? `  [${event.gs.rssi} dBm, ${fmt(event.gs.snr)} dB]` : "";
-  return [`← ${JSON.stringify(event.pkt)}${signal}`, ""];
+  const repeated = event.delivery?.repeated ? "  (entrega repetida, só reconfirmada)" : "";
+  return [`← ${JSON.stringify(event.pkt)}${signal}${repeated}`, ""];
 }
 
 // ─── Eventos ao vivo ─────────────────────────────────────────────────
@@ -343,7 +345,8 @@ function handleEvent(event) {
     charts.vb.push([pkt.vb]);
     charts.tp.push(pkt.tp || []);
   }
-  if (pkt && pkt.t === "ac") map?.upsert([pkt]);
+  // Entrega repetida já foi processada: não move o marcador de novo.
+  if (pkt && pkt.t === "ac" && !event.delivery?.repeated) map?.upsert([pkt]);
 }
 
 function connect() {

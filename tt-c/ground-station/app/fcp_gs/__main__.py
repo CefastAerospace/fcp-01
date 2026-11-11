@@ -8,6 +8,8 @@
     python -m fcp_gs tc-latency --port /dev/ttyUSB0 [--count 50] [--wired]
     python -m fcp_gs inject [--port /dev/ttyUSB0] [--file quadros.jsonl] [--delay 0.05]
     python -m fcp_gs analyze logs/2026-10-14_120000.jsonl
+    python -m fcp_gs logs list --port /dev/ttyUSB0 [--wired]
+    python -m fcp_gs logs get NOME [NOME ...] | --all --port /dev/ttyUSB0 [--out DIR] [--wired]
 """
 
 import argparse
@@ -19,7 +21,9 @@ from pathlib import Path
 from serial.tools import list_ports
 
 from .analyze import analyze
+from .deliveries import DeliveryStore
 from .link import Link, open_serial
+from .logs import LogError, download_file, list_files
 from .session_log import SessionLog
 from .verification import run_tc_latency, run_tm_loss, summarize, write_report
 
@@ -27,6 +31,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 LOG_DIR = BASE_DIR / "logs"
 REPORT_DIR = BASE_DIR / "reports"
 TILE_DIR = BASE_DIR / "cache" / "tiles"
+DELIVERY_FILE = BASE_DIR / "state" / "deliveries.jsonl"  # IDs já processados, entre sessões.
+DOWNLOAD_DIR = BASE_DIR / "downloads"
 DEFAULT_MAP_CENTER = "-15.79,-47.88,4"  # Brasília.
 
 
@@ -76,7 +82,9 @@ def _open_link(args: argparse.Namespace) -> Link:
             print("--port é obrigatório sem --demo.", file=sys.stderr)
             sys.exit(2)
         stream = open_serial(args.port, args.baud)
-    link = Link(stream, "wired" if args.wired else "rf", SessionLog(LOG_DIR))
+    # O demo gera IDs próprios a cada execução: não mistura com o registro real.
+    deliveries = DeliveryStore() if args.demo else DeliveryStore(DELIVERY_FILE)
+    link = Link(stream, "wired" if args.wired else "rf", SessionLog(LOG_DIR), deliveries)
     link.start()
     if not args.demo:
         print(f"Log da sessão: {link.log.path}")
@@ -143,6 +151,31 @@ def _cmd_inject(args: argparse.Namespace) -> int:
     return 0
 
 
+def _cmd_logs(args: argparse.Namespace) -> int:
+    """request_log: lista ou extrai arquivos fechados do SD do OBC."""
+    link = _open_link(args)
+    try:
+        if args.action == "list":
+            for item in list_files(link):
+                print(f"{item['name']}\t{item['size']}\t{'aberto' if item['open'] else 'fechado'}")
+            return 0
+        names = args.names
+        if args.all:
+            names = [item["name"] for item in list_files(link) if not item["open"]]
+        if not names:
+            print("Informe NOME ou --all.", file=sys.stderr)
+            return 2
+        for name in names:
+            path = download_file(link, name, args.out)
+            print(f"{name}: {path.stat().st_size} bytes em {path}")
+        return 0
+    except LogError as error:
+        print(f"request_log: {error}", file=sys.stderr)
+        return 1
+    finally:
+        link.close()
+
+
 def _cmd_tiles(args: argparse.Namespace) -> int:
     from .tiles import TileCache
 
@@ -199,6 +232,13 @@ def main(argv: list[str] | None = None) -> int:
     tiles_cmd.add_argument("--bbox", type=_bbox, required=True, help="SUL,OESTE,NORTE,LESTE")
     tiles_cmd.add_argument("--zoom", type=_zoom_range, default=(4, 11), help="ZMIN-ZMAX (padrão 4-11)")
     tiles_cmd.set_defaults(func=_cmd_tiles)
+
+    logs_cmd = with_port(commands.add_parser("logs", help="request_log: lista e extrai arquivos do SD do OBC"))
+    logs_cmd.add_argument("action", choices=("list", "get"))
+    logs_cmd.add_argument("names", nargs="*", help="arquivos fechados a extrair (get)")
+    logs_cmd.add_argument("--all", action="store_true", help="extrai todos os arquivos fechados (get)")
+    logs_cmd.add_argument("--out", type=Path, default=DOWNLOAD_DIR, help="pasta de destino (get)")
+    logs_cmd.set_defaults(func=_cmd_logs)
 
     analyze_cmd = commands.add_parser("analyze", help="análise pós-passagem de um log .jsonl")
     analyze_cmd.add_argument("log")

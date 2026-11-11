@@ -16,6 +16,7 @@ public:
     std::deque<std::string> inbox;
     std::vector<std::string> sent;
     bool healthy = true;
+    bool fail_send = false;
     int init_calls = 0;
 
     bool Init() override {
@@ -28,6 +29,7 @@ public:
         const uint8_t* data,
         size_t len
     ) override {
+        if (fail_send) return false;
         sent.emplace_back((const char*)data, len);
         return true;
     }
@@ -363,6 +365,151 @@ static void TestTelemetryQueuedOutput(
     TEST_ASSERT_EQUAL_UINT32(123456, queued.timestamp);
 }
 
+// Aeronave mínima para as entregas identificadas.
+static ttc::AIRCRAFT_DATA Aircraft(
+) {
+    ttc::AIRCRAFT_DATA aircraft = {};
+    strcpy(aircraft.icao, "E4953A");
+    aircraft.latitude = -34.5;
+    aircraft.longitude = -58.25;
+    aircraft.altitude = 30000.0f;
+    return aircraft;
+}
+
+static void TestDeliveryEventCarriesId(
+) {
+    FakeTransport radio;
+    FakeTransport wired;
+    Ttc link(radio, &wired);
+    link.Init();
+
+    ttc::DELIVERY_ID id = {7, 42};
+    uint32_t available = ttc::AC_POSITION | ttc::AC_ALTITUDE;
+    TEST_ASSERT_TRUE(link.SendAircraft(Aircraft(), available, id));
+
+    // Antes do TX não há evento.
+    TX_EVENT event;
+    TEST_ASSERT_FALSE(link.ReceiveTransmitEvent(event, 0));
+
+    Drain(link);
+    TEST_ASSERT_EQUAL(1, radio.sent.size());
+    TEST_ASSERT_TRUE(Contains(radio.sent[0], "{\"n\":0,\"t\":\"ac\",\"id\":[7,42],\"ts\":null,"));
+    TEST_ASSERT_TRUE(Contains(radio.sent[0], "\"vel\":null,\"hdg\":null,\"cnt\":null}"));
+
+    TEST_ASSERT_TRUE(link.ReceiveTransmitEvent(event, 0));
+    TEST_ASSERT_TRUE(event.id.boot == 7 && event.id.sequence == 42);
+    TEST_ASSERT_TRUE(event.success);
+    TEST_ASSERT_EQUAL_UINT8(LINK_RF | LINK_WIRED, event.dest);
+    TEST_ASSERT_EQUAL_UINT8(LINK_RF | LINK_WIRED, event.sent);
+    TEST_ASSERT_FALSE(link.ReceiveTransmitEvent(event, 0));
+
+    // Pacote comum não gera evento.
+    link.Send("{\"t\":\"ev\",\"ev\":\"x\"}", 19);
+    Drain(link);
+    TEST_ASSERT_FALSE(link.ReceiveTransmitEvent(event, 0));
+}
+
+static void TestDeliveryLocalFailure(
+) {
+    FakeTransport radio;
+    Ttc link(radio);
+    link.Init();
+
+    radio.fail_send = true;
+    ttc::DELIVERY_ID id = {1, 2};
+    TEST_ASSERT_TRUE(link.SendAircraft(Aircraft(), ttc::AIRCRAFT_ALL, id));
+    Drain(link);
+
+    TX_EVENT event;
+    TEST_ASSERT_TRUE(link.ReceiveTransmitEvent(event, 0));
+    TEST_ASSERT_TRUE(event.id.boot == 1 && event.id.sequence == 2);
+    TEST_ASSERT_FALSE(event.success);
+    TEST_ASSERT_EQUAL_UINT8(0, event.sent);
+    TEST_ASSERT_EQUAL(1, link.GetLinkStats().tx_errors_count);
+}
+
+static void TestDeliveryReservesEvents(
+) {
+    FakeTransport radio;
+    Ttc link(radio);
+    link.Init();
+
+    // Eventos não lidos ocupam a reserva: nenhuma conclusão é perdida.
+    for (uint64_t i = 1; i <= ttc_tracked_slots; i++) {
+        ttc::DELIVERY_ID id = {1, i};
+        TEST_ASSERT_TRUE(link.SendAircraft(Aircraft(), ttc::AIRCRAFT_ALL, id));
+    }
+    ttc::DELIVERY_ID extra = {1, 99};
+    TEST_ASSERT_FALSE(link.SendAircraft(Aircraft(), ttc::AIRCRAFT_ALL, extra));
+    Drain(link);
+    TEST_ASSERT_FALSE(link.SendAircraft(Aircraft(), ttc::AIRCRAFT_ALL, extra));
+
+    TX_EVENT event;
+    for (uint64_t i = 1; i <= ttc_tracked_slots; i++) {
+        TEST_ASSERT_TRUE(link.ReceiveTransmitEvent(event, 0));
+        TEST_ASSERT_TRUE(event.id.sequence == i); // FIFO.
+    }
+    TEST_ASSERT_TRUE(link.SendAircraft(Aircraft(), ttc::AIRCRAFT_ALL, extra));
+
+    // ID inválido e JSON comum sem espaço não reservam vaga.
+    ttc::DELIVERY_ID zero = {0, 1};
+    TEST_ASSERT_FALSE(link.SendDelivery("{\"t\":\"ac\"}", 10, zero));
+}
+
+static void TestGroundConfirmation(
+) {
+    FakeTransport radio;
+    Ttc link(radio);
+    link.Init();
+
+    radio.inbox.push_back("{\"t\":\"cf\",\"id\":[7,42]}");
+    radio.inbox.push_back("{\"t\":\"cf\",\"id\":[7,42]}"); // Repetida: repassada.
+    radio.inbox.push_back("{\"t\":\"cf\",\"id\":[0,42]}"); // Inválida.
+    for (int i = 0; i < 3; i++) link.Update();
+
+    ttc::DELIVERY_ID id;
+    TEST_ASSERT_TRUE(link.ReceiveConfirmation(id, 0));
+    TEST_ASSERT_TRUE(id.boot == 7 && id.sequence == 42);
+    TEST_ASSERT_TRUE(link.ReceiveConfirmation(id, 0));
+    TEST_ASSERT_FALSE(link.ReceiveConfirmation(id, 0));
+
+    // Sem ACK, sem NACK e sem TC para o OBC.
+    Drain(link);
+    TEST_ASSERT_EQUAL(0, radio.sent.size());
+    TC_FRAME tc;
+    TEST_ASSERT_FALSE(link.ReceiveTelecommand(tc, 0));
+
+    LINK_STATS stats = link.GetLinkStats();
+    TEST_ASSERT_EQUAL(2, stats.confirmations_count);
+    TEST_ASSERT_EQUAL(1, stats.rx_errors_count);
+    TEST_ASSERT_EQUAL(0, stats.rx_packets_count);
+    TEST_ASSERT_NOT_EQUAL(0, stats.last_tc_ms);
+}
+
+static void TestExplicitDestination(
+) {
+    FakeTransport radio;
+    FakeTransport wired;
+    Ttc link(radio, &wired);
+    link.Init();
+
+    // Resposta pelo USB mesmo com a cópia da descida no cabo desligada.
+    link.SetUmbilicalEnabled(false);
+    TEST_ASSERT_TRUE(link.Send("{\"t\":\"lg\",\"rq\":1}", 17, LINK_WIRED));
+    Drain(link);
+    TEST_ASSERT_EQUAL(0, radio.sent.size());
+    TEST_ASSERT_EQUAL(1, wired.sent.size());
+
+    TEST_ASSERT_FALSE(link.Send("{\"t\":\"lg\",\"rq\":1}", 17, 0));
+    TEST_ASSERT_FALSE(link.Send("{\"t\":\"lg\",\"rq\":1}", 17, 0x04));
+
+    FakeTransport only_radio;
+    Ttc no_cable(only_radio);
+    no_cable.Init();
+    TEST_ASSERT_FALSE(no_cable.Send("{\"t\":\"lg\",\"rq\":1}", 17, LINK_WIRED));
+    TEST_ASSERT_TRUE(no_cable.Send("{\"t\":\"lg\",\"rq\":1}", 17, LINK_RF));
+}
+
 // setup() e loop() são funções obrigatórias do framework Arduino.
 
 void setup(
@@ -381,6 +528,11 @@ void setup(
     RUN_TEST(TestWiredWithoutRadioAndUnavailableTelemetry);
     RUN_TEST(TestTelemetryQueueFullKeepsAckQueueAvailable);
     RUN_TEST(TestTelemetryQueuedOutput);
+    RUN_TEST(TestDeliveryEventCarriesId);
+    RUN_TEST(TestDeliveryLocalFailure);
+    RUN_TEST(TestDeliveryReservesEvents);
+    RUN_TEST(TestGroundConfirmation);
+    RUN_TEST(TestExplicitDestination);
     UNITY_END();
 }
 

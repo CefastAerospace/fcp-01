@@ -390,6 +390,22 @@ namespace ttc {
         return Serialize(doc, out, capacity);
     }
 
+    bool PacketDeliveryId(
+        const char* json,
+        size_t len,
+        DELIVERY_ID& out
+    ) {
+        JsonDocument doc;
+        if (!DeserializeFrame(doc, json, len)) return false;
+        JsonArray pair = doc["id"];
+        if (pair.isNull() || pair.size() != 2) return false;
+        if (!pair[0].is<uint64_t>() || !pair[1].is<uint64_t>()) return false;
+        DELIVERY_ID id = {pair[0].as<uint64_t>(), pair[1].as<uint64_t>()};
+        if (!ValidId(id)) return false;
+        out = id;
+        return true;
+    }
+
     CONFIRMATION_PARSE ParseConfirmation(
         const char* json,
         size_t len,

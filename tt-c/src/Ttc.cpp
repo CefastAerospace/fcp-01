@@ -186,15 +186,12 @@ void Ttc::PollTransport(
     }
     buffer[len] = '\0';
 
-    // Sinal só no RF; leitura SPI fora da seção crítica (o SPI usa mutex).
-    if (origin == LINK_RF) {
-        int16_t rssi = radio.GetRssi();
-        float snr = radio.GetSnr();
-        portENTER_CRITICAL(&stats_lock);
-        stats.last_rssi = rssi;
-        stats.last_snr = snr;
-        portEXIT_CRITICAL(&stats_lock);
-    }
+    // Sinal só no RF, lido já (vale até o próximo pacote) e fora da seção
+    // crítica (o SPI usa mutex). Só é guardado se o quadro for um TC: o
+    // contrato define rssi/snr da TM como os do último TC recebido.
+    bool has_signal = origin == LINK_RF;
+    int16_t rssi = has_signal ? radio.GetRssi() : 0;
+    float snr = has_signal ? radio.GetSnr() : 0.0f;
 
     // Confirmação de entrega do solo: não é TC, não tem seq nem ACK.
     ttc::DELIVERY_ID confirmed;
@@ -211,7 +208,14 @@ void Ttc::PollTransport(
 
     // Envelope inválido: NACK se o seq é legível; senão, só descarta.
     ttc::TC_INFO info;
-    if (!ttc::ParseTelecommand(buffer, (size_t)len, info)) {
+    bool valid = ttc::ParseTelecommand(buffer, (size_t)len, info);
+    if (has_signal && (valid || info.has_seq)) {
+        portENTER_CRITICAL(&stats_lock);
+        stats.last_rssi = rssi;
+        stats.last_snr = snr;
+        portEXIT_CRITICAL(&stats_lock);
+    }
+    if (!valid) {
         CountRxError();
         Serial.printf("[TT&C] TC rejeitado (%s), %d bytes.\n", ttc::StatusName(info.status), len);
         if (info.has_seq) {
@@ -398,6 +402,10 @@ void Ttc::TransmitFrame(
 
     bool sent = TransmitTo(radio, rf_counter, frame);
     if (sent) sent_mask |= LINK_RF;
+    // Falha de RF com o rádio tido como saudável (ex.: timeout de TX): verifica
+    // já no próximo Update(). Rádio já em falha segue o período normal, sem
+    // reinicializar a cada quadro.
+    else if (radio_healthy) last_health_ms = millis() - health_period_ms;
 
     portENTER_CRITICAL(&stats_lock);
     if (sent) stats.tx_packets_count++;
@@ -613,6 +621,14 @@ bool Ttc::SendDelivery(
         return false;
     }
 
+    // O "id" do JSON é o que a estação confirma: diferente do id do evento, o
+    // OBC receberia confirmação de outra entrega e retransmitiria sem fim.
+    ttc::DELIVERY_ID carried;
+    if (!ttc::PacketDeliveryId(json, len, carried) || carried.boot != id.boot || carried.sequence != id.sequence) {
+        Serial.print("[TT&C] Entrega rejeitada: \"id\" do JSON ausente ou diferente do ID informado.\n");
+        return false;
+    }
+
     // Reserva a vaga do evento antes de enfileirar: toda entrega aceita gera um evento.
     bool reserved = false;
     portENTER_CRITICAL(&stats_lock);
@@ -717,11 +733,16 @@ bool Ttc::HoldTransmit(
     bool hold,
     uint32_t wait_ms
 ) {
+    // Contagem de pedidos: com duas tasks suspendendo, o TX só volta quando
+    // as duas liberarem. Liberação sem pedido pendente não tem efeito.
     portENTER_CRITICAL(&hold_lock);
-    hold_tx = hold;
+    if (hold && hold_count < UINT8_MAX) hold_count++;
+    else if (!hold && hold_count > 0) hold_count--;
+    hold_tx = hold_count > 0;
+    bool still_held = hold_tx;
     portEXIT_CRITICAL(&hold_lock);
     if (!hold) {
-        Notify();
+        if (!still_held) Notify();
         return !transmitting;
     }
 

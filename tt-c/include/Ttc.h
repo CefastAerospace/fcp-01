@@ -222,7 +222,8 @@ public:
      * falha localmente; o evento fica reservado até ReceiveTransmitEvent().
      * O JSON precisa carregar o ID (ex.: BuildAircraft com id).
      *
-     * @return false se o ID é inválido, o pacote excede max_body_len, há
+     * @return false se o ID é inválido ou difere do "id" do JSON, o pacote
+     * excede max_body_len, há
      * ttc_tracked_slots entregas pendentes ou a fila de descida está cheia.
      */
     bool SendDelivery(
@@ -287,8 +288,11 @@ public:
      *
      * @details Para cargas de alto consumo que não podem coincidir com o
      * pico de TX (DP §5.2). A recepção continua ativa durante a suspensão.
+     * Os pedidos são contados: o TX só volta quando cada HoldTransmit(true)
+     * tiver seu HoldTransmit(false), inclusive quando o pedido retornou
+     * false por timeout. Liberação sem pedido pendente não tem efeito.
      *
-     * @param hold true suspende; false retoma.
+     * @param hold true suspende; false libera um pedido.
      * @param wait_ms Espera máxima pelo fim de uma transmissão em curso.
      *
      * @return true se nenhuma transmissão está em curso ao retornar.
@@ -362,7 +366,8 @@ private:
     portMUX_TYPE stats_lock = portMUX_INITIALIZER_UNLOCKED;
     uint16_t rf_counter = 0;    // Só a task do enlace usa.
     uint16_t wired_counter = 0; // Só a task do enlace usa.
-    volatile bool hold_tx = false;
+    volatile bool hold_tx = false;               // hold_count > 0.
+    uint8_t       hold_count = 0;                // Pedidos de HoldTransmit(true) pendentes; sob hold_lock.
     volatile bool transmitting = false;          // Reservado sob hold_lock em TransmitNext().
     portMUX_TYPE  hold_lock = portMUX_INITIALIZER_UNLOCKED; // hold_tx × início do TX.
     volatile bool radio_healthy = false;

@@ -113,6 +113,15 @@ void setup(
  */
 void loop(
 ) {
+    // Timeout de TX deixa o rádio marcado para reinicialização.
+    if (!radio.IsReady()) {
+        Serial.print("[GS] Reinicializando o SX1276.\n");
+        if (!radio.Init()) {
+            delay(1000);
+            return;
+        }
+    }
+
     PollSerial();
 
     uint8_t frame[ttc::max_frame_len];

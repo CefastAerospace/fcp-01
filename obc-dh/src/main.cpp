@@ -36,7 +36,7 @@ namespace {
             static_cast<unsigned>(report.storage_result.attempts));
         Serial.printf("[OBC] Tempo monotonic_ms=%llu; UTC=desconhecido\n",
             static_cast<unsigned long long>(obc_time::esp32::GetMonotonicMs()));
-        Serial.println("[OBC] Inicializacao de bancada encerrada; sem repeticao automatica");
+        Serial.print("[OBC] Inicializacao de bancada encerrada; sem repeticao automatica\n");
     }
 
 } // namespace
@@ -48,7 +48,7 @@ void setup(
 ) {
     // Não aguarda conexão do computador nem inicia missão ou atuadores.
     Serial.begin(115200);
-    Serial.println("[OBC] Boot de bancada: tempo/NVS, I2C e SD");
+    Serial.print("[OBC] Boot de bancada: tempo/NVS, I2C e SD\n");
     const obc_startup::INITIALIZERS initializers = {
         obc_time::esp32::StartBoot,
         i2c::Init,

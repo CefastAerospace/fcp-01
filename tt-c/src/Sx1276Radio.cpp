@@ -140,8 +140,10 @@ bool Sx1276Radio::Send(
     LoRa.endPacket(true);
 
     if (!WaitTxDone()) {
-        Serial.print("[TT&C] ERRO: timeout no TX, reinicializando o SX1276.\n");
-        Init();
+        // Sem Init() aqui: com ready = false, a próxima verificação de saúde
+        // reinicializa o rádio e conta o reset em "rst" (Ttc::CheckRadio).
+        Serial.print("[TT&C] ERRO: timeout no TX, SX1276 marcado para reinicializacao.\n");
+        ready = false;
         return false;
     }
 

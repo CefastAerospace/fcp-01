@@ -219,7 +219,7 @@ A estação responde a cada recepção com uma confirmação na subida:
 
 | Chamada | Uso pelo OBC |
 |---|---|
-| `Ttc::SendAircraft(aircraft, available, id)` / `Ttc::SendDelivery(json, len, id)` | `true` indica que a entrega foi enfileirada. `false` é falha local imediata: ID inválido, pacote acima de 245 bytes, reservas esgotadas ou fila cheia. Nesse caso não haverá evento, e o OBC chama `FinishDeliveryTransmit(id, false)` logo após `BeginDeliveryTransmit`; sem isso a fila de entregas fica presa na tentativa. |
+| `Ttc::SendAircraft(aircraft, available, id)` / `Ttc::SendDelivery(json, len, id)` | `true` indica que a entrega foi enfileirada. `false` é falha local imediata: ID inválido, `id` do JSON ausente ou diferente do `id` informado (em `SendDelivery`), pacote acima de 245 bytes, reservas esgotadas ou fila cheia. Nesse caso não haverá evento, e o OBC chama `FinishDeliveryTransmit(id, false)` logo após `BeginDeliveryTransmit`; sem isso a fila de entregas fica presa na tentativa. |
 | `Ttc::ReceiveTransmitEvent(event, wait)` | Uma conclusão por entrega aceita, com o mesmo `id`. Com `rf` no destino, `success` indica que o TX de RF terminou; a cópia no umbilical não conta, porque a UART conclui a escrita mesmo sem nada ligado. Sem `rf` no destino, `success` indica que ao menos um meio terminou o TX. `dest`/`sent` dizem quais meios foram pedidos e concluídos. Corresponde a `FinishDeliveryTransmit(id, success)`. |
 | `Ttc::ReceiveConfirmation(id, wait)` | Confirmação do solo. Corresponde a `ConfirmDelivery(id)`. |
 

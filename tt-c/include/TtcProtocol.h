@@ -375,6 +375,17 @@ namespace ttc {
         DELIVERY_ID& out
     );
 
+    /**
+     * @brief Lê o "id":[boot,seq] de um pacote de descida já montado.
+     *
+     * @return true se o pacote é um objeto JSON com ID válido.
+     */
+    bool PacketDeliveryId(
+        const char* json,
+        size_t len,
+        DELIVERY_ID& out
+    );
+
     const char* LogErrorName(
         LOG_ERROR error
     );

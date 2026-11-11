@@ -240,6 +240,33 @@ static void TestHoldTransmit(
     TEST_ASSERT_EQUAL(1, radio.sent.size());
 }
 
+static void TestHoldTransmitCountsRequests(
+) {
+    FakeTransport radio;
+    Ttc link(radio);
+    link.Init();
+
+    // Duas tasks suspendem; a primeira a liberar não reabre o TX da outra.
+    TEST_ASSERT_TRUE(link.HoldTransmit(true, 0));
+    TEST_ASSERT_TRUE(link.HoldTransmit(true, 0));
+    link.Send("{\"t\":\"ev\",\"ev\":\"x\"}", 19);
+    link.HoldTransmit(false, 0);
+    Drain(link);
+    TEST_ASSERT_EQUAL(0, radio.sent.size());
+
+    link.HoldTransmit(false, 0);
+    Drain(link);
+    TEST_ASSERT_EQUAL(1, radio.sent.size());
+
+    // Liberação extra não deixa saldo negativo.
+    link.HoldTransmit(false, 0);
+    TEST_ASSERT_TRUE(link.HoldTransmit(true, 0));
+    link.Send("{\"t\":\"ev\",\"ev\":\"y\"}", 19);
+    Drain(link);
+    TEST_ASSERT_EQUAL(1, radio.sent.size());
+    link.HoldTransmit(false, 0);
+}
+
 static void TestWiredOriginAndCounters(
 ) {
     FakeTransport radio;
@@ -508,6 +535,21 @@ static void TestDeliveryReservesEvents(
     TEST_ASSERT_FALSE(link.SendDelivery("{\"t\":\"ac\"}", 10, zero));
 }
 
+static void TestDeliveryIdMustMatchJson(
+) {
+    FakeTransport radio;
+    Ttc link(radio);
+    link.Init();
+
+    ttc::DELIVERY_ID id = {2, 5};
+    const char* other = "{\"t\":\"ac\",\"id\":[2,6],\"icao\":\"E4953A\"}";
+    const char* none = "{\"t\":\"ac\",\"icao\":\"E4953A\"}";
+    const char* same = "{\"t\":\"ac\",\"id\":[2,5],\"icao\":\"E4953A\"}";
+    TEST_ASSERT_FALSE(link.SendDelivery(other, strlen(other), id));
+    TEST_ASSERT_FALSE(link.SendDelivery(none, strlen(none), id));
+    TEST_ASSERT_TRUE(link.SendDelivery(same, strlen(same), id));
+}
+
 static void TestGroundConfirmation(
 ) {
     FakeTransport radio;
@@ -575,6 +617,7 @@ void setup(
     RUN_TEST(TestNackForBadEnvelope);
     RUN_TEST(TestSlowTelecommandKeepsDedupSlot);
     RUN_TEST(TestHoldTransmit);
+    RUN_TEST(TestHoldTransmitCountsRequests);
     RUN_TEST(TestWiredOriginAndCounters);
     RUN_TEST(TestRadioHealthReset);
     RUN_TEST(TestTelemetryFillsLinkFields);
@@ -585,6 +628,7 @@ void setup(
     RUN_TEST(TestDeliveryLocalFailure);
     RUN_TEST(TestDeliveryRfFailureWithWiredCopy);
     RUN_TEST(TestDeliveryReservesEvents);
+    RUN_TEST(TestDeliveryIdMustMatchJson);
     RUN_TEST(TestGroundConfirmation);
     RUN_TEST(TestExplicitDestination);
     UNITY_END();

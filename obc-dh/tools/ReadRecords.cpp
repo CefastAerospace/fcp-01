@@ -61,6 +61,8 @@ namespace {
         RECORD& record,
         obc_data::PAYLOAD_SNAPSHOT& snapshot,
         bool& is_snapshot,
+        obc_delivery::RECORD& delivery,
+        bool& is_delivery,
         uint64_t& record_offset,
         SCAN_SUMMARY& summary,
         bool report
@@ -85,12 +87,15 @@ namespace {
                 obc_record::snapshot_magic, obc_record::snapshot_magic + 4);
             const uint8_t* telemetry = std::search(buffer, buffer + count,
                 obc_record::telemetry_magic, obc_record::telemetry_magic + 4);
-            const uint8_t* found = std::min(std::min(legacy, current), telemetry);
+            const char delivery_magic[] = "FCD1";
+            const uint8_t* delivery_begin = std::search(buffer, buffer + count, delivery_magic, delivery_magic + 4);
+            const uint8_t* found = std::min(std::min(legacy, current), std::min(telemetry, delivery_begin));
             if (found == buffer + count) {
                 discarded = true;
                 if (count < 4 && (std::memcmp(buffer, obc_data::record_magic, count) == 0
                         || std::memcmp(buffer, obc_record::snapshot_magic, count) == 0
-                        || std::memcmp(buffer, obc_record::telemetry_magic, count) == 0)) {
+                        || std::memcmp(buffer, obc_record::telemetry_magic, count) == 0
+                        || std::memcmp(buffer, delivery_magic, count) == 0)) {
                     incomplete = true;
                     reason = obc_record::STATUS::INCOMPLETE;
                 }
@@ -105,7 +110,17 @@ namespace {
 
             size_t consumed = 0;
             const bool candidate_snapshot = buffer[3] == '2';
-            const obc_record::STATUS status = candidate_snapshot
+            const bool candidate_delivery = buffer[2] == 'D';
+            obc_record::STATUS status = obc_record::STATUS::INVALID_DATA;
+            if (candidate_delivery) {
+                const size_t wanted = count >= 6 && buffer[5] == 2
+                    ? obc_delivery::confirm_bytes : obc_delivery::data_bytes;
+                if (count < wanted) status = obc_record::STATUS::INCOMPLETE;
+                else if (obc_delivery::Decode(buffer, wanted, delivery)) {
+                    consumed = wanted;
+                    status = obc_record::STATUS::OK;
+                }
+            } else status = candidate_snapshot
                 ? obc_record::DecodeSnapshot(buffer, count, snapshot, consumed)
                 : buffer[3] == '3'
                     ? obc_record::DecodeTelemetryV3(buffer, count, record, consumed)
@@ -114,6 +129,7 @@ namespace {
                 if (discarded) DiscardRange(begin, offset, reason, incomplete, summary, report);
                 record_offset = offset;
                 is_snapshot = candidate_snapshot;
+                is_delivery = candidate_delivery;
                 offset += consumed;
                 ++summary.records;
                 return true;
@@ -438,6 +454,31 @@ namespace {
 
     // Duas passagens no mesmo arquivo seekable. Memória extra cresce apenas
     // com as referências; busca temporal O(log K) para K referências.
+    // Exporta o diário aditivo, mantendo indisponibilidade e identificação u64.
+    void WriteDelivery(
+        const obc_delivery::RECORD& record,
+        uint64_t offset
+    ) {
+        const auto& delivery = record.delivery;
+        const auto& aircraft = delivery.aircraft;
+        std::cout << "{\"version\":1,\"type\":\"" << (record.confirmation ? "delivery_confirm" : "delivery_data")
+            << "\",\"file_offset\":" << offset << ",\"boot\":\"" << delivery.id.boot
+            << "\",\"sequence\":\"" << delivery.id.sequence << '"';
+        if (!record.confirmation) {
+            std::cout << ",\"monotonic_ms\":" << delivery.monotonic_ms << ",\"icao\":" << aircraft.icao << ",\"lat\":";
+            if (aircraft.available_fields & obc_data::SNAPSHOT_LATITUDE) std::cout << std::setprecision(17) << aircraft.latitude;
+            else std::cout << "null";
+            std::cout << ",\"lon\":";
+            if (aircraft.available_fields & obc_data::SNAPSHOT_LONGITUDE) std::cout << std::setprecision(17) << aircraft.longitude;
+            else std::cout << "null";
+            std::cout << ",\"alt\":";
+            if (aircraft.available_fields & obc_data::SNAPSHOT_ALTITUDE) std::cout << std::setprecision(17) << aircraft.altitude;
+            else std::cout << "null";
+            std::cout << ",\"vel\":null,\"hdg\":null,\"ts\":null,\"count\":null";
+        }
+        std::cout << "}\n";
+    }
+
     int ReadFile(
         const char* path
     ) {
@@ -452,12 +493,14 @@ namespace {
         RECORD record = {};
         obc_data::PAYLOAD_SNAPSHOT snapshot = {};
         bool is_snapshot = false;
+        bool is_delivery = false;
+        obc_delivery::RECORD delivery = {};
         uint64_t offset = 0;
         uint64_t record_offset = 0;
         SCAN_SUMMARY first_pass = {};
         while (ReadNext(input, static_cast<uint64_t>(size), offset, record, snapshot,
-                is_snapshot, record_offset, first_pass, false)) {
-            if (!is_snapshot && record.header.type == obc_data::RECORD_TYPE::TIME_REFERENCE) {
+                is_snapshot, delivery, is_delivery, record_offset, first_pass, false)) {
+            if (!is_snapshot && !is_delivery && record.header.type == obc_data::RECORD_TYPE::TIME_REFERENCE) {
                 references.push_back({record.body.time_reference, record_offset});
             }
         }
@@ -470,8 +513,9 @@ namespace {
         offset = 0;
         SCAN_SUMMARY summary = {};
         while (ReadNext(input, static_cast<uint64_t>(size), offset, record, snapshot,
-                is_snapshot, record_offset, summary, true)) {
-            if (is_snapshot) {
+                is_snapshot, delivery, is_delivery, record_offset, summary, true)) {
+            if (is_delivery) WriteDelivery(delivery, record_offset);
+            else if (is_snapshot) {
                 WriteEnvelope(obc_record::snapshot_version, "payload_snapshot", snapshot.stamp, record_offset, references);
                 WriteSnapshotBody(snapshot);
                 std::cout << "}\n";

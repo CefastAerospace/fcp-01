@@ -75,6 +75,13 @@ namespace obc_record {
         size_t size
     );
 
+    /** @brief Continua CRC bruto por blocos; iniciar em crc32_initial e aplicar xor final. */
+    uint32_t ContinueCrc32(
+        uint32_t crc,
+        const uint8_t* data,
+        size_t size
+    );
+
     /**
      * @brief Valida e codifica um registro completo em buffer do chamador.
      * @details Erros são detectados antes da primeira escrita. Fonte e buffer

@@ -102,6 +102,17 @@ namespace esp32 {
         return result;
     }
 
+    RESULT List(
+        const char* after,
+        FILE_INFO& out
+    ) {
+        const STATUS lock = LockService();
+        if (lock != STATUS::OK) return {lock, 0, 0, 0};
+        const RESULT result = storage.List(after, out);
+        xSemaphoreGive(service_mutex);
+        return result;
+    }
+
     RESULT Close(
     ) {
         const STATUS lock = LockService();

@@ -6,6 +6,7 @@
 #pragma once
 
 #include "ObcRecordCodec.h" // Mesmo decoder usado pelo firmware.
+#include "ObcDelivery.h" // Validação do diário FCD1 em segmentos mistos INT-006.
 #include <algorithm> // min, search, stable_sort e upper_bound.
 #include <exception> // std::exception para erros de recurso no programa nativo.
 #include <fstream> // Leitura binária de arquivo seekable, sem alteração da origem.

@@ -13,6 +13,7 @@
 #include <fcntl.h> // open, O_CREAT, O_EXCL e modos de acesso.
 #include <sys/stat.h> // stat, fstat, mkdir e S_ISDIR/S_ISREG.
 #include <unistd.h> // read, write, lseek, fsync e close.
+#include <dirent.h> // opendir, readdir e closedir para listagem limitada.
 
 namespace obc_storage {
 
@@ -61,6 +62,13 @@ namespace obc_storage {
         size_t transferred;
         int system_error;
         uint8_t attempts;
+    };
+
+    /** @brief Próximo arquivo regular em ordem lexical; nome vazio indica EOF. */
+    struct FILE_INFO {
+        char name[filename_chars + 1];
+        uint32_t size;
+        bool active;
     };
 
     // ─── CLASSES ──────────────────────────────────────────────────────
@@ -134,6 +142,12 @@ namespace obc_storage {
             uint8_t* buffer,
             size_t capacity,
             uint32_t& total_size
+        );
+
+        /** @brief Seleciona menor nome maior que after; memória constante, inclui arquivo ativo. */
+        RESULT List(
+            const char* after,
+            FILE_INFO& out
         );
 
         /**

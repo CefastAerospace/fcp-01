@@ -152,6 +152,9 @@ namespace obc_flow {
         /** @brief Informa se ainda aceita escrita, sem tentar recuperar falhas. */
         bool IsReady(
         ) const;
+        /** @brief Fecha o segmento confirmado e abre outro para permitir leitura do anterior. */
+        bool Seal(
+        );
         uint64_t GetWritten(
         ) const;
         uint64_t GetFailures(

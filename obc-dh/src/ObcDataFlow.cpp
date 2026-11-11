@@ -285,6 +285,10 @@ bool Journal::WriteParts(
 // ─── GETTERS ──────────────────────────────────────────────────────
 
 // Público:
+bool Journal::Seal(
+) { return ready_ && Rotate(); }
+
+// Público:
 bool Journal::IsReady(
 ) const { return ready_; }
 

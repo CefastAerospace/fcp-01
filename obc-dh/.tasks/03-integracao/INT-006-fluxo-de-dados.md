@@ -3,6 +3,73 @@
 **Estado:** Em andamento — primeira etapa implementada e verificada localmente; segunda etapa e aceites pendentes
 **Responsáveis:** OBC-DH, Payload e TT&C
 
+## Segunda etapa local — implementação de 10/11/2026
+
+O plano autorizado acrescentou identificação e retenção de cada mudança da
+projeção disponível por aeronave. `ObcDelivery` fornece cache de 32 entregas,
+FIFO, uma entrega aguardando ACK, consumidores por cópia, eventos separados
+de TX e confirmação, CRC FCD1 e recuperação conservadora de DATA/CONFIRM.
+O escritor do fluxo grava e fecha segmentos antes de permitir descarte das
+cópias duráveis. O controle continua disponível para TX em falha do SD.
+
+`ObcStorage::List` e seu adaptador ESP32 acrescentam listagem lexical com
+memória constante. `DeliveryLogs` lista/lê arquivos fechados e reconstrói
+pendências. `ReadRecords` interpreta os novos registros em arquivos mistos.
+O formato e os encaminhamentos TT&C, incluindo a proposta `request_log`,
+estão em [obc-delivery.md](../../../common/protocol/obc-delivery.md). Os
+comandos reproduzíveis estão em [tools/README.md](../../tools/README.md).
+
+Resultados locais desta implementação.
+
+- `ObcDeliveryCheck` passou com C++11, `-Wall -Wextra -Werror`, ASan e UBSan.
+  O LeakSanitizer exigiu execução fora do sandbox que usa ptrace. Cache e
+  controle ocuparam 2.848 bytes no build nativo.
+- `DeliveryLogsCheck.py` passou com vetores independentes struct/zlib,
+  arquivos temporários reais, leitura por blocos, EOF, arquivo ausente,
+  disponibilidade, corrupção, caudas, confirmações órfãs e 40 pendências.
+- Passaram as verificações existentes de armazenamento, fluxo, codec v1,
+  snapshots v2, TM v3, snapshot partido e leitor misto, com UBSan.
+- `pio run -e obc -e int006-check -e int006-delivery-check` passou nos três
+  ambientes. Após o ajuste de reserva, `obc` usou 31.376 bytes de RAM estática
+  e 408.641 bytes de flash.
+  O framework Arduino 2.0.14 emitiu seu aviso em `uartSetPins`.
+- A nova bancada simula TX, perda de ACK, retentativas, escritor de 100 ms,
+  respostas de arquivos fechados e falta de espaço após 32 registros.
+  `ObcDeliveryBenchCheck.py` está preparado. Sua execução, medição de heap,
+  pilhas e cadência UART estão pendentes por ausência de porta ESP32.
+
+Escolhas locais a avaliar no ensaio incluem fechamento a cada DATA/CONFIRM,
+com aumento do número de arquivos, e cruzamento de registros por múltiplas
+passagens com memória constante. O pior custo da busca cresce quadraticamente
+por consulta. Saturação volátil gera perda explícita. Depois de reset, a
+primeira observação nova estabelece novamente a base de comparação em RAM.
+
+### Diagnóstico da revisão final — ajuste autorizado e verificado
+
+O caso reproduzido antes da correção combinava consulta inicial pendente,
+recepção ocupando as 32 posições com entregas voláteis e falha de escrita.
+Uma pendência antiga legível ficava sem espaço em `Queue::Restore`, mantendo
+a barreira de recuperação ativa e impedindo TX.
+
+O responsável autorizou reservar uma das 32 posições enquanto houver
+consulta pendente. `Queue::Reserve` aplica esse limite à admissão e permite
+que `Restore` use a posição reservada. A substituição de cópias duráveis
+também conserva essa reserva quando inicia uma nova consulta. A saturação
+continua contabilizada e a conclusão da consulta libera as 32 posições.
+
+`ObcDeliveryCheck` acrescentou a combinação de rajada, falha SD e pendências
+antigas, verificando transmissão FIFO, ID/instante preservados e avanço após
+falha persistindo CONFIRM. Também verifica admissão acima de 32 alterações
+com substituição de cópias duráveis e espaço reservado à recuperação.
+Passou novamente com ASan/UBSan. `DeliveryLogsCheck.py` e as regressões do
+leitor v1/v2/v3, snapshots e snapshot partido passaram com os executáveis
+recompilados usando UBSan. Os três builds ESP32 passaram novamente.
+
+A INT-006 permanece em andamento. A ligação das APIs de entrega ao rádio,
+ACK e deduplicação na estação, contrato final de `request_log`, execução da
+nova bancada e aceites Payload/TT&C continuam pendentes. Os critérios e
+roteiros anteriores conservam suas entradas e resultados esperados.
+
 ## Preparação da segunda etapa — 10/11/2026
 
 A primeira etapa abaixo já está implementada e verificada nos recortes registrados. Com computador/ESP32/USB, priorizar os contratos e o desenvolvimento local da segunda etapa, conservando as predecessoras e os aceites pendentes.

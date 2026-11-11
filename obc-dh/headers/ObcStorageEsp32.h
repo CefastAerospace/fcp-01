@@ -59,6 +59,12 @@ namespace esp32 {
     RESULT Close(
     );
 
+    /** @brief Lista arquivos com o mutex do serviço, sem manter iterador externo. */
+    RESULT List(
+        const char* after,
+        FILE_INFO& out
+    );
+
     /**
      * @brief Fecha, desmonta e libera HSPI; não apaga arquivos ou o mutex.
      * @details Retorna erro de fechamento, se houver. SD.end não fornece um

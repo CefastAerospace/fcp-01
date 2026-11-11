@@ -1,5 +1,76 @@
 # Codec e leitura de registros OBC v1/v2/v3
 
+## Segunda etapa INT-006 — entregas FCD1
+
+O fluxo acrescenta controle de entregas, cache fixo de 32 posições e diário
+DATA/CONFIRM nos segmentos existentes. O leitor atualizado interpreta também
+FCD1. Formato, limites da recuperação e proposta `request_log` estão no
+[contrato de entregas](../../common/protocol/obc-delivery.md).
+
+Compilar e verificar dentro de `obc-dh/`.
+
+```bash
+g++ -std=c++11 -Wall -Wextra -Werror \
+    -fsanitize=address,undefined -fno-sanitize-recover=undefined -Iheaders \
+    src/ObcData.cpp src/ObcTime.cpp src/ObcRecordCodec.cpp \
+    src/ObcStorage.cpp src/ObcDataFlow.cpp src/ObcDelivery.cpp \
+    tests/ObcDeliveryCheck.cpp -o /tmp/fcp01-delivery-check
+/tmp/fcp01-delivery-check
+
+g++ -std=c++11 -Wall -Wextra -Werror \
+    -fsanitize=undefined -fno-sanitize-recover=undefined -Iheaders \
+    src/ObcData.cpp src/ObcTime.cpp src/ObcRecordCodec.cpp \
+    src/ObcDelivery.cpp tools/ReadRecords.cpp -o /tmp/fcp01-read-records
+g++ -std=c++11 -Wall -Wextra -Werror \
+    -fsanitize=undefined -fno-sanitize-recover=undefined -Iheaders \
+    src/ObcData.cpp src/ObcTime.cpp src/ObcRecordCodec.cpp \
+    src/ObcStorage.cpp src/ObcDataFlow.cpp src/ObcDelivery.cpp \
+    tools/DeliveryLogs.cpp -o /tmp/fcp01-delivery-logs
+python3 tests/DeliveryLogsCheck.py /tmp/fcp01-delivery-logs /tmp/fcp01-read-records
+```
+
+`ObcDeliveryCheck` exercita consumidores independentes, ACK durante gravação,
+retentativas, falhas, saturação e resets. A regressão da reserva combina
+consulta pendente, rajada de recepção e falha SD, confirma avanço FIFO e
+exercita substituição de cópias duráveis conservando espaço para recuperação.
+`DeliveryLogsCheck` produz vetores
+independentes com struct/zlib, conserva pendências sob CONFIRM inválido ou
+incompleto, recupera 40 entregas e confere extração byte a byte por blocos.
+
+Para extrair uma cópia local de diretório já fechado, usar os comandos abaixo.
+`read` entrega bytes brutos em stdout. `recover` produz JSON Lines das entregas
+pendentes ordenadas e diagnóstico em stderr. Seus códigos são 0 para leitura
+íntegra, 1 para corrupção/cauda/órfão com recuperação conservadora e 2 para
+uso ou I/O inválido. IDs são strings hexadecimais de 16 caracteres. O leitor
+histórico conserva sua saída anterior e acrescenta `delivery_data` e
+`delivery_confirm`, com componentes do ID em strings decimais.
+
+```bash
+/tmp/fcp01-delivery-logs /copia/obc list
+/tmp/fcp01-delivery-logs /copia/obc read boot_0000000000000001_00000000.bin 0 256 > /tmp/bloco.bin
+/tmp/fcp01-delivery-logs /copia/obc recover > /tmp/pendencias.jsonl
+```
+
+A bancada adicional usa o mesmo receptor UART, escritor lento e scanner,
+com respostas de arquivos fechados simuladas e tentativas/ACK simulados.
+O armazenamento simulado retém até 32 registros FCD1 e então injeta falta
+de espaço. O timeout de 200 ms é exclusivo do ensaio. O relatório conserva
+UART, pilhas, ocupação, perdas e os instantes originais das retentativas.
+
+```bash
+pio run -e obc -e int006-check -e int006-delivery-check
+pio run -e int006-delivery-check -t upload --upload-port /dev/ttyUSB0
+python3 tests/ObcDeliveryBenchCheck.py /dev/ttyUSB0
+pio run -e obc -t upload --upload-port /dev/ttyUSB0
+```
+
+Em 10/11/2026 passaram os testes nativos novos, as regressões de
+armazenamento/fluxo/codecs/leitor e os três builds acima. A execução da nova
+bancada, memória dinâmica, pilhas e cadência UART continuam pendentes porque
+este ambiente não disponibilizou porta ESP32. O build `obc` usou 31.376 bytes
+de RAM estática e 408.641 bytes de flash. O cache portátil mediu 2.848 bytes
+no executável nativo. Medições dinâmicas exigem a placa.
+
 **Estado atual — revisão documental de 10/11/2026:** modelos, codecs e leitor estão implementados localmente; a primeira etapa INT-006 já liga UART, tempo e gravação. Aceites dos produtores, cartão físico e precisão RF continuam pendentes. O [contrato OBC](../../common/protocol/obc-data.md) define atualizações individuais v1, snapshots v2 e TM v3. O leitor aceita arquivos mistos sem reescrever a origem.
 
 O snapshot JSON do Payload é diferente de `PAYLOAD_DATA` v1 e do pacote de aeronave TT&C. Não fabricar sessão, sequência, disponibilidade ou atualizações individuais a partir de `id`. DAD-003/TES-007 encerraram os respectivos escopos portáteis; o uso integrado e os ensaios têm suas próprias tarefas.
@@ -65,7 +136,7 @@ Dentro de `obc-dh/`:
 ```bash
 g++ -std=c++11 -Wall -Wextra -Werror -Iheaders \
     src/ObcData.cpp src/ObcTime.cpp src/ObcRecordCodec.cpp \
-    tools/ReadRecords.cpp -o /tmp/fcp01-read-records
+    src/ObcDelivery.cpp tools/ReadRecords.cpp -o /tmp/fcp01-read-records
 /tmp/fcp01-read-records entrada.bin > registros.jsonl
 ```
 
@@ -121,7 +192,7 @@ g++ -std=c++11 -Wall -Wextra -Werror \
 g++ -std=c++11 -Wall -Wextra -Werror \
     -fsanitize=undefined -fno-sanitize-recover=undefined -Iheaders \
     src/ObcData.cpp src/ObcTime.cpp src/ObcRecordCodec.cpp \
-    tools/ReadRecords.cpp -o /tmp/fcp01-read-records
+    src/ObcDelivery.cpp tools/ReadRecords.cpp -o /tmp/fcp01-read-records
 python3 tests/ReadRecordsCheck.py /tmp/fcp01-read-records
 ```
 
@@ -169,7 +240,7 @@ g++ -std=c++11 -Wall -Wextra -Werror \
 g++ -std=c++11 -Wall -Wextra -Werror \
     -fsanitize=undefined -fno-sanitize-recover=undefined -Iheaders \
     src/ObcData.cpp src/ObcTime.cpp src/ObcRecordCodec.cpp \
-    tools/ReadRecords.cpp -o /tmp/fcp01-read-records
+    src/ObcDelivery.cpp tools/ReadRecords.cpp -o /tmp/fcp01-read-records
 python3 tests/TelemetryV3Check.py /tmp/fcp01-telemetry-v3-check /tmp/fcp01-read-records
 python3 tests/SnapshotPartsCheck.py /tmp/fcp01-snapshot-parts-check /tmp/fcp01-read-records
 ```

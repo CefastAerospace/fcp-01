@@ -5,6 +5,7 @@
 #pragma once
 
 #include "ObcDataFlow.h" // Estado, fila e diário portáteis.
+#include "ObcDelivery.h" // Cache e recuperação de entregas com identificação estável.
 #include "ObcStartup.h" // Relatório já produzido pelo boot central.
 #include "PayloadReceiverEsp32.h" // Proprietário único de UART2 e Receiver.
 #include "ObcStorageEsp32.h" // Operações existentes sobre SD/HSPI.
@@ -48,10 +49,32 @@ namespace esp32 {
     void ReportDiagnostics(
     );
 
+    /** @brief Retira cópia para transporte integrado pelo TT&C; timeout é escolhido pelo chamador. */
+    bool BeginDeliveryTransmit(
+        uint64_t timeout_ms,
+        obc_delivery::DELIVERY& out
+    );
+
+    /** @brief Informa conclusão local de transmissão identificada. */
+    bool FinishDeliveryTransmit(
+        obc_delivery::ID id,
+        bool success
+    );
+
+    /** @brief Recebe confirmação identificada do solo e notifica o proprietário do SD. */
+    bool ConfirmDelivery(
+        obc_delivery::ID id
+    );
+
 #ifdef OBC_FLOW_BENCH
     /** @brief Escritor lento simulado; não confirma persistência física. */
     JOURNAL_IO GetBenchIO(
     );
+#ifdef OBC_DELIVERY_BENCH
+    /** @brief Arquivos fechados simulados para o scanner de produção. */
+    obc_delivery::READER_IO GetBenchReaderIO(
+    );
+#endif
 #endif
 
 } // namespace esp32

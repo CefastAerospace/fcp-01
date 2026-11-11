@@ -201,6 +201,50 @@ namespace obc_storage {
     }
 
     // Público:
+    RESULT Storage::List(
+        const char* after,
+        FILE_INFO& out
+    ) {
+        if (!initialized_) return {STATUS::NOT_INITIALIZED, 0, 0, 0};
+        if (after == nullptr || std::strlen(after) > filename_chars) {
+            return {STATUS::INVALID_ARGUMENT, 0, 0, 0};
+        }
+        DIR* directory = ::opendir(directory_);
+        if (directory == nullptr) return IoFailure(STATUS::READ_FAILED, errno);
+        FILE_INFO next = {};
+        RESULT result = {STATUS::OK, 0, 0, 0};
+        for (;;) {
+            errno = 0;
+            const dirent* entry = ::readdir(directory);
+            if (entry == nullptr) {
+                if (errno != 0) result = IoFailure(STATUS::READ_FAILED, errno);
+                break;
+            }
+            char path[directory_chars + filename_chars + 2];
+            if (!BuildPath(entry->d_name, path) || std::strcmp(entry->d_name, after) <= 0
+                    || (next.name[0] && std::strcmp(entry->d_name, next.name) >= 0)) continue;
+            struct stat info;
+            if (::stat(path, &info) != 0) {
+                result = IoFailure(STATUS::READ_FAILED, errno);
+                break;
+            }
+            if (!S_ISREG(info.st_mode)) continue;
+            if (info.st_size < 0 || static_cast<uint64_t>(info.st_size) > max_file_bytes) {
+                result = {STATUS::FILE_LIMIT, 0, 0, 0};
+                break;
+            }
+            std::strcpy(next.name, entry->d_name);
+            next.size = static_cast<uint32_t>(info.st_size);
+            next.active = writer_fd_ >= 0 && std::strcmp(active_name_, next.name) == 0;
+        }
+        if (::closedir(directory) != 0 && result.status == STATUS::OK) {
+            result = IoFailure(STATUS::CLOSE_FAILED, errno);
+        }
+        if (result.status == STATUS::OK) out = next;
+        return result;
+    }
+
+    // Público:
     RESULT Storage::Close(
     ) {
         if (!initialized_) return {STATUS::NOT_INITIALIZED, 0, 0, 0};

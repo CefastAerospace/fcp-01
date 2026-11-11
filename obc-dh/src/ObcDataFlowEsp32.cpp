@@ -15,6 +15,8 @@ namespace {
     State state;
     RecordQueue records;
     Journal journal;
+    obc_delivery::Queue deliveries;
+    bool delivery_reader_ready = false;
     obc_payload::Receiver receiver;
     std::unique_ptr<uint8_t[]> snapshot_first;
     std::unique_ptr<uint8_t[]> snapshot_second;
@@ -53,6 +55,27 @@ namespace {
     obc_storage::RESULT Close(
         void*
     ) { return obc_storage::esp32::Close(); }
+
+    // Leitura no escritor pode ceder CPU ao transporte UART a cada bloco.
+    obc_storage::RESULT ReadDelivery(
+        void*,
+        const char* name,
+        uint32_t offset,
+        uint8_t* bytes,
+        size_t capacity,
+        uint32_t& total
+    ) {
+        const auto result = obc_storage::esp32::Read(name, offset, bytes, capacity, total);
+        vTaskDelay(pdMS_TO_TICKS(1));
+        return result;
+    }
+
+    // O cursor lexical não mantém descritor de diretório entre chamadas.
+    obc_storage::RESULT ListDelivery(
+        void*,
+        const char* after,
+        obc_storage::FILE_INFO& out
+    ) { return obc_storage::esp32::List(after, out); }
 #endif
 
     // Cópia limitada sob proteção; codificação e notificações ficam fora dela.
@@ -88,6 +111,9 @@ namespace {
     ) {
         portENTER_CRITICAL(&state_lock);
         const bool observed = state.ObserveSnapshot(snapshot);
+#if !defined(OBC_FLOW_BENCH) || defined(OBC_DELIVERY_BENCH)
+        if (observed) deliveries.ObserveValidatedSnapshot(snapshot);
+#endif
         const bool reserved = observed && writer_ready && snapshot_state == SLOT_STATE::FREE;
         if (reserved) snapshot_state = SLOT_STATE::ENCODING;
         else state.DropRecords();
@@ -153,6 +179,20 @@ namespace {
 #endif
         journal.Init(io, stamp, static_cast<uint32_t>(esp_reset_reason()));
         UpdateWriterState();
+#if !defined(OBC_FLOW_BENCH) || defined(OBC_DELIVERY_BENCH)
+#ifdef OBC_DELIVERY_BENCH
+        const obc_delivery::READER_IO reader = GetBenchReaderIO();
+#else
+        const obc_delivery::READER_IO reader = {ListDelivery, ReadDelivery, nullptr};
+#endif
+        obc_delivery::RECOVERY recovery = {};
+        delivery_reader_ready = obc_delivery::Audit(reader, recovery);
+        Serial.printf("[DELIVERY] recovery=%u data=%llu confirm=%llu corrupt=%llu tails=%llu orphan=%llu cache_bytes=%u\n",
+            delivery_reader_ready ? 1U : 0U, static_cast<unsigned long long>(recovery.data),
+            static_cast<unsigned long long>(recovery.confirmations), static_cast<unsigned long long>(recovery.corrupt_bytes),
+            static_cast<unsigned long long>(recovery.incomplete_tails), static_cast<unsigned long long>(recovery.orphan_confirmations),
+            static_cast<unsigned>(sizeof(deliveries)));
+#endif
         if (journal.IsReady()) {
             obc_record::RECORD started = {};
             started.header = {1, obc_data::RECORD_TYPE::EVENT, 96, stamp};
@@ -165,6 +205,38 @@ namespace {
         }
         RECORD_BLOCK block = {};
         for (;;) {
+#if !defined(OBC_FLOW_BENCH) || defined(OBC_DELIVERY_BENCH)
+            // Somente este contexto grava DATA/CONFIRM e lê segmentos fechados.
+            obc_delivery::RECORD delivery_record = {};
+            portENTER_CRITICAL(&state_lock);
+            const bool delivery_work = deliveries.BeginStorage(delivery_record);
+            portEXIT_CRITICAL(&state_lock);
+            if (delivery_work) {
+                uint8_t bytes[obc_delivery::data_bytes];
+                size_t count = 0;
+                const bool written = obc_delivery::Encode(delivery_record, bytes, sizeof(bytes), count)
+                    && journal.Write(bytes, count) && journal.Seal();
+                portENTER_CRITICAL(&state_lock);
+                deliveries.FinishStorage(delivery_record, written);
+                portEXIT_CRITICAL(&state_lock);
+            }
+            // A consulta usa a fronteira capturada e só publica se ela continuar atual.
+            portENTER_CRITICAL(&state_lock);
+            const auto frontier = deliveries.GetFrontier();
+            const bool needs_recovery = deliveries.NeedsRecovery();
+            portEXIT_CRITICAL(&state_lock);
+            obc_delivery::DELIVERY recovered = {};
+            bool found = false;
+            if (needs_recovery) {
+                const bool read = delivery_reader_ready
+                    && obc_delivery::FindPending(reader, frontier, recovered, found);
+                portENTER_CRITICAL(&state_lock);
+                if (read) deliveries.Restore(frontier, found ? &recovered : nullptr);
+                else deliveries.ReaderFailed();
+                portEXIT_CRITICAL(&state_lock);
+                if (!read) delivery_reader_ready = false;
+            }
+#endif
             portENTER_CRITICAL(&state_lock);
             const bool small = records.Pop(block);
             portEXIT_CRITICAL(&state_lock);
@@ -205,6 +277,7 @@ bool Init(
     attempted = true;
     boot_id = report.time_status == obc_time::STATUS::OK ? report.boot_id : 0;
     state.Init(boot_id);
+    deliveries.Init(boot_id, report.storage_result.status == obc_storage::STATUS::OK);
     if (boot_id == 0 || !obc_payload::esp32::Init(receiver, boot_id)) {
         Serial.printf("[FLOW] Recepcao inativa: boot ou memoria indisponivel\n");
         return false;
@@ -247,6 +320,11 @@ bool Init(
             portEXIT_CRITICAL(&state_lock);
             Serial.printf("[FLOW] Escritor inativo: falha ao criar tarefa\n");
         }
+    }
+    if (!writer_task) {
+        portENTER_CRITICAL(&state_lock);
+        deliveries.ReaderFailed();
+        portEXIT_CRITICAL(&state_lock);
     }
     Serial.printf("[FLOW] Recepcao=%s; SD=%s; heap=%u; maior_bloco=%u\n",
         active ? "OK" : "inativa", storage && writer_task ? "em inicializacao" : "indisponivel",
@@ -342,6 +420,50 @@ void ReportDiagnostics(
         writer_task ? static_cast<unsigned>(uxTaskGetStackHighWaterMark(writer_task)) : 0U,
         static_cast<unsigned>(transport.stack_free_bytes), static_cast<unsigned long long>(transport.full_observations));
     previous = statistics;
+#if !defined(OBC_FLOW_BENCH) || defined(OBC_DELIVERY_BENCH)
+    portENTER_CRITICAL(&state_lock);
+    const auto delivery_statistics = deliveries.GetStatistics();
+    portEXIT_CRITICAL(&state_lock);
+    Serial.printf("[DELIVERY] occupied=%u peak=%u accepted=%llu repeated=%llu lost=%llu storage_failures=%llu attempts=%llu tx_failures=%llu confirmed=%llu unknown=%llu evicted=%llu\n",
+        static_cast<unsigned>(delivery_statistics.occupied), static_cast<unsigned>(delivery_statistics.high_water),
+        static_cast<unsigned long long>(delivery_statistics.accepted), static_cast<unsigned long long>(delivery_statistics.repeated),
+        static_cast<unsigned long long>(delivery_statistics.lost), static_cast<unsigned long long>(delivery_statistics.storage_failures),
+        static_cast<unsigned long long>(delivery_statistics.attempts), static_cast<unsigned long long>(delivery_statistics.transmit_failures),
+        static_cast<unsigned long long>(delivery_statistics.confirmed), static_cast<unsigned long long>(delivery_statistics.unknown_confirmations),
+        static_cast<unsigned long long>(delivery_statistics.evicted));
+#endif
+}
+
+bool BeginDeliveryTransmit(
+    uint64_t timeout_ms,
+    obc_delivery::DELIVERY& out
+) {
+    const uint64_t now_ms = obc_time::esp32::GetMonotonicMs();
+    portENTER_CRITICAL(&state_lock);
+    const bool result = active && deliveries.BeginTransmit(now_ms, timeout_ms, out);
+    portEXIT_CRITICAL(&state_lock);
+    return result;
+}
+
+bool FinishDeliveryTransmit(
+    obc_delivery::ID id,
+    bool success
+) {
+    portENTER_CRITICAL(&state_lock);
+    const bool result = deliveries.FinishTransmit(id, success);
+    portEXIT_CRITICAL(&state_lock);
+    return result;
+}
+
+bool ConfirmDelivery(
+    obc_delivery::ID id
+) {
+    portENTER_CRITICAL(&state_lock);
+    const bool result = deliveries.Confirm(id);
+    if (!writer_task) deliveries.ReaderFailed();
+    portEXIT_CRITICAL(&state_lock);
+    if (result && writer_task) xTaskNotifyGive(writer_task);
+    return result;
 }
 
 } // namespace esp32

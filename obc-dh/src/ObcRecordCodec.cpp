@@ -448,6 +448,12 @@ namespace obc_record {
         return UpdateCrc32(obc_data::crc32_initial, data, size) ^ obc_data::crc32_final_xor;
     }
 
+    uint32_t ContinueCrc32(
+        uint32_t crc,
+        const uint8_t* data,
+        size_t size
+    ) { return UpdateCrc32(crc, data, size); }
+
     STATUS Encode(
         const RECORD& record,
         uint8_t* buffer,

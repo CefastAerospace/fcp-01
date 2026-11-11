@@ -281,6 +281,20 @@ namespace ttc {
     );
 
     /**
+     * @brief Desserializa exatamente um objeto JSON ocupando todo o quadro.
+     *
+     * @details deserializeJson() para no fim do primeiro valor e aceitaria
+     * "{...}lixo". Aqui, depois do objeto só pode haver espaço em branco.
+     *
+     * @return true se o quadro é um único objeto JSON válido.
+     */
+    bool DeserializeFrame(
+        JsonDocument& doc,
+        const char* json,
+        size_t len
+    );
+
+    /**
      * @brief Valida o envelope de um TC: {"t":"tc","seq":N,"cmd":"nome",...}.
      *
      * @param json Texto recebido (não precisa terminar em '\0').

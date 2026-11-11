@@ -49,10 +49,33 @@ class Broadcaster:
                 self._clients.discard(client)
 
 
+LOOPBACK_HOSTS = frozenset({"localhost", "127.0.0.1", "::1"})
+
+
+def host_name(host: str) -> str:
+    """Nome do cabeçalho Host sem a porta ("[::1]:8000" -> "::1")."""
+    if host.startswith("["):
+        return host[1:].split("]", 1)[0]
+    return host.rsplit(":", 1)[0] if host.count(":") == 1 else host
+
+
 def create_app(link: Link, report_dir: Path,
                map_center: tuple[float, float, int] = DEFAULT_MAP_CENTER,
-               tile_cache: TileCache | None = None) -> Flask:
+               tile_cache: TileCache | None = None,
+               allowed_hosts: frozenset[str] | None = LOOPBACK_HOSTS) -> Flask:
+    """allowed_hosts: nomes aceitos no cabeçalho Host; None aceita qualquer um.
+
+    O padrão (só loopback) barra DNS rebinding: uma página externa que aponte
+    seu domínio para 127.0.0.1 não consegue chamar /api/tc nem /api/inject.
+    """
     app = Flask(__name__, static_folder=None)
+
+    @app.before_request
+    def check_host():
+        if allowed_hosts is not None and host_name(request.host) not in allowed_hosts:
+            return Response("Host não permitido", status=403)
+        return None
+
     broadcaster = Broadcaster()
     link.add_listener(broadcaster.publish)
     test_lock = threading.Lock()
@@ -135,8 +158,9 @@ def create_app(link: Link, report_dir: Path,
         """Bancada: processa um quadro fictício como se tivesse chegado pelo enlace.
 
         Body: {"packet": {...}} (um objeto JSON do contrato) ou
-        {"line": "..."} (a linha cruza de ponte ou umbilical). Uso local;
-        o servidor só escuta em 127.0.0.1.
+        {"line": "..."} (a linha cruza de ponte ou umbilical). O quadro só
+        atualiza o painel: não confirma entregas ao satélite, não grava IDs
+        no registro persistente e não entra na contagem de perdas.
         """
         body = request.get_json(silent=True)
         if isinstance(body, dict) and isinstance(body.get("packet"), dict):
@@ -145,7 +169,7 @@ def create_app(link: Link, report_dir: Path,
             line = body["line"]
         else:
             return jsonify({"error": "envie {'packet': {}} ou {'line': ''}"}), 400
-        link.handle_line(line + "\n")
+        link.handle_line(line + "\n", injected=True)
         return jsonify({"ok": True})
 
     return app

@@ -245,3 +245,20 @@ def test_new_delivery_is_logged_durably(make_link):
     packets = [(delivery, durable) for kind, delivery, durable in calls if kind == "packet"]
     assert packets == [({"id": [3, 8], "repeated": False}, True), ({"id": [3, 8], "repeated": True}, False)]
     assert link.stream.confirmations == [[3, 8], [3, 8]]
+
+
+def test_two_processes_share_delivery_registry(tmp_path):
+    path = tmp_path / "deliveries.jsonl"
+    rf = DeliveryStore(path)
+    wired = DeliveryStore(path)  # Outro processo (ex.: serve --wired) no mesmo arquivo.
+
+    assert rf.record((5, 1)) is True
+    assert (5, 1) in wired  # Relê o que o outro gravou.
+    assert wired.record((5, 1)) is False
+    assert wired.record((5, 2)) is True
+    assert rf.record((5, 2)) is False
+    rf.close()
+    wired.close()
+
+    lines = path.read_text().splitlines()
+    assert lines == ['{"id":[5,1]}', '{"id":[5,2]}']

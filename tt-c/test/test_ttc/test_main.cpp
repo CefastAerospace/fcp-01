@@ -173,6 +173,38 @@ static void TestDuplicateTelecommand(
     TEST_ASSERT_EQUAL(2, link.GetLinkStats().duplicates_count);
 }
 
+static void TestSlowTelecommandKeepsDedupSlot(
+) {
+    FakeTransport radio;
+    FakeTransport wired;
+    Ttc link(radio, &wired);
+    link.Init();
+    link.SetUmbilicalEnabled(false);
+
+    // TC lento pelo cabo, ainda sem ACK.
+    wired.inbox.push_back(Tc(1, "ping"));
+    link.Update();
+    TC_FRAME slow;
+    TEST_ASSERT_TRUE(link.ReceiveTelecommand(slow, 0));
+
+    // Oito TCs novos, respondidos, não podem ocupar o slot do TC em execução.
+    for (uint16_t seq = 2; seq <= 9; seq++) {
+        radio.inbox.push_back(Tc(seq, "ping"));
+        link.Update();
+        TC_FRAME tc;
+        TEST_ASSERT_TRUE(link.ReceiveTelecommand(tc, 0));
+        link.SendAck(tc.seq, tc.cmd, ttc::ACK_OK);
+        Drain(link);
+    }
+
+    // O ACK do TC lento volta pelo cabo, com "q".
+    size_t wired_before = wired.sent.size();
+    link.SendAck(slow.seq, slow.cmd, ttc::ACK_OK);
+    Drain(link);
+    TEST_ASSERT_EQUAL(wired_before + 1, wired.sent.size());
+    TEST_ASSERT_TRUE(Contains(wired.sent.back(), "\"seq\":1,\"cmd\":\"ping\",\"st\":\"ok\",\"q\":"));
+}
+
 static void TestNackForBadEnvelope(
 ) {
     FakeTransport radio;
@@ -541,6 +573,7 @@ void setup(
     RUN_TEST(TestOneFramePerUpdate);
     RUN_TEST(TestDuplicateTelecommand);
     RUN_TEST(TestNackForBadEnvelope);
+    RUN_TEST(TestSlowTelecommandKeepsDedupSlot);
     RUN_TEST(TestHoldTransmit);
     RUN_TEST(TestWiredOriginAndCounters);
     RUN_TEST(TestRadioHealthReset);

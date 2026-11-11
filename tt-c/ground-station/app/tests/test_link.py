@@ -74,3 +74,43 @@ def test_tc_latency_report(make_link):
     assert report["passed"]
     assert report["acked"] == 8 and report["forward_ms"]["max"] == 3
     assert "APROVADO" in summarize(report)
+
+
+def test_line_split_by_read_timeout_is_joined():
+    import json
+    import queue as queue_module
+    import time
+
+    from fcp_gs.link import Link
+
+    class SplitStream:
+        def __init__(self) -> None:
+            self.lines: queue_module.Queue[bytes] = queue_module.Queue()
+
+        def readline(self) -> bytes:
+            try:
+                return self.lines.get(timeout=0.05)
+            except queue_module.Empty:
+                return b""
+
+        def write(self, data: bytes) -> int:
+            return len(data)
+
+        def close(self) -> None:
+            pass
+
+    stream = SplitStream()
+    link = Link(stream, "rf")
+    link.start()
+    try:
+        line = json.dumps({"n": 5, "t": "tm", "md": "bench"}).encode() + b"\n"
+        stream.lines.put(line[:10])  # Pausa no meio: readline() devolve o pedaço.
+        stream.lines.put(line[10:])
+        deadline = time.monotonic() + 1.0
+        while link.snapshot()["latest_tm"] is None and time.monotonic() < deadline:
+            time.sleep(0.01)
+        state = link.snapshot()
+        assert state["latest_tm"] == {"n": 5, "t": "tm", "md": "bench"}
+        assert state["counts"].get("log", 0) == 0
+    finally:
+        link.close()

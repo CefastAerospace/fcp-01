@@ -26,7 +26,7 @@ Implementação de referência: `tt-c/include/TtcProtocol.h` (satélite, estaç�
 | `cmd` | string | Nome do comando (catálogo abaixo). |
 | `args` | objeto, opcional | Argumentos, interpretados pelo OBC. |
 
-**Validação no TT&C (envelope):** JSON válido, `t` = `"tc"`, `seq` em 16 bits, `cmd` no catálogo e `args` objeto. Se o envelope falhar e o `seq` for legível, o TT&C responde com NACK; sem `seq` legível, o quadro é descartado. O conteúdo de `args` é validado pelo OBC.
+**Validação no TT&C (envelope):** um único objeto JSON ocupando o quadro inteiro (só espaço em branco depois do `}`), `t` = `"tc"`, `seq` em 16 bits, `cmd` no catálogo e `args` objeto. Se o envelope falhar e o `seq` for legível, o TT&C responde com NACK; sem `seq` legível, o quadro é descartado. O conteúdo de `args` é validado pelo OBC.
 
 **Deduplicação:** o TT&C lembra os 8 TCs mais recentes por 30 s. Um TC com `seq` repetido não é reentregue ao OBC: se já foi respondido, o mesmo ACK é reenviado; se ainda está em execução, é ignorado. A estação terrena deve iniciar `seq` em valor não repetido a cada sessão (ex.: derivado do relógio).
 
@@ -65,7 +65,7 @@ Todo pacote de descida recebe do TT&C o campo `n` (primeiro campo, inteiro 0–6
 
 | Campo | Descrição |
 |---|---|
-| `seq`, `cmd` | Do TC respondido. |
+| `seq`, `cmd` | Do TC respondido. Num NACK, `cmd` vem como `unknown` quando o nome recebido não pode ser ecoado: ausente, com mais de 23 caracteres ou fora de `[A-Za-z0-9_]`. |
 | `st` | `ok`, `bad_json`, `invalid_cmd` (comando não suportado no estado/firmware), `invalid_param`, `state_rejected` ou `unknown_cmd`. |
 | `q` | ms entre a recepção do TC pelo TT&C e a entrega ao OBC (evidência do REQ-TTC-004, ≤ 200 ms). Ausente em NACKs emitidos pelo próprio TT&C. |
 

@@ -1,7 +1,7 @@
 #include <Arduino.h>     // Framework Arduino.
-#include <ArduinoJson.h> // para JsonDocument, deserializeJson
+#include <ArduinoJson.h> // para JsonDocument
 #include "LoraRadio.h"   // para Sx1276Radio, RADIO_PINS
-#include "TtcProtocol.h" // para max_frame_len
+#include "TtcProtocol.h" // para max_frame_len, DeserializeFrame
 
 // Ponte transparente entre o notebook (serial) e o enlace LoRa.
 // - Linha da serial iniciada por '{' é transmitida como um quadro.
@@ -43,9 +43,12 @@ static void ForwardFrame(
     }
 
     // JSON válido segue literal; inválido segue em hexadecimal para análise.
+    // Literal só se for um único objeto (sem lixo depois) e sem quebra de
+    // linha, que partiria o enquadramento por linhas do notebook.
     JsonDocument doc;
-    bool valid = deserializeJson(doc, (const char*)frame, (size_t)len) == DeserializationError::Ok
-              && doc.is<JsonObject>();
+    bool valid = ttc::DeserializeFrame(doc, (const char*)frame, (size_t)len)
+              && memchr(frame, '\n', (size_t)len) == nullptr
+              && memchr(frame, '\r', (size_t)len) == nullptr;
     if (valid) {
         Serial.print("\"pkt\":");
         Serial.write(frame, (size_t)len);

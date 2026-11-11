@@ -92,7 +92,7 @@ bool Sx1276Radio::Init(
     LoRa.setPins(pins.cs, pins.rst, pins.dio0);
 
     if (!LoRa.begin(ttc::radio_frequency_hz)) {
-        Serial.println("[TT&C] ERRO: SX1276 nao responde.");
+        Serial.print("[TT&C] ERRO: SX1276 nao responde.\n");
         ready = false;
         return false;
     }
@@ -113,12 +113,12 @@ bool Sx1276Radio::Init(
 
     // receive(), chamado em EnterReceive(), mapeia o DIO0 para RX Done.
     if (!EnterReceive()) {
-        Serial.println("[TT&C] ERRO: SX1276 nao entrou em RX.");
+        Serial.print("[TT&C] ERRO: SX1276 nao entrou em RX.\n");
         ready = false;
         return false;
     }
     ready = true;
-    Serial.println("[TT&C] SX1276 inicializado.");
+    Serial.print("[TT&C] SX1276 inicializado.\n");
     return true;
 }
 
@@ -129,6 +129,10 @@ bool Sx1276Radio::Send(
 ) {
     if (!ready || data == nullptr || len == 0 || len > ttc::max_frame_len) return false;
 
+    // Um pacote que chegou desde o último Receive() seria sobrescrito pelo TX
+    // no FIFO, e o RxNbBytes antigo apontaria para o próprio quadro enviado.
+    if (stash_len == 0) stash_len = ReadPendingPacket(stash, sizeof(stash));
+
     LoRa.idle();
     LoRa.beginPacket();
     LoRa.write(data, len);
@@ -136,13 +140,13 @@ bool Sx1276Radio::Send(
     LoRa.endPacket(true);
 
     if (!WaitTxDone()) {
-        Serial.println("[TT&C] ERRO: timeout no TX, reinicializando o SX1276.");
+        Serial.print("[TT&C] ERRO: timeout no TX, reinicializando o SX1276.\n");
         Init();
         return false;
     }
 
     // O TX já terminou: falha aqui fica para a verificação de saúde.
-    if (!EnterReceive()) Serial.println("[TT&C] ERRO: SX1276 nao voltou ao RX apos o TX.");
+    if (!EnterReceive()) Serial.print("[TT&C] ERRO: SX1276 nao voltou ao RX apos o TX.\n");
     return true;
 }
 
@@ -206,6 +210,22 @@ int Sx1276Radio::Receive(
 ) {
     if (!ready || buffer == nullptr || max_len == 0) return 0;
 
+    if (stash_len != 0) {
+        int len = stash_len;
+        stash_len = 0;
+        if (len < 0) return -1;
+        size_t copy = min((size_t)len, max_len);
+        memcpy(buffer, stash, copy);
+        return (int)copy;
+    }
+    return ReadPendingPacket(buffer, max_len);
+}
+
+// Privado:
+int Sx1276Radio::ReadPendingPacket(
+    uint8_t* buffer,
+    size_t max_len
+) {
     // Leitura direta do FIFO: parsePacket() trocaria o RX contínuo por
     // RX single, deixando o rádio surdo entre chamadas.
     uint8_t irq_flags = TransferRegister(sx1276_reg_irq_flags, 0x00);

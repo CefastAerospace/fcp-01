@@ -172,12 +172,12 @@ void setup(
 ) {
     // Ttc::Init() abre a serial pelo umbilical; os logs usam a mesma porta.
     // Sem rádio, o umbilical segue funcionando e a task tenta reinicializá-lo.
-    if (!ttc_link.Init()) Serial.println("[SAT] ERRO: radio indisponivel, seguindo pelo umbilical.");
+    if (!ttc_link.Init()) Serial.print("[SAT] ERRO: radio indisponivel, seguindo pelo umbilical.\n");
     if (!ttc_link.Start()) {
-        Serial.println("[SAT] ERRO: falha ao criar a task do TT&C.");
+        Serial.print("[SAT] ERRO: falha ao criar a task do TT&C.\n");
         while (true) delay(1000);
     }
-    Serial.println("[SAT] Teste do enlace TT&C (simulador do OBC) pronto.");
+    Serial.print("[SAT] Teste do enlace TT&C (simulador do OBC) pronto.\n");
 }
 
 /**

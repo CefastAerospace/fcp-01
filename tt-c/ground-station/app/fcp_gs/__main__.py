@@ -103,7 +103,16 @@ def _cmd_serve(args: argparse.Namespace) -> int:
     from .tiles import TileCache
 
     link = _open_link(args)
-    app = create_app(link, REPORT_DIR, map_center=args.map_center, tile_cache=TileCache(TILE_DIR))
+    from .server import LOOPBACK_HOSTS
+
+    if args.host in ("0.0.0.0", "::"):
+        # Acesso pela rede foi pedido explicitamente: qualquer Host é aceito.
+        print("ATENÇÃO: painel acessível pela rede, sem autenticação (TCs incluídos).", file=sys.stderr)
+        allowed_hosts = None
+    else:
+        allowed_hosts = LOOPBACK_HOSTS | {args.host}
+    app = create_app(link, REPORT_DIR, map_center=args.map_center, tile_cache=TileCache(TILE_DIR),
+                     allowed_hosts=allowed_hosts)
     print(f"Abra http://localhost:{args.http}")
     try:
         app.run(host=args.host, port=args.http, threaded=True)

@@ -15,6 +15,7 @@ static constexpr TickType_t  enqueue_wait     = pdMS_TO_TICKS(100);
 static constexpr TickType_t  idle_wait        = pdMS_TO_TICKS(20); // Polling de reserva.
 static constexpr uint32_t    task_stack_size  = 8192;
 static constexpr uint32_t    dedup_expiry_ms  = 30000; // Cobre as retentativas da estação terrena.
+static constexpr uint32_t    unacked_expiry_ms = 300000; // TC sem ACK: OBC travado não prende o slot.
 static constexpr uint32_t    health_period_ms = 1000;
 
 // ==================================================================
@@ -67,7 +68,7 @@ bool Ttc::Init(
     if (dedup_mutex == nullptr) dedup_mutex = xSemaphoreCreateMutex();
     if (rx_queue == nullptr || ack_queue == nullptr || tx_queue == nullptr || event_queue == nullptr
             || confirm_queue == nullptr || dedup_mutex == nullptr) {
-        Serial.println("[TT&C] ERRO: falha ao criar filas.");
+        Serial.print("[TT&C] ERRO: falha ao criar filas.\n");
         return false;
     }
 
@@ -76,7 +77,7 @@ bool Ttc::Init(
     stats.last_rssi = -120;
     portEXIT_CRITICAL(&stats_lock);
 
-    if (umbilical != nullptr && !umbilical->Init()) Serial.println("[TT&C] ERRO: falha no umbilical.");
+    if (umbilical != nullptr && !umbilical->Init()) Serial.print("[TT&C] ERRO: falha no umbilical.\n");
 
     // Rádio ausente não impede o umbilical; a verificação de saúde tenta de novo.
     radio_healthy = radio.Init();
@@ -100,7 +101,7 @@ bool Ttc::Start(
     BaseType_t created = xTaskCreatePinnedToCore(TaskEntry, "ttc_link", task_stack_size, this, priority, &task_handle, core);
     if (created != pdPASS) {
         task_handle = nullptr;
-        Serial.println("[TT&C] ERRO: falha ao criar a task do enlace.");
+        Serial.print("[TT&C] ERRO: falha ao criar a task do enlace.\n");
         return false;
     }
     radio.SetNotifyTask(task_handle);
@@ -148,7 +149,7 @@ void Ttc::CheckRadio(
     }
 
     // Init() pulsa o RST (GPIO 14) e reconfigura o rádio.
-    Serial.println("[TT&C] ERRO: SX1276 sem resposta ou fora de RX, reinicializando.");
+    Serial.print("[TT&C] ERRO: SX1276 sem resposta ou fora de RX, reinicializando.\n");
     radio_healthy = radio.Init();
     portENTER_CRITICAL(&stats_lock);
     stats.radio_resets_count++;
@@ -180,7 +181,7 @@ void Ttc::PollTransport(
 
     if (len < 0) {
         CountRxError();
-        Serial.println("[TT&C] Quadro corrompido ou longo demais descartado.");
+        Serial.print("[TT&C] Quadro corrompido ou longo demais descartado.\n");
         return;
     }
     buffer[len] = '\0';
@@ -234,7 +235,7 @@ void Ttc::HandleConfirmation(
     if (queued) stats.confirmations_count++;
     else stats.confirmations_dropped++;
     portEXIT_CRITICAL(&stats_lock);
-    if (!queued) Serial.println("[TT&C] Fila de confirmacoes cheia, confirmacao descartada.");
+    if (!queued) Serial.print("[TT&C] Fila de confirmacoes cheia, confirmacao descartada.\n");
 }
 
 // Privado:
@@ -271,9 +272,8 @@ void Ttc::HandleTelecommand(
         return;
     }
 
-    // Registra o TC no slot mais antigo.
-    size_t index = dedup_next;
-    dedup_next = (dedup_next + 1) % ttc_dedup_slots;
+    // Registra o TC num slot livre, expirado ou já respondido, nessa ordem.
+    size_t index = FreeDedupSlot();
     dedup[index] = {};
     dedup[index].used = true;
     dedup[index].seq = info.seq;
@@ -297,7 +297,7 @@ void Ttc::HandleTelecommand(
         dedup[index].used = false;
         xSemaphoreGive(dedup_mutex);
         CountRxError();
-        Serial.println("[TT&C] Fila de TC cheia, comando descartado.");
+        Serial.print("[TT&C] Fila de TC cheia, comando descartado.\n");
         EnqueueAck(info.seq, info.cmd_name, ttc::ERR_STATE_REJECTED, -1, origin);
         return;
     }
@@ -317,6 +317,45 @@ int Ttc::FindDedupSlot(
         if (dedup[i].used && dedup[i].seq == seq && now_ms - dedup[i].rx_ms < dedup_expiry_ms) return (int)i;
     }
     return -1;
+}
+
+// Privado:
+int Ttc::FindAckSlot(
+    uint16_t seq
+) {
+    // Para o ACK, um TC ainda sem resposta continua valendo após dedup_expiry_ms:
+    // execução lenta não pode perder o meio de origem nem o "q". Entre slots com
+    // o mesmo seq, vale o mais recente.
+    int found = -1;
+    uint32_t now_ms = millis();
+    for (size_t i = 0; i < ttc_dedup_slots; i++) {
+        if (!dedup[i].used || dedup[i].seq != seq) continue;
+        if (dedup[i].acked && now_ms - dedup[i].rx_ms >= dedup_expiry_ms) continue;
+        if (found < 0 || now_ms - dedup[i].rx_ms < now_ms - dedup[found].rx_ms) found = (int)i;
+    }
+    return found;
+}
+
+// Privado:
+size_t Ttc::FreeDedupSlot(
+) {
+    // Prioridade: livre > expirado > respondido mais antigo > mais antigo.
+    // Um TC em execução só é sobrescrito com os 8 slots ocupados por TCs sem ACK.
+    uint32_t now_ms = millis();
+    int expired = -1, acked = -1, oldest = -1;
+    for (size_t i = 0; i < ttc_dedup_slots; i++) {
+        if (!dedup[i].used) return i;
+        uint32_t age = now_ms - dedup[i].rx_ms;
+        if (age >= dedup_expiry_ms && (dedup[i].acked || age >= unacked_expiry_ms)) {
+            if (expired < 0) expired = (int)i;
+            continue;
+        }
+        if (dedup[i].acked && (acked < 0 || age > now_ms - dedup[acked].rx_ms)) acked = (int)i;
+        if (oldest < 0 || age > now_ms - dedup[oldest].rx_ms) oldest = (int)i;
+    }
+    if (expired >= 0) return (size_t)expired;
+    if (acked >= 0) return (size_t)acked;
+    return (size_t)oldest;
 }
 
 // Privado:
@@ -383,7 +422,7 @@ void Ttc::PublishTransmitEvent(
         portENTER_CRITICAL(&stats_lock);
         if (tracked_pending > 0) tracked_pending--;
         portEXIT_CRITICAL(&stats_lock);
-        Serial.println("[TT&C] ERRO: evento de entrega sem vaga reservada.");
+        Serial.print("[TT&C] ERRO: evento de entrega sem vaga reservada.\n");
     }
 }
 
@@ -401,12 +440,12 @@ bool Ttc::TransmitTo(
         Serial.printf("[TT&C] Pacote de %u bytes sem espaco para o contador.\n", frame.len);
         return false;
     }
-    counter++;
-
     if (!transport.Send((const uint8_t*)json, len)) {
         Serial.printf("[TT&C] Falha no TX de %u bytes.\n", (unsigned)len);
         return false;
     }
+    // Só avança com o quadro no ar: um "n" pulado conta como perda na estação.
+    counter++;
     return true;
 }
 
@@ -435,7 +474,7 @@ bool Ttc::ReceiveTelecommand(
 
     // Instante da entrega ao OBC, base do campo "q" do ACK.
     xSemaphoreTake(dedup_mutex, portMAX_DELAY);
-    int slot = FindDedupSlot(out.seq);
+    int slot = FindAckSlot(out.seq);
     if (slot >= 0) dedup[slot].delivered_ms = millis();
     xSemaphoreGive(dedup_mutex);
     return true;
@@ -450,7 +489,7 @@ bool Ttc::SendAck(
     if (dedup_mutex == nullptr) return false;
 
     xSemaphoreTake(dedup_mutex, portMAX_DELAY);
-    int slot = FindDedupSlot(seq);
+    int slot = FindAckSlot(seq);
     uint8_t dest = slot >= 0 ? dedup[slot].origin : DownlinkDestinations();
     int32_t queue_ms = -1;
     if (slot >= 0 && dedup[slot].delivered_ms != 0) {
@@ -507,8 +546,11 @@ bool Ttc::EnqueueItem(
     const TX_FRAME& item
 ) {
     if (queue == nullptr) return false;
-    if (xQueueSend(queue, &item, enqueue_wait) != pdTRUE) {
-        Serial.println("[TT&C] Fila de descida cheia, pacote descartado.");
+    // A task do enlace é a única consumidora das filas de descida: esperar
+    // nela só a deixaria surda para RX/TX e descartaria o pacote do mesmo jeito.
+    bool own_task = task_handle != nullptr && xTaskGetCurrentTaskHandle() == task_handle;
+    if (xQueueSend(queue, &item, own_task ? 0 : enqueue_wait) != pdTRUE) {
+        Serial.print("[TT&C] Fila de descida cheia, pacote descartado.\n");
         return false;
     }
     Notify();
@@ -605,7 +647,7 @@ bool Ttc::SendAircraft(
     char json[ttc::max_frame_len + 1];
     size_t len = ttc::BuildAircraft(aircraft, json, sizeof(json), available, &id);
     if (len == 0) {
-        Serial.println("[TT&C] Aeronave invalida ou acima do limite do quadro.");
+        Serial.print("[TT&C] Aeronave invalida ou acima do limite do quadro.\n");
         return false;
     }
     return SendDelivery(json, len, id);
@@ -652,7 +694,7 @@ bool Ttc::SendTelemetry(
     char json[ttc::max_frame_len + 1];
     size_t len = ttc::BuildTelemetry(filled, json, sizeof(json), available);
     if (len == 0) {
-        Serial.println("[TT&C] TM excede o limite do quadro.");
+        Serial.print("[TT&C] TM excede o limite do quadro.\n");
         return false;
     }
     if (!Send(json, len)) return false;

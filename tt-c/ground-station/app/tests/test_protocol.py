@@ -63,3 +63,18 @@ def test_loss_tracker_wraps_and_restarts():
 def test_parse_rejects_non_json_constants(constant):
     received = parse_line('{"n":1,"t":"ac","icao":"X","alt":%s}' % constant)
     assert received.kind == "log"
+
+
+def test_loss_tracker_restart_from_high_counter():
+    tracker = LossTracker()
+    tracker.feed(40000)
+    assert tracker.feed(0) == 0  # Reinício: não são 25535 perdas.
+    assert tracker.restarts == 1 and tracker.lost == 0
+    assert tracker.feed(1) == 0
+
+
+def test_loss_tracker_normal_wrap_still_counts_losses():
+    tracker = LossTracker()
+    tracker.feed(65534)
+    assert tracker.feed(2) == 3  # 65535, 0 e 1 perdidos na volta normal.
+    assert tracker.restarts == 0

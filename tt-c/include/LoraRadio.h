@@ -89,6 +89,12 @@ private:
     bool ready = false;
     TaskHandle_t notify_task = nullptr;
 
+    // Pacote recebido e ainda não lido quando um TX começou: TX e RX dividem
+    // o FIFO (base 0), então ele é salvo antes e entregue no próximo Receive().
+    // stash_len: 0 vazio, -1 erro de CRC, > 0 bytes. Só a task do enlace usa.
+    uint8_t stash[ttc::max_frame_len];
+    int stash_len = 0;
+
     static Sx1276Radio* irq_owner; // Instância atendida pela ISR do DIO0.
 
     /**
@@ -114,6 +120,16 @@ private:
      * @return true se o rádio ficou em RX contínuo.
      */
     bool EnterReceive();
+
+    /**
+     * @brief Lê o pacote do FIFO se RX Done está ativo, limpando as flags.
+     *
+     * @return 0 sem pacote, -1 com erro de CRC, ou bytes lidos.
+     */
+    int ReadPendingPacket(
+        uint8_t* buffer,
+        size_t max_len
+    );
 
     /**
      * @brief Acesso direto a registrador, não exposto por LoRaClass.

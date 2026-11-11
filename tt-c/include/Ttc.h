@@ -358,7 +358,6 @@ private:
     TaskHandle_t task_handle = nullptr;
     SemaphoreHandle_t dedup_mutex = nullptr;
     DEDUP_SLOT dedup[ttc_dedup_slots] = {};
-    size_t dedup_next = 0;
     LINK_STATS stats = {};
     portMUX_TYPE stats_lock = portMUX_INITIALIZER_UNLOCKED;
     uint16_t rf_counter = 0;    // Só a task do enlace usa.
@@ -444,6 +443,20 @@ private:
     int FindDedupSlot(
         uint16_t seq
     );
+
+    /**
+     * @brief Slot do TC a responder: como FindDedupSlot(), mas um TC sem ACK
+     * não expira (execução lenta mantém origem e "q").
+     */
+    int FindAckSlot(
+        uint16_t seq
+    );
+
+    /**
+     * @brief Slot para um TC novo: livre, expirado, respondido mais antigo ou,
+     * só com todos em execução, o mais antigo.
+     */
+    size_t FreeDedupSlot();
 
     /**
      * @brief Transmite o próximo pacote, ACKs primeiro, em cada meio de destino.

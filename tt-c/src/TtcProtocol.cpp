@@ -81,6 +81,36 @@ namespace ttc {
     }
 
     // Nome de arquivo aceito pelo request_log: sem diretórios nem "..".
+    // Leitor que expõe quantos bytes o ArduinoJson consumiu.
+    struct FrameReader {
+        const char* data;
+        size_t      len;
+        size_t      pos;
+
+        int read() {
+            return pos < len ? (uint8_t)data[pos++] : -1;
+        }
+
+        size_t readBytes(char* buffer, size_t count) {
+            size_t n = 0;
+            while (n < count && pos < len) buffer[n++] = data[pos++];
+            return n;
+        }
+    };
+
+    static bool EchoableCommandName(
+        const char* name
+    ) {
+        size_t len = 0;
+        for (; name[len] != '\0'; len++) {
+            if (len >= cmd_name_len - 1) return false;
+            char c = name[len];
+            bool ok = (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9') || c == '_';
+            if (!ok) return false;
+        }
+        return len > 0;
+    }
+
     static bool ValidLogName(
         const char* name,
         bool allow_empty
@@ -171,6 +201,23 @@ namespace ttc {
         return "unknown";
     }
 
+    bool DeserializeFrame(
+        JsonDocument& doc,
+        const char* json,
+        size_t len
+    ) {
+        if (json == nullptr || len == 0) return false;
+        FrameReader reader = {json, len, 0};
+        if (deserializeJson(doc, reader) != DeserializationError::Ok) return false;
+        if (!doc.is<JsonObject>()) return false;
+        // O parser para logo após o '}' final: o resto precisa ser espaço.
+        for (size_t i = reader.pos; i < len; i++) {
+            char c = json[i];
+            if (c != ' ' && c != '\t' && c != '\r' && c != '\n') return false;
+        }
+        return true;
+    }
+
     bool ParseTelecommand(
         const char* json,
         size_t len,
@@ -182,8 +229,7 @@ namespace ttc {
         if (json == nullptr || len == 0 || len > max_frame_len) return false;
 
         JsonDocument doc;
-        if (deserializeJson(doc, json, len) != DeserializationError::Ok) return false;
-        if (!doc.is<JsonObject>()) return false;
+        if (!DeserializeFrame(doc, json, len)) return false;
 
         // seq antes do tipo: com seq legível, até um envelope ruim recebe NACK.
         if (doc["seq"].is<uint16_t>()) {
@@ -194,8 +240,10 @@ namespace ttc {
 
         const char* name = doc["cmd"];
         if (name == nullptr) return false;
-        strncpy(out.cmd_name, name, cmd_name_len - 1);
-        out.cmd_name[cmd_name_len - 1] = '\0';
+        // O NACK ecoa o cmd: só nomes curtos em [A-Za-z0-9_] cabem sem escape
+        // e sem corte. Outros viram "unknown", que nunca é um comando válido.
+        if (EchoableCommandName(name)) strcpy(out.cmd_name, name);
+        else strcpy(out.cmd_name, "unknown");
 
         // args, se presente, precisa ser objeto; o conteúdo é do OBC.
         if (!doc["args"].isNull() && !doc["args"].is<JsonObject>()) {
@@ -351,7 +399,7 @@ namespace ttc {
         if (json == nullptr || len == 0 || len > max_frame_len) return CF_NOT_CONFIRMATION;
 
         JsonDocument doc;
-        if (deserializeJson(doc, json, len) != DeserializationError::Ok) return CF_NOT_CONFIRMATION;
+        if (!DeserializeFrame(doc, json, len)) return CF_NOT_CONFIRMATION;
         if (!doc.is<JsonObject>() || doc["t"] != "cf") return CF_NOT_CONFIRMATION;
 
         // Somente "t" e "id"; o ID é um par de inteiros positivos de 64 bits.
@@ -390,7 +438,7 @@ namespace ttc {
         if (json == nullptr || len == 0 || len > max_frame_len) return ERR_BAD_JSON;
 
         JsonDocument doc;
-        if (deserializeJson(doc, json, len) != DeserializationError::Ok) return ERR_BAD_JSON;
+        if (!DeserializeFrame(doc, json, len)) return ERR_BAD_JSON;
         JsonObject args = doc["args"];
         if (args.isNull()) return ERR_INVALID_PARAM;
 

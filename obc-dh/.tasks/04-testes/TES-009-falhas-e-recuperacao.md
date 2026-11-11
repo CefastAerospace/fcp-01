@@ -57,7 +57,28 @@ cenários originais e não mudam seu estado por conclusão da origem.
 | Travamento/perda de comunicação/reset | INT-008 ainda pendente | Supervisão, limites de saúde/recuperação e montagem |
 | Retomada de missão/tempo/atuações | INT-006 aberta; INT-007/INT-008 pendentes | Estados duráveis, autorização, integração e critérios de retomada |
 
-Encaminhar preparação dos cenários UART/SD. Simulações existentes ajudam a preparar o procedimento, mas não aprovam os casos físicos. Medições auxiliares de boot/NVS em ESP32 isolado não encerram retomada de missão ou segurança de atuações.
+Encaminhar preparação dos cenários I2C/UART/SD. Simulações existentes ajudam a preparar o procedimento, mas não aprovam os casos físicos. Medições auxiliares de boot/NVS em ESP32 isolado não encerram retomada de missão ou segurança de atuações.
+
+## Atualização para execução física — 11/11/2026
+
+| Recorte | Base de software disponível | Preparação necessária |
+|---|---|---|
+| Falha e recuperação I2C | COM-003 concluída, com `ExecuteChecked`, diagnóstico e recuperação explícita | Exercitar o backend físico por consumidores integrados ou entrada de ensaio, com montagem e injeção acordadas |
+| Desconexão e excesso UART | Receptor FCPU local | Produtor ou gerador compatível, aceite do enquadramento, tráfego e montagem com Payload |
+| Interrupção de escrita SD | Serviço SD, diário e leitores locais | Cartão de ensaio, método de corte acordado e coleta dos arquivos para análise |
+| Pendências de entrega após reset | DATA/CONFIRM FCD1 e recuperação local da INT-006 | Exercitar arquivos do cartão e registrar os IDs, instantes e confirmações do cenário de ensaio |
+
+`i2c-recovery-check` executa FreeRTOS real com GPIOs, resultados do controlador
+e relógio da recuperação simulados. O ensaio de SDA/SCL presos precisa usar
+o backend físico do serviço. Os tempos reais do driver serão medidos nesse
+ensaio, conforme a política recebida da COM-003.
+
+O formato FCD1 e a recuperação de entregas estão descritos em
+[obc-delivery.md](../../../common/protocol/obc-delivery.md). `DeliveryLogs`
+e `ReadRecords` permitem analisar arquivos fechados e segmentos mistos.
+A reabilitação do escritor após falha, a supervisão de travamentos e a
+retomada completa de missão/atuações seguem nas integrações INT-007/INT-008.
+Os procedimentos das ferramentas estão em [tools/README.md](../../tools/README.md).
 
 ## Checklist de execução por cenário
 

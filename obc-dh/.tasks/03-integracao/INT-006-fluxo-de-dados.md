@@ -1,6 +1,6 @@
 # INT-006 — Fluxo Payload–tempo–SD–telemetria
 
-**Estado:** Em andamento — primeira etapa implementada e verificada localmente; segunda etapa e aceites pendentes
+**Estado:** Em andamento — entregas, diário e extração local implementados; integração TT&C e aceites pendentes
 **Responsáveis:** OBC-DH, Payload e TT&C
 
 ## Segunda etapa local — implementação de 10/11/2026
@@ -70,7 +70,26 @@ ACK e deduplicação na estação, contrato final de `request_log`, execução d
 nova bancada e aceites Payload/TT&C continuam pendentes. Os critérios e
 roteiros anteriores conservam suas entradas e resultados esperados.
 
-## Preparação da segunda etapa — 10/11/2026
+## Situação para encaminhamento aos testes — 11/11/2026
+
+As implementações locais da segunda etapa estão descritas acima. O setor de
+testes pode executar os roteiros de bancada e registrar os recortes na
+TES-008. A disponibilidade de ESP32 foi confirmada na execução da COM-003.
+O roteiro `ObcDeliveryBenchCheck.py` da bancada de entregas continua com
+execução pendente, conforme encaminhamento à TES-008.
+
+| Interface | Disponível | Pendência de integração |
+|---|---|---|
+| Payload–OBC | Receptor FCPU com corpo JSON e validação local | Aceite do enquadramento com Payload, produtor UART no Pi, unidades e perfil de tráfego |
+| Controle de entregas | ID estável, cache, DATA/CONFIRM e recuperação local | Ligação das APIs de entrega à biblioteca e à estação TT&C |
+| Arquivos fechados | Listagem, leitura por blocos, leitor FCP1/FCP2/FCP3/FCD1 e reconstrução local de pendências | Contrato final e implementação de `request_log` com respostas USB |
+
+O despacho atual aceita `ping`, `get_status`, `request_tm` e `set_time`.
+`request_log` permanece com resposta `invalid_cmd`. O pacote com ID estável,
+ACK de dados pelo solo, deduplicação na estação e eventos de TX precisam das
+adaptações descritas no [contrato de entregas](../../../common/protocol/obc-delivery.md).
+
+## Histórico da preparação da segunda etapa — 10/11/2026
 
 A primeira etapa abaixo já está implementada e verificada nos recortes registrados. Com computador/ESP32/USB, priorizar os contratos e o desenvolvimento local da segunda etapa, conservando as predecessoras e os aceites pendentes.
 

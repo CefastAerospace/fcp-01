@@ -61,6 +61,32 @@ Os pré-requisitos formais da tabela original continuam válidos para concluir c
 | Convivência FOC/I2C/rádio/SD | Preparar instrumentação e limites com ADCS | INT-005 e montagem integrada ainda pendentes |
 | Modos, energia, térmico e Burn Wire | Levantar contratos e procedimento com os responsáveis | INT-007, ConOps, limites e condições físicas ainda pendentes |
 
+## Atualização dos recortes disponíveis — 11/11/2026
+
+A segunda etapa local da INT-006 acrescentou controle de entregas, diário
+FCD1 e ferramentas para arquivos fechados. Os contratos e as instruções
+atuais estão em [obc-delivery.md](../../../common/protocol/obc-delivery.md) e
+[tools/README.md](../../tools/README.md).
+
+| Recorte | Firmware ou ferramenta disponível | Encaminhamento |
+|---|---|---|
+| USB, UTC e TM | `obc` e `int006-check`, com `ObcDataFlowCheck.py` | Reproduzir os cenários de bancada e registrar a configuração usada |
+| Entregas com ID e retentativas | `int006-delivery-check`, com `ObcDeliveryBenchCheck.py` | Executar o roteiro preparado; transporte, ACK e arquivos usam simulação nessa bancada |
+| Extração local e recuperação de pendências | `DeliveryLogs`, `ReadRecords` e `DeliveryLogsCheck.py` | Exercitar arquivos fechados e segmentos mistos FCP1/FCP2/FCP3/FCD1 |
+| Enlace real e extração pela estação | APIs de entrega no OBC e proposta `request_log` | Integrar ID, ACK dos dados, deduplicação, eventos de TX e respostas USB com TT&C |
+
+O roteiro da bancada de entregas está pronto e sua execução permanece
+pendente. A extração local usa os arquivos fechados obtidos pelo serviço ou
+copiados do cartão. `request_log` ainda recebe `invalid_cmd` no firmware
+atual. O contrato completo desse comando e as adaptações da biblioteca e
+da estação seguem com TT&C na INT-006.
+
+Os cenários de convivência dependem da integração dos consumidores na
+INT-005. Modos, proteções e atuações dependem da INT-007. O cenário de boot
+seguro depende das condições da INT-003. A montagem completa permite
+preparar esses ensaios e disponibilizar os dispositivos aos responsáveis
+pelas integrações.
+
 ## Checklist de execução por cenário
 
 - [ ] **Boot e reset:** conferir inicialização automática e falhas independentes. Antes de autorizar o caso físico completo, obter estados elétricos e medir motor/Burn Wire antes de o firmware executar, durante reset e após inicialização. Ausência de comandos de atuação no código não comprova saída segura.

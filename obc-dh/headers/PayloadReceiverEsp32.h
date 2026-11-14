@@ -7,6 +7,7 @@
 #include "PayloadReceiver.h" // Receiver, RESULT e STATUS portáteis.
 #include "Pinout.h" // GPIO16/RX e GPIO17/TX existentes.
 #include "ObcTimeEsp32.h" // GetMonotonicMs do boot corrente.
+#include "ObcTaskHealth.h" // Progresso temporal independente da chegada de dados.
 #include <Arduino.h> // Serial2 e HardwareSerial do framework.
 #include <freertos/task.h> // Tarefa opcional proprietária do transporte UART2.
 #ifdef OBC_FLOW_BENCH
@@ -25,6 +26,7 @@ namespace esp32 {
         uint64_t maximum_gap_ms;
         uint64_t full_observations;
         size_t stack_free_bytes;
+        obc_health::PROGRESS progress;
     };
 
     /**

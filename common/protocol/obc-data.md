@@ -266,6 +266,20 @@ Corpo: `source` u8, `code` u16, `severity` u8, `description` de 64 bytes. Origem
 
 `code` é opaco, com significado definido por cada origem; catálogos dos produtores ainda precisam de aceite. Descrição contém até 64 bytes de texto, sem exigir mensagem não vazia. Na RAM são 65 bytes com NUL; no arquivo são 64 com padding zero após o fim do texto. A validação local verifica terminação/limite, não UTF-8. Os códigos dos exemplos abaixo são propostos, não ações já integradas.
 
+Desde 14/11/2026, a supervisão diagnóstica local usa origem OBC com código
+256 para UART, 257 para processamento e 258 para escritor. Suspeita produz
+FAULT/error; retorno ao progresso produz EVENT/info. Cabeçalho conserva boot
+e ms monotônicos da avaliação. Não há alteração de layout ou ação automática
+associada a esses códigos; gravação depende da fila/SD e pode sofrer perda explícita.
+
+O diagnóstico I2C acrescenta o código OBC 259 no mesmo layout. Suspeita de
+callback/recuperação e serviço indisponível produzem FAULT/error; mudanças
+observadas de disponibilidade/recuperação e retorno do progresso produzem
+EVENT/info. `ok` informa ausência de atraso diagnosticado, não disponibilidade:
+uma recuperação em curso conserva o estado de serviço `recovering`. A primeira
+amostra normal não gera evento; amostras repetidas não repetem o registro.
+Sem boot válido há somente diagnóstico USB. Não há ação automática associada.
+
 ```json
 {"version":1,"type":"event","boot_id":1,"monotonic_ms":5000,"data":{"source":1,"code":1,"severity":0,"description":"startup"}}
 {"version":1,"type":"fault","boot_id":1,"monotonic_ms":5000,"data":{"source":7,"code":1,"severity":2,"description":"sd unavailable"}}

@@ -30,6 +30,16 @@ cheio, a admissão libera também o espaço necessário à consulta. Saturação
 sem cópia durável substituível contabiliza perda. A conclusão da consulta
 libera a admissão para usar novamente as 32 posições.
 
+Desde a retomada local de 13/11/2026, há também uma posição fixa exclusiva
+para recuperação já persistida. Ela é usada somente quando a consulta
+retorna com o cache cheio e nenhuma cópia pode ceder lugar. Nunca recebe
+novas admissões do Payload e não substitui uma recuperação em uso. Sua
+liberação segue a conclusão de CONFIRM, inclusive em falha de gravação.
+`occupied`/`high_water` continuam contando as 32 posições originais;
+`recovery_occupied` e o diagnóstico `recovery_slot` indicam essa reserva
+separada. O limite total em RAM é 32 cópias do cache mais uma cópia durável,
+sem alocação dinâmica em produção ou alteração do formato FCD1/TT&C.
+
 O escritor existente serializa DATA e CONFIRM com os registros históricos.
 Após cada registro de entrega, fecha o segmento e cria o próximo segmento
 exclusivo. Isso permite recuperar cópias duráveis usando a leitura existente

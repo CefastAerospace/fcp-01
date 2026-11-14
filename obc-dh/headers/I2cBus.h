@@ -78,6 +78,8 @@ namespace i2c {
         uint64_t bus_errors;
         uint64_t incomplete_reads;
         uint64_t operation_failures;
+        uint32_t recovery_started_ms;
+        uint32_t sampled_ms;
     };
 
     /**

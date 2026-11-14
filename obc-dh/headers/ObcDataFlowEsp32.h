@@ -8,6 +8,9 @@
 #include "ObcDelivery.h" // Cache e recuperação de entregas com identificação estável.
 #include "ObcDownlink.h" // Caixa limitada de request_log e resposta por cópia.
 #include "ObcStartup.h" // Relatório já produzido pelo boot central.
+#include "ObcTaskHealth.h" // Avaliação portátil e eventos diagnósticos das tarefas.
+#include "ObcI2cHealth.h" // Diagnóstico portátil de progresso e disponibilidade I2C.
+#include "I2cBus.h" // Cópia coerente dos diagnósticos do executor existente.
 #include "PayloadReceiverEsp32.h" // Proprietário único de UART2 e Receiver.
 #include "ObcStorageEsp32.h" // Operações existentes sobre SD/HSPI.
 #include <esp_system.h> // esp_reset_reason.
@@ -46,7 +49,7 @@ namespace esp32 {
         uint64_t sampled_ms
     );
 
-    /** @brief Amostra estatísticas e emite diagnóstico agrupado até uma vez por segundo. */
+    /** @brief Avalia saúde a cada 100 ms; conserva diagnósticos periódicos de 1 s. */
     void ReportDiagnostics(
     );
 
@@ -82,6 +85,33 @@ namespace esp32 {
     );
 
 #ifdef OBC_FLOW_BENCH
+#ifdef OBC_I2C_HEALTH_BENCH
+    /** @brief Inicia o cliente de cenários I2C apenas na bancada, após set_time. */
+    void StartI2cHealthBench(
+    );
+#endif
+#ifdef OBC_TASK_HEALTH_BENCH
+    /** @brief Inicia uma vez as injeções da bancada após set_time. */
+    void StartHealthBench(
+    );
+    /** @brief Consulta do proprietário SD, sem executar I/O ou esperar. */
+    bool HealthBenchScanRequested(
+    );
+    /** @brief Varredura simulada longa com progresso por leitura/listagem. */
+    void RunHealthBenchScan(
+        const obc_delivery::READER_IO& reader
+    );
+    /** @brief Uma falha de escrita exclusiva para exercitar a espera real de recuperação. */
+    bool FailHealthBenchWrite(
+    );
+    /** @brief Conclui a bancada após o escritor confirmar retomada normal. */
+    void ObserveHealthBenchRecovery(
+        uint64_t recovered
+    );
+#endif
+    /** @brief Ciclo simulado somente na nova bancada; histórico fornece callbacks nulos. */
+    RECOVERY_IO GetBenchRecoveryIO(
+    );
 #if defined(OBC_CAPACITY_BENCH) || defined(OBC_MEMORY_BENCH)
     /** @brief Observação pelo proprietário do receptor, após publicação e fora do lock. */
     void ObserveLimitsPayload(

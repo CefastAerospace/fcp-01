@@ -1,0 +1,751 @@
+{
+  "passed": true,
+  "bench": true,
+  "lines": [
+    "ets Jul 29 2019 12:21:46",
+    "rst:0x1 (POWERON_RESET),boot:0x13 (SPI_FAST_FLASH_BOOT)",
+    "configsip: 0, SPIWP:0xee",
+    "clk_drv:0x00,q_drv:0x00,d_drv:0x00,cs0_drv:0x00,hd_drv:0x00,wp_drv:0x00",
+    "mode:DIO, clock div:2",
+    "load:0x3fff0030,len:1184",
+    "load:0x40078000,len:13232",
+    "load:0x40080400,len:3028",
+    "entry 0x400805e4",
+    "[FLOW-CHECK] ADS-B em RAM e SD lento simulados; sem ensaio E[TT&C] ERRO: SX1276 nao responde.",
+    "[OBC] TT&C: radio=indisponivel; umbilical=OK; tarefa=OK",
+    "[FLOW] RAM apos receptor: heap=182060 byte_heap=110680 byte_largest=47092",
+    "[FLOW] RAM apos bloco SD: bloco=1 heap=117528 byte_heap=46148 byte_largest=16372 stack_budget=19456 margin=4096 reserva=23552 parser_limit=98304",
+    "[FLOW] Recepcao=OK; SD=em inicializacao; heap=96944; maior_bloco=69620",
+    "[FLOW-CHECK] Arquivo simulado: boot_0000000000000034_00000000.bin",
+    "[DELIVERY] recovery=1 data=0 confirm=0 corrupt=0 tails=0 orphan=0 cache_bytes=2840",
+    "[TT&C] ERRO: SX1276 sem resposta ou fora de RX, reinicializando.",
+    "[FLOW] received=0 invalid=0 gaps=0 duplicates=0 written=2 failures=0 dropped=0 SD=1 status=0 poll_gap_ms=1 process_gap_ms=1 stack_rx=7664 stack_sd=5560 stack_uart=2544 uart_full=0",
+    "[FLOW-MEMORY] heap=96944 byte_heap=25564 byte_largest=8180 byte_min=23068 parser_peak_bytes=0 parser_limit_bytes=98304",
+    "[TT&C] ERRO: SX1276 nao responde.",
+    "[STORAGE] state=0 attempt=0 episodes=0 attempts=0 recovered=0 exhausted=0 lifecycle_failures=0 cause=0 end=0 status=0 monotonic_ms=1005",
+    "[DELIVERY] occupied=0 peak=0 accepted=0 repeated=0 lost=0 storage_failures=0 attempts=0 tx_failures=0 confirmed=0 unknown=0 evicted=0",
+    "[TT&C] ERRO: SX1276 sem resposta ou fora de RX, reinicializando.",
+    "[FLOW] received=0 invalid=0 gaps=0 duplicates=0 written=3 failures=0 dropped=0 SD=1 status=0 poll_gap_ms=1 process_gap_ms=1 stack_rx=7664 stack_sd=5560 stack_uart=2544 uart_full=0",
+    "[TT&C] ERRO: SX1276 nao responde.",
+    "[FLOW-MEMORY] heap=96944 byte_heap=25564 byte_largest=8180 byte_min=23068 parser_peak_bytes=0 parser_limit_bytes=98304",
+    "[STORAGE] state=0 attempt=0 episodes=0 attempts=0 recovered=0 exhausted=0 lifecycle_failures=0 cause=0 end=0 status=0 monotonic_ms=2018",
+    "[DELIVERY] occupied=0 peak=0 accepted=0 repeated=0 lost=0 storage_failures=0 attempts=0 tx_failures=0 confirmed=0 unknown=0 evicted=0",
+    "[TT&C] ERRO: SX1276 sem resposta ou fora de RX, reinicializando.",
+    "[FLOW] received=0 invalid=0 gaps=0 duplicates=0 written=4 failures=0 dropped=0 SD=1 status=0 poll_gap_ms=1 process_gap_ms=1 stack_rx=7664 stack_sd=5560 stack_uart=2544 uart_full=0",
+    "[TT&C] ERRO: SX1276 nao responde.",
+    "[FLOW-MEMORY] heap=96944 byte_heap=25564 byte_largest=8180 byte_min=23068 parser_peak_bytes=0 parser_limit_bytes=98304",
+    "[STORAGE] state=0 attempt=0 episodes=0 attempts=0 recovered=0 exhausted=0 lifecycle_failures=0 cause=0 end=0 status=0 monotonic_ms=3021",
+    "[DELIVERY] occupied=0 peak=0 accepted=0 repeated=0 lost=0 storage_failures=0 attempts=0 tx_failures=0 confirmed=0 unknown=0 evicted=0",
+    "[TT&C] ERRO: SX1276 sem resposta ou fora de RX, reinicializando.",
+    "[FLOW] received=0 invalid=0 gaps=0 duplicates=0 written=5 failures=0 dropped=0 SD=1 status=0 poll_gap_ms=1 process_gap_ms=1 stack_rx=7664 stack_sd=5560 stack_uart=2544 uart_full=0",
+    "[TT&C] ERRO: SX1276 nao responde.",
+    "[FLOW-MEMORY] heap=96944 byte_heap=25564 byte_largest=8180 byte_min=23068 parser_peak_bytes=0 parser_limit_bytes=98304",
+    "[STORAGE] state=0 attempt=0 episodes=0 attempts=0 recovered=0 exhausted=0 lifecycle_failures=0 cause=0 end=0 status=0 monotonic_ms=4024",
+    "[DELIVERY] occupied=0 peak=0 accepted=0 repeated=0 lost=0 storage_failures=0 attempts=0 tx_failures=0 confirmed=0 unknown=0 evicted=0",
+    "[TT&C] ERRO: SX1276 sem resposta ou fora de RX, reinicializando.",
+    "[FLOW] received=0 invalid=0 gaps=0 duplicates=0 written=6 failures=0 dropped=0 SD=1 status=0 poll_gap_ms=1 process_gap_ms=1 stack_rx=7664 stack_sd=5560 stack_uart=2544 uart_full=0",
+    "[TT&C] ERRO: SX1276 nao responde.",
+    "[FLOW-MEMORY] heap=96944 byte_heap=25564 byte_largest=8180 byte_min=23068 parser_peak_bytes=0 parser_limit_bytes=98304",
+    "[STORAGE] state=0 attempt=0 episodes=0 attempts=0 recovered=0 exhausted=0 lifecycle_failures=0 cause=0 end=0 status=0 monotonic_ms=5027",
+    "[DELIVERY] occupied=0 peak=0 accepted=0 repeated=0 lost=0 storage_failures=0 attempts=0 tx_failures=0 confirmed=0 unknown=0 evicted=0",
+    "{\"n\":0,\"t\":\"ack\",\"seq\":61834,\"cmd\":\"ping\",\"st\":\"ok\",\"q\":0}",
+    "{\"n\":1,\"t\":\"ack\",\"seq\":61835,\"cmd\":\"request_log\",\"st\":\"invalid_param\",\"q\":0}",
+    "{\"n\":2,\"t\":\"ack\",\"seq\":61836,\"cmd\":\"request_log\",\"st\":\"invalid_param\",\"q\":0}",
+    "{\"n\":3,\"t\":\"ack\",\"seq\":61837,\"cmd\":\"set_time\",\"st\":\"ok\",\"q\":0}",
+    "[FLOW-CHECK] UTC recebida; inicio da injecao em 1000 ms",
+    "{\"n\":4,\"t\":\"ack\",\"seq\":61838,\"cmd\":\"ping\",\"st\":\"ok\",\"q\":0}",
+    "[TT&C] ERRO: SX1276 sem resposta ou fora de RX, reinicializando.",
+    "[FLOW] received=0 invalid=0 gaps=0 duplicates=0 written=8 failures=0 dropped=0 SD=1 status=0 poll_gap_ms=1 process_gap_ms=1 stack_rx=7632 stack_sd=5560 stack_uart=1332 uart_full=0",
+    "[FLOW-MEMORY] heap=96944 byte_heap=25564 byte_largest=8180 byte_min=21840 parser_peak_bytes=0 parser_limit_bytes=98304",
+    "[TT&C] ERRO: SX1276 nao responde.",
+    "[STORAGE] state=0 attempt=0 episodes=0 attempts=0 recovered=0 exhausted=0 lifecycle_failures=0 cause=0 end=0 status=0 monotonic_ms=6031",
+    "[DELIVERY] occupied=0 peak=0 accepted=0 repeated=0 lost=0 storage_failures=0 attempts=0 tx_failures=0 confirmed=0 unknown=0 evicted=0",
+    "{\"n\":5,\"t\":\"ack\",\"seq\":61839,\"cmd\":\"ping\",\"st\":\"ok\",\"q\":0}",
+    "{\"n\":6,\"t\":\"ac\",\"id\":[52,1],\"ts\":null,\"icao\":\"e49a48\",\"lat\":-20.10978,\"lon\":-44.37088,\"alt\":38000,\"vel\":null,\"hdg\":null,\"cnt\":null}",
+    "[TT&C] Falha no TX de 131 bytes.",
+    "[TT&C] ERRO: SX1276 sem resposta ou fora de RX, reinicializando.",
+    "[FLOW] received=2 invalid=0 gaps=0 duplicates=1 written=9 failures=0 dropped=0 SD=1 status=0 poll_gap_ms=1 process_gap_ms=20 stack_rx=3184 stack_sd=5560 stack_uart=1332 uart_full=59",
+    "[FLOW-CHECK] Arquivo simulado: boot_0000000000000034_00000001.bin",
+    "[TT&C] ERRO: SX1276 nao responde.",
+    "[FLOW-MEMORY] heap=96860 byte_heap=25480 byte_largest=8180 byte_min=16196 parser_peak_bytes=7190 parser_limit_bytes=98304",
+    "[STORAGE] state=0 attempt=0 episodes=0 attempts=0 recovered=0 exhausted=0 lifecycle_failures=0 cause=0 end=0 status=0 monotonic_ms=7044",
+    "[DELIVERY] occupied=7 peak=7 accepted=7 repeated=7 lost=0 storage_failures=0 attempts=1 tx_failures=0 confirmed=0 unknown=0 evicted=0",
+    "{\"n\":7,\"t\":\"ack\",\"seq\":61840,\"cmd\":\"ping\",\"st\":\"ok\",\"q\":24}",
+    "[FLOW-CHECK] Arquivo simulado: boot_0000000000000034_00000002.bin",
+    "{\"n\":8,\"t\":\"ack\",\"seq\":61841,\"cmd\":\"ping\",\"st\":\"ok\",\"q\":0}",
+    "[FLOW-CHECK] Arquivo simulado: boot_0000000000000034_00000003.bin",
+    "[FLOW] received=15 invalid=0 gaps=0 duplicates=1 written=18 failures=0 dropped=11 SD=1 status=0 poll_gap_ms=1 process_gap_ms=20 stack_rx=3136 stack_sd=5560 stack_uart=1332 uart_full=415",
+    "[TT&C] ERRO: SX1276 sem resposta ou fora de RX, reinicializando.",
+    "[FLOW-MEMORY] heap=96944 byte_heap=25564 byte_largest=8180 byte_min=15976 parser_peak_bytes=7190 parser_limit_bytes=98304",
+    "[STORAGE] state=0 attempt=0 episodes=0 attempts=0 recovered=0 exhausted=0 lifecycle_failures=0 cause=0 end=0 status=0 monotonic_ms=8044",
+    "[TT&C] ERRO: SX1276 nao responde.",
+    "[DELIVERY] occupied=7 peak=7 accepted=7 repeated=98 lost=0 storage_failures=0 attempts=1 tx_failures=0 confirmed=0 unknown=0 evicted=0",
+    "{\"n\":9,\"t\":\"ack\",\"seq\":61842,\"cmd\":\"ping\",\"st\":\"ok\",\"q\":1}",
+    "[FLOW-CHECK] Arquivo simulado: boot_0000000000000034_00000004.bin",
+    "{\"n\":10,\"t\":\"ack\",\"seq\":61843,\"cmd\":\"ping\",\"st\":\"ok\",\"q\":0}",
+    "[FLOW-CHECK] Arquivo simulado: boot_0000000000000034_00000005.bin",
+    "[FLOW] received=24 invalid=1 gaps=0 duplicates=1 written=28 failures=0 dropped=18 SD=1 status=0 poll_gap_ms=1 process_gap_ms=20 stack_rx=3104 stack_sd=5560 stack_uart=1332 uart_full=610",
+    "[FLOW-MEMORY] heap=96944 byte_heap=25564 byte_largest=8180 byte_min=15976 parser_peak_bytes=7190 parser_limit_bytes=98304",
+    "[TT&C] ERRO: SX1276 sem resposta ou fora de RX, reinicializando.",
+    "[STORAGE] state=0 attempt=0 episodes=0 attempts=0 recovered=0 exhausted=0 lifecycle_failures=0 cause=0 end=0 status=0 monotonic_ms=9046",
+    "[DELIVERY] occupied=7 peak=7 accepted=7 repeated=140 lost=0 storage_failures=0 attempts=1 tx_failures=0 confirmed=0 unknown=0 evicted=0",
+    "[TT&C] ERRO: SX1276 nao responde.",
+    "[FLOW-CHECK] Arquivo simulado: boot_0000000000000034_00000006.bin",
+    "{\"n\":11,\"t\":\"ack\",\"seq\":61844,\"cmd\":\"ping\",\"st\":\"ok\",\"q\":0}",
+    "[FLOW-CHECK] Arquivo simulado: boot_0000000000000034_00000007.bin",
+    "{\"n\":12,\"t\":\"ack\",\"seq\":61845,\"cmd\":\"ping\",\"st\":\"ok\",\"q\":0}",
+    "[FLOW] received=24 invalid=1 gaps=0 duplicates=1 written=39 failures=0 dropped=18 SD=1 status=0 poll_gap_ms=1 process_gap_ms=20 stack_rx=3104 stack_sd=5560 stack_uart=1332 uart_full=610",
+    "[FLOW-MEMORY] heap=96944 byte_heap=25564 byte_largest=8180 byte_min=15976 parser_peak_bytes=7190 parser_limit_bytes=98304",
+    "[TT&C] ERRO: SX1276 sem resposta ou fora de RX, reinicializando.",
+    "[STORAGE] state=0 attempt=0 episodes=0 attempts=0 recovered=0 exhausted=0 lifecycle_failures=0 cause=0 end=0 status=0 monotonic_ms=10062",
+    "[DELIVERY] occupied=7 peak=7 accepted=7 repeated=140 lost=0 storage_failures=0 attempts=1 tx_failures=0 confirmed=0 unknown=0 evicted=0",
+    "[TT&C] ERRO: SX1276 nao responde.",
+    "{\"n\":13,\"t\":\"ack\",\"seq\":61846,\"cmd\":\"ping\",\"st\":\"ok\",\"q\":0}",
+    "[FLOW] received=24 invalid=1 gaps=0 duplicates=1 written=40 failures=0 dropped=18 SD=1 status=0 poll_gap_ms=1 process_gap_ms=20 stack_rx=3104 stack_sd=5560 stack_uart=1332 uart_full=610",
+    "[FLOW-MEMORY] heap=96944 byte_heap=25564 byte_largest=8180 byte_min=15976 parser_peak_bytes=7190 parser_limit_bytes=98304",
+    "[TT&C] ERRO: SX1276 sem resposta ou fora de RX, reinicializando.",
+    "[STORAGE] state=0 attempt=0 episodes=0 attempts=0 recovered=0 exhausted=0 lifecycle_failures=0 cause=0 end=0 status=0 monotonic_ms=11076",
+    "[DELIVERY] occupied=7 peak=7 accepted=7 repeated=140 lost=0 storage_failures=0 attempts=1 tx_failures=0 confirmed=0 unknown=0 evicted=0",
+    "[TT&C] ERRO: SX1276 nao responde.",
+    "{\"n\":14,\"t\":\"ack\",\"seq\":61847,\"cmd\":\"ping\",\"st\":\"ok\",\"q\":0}",
+    "{\"n\":15,\"t\":\"ack\",\"seq\":61848,\"cmd\":\"ping\",\"st\":\"ok\",\"q\":0}",
+    "[FLOW] received=24 invalid=1 gaps=0 duplicates=1 written=41 failures=0 dropped=18 SD=1 status=0 poll_gap_ms=1 process_gap_ms=20 stack_rx=3104 stack_sd=5560 stack_uart=1332 uart_full=610",
+    "[FLOW-MEMORY] heap=96944 byte_heap=25564 byte_largest=8180 byte_min=15976 parser_peak_bytes=7190 parser_limit_bytes=98304",
+    "[TT&C] ERRO: SX1276 sem resposta ou fora de RX, reinicializando.",
+    "[STORAGE] state=0 attempt=0 episodes=0 attempts=0 recovered=0 exhausted=0 lifecycle_failures=0 cause=0 end=0 status=0 monotonic_ms=12091",
+    "[DELIVERY] occupied=7 peak=7 accepted=7 repeated=140 lost=0 storage_failures=0 attempts=1 tx_failures=0 confirmed=0 unknown=0 evicted=0",
+    "[TT&C] ERRO: SX1276 nao responde.",
+    "{\"n\":16,\"t\":\"ack\",\"seq\":61849,\"cmd\":\"ping\",\"st\":\"ok\",\"q\":0}",
+    "{\"n\":17,\"t\":\"ack\",\"seq\":61850,\"cmd\":\"ping\",\"st\":\"ok\",\"q\":0}",
+    "[FLOW] received=24 invalid=1 gaps=0 duplicates=1 written=42 failures=0 dropped=18 SD=1 status=0 poll_gap_ms=1 process_gap_ms=20 stack_rx=3104 stack_sd=5560 stack_uart=1332 uart_full=610",
+    "[FLOW-MEMORY] heap=96944 byte_heap=25564 byte_largest=8180 byte_min=15976 parser_peak_bytes=7190 parser_limit_bytes=98304",
+    "[TT&C] ERRO: SX1276 sem resposta ou fora de RX, reinicializando.",
+    "[STORAGE] state=0 attempt=0 episodes=0 attempts=0 recovered=0 exhausted=0 lifecycle_failures=0 cause=0 end=0 status=0 monotonic_ms=13106",
+    "[DELIVERY] occupied=7 peak=7 accepted=7 repeated=140 lost=0 storage_failures=0 attempts=1 tx_failures=0 confirmed=0 unknown=0 evicted=0",
+    "[TT&C] ERRO: SX1276 nao responde.",
+    "{\"n\":18,\"t\":\"ack\",\"seq\":61851,\"cmd\":\"ping\",\"st\":\"ok\",\"q\":0}",
+    "{\"n\":19,\"t\":\"ack\",\"seq\":61852,\"cmd\":\"ping\",\"st\":\"ok\",\"q\":0}",
+    "[FLOW] received=24 invalid=1 gaps=0 duplicates=1 written=43 failures=0 dropped=18 SD=1 status=0 poll_gap_ms=1 process_gap_ms=20 stack_rx=3104 stack_sd=5560 stack_uart=1332 uart_full=610",
+    "[FLOW-MEMORY] heap=96944 byte_heap=25564 byte_largest=8180 byte_min=15976 parser_peak_bytes=7190 parser_limit_bytes=98304",
+    "[TT&C] ERRO: SX1276 sem resposta ou fora de RX, reinicializando.",
+    "[STORAGE] state=0 attempt=0 episodes=0 attempts=0 recovered=0 exhausted=0 lifecycle_failures=0 cause=0 end=0 status=0 monotonic_ms=14121",
+    "[DELIVERY] occupied=7 peak=7 accepted=7 repeated=140 lost=0 storage_failures=0 attempts=1 tx_failures=0 confirmed=0 unknown=0 evicted=0",
+    "[TT&C] ERRO: SX1276 nao responde.",
+    "{\"n\":20,\"t\":\"ack\",\"seq\":61853,\"cmd\":\"ping\",\"st\":\"ok\",\"q\":0}",
+    "{\"n\":21,\"t\":\"ack\",\"seq\":61854,\"cmd\":\"ping\",\"st\":\"ok\",\"q\":0}",
+    "[FLOW] received=24 invalid=1 gaps=0 duplicates=1 written=44 failures=0 dropped=18 SD=1 status=0 poll_gap_ms=1 process_gap_ms=20 stack_rx=3104 stack_sd=5560 stack_uart=1332 uart_full=610",
+    "[FLOW-MEMORY] heap=96944 byte_heap=25564 byte_largest=8180 byte_min=15976 parser_peak_bytes=7190 parser_limit_bytes=98304",
+    "[TT&C] ERRO: SX1276 sem resposta ou fora de RX, reinicializando.",
+    "[STORAGE] state=0 attempt=0 episodes=0 attempts=0 recovered=0 exhausted=0 lifecycle_failures=0 cause=0 end=0 status=0 monotonic_ms=15136",
+    "[DELIVERY] occupied=7 peak=7 accepted=7 repeated=140 lost=0 storage_failures=0 attempts=1 tx_failures=0 confirmed=0 unknown=0 evicted=0",
+    "[TT&C] ERRO: SX1276 nao responde.",
+    "{\"n\":22,\"t\":\"ack\",\"seq\":61855,\"cmd\":\"ping\",\"st\":\"ok\",\"q\":0}",
+    "[FLOW] received=24 invalid=1 gaps=0 duplicates=1 written=45 failures=0 dropped=18 SD=1 status=0 poll_gap_ms=1 process_gap_ms=20 stack_rx=3104 stack_sd=5560 stack_uart=1332 uart_full=610",
+    "[FLOW-MEMORY] heap=96944 byte_heap=25564 byte_largest=8180 byte_min=15976 parser_peak_bytes=7190 parser_limit_bytes=98304",
+    "[TT&C] ERRO: SX1276 sem resposta ou fora de RX, reinicializando.",
+    "[STORAGE] state=0 attempt=0 episodes=0 attempts=0 recovered=0 exhausted=0 lifecycle_failures=0 cause=0 end=0 status=0 monotonic_ms=16150",
+    "[DELIVERY] occupied=7 peak=7 accepted=7 repeated=140 lost=0 storage_failures=0 attempts=1 tx_failures=0 confirmed=0 unknown=0 evicted=0",
+    "[TT&C] ERRO: SX1276 nao responde.",
+    "{\"n\":23,\"t\":\"ack\",\"seq\":61856,\"cmd\":\"ping\",\"st\":\"ok\",\"q\":0}",
+    "{\"n\":24,\"t\":\"ack\",\"seq\":61857,\"cmd\":\"ping\",\"st\":\"ok\",\"q\":0}",
+    "{\"n\":25,\"t\":\"ac\",\"id\":[52,1],\"ts\":null,\"icao\":\"e49a48\",\"lat\":-20.10978,\"lon\":-44.37088,\"alt\":38000,\"vel\":null,\"hdg\":null,\"cnt\":null}",
+    "[TT&C] Falha no TX de 131 bytes.",
+    "[FLOW-CHECK] Arquivo simulado: boot_0000000000000034_00000008.bin",
+    "[FLOW] received=24 invalid=1 gaps=0 duplicates=1 written=46 failures=0 dropped=18 SD=1 status=0 poll_gap_ms=1 process_gap_ms=20 stack_rx=3104 stack_sd=5560 stack_uart=1332 uart_full=610",
+    "[TT&C] ERRO: SX1276 sem resposta ou fora de RX, reinicializando.",
+    "[FLOW-MEMORY] heap=96944 byte_heap=25564 byte_largest=8180 byte_min=15976 parser_peak_bytes=7190 parser_limit_bytes=98304",
+    "[STORAGE] state=0 attempt=0 episodes=0 attempts=0 recovered=0 exhausted=0 lifecycle_failures=0 cause=0 end=0 status=0 monotonic_ms=17167",
+    "[TT&C] ERRO: SX1276 nao responde.",
+    "[DELIVERY] occupied=7 peak=7 accepted=7 repeated=140 lost=0 storage_failures=0 attempts=2 tx_failures=0 confirmed=1 unknown=0 evicted=0",
+    "{\"n\":26,\"t\":\"ac\",\"id\":[52,2],\"ts\":null,\"icao\":\"e4924a\",\"lat\":-19.80653,\"lon\":-43.49178,\"alt\":33000,\"vel\":null,\"hdg\":null,\"cnt\":null}",
+    "[TT&C] Falha no TX de 131 bytes.",
+    "{\"n\":27,\"t\":\"ack\",\"seq\":61859,\"cmd\":\"ping\",\"st\":\"ok\",\"q\":0}",
+    "{\"n\":28,\"t\":\"lg\",\"rq\":61858,\"op\":\"list\",\"ls\":[[\"boot_0000000000000034_00000000.bin\",68,0],[\"boot_0000000000000034_00000001.bin\",68,0],[\"boot_0000000000000034_00000002.bin\",68,0],[\"boot_0000000000000034_00000003.bin\",68,0]],\"end\":false}",
+    "{\"n\":29,\"t\":\"ack\",\"seq\":61858,\"cmd\":\"request_log\",\"st\":\"ok\",\"q\":0}",
+    "{\"n\":30,\"t\":\"ack\",\"seq\":61861,\"cmd\":\"ping\",\"st\":\"ok\",\"q\":0}",
+    "[FLOW-CHECK] Arquivo simulado: boot_0000000000000034_00000009.bin",
+    "{\"n\":31,\"t\":\"lg\",\"rq\":61860,\"op\":\"list\",\"ls\":[[\"boot_0000000000000034_00000004.bin\",68,0],[\"boot_0000000000000034_00000005.bin\",68,0],[\"boot_0000000000000034_00000006.bin\",68,0],[\"boot_0000000000000034_00000007.bin\",36,0]],\"end\":false}",
+    "{\"n\":32,\"t\":\"ack\",\"seq\":61860,\"cmd\":\"request_log\",\"st\":\"ok\",\"q\":0}",
+    "{\"n\":33,\"t\":\"ac\",\"id\":[52,3],\"ts\":null,\"icao\":\"e495b2\",\"lat\":null,\"lon\":null,\"alt\":13050,\"vel\":null,\"hdg\":null,\"cnt\":null}",
+    "[TT&C] Falha no TX de 121 bytes.",
+    "{\"n\":34,\"t\":\"ack\",\"seq\":61863,\"cmd\":\"ping\",\"st\":\"ok\",\"q\":0}",
+    "{\"n\":35,\"t\":\"ack\",\"seq\":61862,\"cmd\":\"request_log\",\"st\":\"ok\",\"q\":0}",
+    "{\"n\":36,\"t\":\"lg\",\"rq\":61862,\"op\":\"list\",\"ls\":[[\"boot_0000000000000034_00000008.bin\",36,0]],\"end\":true}",
+    "{\"n\":37,\"t\":\"ack\",\"seq\":61865,\"cmd\":\"ping\",\"st\":\"ok\",\"q\":0}",
+    "[FLOW-CHECK] Arquivo simulado: boot_0000000000000034_0000000a.bin",
+    "[FLOW] received=24 invalid=1 gaps=0 duplicates=1 written=53 failures=0 dropped=18 SD=1 status=0 poll_gap_ms=1 process_gap_ms=20 stack_rx=3104 stack_sd=5092 stack_uart=1332 uart_full=610",
+    "[FLOW-MEMORY] heap=96944 byte_heap=25564 byte_largest=8180 byte_min=15976 parser_peak_bytes=7190 parser_limit_bytes=98304",
+    "[TT&C] ERRO: SX1276 sem resposta ou fora de RX, reinicializando.",
+    "[STORAGE] state=0 attempt=0 episodes=0 attempts=0 recovered=0 exhausted=0 lifecycle_failures=0 cause=0 end=0 status=0 monotonic_ms=18172",
+    "[DELIVERY] occupied=4 peak=7 accepted=7 repeated=140 lost=0 storage_failures=0 attempts=4 tx_failures=0 confirmed=3 unknown=0 evicted=0",
+    "[TT&C] ERRO: SX1276 nao responde.",
+    "{\"n\":38,\"t\":\"ac\",\"id\":[52,4],\"ts\":null,\"icao\":\"e49fb3\",\"lat\":-20.07603,\"lon\":-44.37643,\"alt\":14200,\"vel\":null,\"hdg\":null,\"cnt\":null}",
+    "[TT&C] Falha no TX de 131 bytes.",
+    "{\"n\":39,\"t\":\"lg\",\"rq\":61864,\"op\":\"read\",\"name\":\"boot_0000000000000034_00000000.bin\",\"off\":0,\"tot\":68,\"d\":\"RkNEMQEBRAA0AAAAAAAAAAEAAAAAAAAAERsAAAAAAABImuQABwAAABzr4jYaHDTAOdIZGHkvRsAAAAAAAI7iQHxI+p4=\"}",
+    "{\"n\":40,\"t\":\"ack\",\"seq\":61864,\"cmd\":\"request_log\",\"st\":\"ok\",\"q\":0}",
+    "{\"n\":41,\"t\":\"ack\",\"seq\":61867,\"cmd\":\"ping\",\"st\":\"ok\",\"q\":0}",
+    "[FLOW-CHECK] Arquivo simulado: boot_0000000000000034_0000000b.bin",
+    "{\"n\":42,\"t\":\"ac\",\"id\":[52,5],\"ts\":null,\"icao\":\"e491a2\",\"lat\":null,\"lon\":null,\"alt\":35025,\"vel\":null,\"hdg\":null,\"cnt\":null}",
+    "[TT&C] Falha no TX de 121 bytes.",
+    "{\"n\":43,\"t\":\"lg\",\"rq\":61866,\"op\":\"read\",\"name\":\"boot_0000000000000034_00000000.bin\",\"off\":68,\"tot\":68,\"d\":\"\"}",
+    "{\"n\":44,\"t\":\"ack\",\"seq\":61866,\"cmd\":\"request_log\",\"st\":\"ok\",\"q\":0}",
+    "{\"n\":45,\"t\":\"ack\",\"seq\":61869,\"cmd\":\"ping\",\"st\":\"ok\",\"q\":0}",
+    "[FLOW-CHECK] Arquivo simulado: boot_0000000000000034_0000000c.bin",
+    "{\"n\":46,\"t\":\"lg\",\"rq\":61868,\"op\":\"read\",\"name\":\"boot_0000000000000034_00000001.bin\",\"off\":0,\"tot\":68,\"d\":\"RkNEMQEBRAA0AAAAAAAAAAIAAAAAAAAAERsAAAAAAABKkuQABwAAALAcIQN5zjPAZvZ5jPK+RcAAAAAAAB3gQLTP5es=\"}",
+    "{\"n\":47,\"t\":\"ack\",\"seq\":61868,\"cmd\":\"request_log\",\"st\":\"ok\",\"q\":0}",
+    "{\"n\":48,\"t\":\"ac\",\"id\":[52,6],\"ts\":null,\"icao\":\"e4970f\",\"lat\":null,\"lon\":null,\"alt\":null,\"vel\":null,\"hdg\":null,\"cnt\":null}",
+    "[TT&C] Falha no TX de 120 bytes.",
+    "{\"n\":49,\"t\":\"ack\",\"seq\":61871,\"cmd\":\"ping\",\"st\":\"ok\",\"q\":0}",
+    "{\"n\":50,\"t\":\"ack\",\"seq\":61870,\"cmd\":\"request_log\",\"st\":\"ok\",\"q\":0}",
+    "{\"n\":51,\"t\":\"lg\",\"rq\":61870,\"op\":\"read\",\"name\":\"boot_0000000000000034_00000001.bin\",\"off\":68,\"tot\":68,\"d\":\"\"}",
+    "{\"n\":52,\"t\":\"ack\",\"seq\":61873,\"cmd\":\"ping\",\"st\":\"ok\",\"q\":0}",
+    "[FLOW-CHECK] Arquivo simulado: boot_0000000000000034_0000000d.bin",
+    "[TT&C] ERRO: SX1276 sem resposta ou fora de RX, reinicializando.",
+    "[FLOW] received=24 invalid=1 gaps=0 duplicates=1 written=63 failures=0 dropped=18 SD=1 status=0 poll_gap_ms=2 process_gap_ms=20 stack_rx=3104 stack_sd=5092 stack_uart=1332 uart_full=610",
+    "[FLOW-MEMORY] heap=96944 byte_heap=25564 byte_largest=8180 byte_min=15976 parser_peak_bytes=7190 parser_limit_bytes=98304",
+    "[TT&C] ERRO: SX1276 nao responde.",
+    "[STORAGE] state=0 attempt=0 episodes=0 attempts=0 recovered=0 exhausted=0 lifecycle_failures=0 cause=0 end=0 status=0 monotonic_ms=19192",
+    "[DELIVERY] occupied=2 peak=7 accepted=7 repeated=140 lost=0 storage_failures=0 attempts=7 tx_failures=0 confirmed=6 unknown=0 evicted=0",
+    "{\"n\":53,\"t\":\"ac\",\"id\":[52,7],\"ts\":null,\"icao\":\"e49830\",\"lat\":null,\"lon\":null,\"alt\":36000,\"vel\":null,\"hdg\":null,\"cnt\":null}",
+    "[TT&C] Falha no TX de 121 bytes.",
+    "{\"n\":54,\"t\":\"lg\",\"rq\":61872,\"op\":\"read\",\"name\":\"boot_0000000000000034_00000002.bin\",\"off\":0,\"tot\":68,\"d\":\"RkNEMQEBRAA0AAAAAAAAAAMAAAAAAAAAERsAAAAAAACyleQABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAH3JQL3mc5M=\"}",
+    "{\"n\":55,\"t\":\"ack\",\"seq\":61872,\"cmd\":\"request_log\",\"st\":\"ok\",\"q\":0}",
+    "{\"n\":56,\"t\":\"ack\",\"seq\":61875,\"cmd\":\"ping\",\"st\":\"ok\",\"q\":0}",
+    "[FLOW-CHECK] Arquivo simulado: boot_0000000000000034_0000000e.bin",
+    "{\"n\":57,\"t\":\"lg\",\"rq\":61874,\"op\":\"read\",\"name\":\"boot_0000000000000034_00000002.bin\",\"off\":68,\"tot\":68,\"d\":\"\"}",
+    "{\"n\":58,\"t\":\"ack\",\"seq\":61874,\"cmd\":\"request_log\",\"st\":\"ok\",\"q\":0}",
+    "{\"n\":59,\"t\":\"ack\",\"seq\":61877,\"cmd\":\"ping\",\"st\":\"ok\",\"q\":0}",
+    "{\"n\":60,\"t\":\"lg\",\"rq\":61876,\"op\":\"read\",\"name\":\"missing.bin\",\"off\":0,\"err\":\"not_found\"}",
+    "{\"n\":61,\"t\":\"ack\",\"seq\":61876,\"cmd\":\"request_log\",\"st\":\"ok\",\"q\":0}",
+    "{\"n\":62,\"t\":\"ack\",\"seq\":61878,\"cmd\":\"request_log\",\"st\":\"ok\",\"q\":0}",
+    "{\"n\":63,\"t\":\"lg\",\"rq\":61878,\"op\":\"read\",\"name\":\"boot_0000000000000034_00000000.bin\",\"off\":69,\"err\":\"range\"}",
+    "{\"n\":64,\"t\":\"ack\",\"seq\":61879,\"cmd\":\"ping\",\"st\":\"ok\",\"q\":0}"
+  ],
+  "exchanges": [
+    {
+      "ack": {
+        "n": 0,
+        "t": "ack",
+        "seq": 61834,
+        "cmd": "ping",
+        "st": "ok",
+        "q": 0
+      },
+      "response_ms": 32.896
+    },
+    {
+      "ack": {
+        "n": 1,
+        "t": "ack",
+        "seq": 61835,
+        "cmd": "request_log",
+        "st": "invalid_param",
+        "q": 0
+      },
+      "response_ms": 24.689
+    },
+    {
+      "ack": {
+        "n": 2,
+        "t": "ack",
+        "seq": 61836,
+        "cmd": "request_log",
+        "st": "invalid_param",
+        "q": 0
+      },
+      "response_ms": 22.869
+    },
+    {
+      "ack": {
+        "n": 3,
+        "t": "ack",
+        "seq": 61837,
+        "cmd": "set_time",
+        "st": "ok",
+        "q": 0
+      },
+      "response_ms": 19.547
+    },
+    {
+      "ack": {
+        "n": 4,
+        "t": "ack",
+        "seq": 61838,
+        "cmd": "ping",
+        "st": "ok",
+        "q": 0
+      },
+      "response_ms": 22.176
+    },
+    {
+      "ack": {
+        "n": 5,
+        "t": "ack",
+        "seq": 61839,
+        "cmd": "ping",
+        "st": "ok",
+        "q": 0
+      },
+      "response_ms": 20.979
+    },
+    {
+      "ack": {
+        "n": 7,
+        "t": "ack",
+        "seq": 61840,
+        "cmd": "ping",
+        "st": "ok",
+        "q": 24
+      },
+      "response_ms": 66.023
+    },
+    {
+      "ack": {
+        "n": 8,
+        "t": "ack",
+        "seq": 61841,
+        "cmd": "ping",
+        "st": "ok",
+        "q": 0
+      },
+      "response_ms": 31.708
+    },
+    {
+      "ack": {
+        "n": 9,
+        "t": "ack",
+        "seq": 61842,
+        "cmd": "ping",
+        "st": "ok",
+        "q": 1
+      },
+      "response_ms": 32.486
+    },
+    {
+      "ack": {
+        "n": 10,
+        "t": "ack",
+        "seq": 61843,
+        "cmd": "ping",
+        "st": "ok",
+        "q": 0
+      },
+      "response_ms": 16.031
+    },
+    {
+      "ack": {
+        "n": 11,
+        "t": "ack",
+        "seq": 61844,
+        "cmd": "ping",
+        "st": "ok",
+        "q": 0
+      },
+      "response_ms": 25.768
+    },
+    {
+      "ack": {
+        "n": 12,
+        "t": "ack",
+        "seq": 61845,
+        "cmd": "ping",
+        "st": "ok",
+        "q": 0
+      },
+      "response_ms": 26.044
+    },
+    {
+      "ack": {
+        "n": 13,
+        "t": "ack",
+        "seq": 61846,
+        "cmd": "ping",
+        "st": "ok",
+        "q": 0
+      },
+      "response_ms": 17.752
+    },
+    {
+      "ack": {
+        "n": 14,
+        "t": "ack",
+        "seq": 61847,
+        "cmd": "ping",
+        "st": "ok",
+        "q": 0
+      },
+      "response_ms": 19.199
+    },
+    {
+      "ack": {
+        "n": 15,
+        "t": "ack",
+        "seq": 61848,
+        "cmd": "ping",
+        "st": "ok",
+        "q": 0
+      },
+      "response_ms": 18.0
+    },
+    {
+      "ack": {
+        "n": 16,
+        "t": "ack",
+        "seq": 61849,
+        "cmd": "ping",
+        "st": "ok",
+        "q": 0
+      },
+      "response_ms": 18.957
+    },
+    {
+      "ack": {
+        "n": 17,
+        "t": "ack",
+        "seq": 61850,
+        "cmd": "ping",
+        "st": "ok",
+        "q": 0
+      },
+      "response_ms": 19.304
+    },
+    {
+      "ack": {
+        "n": 18,
+        "t": "ack",
+        "seq": 61851,
+        "cmd": "ping",
+        "st": "ok",
+        "q": 0
+      },
+      "response_ms": 18.033
+    },
+    {
+      "ack": {
+        "n": 19,
+        "t": "ack",
+        "seq": 61852,
+        "cmd": "ping",
+        "st": "ok",
+        "q": 0
+      },
+      "response_ms": 19.743
+    },
+    {
+      "ack": {
+        "n": 20,
+        "t": "ack",
+        "seq": 61853,
+        "cmd": "ping",
+        "st": "ok",
+        "q": 0
+      },
+      "response_ms": 17.794
+    },
+    {
+      "ack": {
+        "n": 21,
+        "t": "ack",
+        "seq": 61854,
+        "cmd": "ping",
+        "st": "ok",
+        "q": 0
+      },
+      "response_ms": 19.312
+    },
+    {
+      "ack": {
+        "n": 22,
+        "t": "ack",
+        "seq": 61855,
+        "cmd": "ping",
+        "st": "ok",
+        "q": 0
+      },
+      "response_ms": 17.882
+    },
+    {
+      "ack": {
+        "n": 23,
+        "t": "ack",
+        "seq": 61856,
+        "cmd": "ping",
+        "st": "ok",
+        "q": 0
+      },
+      "response_ms": 18.868
+    },
+    {
+      "ack": {
+        "n": 24,
+        "t": "ack",
+        "seq": 61857,
+        "cmd": "ping",
+        "st": "ok",
+        "q": 0
+      },
+      "response_ms": 19.56
+    },
+    {
+      "ack": {
+        "n": 27,
+        "t": "ack",
+        "seq": 61859,
+        "cmd": "ping",
+        "st": "ok",
+        "q": 0
+      },
+      "response_ms": 61.16
+    },
+    {
+      "ack": {
+        "n": 29,
+        "t": "ack",
+        "seq": 61858,
+        "cmd": "request_log",
+        "st": "ok",
+        "q": 0
+      },
+      "response_ms": 107.39
+    },
+    {
+      "ack": {
+        "n": 30,
+        "t": "ack",
+        "seq": 61861,
+        "cmd": "ping",
+        "st": "ok",
+        "q": 0
+      },
+      "response_ms": 57.68
+    },
+    {
+      "ack": {
+        "n": 32,
+        "t": "ack",
+        "seq": 61860,
+        "cmd": "request_log",
+        "st": "ok",
+        "q": 0
+      },
+      "response_ms": 324.408
+    },
+    {
+      "ack": {
+        "n": 34,
+        "t": "ack",
+        "seq": 61863,
+        "cmd": "ping",
+        "st": "ok",
+        "q": 0
+      },
+      "response_ms": 48.128
+    },
+    {
+      "ack": {
+        "n": 35,
+        "t": "ack",
+        "seq": 61862,
+        "cmd": "request_log",
+        "st": "ok",
+        "q": 0
+      },
+      "response_ms": 59.238
+    },
+    {
+      "ack": {
+        "n": 37,
+        "t": "ack",
+        "seq": 61865,
+        "cmd": "ping",
+        "st": "ok",
+        "q": 0
+      },
+      "response_ms": 51.695
+    },
+    {
+      "ack": {
+        "n": 40,
+        "t": "ack",
+        "seq": 61864,
+        "cmd": "request_log",
+        "st": "ok",
+        "q": 0
+      },
+      "response_ms": 453.077
+    },
+    {
+      "ack": {
+        "n": 41,
+        "t": "ack",
+        "seq": 61867,
+        "cmd": "ping",
+        "st": "ok",
+        "q": 0
+      },
+      "response_ms": 38.608
+    },
+    {
+      "ack": {
+        "n": 44,
+        "t": "ack",
+        "seq": 61866,
+        "cmd": "request_log",
+        "st": "ok",
+        "q": 0
+      },
+      "response_ms": 331.94
+    },
+    {
+      "ack": {
+        "n": 45,
+        "t": "ack",
+        "seq": 61869,
+        "cmd": "ping",
+        "st": "ok",
+        "q": 0
+      },
+      "response_ms": 53.526
+    },
+    {
+      "ack": {
+        "n": 47,
+        "t": "ack",
+        "seq": 61868,
+        "cmd": "request_log",
+        "st": "ok",
+        "q": 0
+      },
+      "response_ms": 360.507
+    },
+    {
+      "ack": {
+        "n": 49,
+        "t": "ack",
+        "seq": 61871,
+        "cmd": "ping",
+        "st": "ok",
+        "q": 0
+      },
+      "response_ms": 49.763
+    },
+    {
+      "ack": {
+        "n": 50,
+        "t": "ack",
+        "seq": 61870,
+        "cmd": "request_log",
+        "st": "ok",
+        "q": 0
+      },
+      "response_ms": 63.69
+    },
+    {
+      "ack": {
+        "n": 52,
+        "t": "ack",
+        "seq": 61873,
+        "cmd": "ping",
+        "st": "ok",
+        "q": 0
+      },
+      "response_ms": 51.122
+    },
+    {
+      "ack": {
+        "n": 55,
+        "t": "ack",
+        "seq": 61872,
+        "cmd": "request_log",
+        "st": "ok",
+        "q": 0
+      },
+      "response_ms": 451.844
+    },
+    {
+      "ack": {
+        "n": 56,
+        "t": "ack",
+        "seq": 61875,
+        "cmd": "ping",
+        "st": "ok",
+        "q": 0
+      },
+      "response_ms": 38.732
+    },
+    {
+      "ack": {
+        "n": 58,
+        "t": "ack",
+        "seq": 61874,
+        "cmd": "request_log",
+        "st": "ok",
+        "q": 0
+      },
+      "response_ms": 317.682
+    },
+    {
+      "ack": {
+        "n": 59,
+        "t": "ack",
+        "seq": 61877,
+        "cmd": "ping",
+        "st": "ok",
+        "q": 0
+      },
+      "response_ms": 37.958
+    },
+    {
+      "ack": {
+        "n": 61,
+        "t": "ack",
+        "seq": 61876,
+        "cmd": "request_log",
+        "st": "ok",
+        "q": 0
+      },
+      "response_ms": 58.595
+    },
+    {
+      "ack": {
+        "n": 62,
+        "t": "ack",
+        "seq": 61878,
+        "cmd": "request_log",
+        "st": "ok",
+        "q": 0
+      },
+      "response_ms": 61.678
+    },
+    {
+      "ack": {
+        "n": 64,
+        "t": "ack",
+        "seq": 61879,
+        "cmd": "ping",
+        "st": "ok",
+        "q": 0
+      },
+      "response_ms": 70.009
+    }
+  ],
+  "files": [
+    {
+      "name": "boot_0000000000000034_00000000.bin",
+      "bytes": 68,
+      "crc": "ok"
+    },
+    {
+      "name": "boot_0000000000000034_00000001.bin",
+      "bytes": 68,
+      "crc": "ok"
+    },
+    {
+      "name": "boot_0000000000000034_00000002.bin",
+      "bytes": 68,
+      "crc": "ok"
+    }
+  ],
+  "deliveries": 7,
+  "retried": true
+}

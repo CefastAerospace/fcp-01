@@ -46,6 +46,34 @@ namespace obc_flow {
         void* context;
     };
 
+    /** @brief Ciclo de vida do armazenamento, separado do diário e das suas filas. */
+    struct RECOVERY_IO {
+        obc_storage::RESULT (*end)(
+            void* context
+        );
+        obc_storage::RESULT (*init)(
+            void* context
+        );
+        void* context;
+    };
+
+    /** @brief VERIFYING exige um registro normal confirmado, além dos metadados. */
+    enum class RECOVERY_STATE { IDLE, WAITING, VERIFYING, EXHAUSTED, RETRY };
+
+    /** @brief Diagnóstico cumulativo; attempts pertence somente ao episódio atual. */
+    struct STORAGE_RECOVERY_DIAGNOSTICS {
+        RECOVERY_STATE state;
+        uint8_t attempts;
+        uint64_t episodes;
+        uint64_t total_attempts;
+        uint64_t recovered;
+        uint64_t exhausted;
+        uint64_t lifecycle_failures;
+        obc_storage::RESULT cause;
+        obc_storage::RESULT last_end;
+        obc_storage::RESULT last_result;
+    };
+
     // ─── CLASSES ──────────────────────────────────────────────────────
 
     /** @brief Resumo compartilhável; não mantém cópia da lista de aeronaves. */
@@ -67,6 +95,10 @@ namespace obc_flow {
             uint32_t delay_ms,
             obc_time::TIME_REFERENCE& reference
         );
+        /** @brief Copia referência vigente; false preserva a saída quando UTC é desconhecido. */
+        bool GetTimeReference(
+            obc_time::TIME_REFERENCE& reference
+        ) const;
         /** @brief TM local v3: bench, UTC reconstruído e ac; demais fontes ainda ausentes. */
         obc_data::TELEMETRY_DATA ComposeTelemetry(
             uint64_t now_ms
@@ -132,6 +164,19 @@ namespace obc_flow {
             const obc_time::EVENT_STAMP& stamp,
             uint32_t reset_reason
         );
+        /**
+         * @brief Retoma após End/Init externos, sempre no próximo segmento exclusivo.
+         * @details Conserva boot e contadores; não repete o registro incerto. Cada
+         * chamada consome um índice, inclusive em colisão/falha de abertura. A
+         * referência opcional deve pertencer ao mesmo boot. Exige diário inativo.
+         */
+        bool Resume(
+            const obc_time::TIME_REFERENCE* reference = nullptr
+        );
+        /** @brief Persiste referência do mesmo boot se diferente da última confirmada. */
+        bool WriteReference(
+            const obc_time::TIME_REFERENCE& reference
+        );
         /** @brief Acrescenta registro integral; FILE_LIMIT rotaciona antes de repetir. */
         bool Write(
             const uint8_t* bytes,
@@ -170,6 +215,7 @@ namespace obc_flow {
         uint8_t reference_[36] = {};
         bool has_reference_ = false;
         bool attempted_ = false;
+        bool boot_encoded_ = false;
         bool ready_ = false;
         uint64_t written_ = 0;
         uint64_t failures_ = 0;
@@ -182,6 +228,37 @@ namespace obc_flow {
             bool count_record = true
         );
         bool Rotate(
+        );
+    };
+
+    /**
+     * @brief Três tentativas por episódio, espaçadas por 5 s, sem espera ou reboot.
+     * @details Service executa no proprietário do SD. End/Init/Resume continuam
+     * síncronos, fora de locks. Callbacks ausentes desabilitam a política nas
+     * bancadas históricas. Metadados sozinhos não renovam o orçamento.
+     */
+    class StorageRecovery {
+    public:
+        static constexpr uint8_t max_attempts = 3;
+        static constexpr uint64_t retry_delay_ms = 5000;
+        /** @brief Retorna true somente após remontagem e abertura com metadados confirmados. */
+        bool Service(
+            const RECOVERY_IO& io,
+            Journal& journal,
+            uint64_t now_ms,
+            const obc_time::TIME_REFERENCE* reference
+        );
+        /** @brief Sucesso de registro normal conclui episódio VERIFYING; falha não renova limite. */
+        void ObserveWrite(
+            bool success
+        );
+        /** @brief Amostra sem zerar contadores; proteção pertence ao adaptador. */
+        STORAGE_RECOVERY_DIAGNOSTICS GetDiagnostics(
+        ) const;
+    private:
+        STORAGE_RECOVERY_DIAGNOSTICS diagnostic_ = {};
+        uint64_t waiting_since_ms_ = 0;
+        void Exhaust(
         );
     };
 

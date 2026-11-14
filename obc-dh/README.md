@@ -4,6 +4,33 @@ Núcleo de processamento do FCP-01: um ESP32 DevKit V1 coordena todos os subsist
 
 ## Estado local — atualização de 11/11/2026
 
+**Diagnóstico I2C — 14/11/2026:** recorte local concluído: callback >100 ms
+e recuperação >200 ms sinalizados, sem reset ou pedido automático de
+recuperação. Núcleo portátil, bancada ESP32/USB e regressões originais de
+I2C, supervisão e downlink passaram; `obc` restaurado e verificado.
+Controlador/sinais simulados na bancada; não comprova sensores ou barramento
+físico. Procedimentos no [guia](tools/README.md#diagnóstico-i2c--14112026)
+e histórico preservado na [INT-008](.tasks/03-integracao/INT-008-supervisao-e-retomada.md).
+
+**Complemento de 14/11/2026:** supervisão diagnóstica de progresso UART,
+processamento e escritor implementada, sem reset automático. Núcleo nativo
+e cinco builds aprovados, além da bancada FreeRTOS/USB: cada tarefa produziu
+suspeita/retorno, sem falso alerta na varredura ou espera de recuperação SD.
+Regressões originais aprovadas; `obc` restaurado e verificado sem cartão.
+Recorte local concluído, com backend SD simulado; INT-008 permanece aberta.
+Limites, procedimentos e estado na [INT-008](.tasks/03-integracao/INT-008-supervisao-e-retomada.md).
+
+**Complemento de 13/11/2026:** retomada local do escritor SD implementada
+na INT-008: até três tentativas por episódio, separadas por 5 s, sem reboot
+automático. Preserva arquivos/contadores e retoma em segmento novo. A
+verificação portátil e a bancada ESP32/USB passaram com SD simulado. A
+revisão reproduziu bloqueio com cache cheio; após autorização, uma reserva
+durável adicional corrigiu o caso, preservando as 32 admissões. A verificação
+compartilhada PC/ESP32 e a bancada integrada passaram; recorte local concluído.
+Supervisão completa e ensaios físicos permanecem pendentes. Procedimento
+no [guia](tools/README.md#retomada-do-escritor-sd--13112026) e evidências na
+[INT-008](.tasks/03-integracao/INT-008-supervisao-e-retomada.md).
+
 Espressif32 fixado em 6.6.0. As novas bancadas de capacidade/memória
 passaram com um ESP32/USB: saturação de 32 entregas, perdas explícitas,
 retomada após drenagem, JSON de 65.536 bytes, snapshot denso e NO_MEMORY

@@ -1,5 +1,252 @@
 # Codec e leitura de registros OBC v1/v2/v3
 
+## Diagnóstico I2C — 14/11/2026
+
+`ObcI2cHealth` avalia os diagnósticos do executor no loop existente, com
+período alvo de 100 ms. Callback acima de 100 ms ou recuperação acima de
+200 ms fica suspect; igualdade não dispara. Serviço ocioso sem sensores
+não vence. `service` distingue uninitialized/ready/recovering/unavailable;
+`state=ok` significa ausência de atraso, não disponibilidade do serviço.
+
+`[I2C-HEALTH]` publica estado, serviço, atividade, idade, limite, instante
+da amostra u32, tempo monotônico u64, changed, fila, causas e contadores.
+Transições observadas são imediatas na avaliação; amostras periódicas saem
+a cada segundo. O diagnóstico USB continua mesmo sem boot válido.
+EVENT/FAULT OBC 259 usa o layout existente de 96 bytes e exige boot válido;
+fila/SD podem perder registros, com contagem explícita. A primeira amostra
+normal não gera evento, e callback/ociosidade normais não geram um evento
+por operação. Recuperações curtas entre amostras podem passar sem transição.
+
+Não há cancelamento, nova tarefa em produção, reset ou pedido automático
+de recuperação. APIs, contexto dos callbacks, 20 ms por transferência,
+duas tentativas e orçamento cooperativo de 100 ms permanecem. O diagnóstico
+depende do loop/escalonamento/mutex funcionando; não é watchdog global.
+
+Verificação portátil, dentro de `obc-dh/`, com sanitizadores ativos e
+execução fora de ambiente com ptrace:
+
+```bash
+g++ -std=c++11 -Wall -Wextra -Werror \
+    -fsanitize=address,undefined -fno-sanitize-recover=undefined \
+    -fno-omit-frame-pointer -Iheaders \
+    src/ObcData.cpp src/ObcTime.cpp src/ObcRecordCodec.cpp \
+    src/ObcI2cHealth.cpp tests/ObcI2cHealthCheck.cpp \
+    -o /tmp/fcp01-i2c-health-check
+/tmp/fcp01-i2c-health-check
+```
+
+O teste cobre limites, primeira amostra, ociosidade, wrap u32, suspeita sem
+repetição e mantida após detecção, retorno, indisponibilidade e EVENT/FAULT
+codificados/decodificados pelo codec real. Não desativar LeakSanitizer.
+
+Bancada e regressões somente com ESP32/USB, sem sensores, cartão, Pi, rádio
+ou jumpers. Usar Python com pyserial e nomes novos para os relatórios:
+
+```bash
+pio run -e int008-i2c-health-check -t upload --upload-port /dev/ttyUSB0
+python3 tests/ObcI2cHealthBenchCheck.py /dev/ttyUSB0 --bench \
+    --report /tmp/obc-i2c-health-bench.json
+pio run -e i2c-recovery-check -t upload --upload-port /dev/ttyUSB0
+python3 tests/I2cRecoveryBenchCheck.py /dev/ttyUSB0 \
+    --report /tmp/obc-i2c-health-recovery.json
+pio run -e int008-health-check -t upload --upload-port /dev/ttyUSB0
+python3 tests/ObcTaskHealthBenchCheck.py /dev/ttyUSB0 --bench \
+    --report /tmp/obc-i2c-health-tasks.json
+pio run -e int006-ttc-check -t upload --upload-port /dev/ttyUSB0
+python3 tests/ObcDownlinkCheck.py /dev/ttyUSB0 --bench \
+    --report /tmp/obc-i2c-health-downlink.json
+pio run -e obc -t upload --upload-port /dev/ttyUSB0
+python3 tests/ObcI2cHealthBenchCheck.py /dev/ttyUSB0 \
+    --report /tmp/obc-i2c-health-normal.json
+python3 tests/ObcTaskHealthBenchCheck.py /dev/ttyUSB0 \
+    --report /tmp/obc-i2c-health-tasks-normal.json
+python3 tests/ObcDownlinkCheck.py /dev/ttyUSB0 \
+    --report /tmp/obc-i2c-health-downlink-normal.json
+```
+
+A bancada nova reutiliza o executor FreeRTOS, TT&C e fluxo existentes.
+Somente nela, um cliente adicional mantém callback por pelo menos 350 ms
+e chamada de desativação por pelo menos 450 ms, fora dos locks. A espera
+consulta o prazo em micros e cede CPU; não depende apenas da quantidade de
+ticks. Controlador/GPIOs e SD/Payload são simulados. Verifica quatro ciclos,
+dois recuperados e dois esgotados, contexto preservado além do prazo de
+fila, ausência de repetição automática e retomada por pedido explícito.
+Os roteiros históricos e suas entradas/expectativas permanecem intactos.
+
+Recorte aprovado em 14/11: suspeitas aos 170/279 ms, 25 ACKs, maior resposta
+de 91,924 ms, sem falso alerta na ociosidade/recuperação normal. Regressões
+nativas e USB originais passaram. `obc` restaurado e verificado nos três
+roteiros; restaurar também após eventual falha. A reprovação inicial da
+pausa, os dois ajustes autorizados e todos os relatórios estão na
+[INT-008](../.tasks/03-integracao/INT-008-supervisao-e-retomada.md).
+
+## Supervisão diagnóstica das tarefas — 14/11/2026
+
+`ObcTaskHealth` avalia progresso de UART, processamento e escritor. Os
+proprietários publicam atividade e tempo de avanço; o loop existente avalia
+as cópias com período alvo de 100 ms. Suspeita exige idade maior que 100 ms
+na UART, 2.000 ms no processamento ou 5.000 ms no escritor. Esses limites
+diagnósticos não substituem o critério UART de 10 ms ou os testes existentes.
+
+`[HEALTH]` informa task/state/activity/age_ms/limit_ms/completions/sampled_ms.
+Mudanças para suspect/ok são emitidas imediatamente na avaliação; amostras
+periódicas acompanham os diagnósticos de um segundo. O campo changed separa
+transições de amostras. Tarefas não criadas ficam inactive. Rodadas sem dados
+e retornos de erro também comprovam progresso; ausência de aeronaves não
+indica tarefa travada. Na varredura, cada leitura/listagem renova o progresso.
+A espera entre tentativas SD é recovery_wait, sem esconder operações de
+montagem que não retornam. Não há tarefa supervisora nova, reset ou exclusão
+de tarefas. A avaliação depende de o loop/escalonamento/locks progredirem.
+
+Transições usam EVENT/FAULT v1 de 96 bytes, origem OBC e código 256/UART,
+257/processamento ou 258/escritor. O evento recebe boot e tempo monotônico
+da avaliação. A fila existente pode recusar o registro ou o SD pode falhar;
+as perdas continuam contabilizadas, sem prometer persistência ou repetir
+eventos a cada amostra. TT&C/FCD1 e os arquivos anteriores não mudam.
+
+Verificação nativa, dentro de `obc-dh/`:
+
+```bash
+g++ -std=c++11 -Wall -Wextra -Werror \
+    -fsanitize=address,undefined -fno-sanitize-recover=undefined \
+    -fno-omit-frame-pointer -Iheaders \
+    src/ObcData.cpp src/ObcTime.cpp src/ObcRecordCodec.cpp \
+    src/ObcTaskHealth.cpp tests/ObcTaskHealthCheck.cpp \
+    -o /tmp/fcp01-task-health-check
+/tmp/fcp01-task-health-check
+```
+
+O teste passou com limites/fronteiras, zero válido, publicação posterior à
+amostra, tarefas ausentes/nunca executadas, espera/varredura com progresso,
+retorno, saturação do contador e eventos reais codificados/decodificados.
+Executar LeakSanitizer sem ptrace, sem desativar sanitizadores.
+
+Bancada com somente ESP32/USB, sem cartão, Pi, rádio ou jumpers:
+
+```bash
+pio run -e int008-health-check -t upload --upload-port /dev/ttyUSB0
+python3 tests/ObcTaskHealthBenchCheck.py /dev/ttyUSB0 --bench \
+    --report /tmp/obc-health-bench.json
+pio run -e int006-ttc-check -t upload --upload-port /dev/ttyUSB0
+python3 tests/ObcDownlinkCheck.py /dev/ttyUSB0 --bench \
+    --report /tmp/obc-health-regression.json
+pio run -e obc -t upload --upload-port /dev/ttyUSB0
+python3 tests/ObcTaskHealthBenchCheck.py /dev/ttyUSB0 \
+    --report /tmp/obc-health-normal.json
+python3 tests/ObcDownlinkCheck.py /dev/ttyUSB0 \
+    --report /tmp/obc-health-downlink-normal.json
+```
+
+Usar Python com pyserial e nomes novos; o roteiro novo recusa relatório
+existente. `int008-health-check` reutiliza os vetores antigos e acrescenta
+somente injeções exclusivas dessa bancada: UART 300 ms, processamento
+2.500 ms e escrita 5.500 ms. Essas pausas violam deliberadamente progresso;
+não aplicar o roteiro de cadência normal a esse ambiente. O roteiro próprio
+exige uma suspeita/retorno por tarefa, varredura maior que 6 s com 32 operações
+progredindo sem falso alerta, espera real de recuperação SD e comandos ativos.
+Sem --bench, exige UART/processamento ok e escritor inactive sem periféricos.
+
+Os cinco builds obc/uart-receiver-check/int006-ttc-check/int008-storage-check/
+int008-health-check passaram. Execução USB aprovada em 14/11: um par
+suspect/ok por tarefa, varredura de 6.465 ms e espera SD de 5.581 ms sem
+falso alerta. Na bancada nova, 111 ACKs e maior resposta de 166,315 ms.
+A regressão original aprovou 44 ACKs e três arquivos com CRC válido.
+`obc` restaurado e aprovado pelos dois roteiros, sem SD/Pi; nenhum falso
+alerta e `no_sd` esperado. Recorte local concluído, sem comprovar periféricos
+físicos, supervisão I2C/TT&C ou watchdog global. Restaurar e verificar obc
+após qualquer execução, inclusive em falha.
+
+Estado e evidências na [INT-008](../.tasks/03-integracao/INT-008-supervisao-e-retomada.md).
+
+## Retomada do escritor SD — 13/11/2026
+
+**Ajuste autorizado da reserva:** a revisão encontrou bloqueio ao reconsultar
+o SD com 32 entregas não persistidas e uma pendência antiga fora do cache.
+Após discussão com o responsável, uma posição fixa exclusiva de recuperação
+passou a atender esse caso. Preserva as 32 admissões e suas cópias; a posição
+extra não admite dados novos do Payload. `occupied`/`high_water` mantêm seu
+significado, e `recovery_slot` indica a ocupação adicional. Não muda FCD1/TT&C.
+
+O escritor existente tenta recuperar uma falha terminal sem reiniciar o ESP32:
+até três ciclos End/Init/novo segmento por episódio, com 5 s de espera antes
+de cada tentativa. A espera começa após o retorno do ciclo anterior; operações
+de montagem continuam síncronas e não têm prazo físico comprovado. Somente
+um registro normal confirmado renova o orçamento. BOOT, referência temporal e
+eventos próprios de recuperação não bastam. Após esgotamento, a gravação fica
+indisponível até reinicialização manual; UART e TT&C continuam ativos.
+
+Não há hotplug se o SD já estava ausente no boot, reparo de FAT32, exclusão de
+arquivos ou repetição automática do registro incerto. Arquivos e caudas parciais
+são preservados. A retomada usa nome exclusivo, mesmo boot, contadores
+cumulativos e referência temporal vigente em RAM. O escritor continua sendo
+o único proprietário de I/O. As bancadas históricas não fornecem callbacks
+de remontagem e conservam suas entradas e expectativas.
+
+Verificação portátil, dentro de `obc-dh/`:
+
+```bash
+g++ -std=c++11 -Wall -Wextra -Werror \
+    -fsanitize=address,undefined -fno-sanitize-recover=undefined \
+    -fno-omit-frame-pointer -Iheaders \
+    src/ObcData.cpp src/ObcTime.cpp src/ObcRecordCodec.cpp \
+    src/ObcStorage.cpp src/ObcDataFlow.cpp src/ObcDelivery.cpp \
+    tests/ObcStorageRecoveryCheck.cpp -o /tmp/fcp01-storage-recovery-check
+/tmp/fcp01-storage-recovery-check
+```
+
+O teste usa arquivos temporários POSIX, tempo explícito e falhas de montagem,
+abertura, metadados e escrita, incluindo cauda parcial. Confere intervalos,
+renovação somente por dados, esgotamento, colisões sem sobrescrita, referência
+do mesmo boot, contadores e reconsulta sem alterar IDs em trânsito. Executar
+ASan/LeakSanitizer fora de ambientes com ptrace, sem desativar sanitizadores.
+
+Verificação adicional da reserva com o mesmo código executado no PC e no ESP32:
+
+```bash
+g++ -std=c++11 -Wall -Wextra -Werror \
+    -fsanitize=address,undefined -fno-sanitize-recover=undefined \
+    -fno-omit-frame-pointer -Iheaders -Isrc/bench \
+    src/ObcData.cpp src/ObcTime.cpp src/ObcRecordCodec.cpp \
+    src/ObcStorage.cpp src/ObcDataFlow.cpp src/ObcDelivery.cpp \
+    src/bench/DeliveryRecoveryCheck.cpp tests/ObcDeliveryRecoveryCheck.cpp \
+    -o /tmp/fcp01-delivery-recovery-check
+/tmp/fcp01-delivery-recovery-check
+```
+
+O cenário preserva IDs/conteúdo das 32 cópias não duráveis, recupera duas
+entregas antigas em sequência e confirma drenagem sem bloqueio. Confere
+reserva ocupada durante CONFIRM, liberação mesmo após falha persistindo
+CONFIRM, recusa da 33ª admissão e consumidor TX já em uso. A fila mede
+2.920 bytes no nativo, contra 2.848 antes do ajuste. Não há alocação
+dinâmica adicional em produção. A bancada ESP32 executa essa mesma função
+antes de iniciar o fluxo integrado e libera sua memória temporária; falha
+impede iniciar o fluxo. As verificações anteriores permanecem intactas.
+
+Bancada adicional com ESP32/USB, sem jumper ou cartão, usando Python com
+pyserial e nomes novos para os relatórios:
+
+```bash
+pio run -e int008-storage-check -t upload --upload-port /dev/ttyUSB0
+python3 tests/ObcStorageRecoveryBenchCheck.py /dev/ttyUSB0 \
+    --report /tmp/obc-storage-recovery-bench.json
+pio run -e obc -t upload --upload-port /dev/ttyUSB0
+python3 tests/ObcDownlinkCheck.py /dev/ttyUSB0 \
+    --report /tmp/obc-storage-recovery-normal.json
+```
+
+`int008-storage-check` reutiliza TT&C, UART e escritor reais, com o backend
+FCD1 simulado existente. As injeções e o controle de nomes ficam exclusivamente
+nessa bancada. Os três episódios exigem seis tentativas, duas retomadas,
+um esgotamento e nenhuma quarta tentativa. Durante montagem simulada de
+300 ms, o roteiro aplica `set_time` e confere a referência antes dos dados.
+Mantém ping/TM/request_log e confirma sete entregas. O relatório registra
+quadros, tempos, pilhas e diagnóstico. Não demonstra integridade física,
+remontagem real, alimentação ou durabilidade em reset. Restaurar `obc`
+também após falha, preservando o diagnóstico antes de qualquer correção.
+
+Resultados e hashes estão na
+[INT-008](../.tasks/03-integracao/INT-008-supervisao-e-retomada.md).
+
 ## Limites de capacidade e memória — 11/11/2026
 
 O consumidor OBC fixa `espressif32@6.6.0`. As bancadas adicionais

@@ -2,6 +2,24 @@
 
 Este documento distingue decisões vigentes, comportamento implementado e integração prevista. Atualização de 11/11/2026 para integração OBC sobre `f7af605`; evidências de execução permanecem datadas nas tarefas. [REQUISITOS.md](REQUISITOS.md) preserva obrigações e validação; [TODO.md](TODO.md) reúne estado e dependências. Decisão documentada não comprova aceite externo ou teste físico.
 
+Complemento I2C de 14/11/2026: diagnóstico de callback >100 ms e recuperação
+>200 ms concluído localmente, com verificação portátil e ESP32/USB. Mantém
+política de recuperação, contextos e validações; não solicita recuperação
+ou reset automaticamente. Reprovação da pausa e correções autorizadas estão
+preservadas na INT-008. `obc` restaurado e regressões originais aprovadas.
+
+Complemento de 14/11/2026: diagnóstico de progresso UART/processamento/escritor
+implementado e verificado no núcleo portátil e na bancada FreeRTOS/USB,
+com cinco builds aprovados. Recorte local concluído: suspeita/retorno das
+três tarefas, varredura e espera SD sem falso alerta, regressões originais
+aprovadas e `obc` restaurado. Backend SD simulado; não comprova periféricos
+físicos ou watchdog global. A retomada local de 13/11 continua preservada.
+
+Complemento de 13/11/2026, base `777b5f8`: retomada local do escritor SD da
+INT-008 concluída no recorte descrito abaixo. O bloqueio na reconsulta com
+cache cheio foi corrigido após discussão com o responsável e verificado no
+PC/ESP32. Não encerra a supervisão ou a retomada operacional da missão.
+
 ## 1. Escopo e responsabilidades
 
 O ESP32 executará o firmware integrado sobre Arduino/FreeRTOS. O OBC-DH organiza execução, circulação de dados, telecomandos, telemetria e registros. O Payload, em Raspberry Pi Zero W, entrega ADS-B já decodificado por UART. O ADCS executará no mesmo ESP32 do OBC, conforme confirmado pelo responsável nesta revisão.
@@ -89,7 +107,33 @@ Após o boot e TT&C, `ObcDataFlowEsp32` inicia o transporte UART2 (Core 1/priori
 
 O resumo de TM não copia a lista de aeronaves. O mesmo snapshot válido fornece `ac`; o tempo da TM é reconstruído no instante da composição. `msg` não é inferido de `id`, pacotes ou aeronaves. `SendTelemetry` devolve opcionalmente a amostra enfileirada para persistência v3. A aplicação de `set_time` confirma RAM e tenta gravar a referência separadamente; ausência/falha de SD não fabrica persistência.
 
-O diário serializa BOOT, referências, snapshots v2, TM v3, estatísticas e eventos/falhas. Cria nomes exclusivos por boot/segmento e rotaciona entre registros; falha terminal desativa escrita. Ocupação de fila/bloco ou SD indisponível gera descarte contado, sem retenção ilimitada e sem interromper recepção/TM. `records_written` só conta um snapshot partido após ambas as partes. A segunda etapa conserva seleção/envio de aeronaves e extração de arquivos; recuperação automática continua em INT-008.
+O diário serializa BOOT, referências, snapshots v2, TM v3, estatísticas e eventos/falhas. Cria nomes exclusivos por boot/segmento e rotaciona entre registros; falha terminal desativa escrita. Ocupação de fila/bloco ou SD indisponível gera descarte contado, sem retenção ilimitada e sem interromper recepção/TM. `records_written` só conta um snapshot partido após ambas as partes. A segunda etapa ligou entregas/extração; desde 13/11 a retomada local limitada do escritor está implementada na INT-008, conforme abaixo.
+
+### Retomada local do escritor INT-008 — 13/11/2026
+
+`StorageRecovery` observa falha do `Journal` e coordena até três ciclos
+End/Init/Resume por episódio, com 5 s de espera antes de cada tentativa.
+Executa na tarefa escritora existente, sem I/O sob lock ou suspensão de 5 s.
+Montagem e operações do driver continuam síncronas; não há garantia de prazo
+físico. Um registro normal confirmado renova o orçamento; BOOT, referência
+e eventos próprios da recuperação não bastam. Esgotamento conserva
+indisponibilidade até reinicialização manual, sem reset automático do ESP32.
+
+`Journal::Resume` conserva boot/contadores, avança segmento e usa criação
+exclusiva. Preserva caudas incertas e não repete o registro perdido. A
+referência vigente em RAM é sincronizada antes de liberar admissão, incluindo
+`set_time` durante montagem. A reconsulta de entregas conserva fronteira,
+IDs e reservas. Filas limitadas e descartes explícitos permanecem. Não há
+hotplug se o escritor não iniciou no boot, nem reparo/formatação do cartão.
+
+`[STORAGE]` acrescenta estado, tentativas, episódios e resultados ao diagnóstico.
+A bancada nova usa o mesmo escritor e TT&C, com SD/Payload simulados;
+callbacks de remontagem ausentes preservam as bancadas históricas.
+Evidências na INT-008 e procedimento no guia de ferramentas. A reconsulta
+com 32 cópias não duráveis pode usar uma posição fixa adicional, exclusiva
+de recuperação persistida, sem reduzir admissões ou descartar o cache.
+`recovery_slot` diagnostica essa posição separadamente de `occupied`/`peak`.
+Cartão, alimentação, durabilidade e retomada de voo continuam nos escopos próprios.
 
 ### Entregas e extração INT-006 — 11/11/2026
 
@@ -162,6 +206,49 @@ O adaptador usa mutex estático sem espera (`BUSY` na disputa), somente em conte
 `fsync` e repetição no arquivo lógico não garantem integridade física em queda de energia. Falha de montagem mantém indisponibilidade, sem reparo automático de FAT32. Em bancada, preservar cópia/imagem antes de reparo externo; usar o leitor existente em cópias de arquivos v1 para localizar registros íntegros. Confirmar módulo/alimentação com EPS e executar TES-006/TES-009 antes de afirmar comportamento físico. Políticas, evidências e limites estão em [COM-005](../.tasks/01-comunicacao/done/COM-005-armazenamento-sd.md).
 
 ## 6. Missão e supervisão
+
+### Diagnóstico do executor I2C — 14/11/2026
+
+`I2cBus::DIAGNOSTICS` acrescenta início da recuperação e instante da amostra,
+em millis u32, sob o mutex existente. `ObcI2cHealth` avalia a cópia no loop
+com período alvo de 100 ms: callback acima de 100 ms ou recuperação acima
+de 200 ms ficam suspect. Ociosidade não vence. Disponibilidade é separada
+de progresso: `ok` com serviço `recovering` não significa pronto; esgotamento
+fica unavailable até uma recuperação explicitamente solicitada ter sucesso.
+
+`ReportDiagnostics` publica `[I2C-HEALTH]` mesmo sem boot válido; transições
+observadas com boot válido usam EVENT/FAULT v1, origem OBC, código 259.
+Fila/SD conservam perdas explícitas. Callback/contexto, limites, prioridades,
+duas tentativas e orçamento cooperativo de 100 ms da recuperação permanecem.
+Não há nova tarefa em produção, cancelamento ou recuperação/reset automático.
+O diagnóstico depende do loop/escalonamento/mutex; não recupera driver sem
+retorno. A detecção inicial usa idade modular menor que um wrap u32;
+suspeita já detectada só termina com mudança/fim da atividade. Recuperações
+curtas entre duas amostras podem não ser observadas. Procedimentos no guia
+e evidências do recorte local concluído na INT-008; sem prova elétrica ou de watchdog.
+
+### Diagnóstico das três tarefas do fluxo — 14/11/2026
+
+`ObcTaskHealth` recebe amostras fixas publicadas pelos proprietários, protegidas
+pelos locks já existentes. O loop avalia com período alvo de 100 ms e usa
+limites diagnósticos de 100/2.000/5.000 ms para UART/processamento/escritor.
+O estado suspect exige idade maior que o limite; progresso real retorna a ok.
+Criação não realizada permanece inactive; uma tarefa criada sem executar
+conserva starting e pode exceder o prazo. Zero é instante monotônico válido.
+Esses limites não alteram o critério UART de 10 ms ou a validação existente.
+
+Início/retorno de parser, codificação e callbacks de I/O são instrumentados
+sem I/O dentro dos locks. Leituras/listagens renovam progresso durante SCAN;
+RECOVERY_WAIT distingue a espera entre tentativas SD sem mascarar MOUNT/WRITE
+sem retorno. Retornos de erro ou sem dados também comprovam progresso.
+Não há inferência de perda de comunicação pela ausência de aeronaves.
+
+`[HEALTH]` acrescenta amostras e transições; EVENT/FAULT v1 existentes usam
+origem OBC e códigos 256–258. A fila e o escritor continuam sendo os mesmos,
+com perdas explícitas. Não há alocação dinâmica no supervisor, nova tarefa,
+reset ou recuperação automática de tarefas. O diagnóstico depende do loop,
+escalonamento e locks continuarem funcionando; não substitui watchdog global.
+Prova nativa, builds e bancada USB aprovados; relatórios na INT-008.
 
 Inicializar automaticamente após energização, aplicar os estados de saída acordados, identificar falhas e iniciar no modo do ConOps. Considerar motor e Burn Wire durante boot/reset, inclusive os níveis impostos pelo circuito antes de o firmware executar.
 

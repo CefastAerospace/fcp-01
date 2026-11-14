@@ -252,6 +252,7 @@ namespace i2c {
                 if (recovery_cause != RECOVERY_CAUSE::NONE) {
                     diagnostics.trigger = recovery_cause;
                     diagnostics.state = SERVICE_STATE::RECOVERING;
+                    diagnostics.recovery_started_ms = millis();
                 }
                 // O callback terminou: promove somente quem ainda aguarda.
                 // - Uma falha do callback também consumiu um atendimento.
@@ -455,6 +456,7 @@ namespace i2c {
         const bool accepted = diagnostics.state == SERVICE_STATE::UNAVAILABLE;
         if (accepted) {
             diagnostics.state = SERVICE_STATE::RECOVERING;
+            diagnostics.recovery_started_ms = millis();
             diagnostics.trigger = RECOVERY_CAUSE::REQUESTED;
             recovery_requested = true;
         }
@@ -469,6 +471,7 @@ namespace i2c {
         xSemaphoreTake(queue_mutex, portMAX_DELAY);
         DIAGNOSTICS copy = diagnostics;
         copy.queued_requests = pending_count;
+        copy.sampled_ms = millis();
         xSemaphoreGive(queue_mutex);
         if (worker_task) copy.worker_stack_free_bytes = uxTaskGetStackHighWaterMark(worker_task);
         return copy;

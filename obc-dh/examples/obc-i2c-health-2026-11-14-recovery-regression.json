@@ -1,0 +1,19 @@
+{
+  "passed": true,
+  "port": "/dev/ttyUSB0",
+  "simulated_gpio": true,
+  "simulated_recovery_clock": true,
+  "lines": [
+    "[I2C-CHECK] PASS cycles=3 attempts=5 recovered=2 exhausted=1 stack=3276 callback_max_us=1005345 context_queue_ms=1000 context_hold_ms=1005"
+  ],
+  "diagnostics": {
+    "cycles": 3,
+    "attempts": 5,
+    "recovered": 2,
+    "exhausted": 1,
+    "stack": 3276,
+    "callback_max_us": 1005345,
+    "context_queue_ms": 1000,
+    "context_hold_ms": 1005
+  }
+}

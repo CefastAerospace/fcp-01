@@ -73,10 +73,18 @@ namespace {
         uint64_t previous_ms = obc_time::esp32::GetMonotonicMs();
         for (;;) {
             const uint64_t now_ms = obc_time::esp32::GetMonotonicMs();
+            portENTER_CRITICAL(&transport_lock);
+            obc_health::Mark(transport_statistics.progress, obc_health::ACTIVITY::TRANSPORT, now_ms);
+            portEXIT_CRITICAL(&transport_lock);
+#ifdef OBC_TASK_HEALTH_BENCH
+            obc_health::bench::Before(obc_health::TASK::UART, obc_health::ACTIVITY::TRANSPORT);
+#endif
             PumpTransport();
             portENTER_CRITICAL(&transport_lock);
             const uint64_t gap = now_ms - previous_ms;
             if (gap > transport_statistics.maximum_gap_ms) transport_statistics.maximum_gap_ms = gap;
+            obc_health::Mark(transport_statistics.progress, obc_health::ACTIVITY::IDLE,
+                obc_time::esp32::GetMonotonicMs(), true);
             portEXIT_CRITICAL(&transport_lock);
             previous_ms = now_ms;
             vTaskDelay(pdMS_TO_TICKS(1));
@@ -103,10 +111,16 @@ bool StartTransportTask(
     if (active_receiver == nullptr) return false;
     if (transport_started) return true;
     transport_started = true;
+    portENTER_CRITICAL(&transport_lock);
+    obc_health::Start(transport_statistics.progress, obc_time::esp32::GetMonotonicMs());
+    portEXIT_CRITICAL(&transport_lock);
     if (xTaskCreatePinnedToCore(TransportEntry, "payload_uart", transport_stack_bytes,
             nullptr, 3, &transport_task, 1) != pdPASS) {
         transport_started = false;
         transport_task = nullptr;
+        portENTER_CRITICAL(&transport_lock);
+        transport_statistics.progress = {};
+        portEXIT_CRITICAL(&transport_lock);
         return false;
     }
     return true;

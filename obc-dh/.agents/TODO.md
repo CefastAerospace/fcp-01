@@ -1,5 +1,34 @@
 # TODO — OBC-DH
 
+**I2C, recorte local concluído em 14/11/2026:** diagnóstico de callback
+>100 ms e recuperação >200 ms implementado. Teste portátil, regressões
+nativas, cinco builds e bancada USB passaram. Após duas correções autorizadas
+na bancada (namespace e espera monotônica mínima), expectativas permanecem
+intactas. Regressões USB originais de I2C, supervisão e downlink aprovadas;
+`obc` restaurado e verificado. Reprovação inicial e reexecução preservadas
+na INT-008, ainda aberta por watchdog, demais recursos e retomada operacional.
+
+**Atualização local: 14/11/2026.** Supervisão diagnóstica das três tarefas
+do fluxo implementada: suspeita após exceder 100 ms na UART, 2 s no
+processamento e 5 s por operação SD, sem reset/recuperação automática de
+tarefas. Verificação nativa com ASan/UBSan, cinco builds e bancada ESP32/USB
+passaram. Cada tarefa produziu um par suspect/ok; varredura de 6.465 ms e
+espera de recuperação SD sem falso alerta. Regressões originais preservadas
+e aprovadas; `obc` restaurado e verificado sem cartão. Recorte local concluído;
+INT-008 permanece Em andamento pelos demais recursos, watchdog e operação.
+Os recortes concluídos e as evidências de 13/11 são preservados.
+
+**Atualização local: 13/11/2026, base `777b5f8`.** Recorte autorizado da
+INT-008: retomada do escritor SD implementada e verificada em arquivos POSIX
+e ESP32/USB com backend simulado. Até três tentativas por episódio, intervalo
+de 5 s, renovação após escrita normal e nenhum reboot automático. A bancada
+nova aprovou duas retomadas e um esgotamento; regressões originais preservadas.
+A revisão reproduziu bloqueio de downlink ao reconsultar com 32 entregas
+não persistidas. Após autorização, uma reserva durável adicional corrigiu
+o caso sem reduzir admissões ou descartar cópias. A mesma verificação passou
+no PC/ESP32, com regressões preservadas. Recorte local concluído; INT-008
+mantém supervisão/modos e ensaios físicos pendentes. Evidências na tarefa.
+
 **Atualização: 11/11/2026, alterações locais sobre `f7af605`.** O firmware central integra entregas identificadas, eventos TX, confirmações do solo e extração `request_log` pelo TT&C. Após corrigir a admissão de memória, a bancada USB de entregas/extração e o firmware normal passaram com o roteiro original. Testes nativos, quatro builds, relatórios e histórico da reprovação estão na INT-006. Aceites, operação, hardware restante, sensores, modos e supervisão continuam abertos.
 
 **Limites e versão:** Espressif32 fixado em 6.6.0; dez ambientes compilados
@@ -69,7 +98,7 @@ Detalhes e histórico: [regras e rastreabilidade](../.tasks/README.md). Requisit
 | INT-005 | [Integração de sensores, encoder e ADCS](../.tasks/03-integracao/INT-005-sensores-e-adcs.md) | COM-001, COM-002, INT-002, INT-003 | Inventário e limites dos setores | Pendente |
 | INT-006 | [Fluxo Payload–tempo–SD–telemetria](../.tasks/03-integracao/INT-006-fluxo-de-dados.md) | COM-004, COM-005, DAD-003, INT-004 | Cliente real, TM/tempo e extração USB aprovados nos recortes locais; aceites, operação e hardware restante pendentes | Em andamento |
 | INT-007 | [Comandos, modos e proteções operacionais](../.tasks/03-integracao/INT-007-comandos-modos-e-protecoes.md) | INT-004, INT-005, INT-006 | ConOps e condições de atuação | Pendente |
-| INT-008 | [Supervisão, watchdog e retomada após falhas](../.tasks/03-integracao/INT-008-supervisao-e-retomada.md) | COM-003, INT-007 | Limites de recuperação | Pendente |
+| INT-008 | [Supervisão, watchdog e retomada após falhas](../.tasks/03-integracao/INT-008-supervisao-e-retomada.md) | COM-003, INT-007 | Retomada do escritor e diagnósticos UART/processamento/escritor/I2C concluídos localmente; demais recursos/watchdog/operação pendentes | Em andamento |
 
 ## 4. Testes
 
@@ -99,6 +128,15 @@ Ordem sugerida para avançar engenharia com poucos dispositivos. “Pode avança
 
 O engenheiro OBC-DH pode preparar interfaces e evidências; a execução dos novos ensaios é encaminhada ao setor de testes. Roteiros atuais e retorno ao firmware normal estão em [examples/README.md](../examples/README.md#bancada-integrada-int-006). Abertura de contrato não autoriza escolher parâmetros dos outros setores unilateralmente.
 
+O recorte independente de retomada do escritor da INT-008 foi autorizado e
+concluído em 13/11, sem antecipar políticas de modos, I2C, atuadores ou
+reset do OBC. O bloqueio com cache cheio foi corrigido após autorização;
+os resultados e o diagnóstico anterior permanecem preservados na tarefa.
+O recorte de diagnóstico UART/processamento/escritor também foi concluído
+em 14/11, com ESP32/USB e backend simulado; não antecipa watchdog global,
+supervisão TT&C ou comprovação física de SD/Pi/RF. O diagnóstico I2C foi
+concluído no mesmo dia; mantém ações de recuperação e consumidores pendentes.
+
 Mensagens preparadas para TT&C, Payload e testes, sem envio externo:
 [encaminhamentos de 11/11/2026](../encaminhamentos-2026-11-11.md).
 
@@ -118,7 +156,7 @@ O setor de testes executa e encaminha acertos, falhas, impedimentos e evidência
 | TES-008: USB e simulação de fluxo/tempo | INT-003/004/006 têm entregas parciais verificadas | Recortes de bancada disponíveis com ESP32/USB e roteiro compatível; registrar evidência parcial. | Aceites e dependências formais continuam para os cenários completos; não aprovar reset seguro, RF ou SD físico por esses recortes. |
 | TES-008: demais cenários | Dependências por cenário ainda abertas | Preparar procedimento e limites. | Boot de voo, FOC/sensores, RF, cartão, modos/energia/térmico/atuações e respectivas aprovações. |
 | TES-009: UART e interrupção SD | COM-004/005 concluídas | Preparar separadamente os ensaios físicos. | Ponta/gerador compatível, taxas e montagem UART; cartão, corte aprovado e critérios EPS. |
-| TES-009: recuperação I2C, watchdog e retomada | COM-003 concluída; INT-007/INT-008 pendentes; INT-006 parcial | Preparar o cenário físico I2C e levantar procedimentos dos demais cenários. | Acordo e montagem I2C; supervisão e estados duráveis das integrações. |
+| TES-009: recuperação I2C, watchdog e retomada | COM-003 concluída; INT-007 pendente; INT-008/INT-006 parciais | Preparar I2C e retomada física SD; recorte lógico do escritor disponível, sem aprovar os demais cenários. | Cartão/montagem, acordo I2C, supervisão e estados duráveis das integrações. |
 | TES-010 | INT-008 e parte de TES-001 a TES-009 ainda abertas | Preparar rastreabilidade e procedimento; missão completa ainda não liberada. | Predecessoras, referências/limites vigentes e montagem integrada. |
 
 Nenhuma linha desta matriz é evidência de novo ensaio. A auditoria de links e consistência documental é distinta da validação funcional ou física.

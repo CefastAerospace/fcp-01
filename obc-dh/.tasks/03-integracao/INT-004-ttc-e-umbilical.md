@@ -3,6 +3,13 @@
 **Estado:** Em andamento — implementação e bancada USB verificadas; aceite TT&C pendente
 **Responsáveis:** OBC-DH e TT&C
 
+
+## Separação vigente — 14/11/2026
+
+Entrega desta INT: adaptador OBC–TT&C, comandos básicos, build/regressões pertinentes e contrato consumido identificado. O aceite conjunto das interfaces/unidades permanece engenharia OBC/TT&C; não é obrigação transferida ao setor de testes. Comprovação RF e dos tempos integrados continua na TES-008, sem bloquear o encerramento da implementação por si só. A capacidade de boot de bancada da INT-003 já é consumida; sua parte elétrica de voo não bloqueia o adaptador de bancada.
+
+As lacunas de regressão do consumidor atual ficam na [TES-012](../04-testes/TES-012-consumidor-telecomandos.md). `CMD_RESET_OBC` pertence à [INT-012](INT-012-watchdog-reset-obc.md). O aceite conjunto ainda está pendente; estado Em andamento preservado.
+
 ## Fixação do ambiente consumidor — 11/11/2026
 
 Implementada a fixação aprovada: `platform = espressif32@6.6.0` em obc,
@@ -42,7 +49,7 @@ estação e os pedidos aos setores estão nos
 
 ## Histórico do estado e uso dos roteiros — 10/11/2026
 
-A biblioteca TT&C já está ligada ao firmware central. O histórico abaixo registra a versão INT-004, na qual `set_time` era rejeitado. A INT-006 posterior implementou esse comando e a TM integrada; usar `ObcDataFlowCheck.py` para o firmware atual, conforme o [guia](../../examples/README.md#bancada-integrada-int-006). Preservar `ObcTtcCheck.py` e suas expectativas para a versão anterior.
+A biblioteca TT&C já está ligada ao firmware central. O histórico abaixo registra a versão INT-004, na qual `set_time` era rejeitado. A INT-006 posterior implementou esse comando e a TM integrada. Orientação vigente de 14/11: usar `ObcDownlinkCheck.py` e o complemento `ObcStationCheck.py` para o firmware atual, conforme o [guia](../../examples/README.md#bancada-integrada-int-006). `ObcDataFlowCheck.py` também é histórico, anterior a `request_log`/quadros `ac`. Preservar `ObcTtcCheck.py` e suas expectativas para a versão anterior.
 
 O aceite conjunto TT&C ainda mantém esta tarefa aberta; a bancada parcial não encerra o boot de voo da INT-003 ou ensaios RF. É possível preparar o aceite com contratos/mapeamentos e evidências existentes sem novos dispositivos. As versões Espressif32/Arduino registradas abaixo são as observadas naquela execução, quando a plataforma ainda não estava fixada. A fixação posterior está registrada acima. ArduinoJson/LoRa estão fixados no consumidor OBC; `tt-c` acompanha o checkout local.
 
@@ -65,7 +72,7 @@ Reutilizar a biblioteca TT&C: Init()/Start(), ReceiveTelecommand(), SendAck(), S
 
 ## Critérios de conclusão
 
-Transporte ligado ao firmware central, TC/ACK e TC/TM de bancada conectados e build aprovado. Preservar ACK pelo meio de origem e os limites de entrega TC ≤200 ms e resposta ≤2 s; comprovação integrada em [TES-008](../04-testes/TES-008-integracao.md).
+Transporte ligado ao firmware central, TC/ACK e TC/TM conectados, contrato necessário acordado, build e regressões pertinentes aprovados. Preservar ACK pelo meio de origem e os limites de entrega TC ≤200 ms e resposta ≤2 s; comprovação integrada em [TES-008](../04-testes/TES-008-integracao.md).
 
 ## Encaminhamentos recebidos — 09/11/2026
 

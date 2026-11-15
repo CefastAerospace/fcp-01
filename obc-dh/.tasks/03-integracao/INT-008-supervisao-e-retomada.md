@@ -1,7 +1,20 @@
-# INT-008 — Supervisão, watchdog e retomada após falhas
+# INT-008 — Supervisão de recursos e recuperação local
 
-**Estado:** Em andamento — retomada local e diagnósticos de tarefas/I2C concluídos; demais recursos, watchdog e operação pendentes
+**Estado:** Em andamento — retomada local e diagnósticos de tarefas/I2C concluídos; demais recursos pendentes
 **Responsáveis:** OBC-DH e setores
+
+
+## Escopo vigente — 14/11/2026
+
+Permanecem nesta INT a supervisão de recursos, diagnósticos e recuperação local, incluindo o escritor SD. Diagnósticos UART/processamento/escritor/I2C e retomada local já estão implementados nos recortes registrados. Restam diagnóstico OBC do TT&C, degradação de memória e políticas locais dos recursos ainda não cobertos; reutilizar métricas/recuperação dos proprietários, sem duplicar tarefas, drivers ou reset do SX1276.
+
+Watchdog e `CMD_RESET_OBC` passam à [INT-012](INT-012-watchdog-reset-obc.md). Retorno de modos/missão e estados duráveis após reset passam à [INT-013](INT-013-retomada-operacional.md), que recebe o encaminhamento DAD-003. Estados do Burn Wire pertencem à [INT-011](INT-011-burn-wire-persistencia.md).
+
+A INT-007 inteira deixa de ser predecessora desta supervisão local. Decisões dependentes de modo são consumidas somente na INT-013 ou na integração correspondente. Parâmetros provisórios seguem o [registro comum](../README.md#parâmetros-provisórios). Build e regressões pertinentes pertencem ao OBC; comprovação física permanece na TES-009. Estado Em andamento preservado.
+
+## Histórico dos recortes anteriores à redistribuição
+
+As seções datadas abaixo preservam procedimentos, resultados e pendências do escopo original. Menções a watchdog/modos como pendências desta INT devem ser lidas com as destinatárias vigentes acima; nenhum resultado histórico foi apagado.
 
 ## Diagnóstico I2C — recorte local concluído, 14/11/2026
 
@@ -380,15 +393,15 @@ não habilita watchdog/reset do OBC nem define retomada de missão/atuadores.
 
 ## Objetivo
 
-Detectar falhas e perda de comunicação, recuperar recursos e registrar o ocorrido.
+Detectar degradação/falhas dos recursos, coordenar sua recuperação local e registrar o ocorrido.
 
 ## Entrega
 
-Supervisionar tarefas críticas e recursos, distinguindo watchdog de tarefas de proteção térmica. Reutilizar GetLinkStats()/last_tc_ms e a saúde/reset do SX1276. Associar horários, persistir falhas e contagem de reinicializações, recuperar periférico/tarefa/OBC e retornar ao estado do ConOps. Não assumir watchdog externo ou partição de recuperação do DP como implementação confirmada.
+Supervisionar tarefas e recursos por progresso e disponibilidade. Reutilizar GetLinkStats()/last_tc_ms, IsHealthy() e a saúde/reset do SX1276, distinguindo silêncio do solo, disponibilidade do rádio e progresso da tarefa; essas métricas não comprovam todas essas condições. Usar heap, maior bloco e margens de pilha já disponíveis para diagnosticar degradação/retorno, sem reset automático apenas por memória baixa. Associar horários e encaminhar falhas/eventos pelo diário existente; SD indisponível não confirma persistência. Recuperar recursos no proprietário, com limites/tentativas e estado final observável. Watchdog/reset são da INT-012; retorno operacional/contagem no novo boot é integrado na INT-013. Não assumir watchdog externo ou partição de recuperação.
 
 ## Pré-requisitos
 
-- **Tarefas:** [COM-003](../01-comunicacao/done/COM-003-recuperacao-i2c.md), [INT-007](INT-007-comandos-modos-e-protecoes.md)
+- **Tarefas/capacidades:** [COM-003](../01-comunicacao/done/COM-003-recuperacao-i2c.md), boot de bancada da INT-003, adaptador/métricas TT&C da INT-004 e diário/diagnósticos da INT-006. Esses recortes já disponíveis permitem trabalhar sem encerrar a INT-007. Integração de consumidores específicos depende de INT-005/009 apenas no recurso correspondente.
 - **Condições externas:** Definir saúde, tempos, tentativas e retomada com coordenação e setores.
 
 ## Definições e condições
@@ -398,7 +411,7 @@ Supervisionar tarefas críticas e recursos, distinguindo watchdog de tarefas de 
 
 ## Critérios de conclusão
 
-Supervisão, limites e recuperação implementados, eventos registrados e verificações locais disponíveis. Atendimento aos tempos e integridade após falhas depende de [TES-009](../04-testes/TES-009-falhas-e-recuperacao.md).
+Supervisão e recuperação local do próprio escopo implementadas, limites/ações documentados, eventos encaminhados e build/regressões pertinentes aprovados. Persistência só é declarada com gravação confirmada. Comprovação independente dos tempos e integridade física após falhas pertence à [TES-009](../04-testes/TES-009-falhas-e-recuperacao.md) e não bloqueia por si só esta implementação. Watchdog e retomada operacional permanecem abertos nas INT-012/013.
 
 ## Encaminhamentos recebidos — 09/11/2026
 
@@ -410,7 +423,7 @@ cenários originais e não mudam seu estado por conclusão da origem.
 | Origem concluída | Obrigação recebida | Situação |
 |---|---|---|
 | [COM-005](../01-comunicacao/done/COM-005-armazenamento-sd.md) | Integrar a política de retomada do escritor após falha/reset: preservar arquivos, End/Init e nome novo, sem apagar ou reutilizar conteúdo anterior. | Retomada local após falha concluída em 13/11, incluindo reserva com cache cheio; política operacional/reset e comprovação física pendentes |
-| [DAD-003](../02-dados-e-tempo/done/DAD-003-registros-e-interpretacao.md) | Integrar retomada persistente por boot e falhas com os estados definidos em INT-007, sem deduzir autorização de atuação de eventos ou flags voláteis. | Pendente |
+| [DAD-003](../02-dados-e-tempo/done/DAD-003-registros-e-interpretacao.md) | Integrar retomada persistente por boot e falhas, sem deduzir autorização de atuação de eventos ou flags voláteis. | Transferida, ainda pendente na [INT-013](INT-013-retomada-operacional.md); estados de atuação na [INT-011](INT-011-burn-wire-persistencia.md) |
 
 ## Encaminhamento recebido da COM-003 — 10/11/2026
 
@@ -421,7 +434,8 @@ por progresso, limites e ações para callbacks ou chamadas internas do driver
 que permanecem executando. O contexto do callback pertence ao chamador até
 sua conclusão. O diagnóstico de callback/recuperação e indisponibilidade foi
 concluído localmente em 14/11, conforme evidências acima. Ações para driver
-sem retorno, watchdog e integração dos consumidores continuam pendentes.
+sem retorno e watchdog continuam pendentes na INT-012; consumidores ADCS
+e EPS/Térmico continuam nas INT-005/009, sem eliminar a supervisão local desta INT.
 
 ## Evidências
 

@@ -1,5 +1,7 @@
 # Encaminhamentos OBC-DH — 11/11/2026
 
+**Correspondência de 14/11/2026:** estas mensagens permanecem históricas e não foram enviadas por esta revisão. Consulte o [painel](.agents/TODO.md) e a [redistribuição](.tasks/README.md#correspondência-das-entregas-redistribuídas) para as destinatárias atuais: aquisição INT-009, proteções INT-010, Burn Wire INT-011, watchdog INT-012 e retomada operacional INT-013. As obrigações originais e os critérios dos setores permanecem preservados.
+
 Mensagens preparadas para envio pelo responsável. Nenhuma comunicação externa
 foi realizada pelo agente. Base: revisão de `f7af605` e integração OBC local
 subsequente, sem commit nesta entrega.

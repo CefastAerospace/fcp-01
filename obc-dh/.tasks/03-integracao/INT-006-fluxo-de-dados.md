@@ -3,6 +3,13 @@
 **Estado:** Em andamento — bancada USB, cliente real da estação e TM/tempo aprovados nos recortes locais; aceites, operação e ensaios físicos restantes pendentes
 **Responsáveis:** OBC-DH, Payload e TT&C
 
+
+## Separação vigente — 14/11/2026
+
+Esta INT entrega fluxo, persistência, entregas, extração e os contratos necessários ao seu comportamento. Build/regressões locais pertencem ao OBC; ensaios com Pi/cartão/RF e interrupção física permanecem nas TES-005/006/008/009, sem condicionar por si só o encerramento da implementação. Aceites operacionais de tráfego/timeout/retenção, semântica dos campos e preservação de cada atualização ADS-B continuam pendências reais de engenharia; a ponta Pi continua responsabilidade Payload.
+
+`request_log`, cliente real da estação e verificações USB/limites locais já estão registrados como aprovados em 11/11. Nas tabelas históricas abaixo, pendência antiga de USB ou extração não é diagnóstico vigente. [TES-011](../04-testes/TES-011-regressoes-reproduziveis.md) organizará regressões; [TES-012](../04-testes/TES-012-consumidor-telecomandos.md) cobrirá lacunas do consumidor. Retomada operacional após reset passa à [INT-013](INT-013-retomada-operacional.md). Nenhum aceite ou conclusão foi inferido por esta revisão.
+
 ## Limites de capacidade e memória — 11/11/2026
 
 Plano autorizado implementado em duas bancadas separadas, derivadas de
@@ -470,7 +477,7 @@ Associar tempo aos dados/eventos, gravar missão/TM/estatísticas/falhas e persi
 
 ## Critérios de conclusão
 
-Fluxo central e tratamento de erros implementados, contrato temporal preservado e verificações locais registradas. Demonstrar ADS-B simulado com timestamp na TM e extração reproduzível em [TES-008](../04-testes/TES-008-integracao.md).
+Fluxo central e tratamento de erros implementados, contratos necessários acordados, contrato temporal preservado, build e regressões pertinentes aprovados e registrados. A demonstração original de ADS-B simulado com timestamp na TM e extração reproduzível permanece na [TES-008](../04-testes/TES-008-integracao.md), sem ser substituída ou exigida para encerrar esta implementação.
 
 ## Encaminhamentos recebidos — 09/11/2026
 
@@ -586,7 +593,8 @@ Binários verificados (SHA-256):
   de 11/11 acima. Falta o acordo operacional de tráfego/timeout/retenção.
 - Aceites Payload/TT&C e ponta Pi: FCPU, tráfego, rajadas, retenção, unidades,
   idade dos campos, estatísticas e preservação de cada atualização ADS-B.
-- Ensaios físicos com Pi/cartão, recuperação após interrupção e comprovação
+- Encaminhamentos de comprovação, que não bloqueiam por si só esta INT:
+  ensaios físicos com Pi/cartão, recuperação após interrupção e comprovação
   integrada em TES-005/TES-006/TES-008/TES-009. A bancada simulada não os encerra.
 - Boot de voo, sensores, modos/atuações e recuperação continuam em suas
   tarefas próprias. Manter esta tarefa fora de `done/`: a entrega é parcial.

@@ -2,6 +2,39 @@
 
 O [TODO](../.agents/TODO.md) é o painel unificado. Os arquivos nesta pasta são a fonte do escopo, dependências, condições externas e evidências. O painel e cada tarefa devem manter o mesmo estado.
 
+## Revisão vigente — 14/11/2026
+
+A revisão separa entrega de software, contrato de integração e comprovação independente. OBC-DH mantém e executa regressões de desenvolvimento; o setor de testes executa os ensaios e registra o aceite. As tarefas novas são planejamento, não implementação ou evidência de execução. Nenhuma tarefa mudou de estado apenas por esta revisão.
+
+| Tipo de entrega | Responsável | Encerramento |
+|---|---|---|
+| Implementação | OBC-DH | Comportamento do próprio escopo implementado, build e regressões pertinentes aprovados, versão e limitações registradas. |
+| Contrato de integração | OBC-DH e setor correspondente | Interface, unidades, responsabilidades e parâmetros necessários registrados e acordados. Não transferir decisão de engenharia ao setor de testes. |
+| Comprovação independente | Setor de testes, com apoio técnico | Procedimento executado, resultados comparados aos critérios e evidências preservadas. |
+
+Uma implementação concluída não aprova requisito de missão. A TES vinculada permanece aberta até sua própria comprovação. COM/DAD/INT conservam verificações locais; não devem exigir a aprovação de uma TES que depende delas para iniciar. Uma definição elétrica ou operacional necessária ao próprio código continua sendo condição externa real, mesmo quando o ensaio físico tem task própria.
+
+### Correspondência das entregas redistribuídas
+
+| Origem | Entrega que permanece | Destino da entrega extraída |
+|---|---|---|
+| INT-003 | Boot, estados iniciais e falhas implementados | Comprovação elétrica/boot/reset continua na TES-008. |
+| INT-004 | Adaptador e contrato OBC–TT&C | Comprovação RF/temporal continua na TES-008; aceite de contrato permanece nesta INT. |
+| INT-005 | ADCS, encoder, aquisição de atitude/luz e FOC | [INT-009](03-integracao/INT-009-aquisicao-eps-termico.md): aquisição EPS/Térmico e seus contratos, incluindo pendências recebidas de DAD-001/COM-003. |
+| INT-006 | Fluxo, registros, entregas, extração e contratos necessários | Comprovações físicas continuam nas TES-005/006/008/009. A ponta Pi continua responsabilidade Payload. |
+| INT-007 | Comandos, modos e coordenação da missão | [INT-010](03-integracao/INT-010-protecoes-energia-termico.md): proteções; [INT-011](03-integracao/INT-011-burn-wire-persistencia.md): Burn Wire/estados duráveis DAD-003; [INT-012](03-integracao/INT-012-watchdog-reset-obc.md): `CMD_RESET_OBC`. |
+| INT-008 | Supervisão de recursos e recuperação local, incluindo histórico do escritor e diagnósticos | INT-012: watchdog; [INT-013](03-integracao/INT-013-retomada-operacional.md): retorno de modos/missão e estados duráveis DAD-003 após reset. |
+| TES-002 | Comprovação do executor FreeRTOS pelo setor de testes | OBC prepara e mantém a ferramenta, reaproveitando a bancada parcial de recuperação. |
+| Regressões existentes | TES-001/004/007 e seus históricos preservados | [TES-011](04-testes/TES-011-regressoes-reproduziveis.md): execução nativa reproduzível; [TES-012](04-testes/TES-012-consumidor-telecomandos.md): lacunas do consumidor atual. |
+
+Não renumerar IDs existentes. As novas tarefas recebem novos IDs do mesmo prefixo. Obrigações transferidas continuam abertas na destinatária, com referência à origem; uma divisão não encerra automaticamente nenhum dos lados. Históricos datados descrevem o escopo da época; esta correspondência e os escopos vigentes definem o trabalho atual.
+
+### Parâmetros provisórios
+
+Registrar cada parâmetro de desenvolvimento provisório na task proprietária: valor, unidade, finalidade, versão, responsável pela definição final e ensaio que o avaliará. Informar se ainda falta valor; esta revisão não arbitra nenhum número novo.
+
+Um valor provisório pode permitir desenvolver lógica quando não redefine contrato ou segurança. Não autoriza atuação, mudança de nível elétrico, limite de proteção, aceite de interface ou aprovação de missão. Ausência de definição necessária mantém a entrega correspondente aberta. A troca posterior do valor pertence ao OBC, com regressões pertinentes; não cabe ao setor de testes ajustar firmware ou expectativas para obter aprovação. Entradas, asserts e resultados esperados históricos permanecem preservados.
+
 ## Estrutura e uso
 
 - `01-comunicacao/`: serviço I2C, prioridade, recuperação, UART e acesso ao SD.
@@ -15,7 +48,7 @@ Não ler todas as tarefas em cada trabalho. Consultar o painel e abrir somente a
 
 ## Dependências e estados
 
-Uma tarefa fica disponível quando todas as tarefas predecessoras estiverem concluídas e suas condições externas resolvidas. A elaboração de contratos e o levantamento de parâmetros podem avançar antes disso. O responsável pela condição externa aparece no arquivo; registrar decisão, responsável, referência e unidades quando resolvê-la.
+Uma entrega fica disponível quando as capacidades predecessoras que ela consome estão implementadas e suas condições externas resolvidas. Cada task deve identificar a capacidade e a versão quando utilizar uma entrega parcial já disponível, sem exigir encerramento de escopos independentes do mesmo ID. Preparação de contratos e lógica isolada pode anteceder a integração; isso não declara integração pronta. O responsável pela condição externa aparece no arquivo; registrar decisão, responsável, referência e unidades quando resolvê-la.
 
 Pendente significa não iniciada, mesmo se ainda houver dependências. Em andamento significa execução iniciada. Bloqueada registra um impedimento encontrado durante a execução, com motivo e responsável. Concluída exige os critérios do escopo atendidos e evidências registradas. Não há automação de estados; atualizar painel e tarefa juntos.
 
@@ -43,7 +76,7 @@ Cada arquivo contém estado/responsáveis, objetivo, entrega, pré-requisitos, c
 
 ### Registro por cenário
 
-Os checklists das TES abertas são roteiros para o setor de testes; seus responsáveis técnicos continuam apoiando interfaces, montagem e diagnóstico. OBC-DH conserva suas verificações locais de implementação, sem que isso substitua o aceite dos ensaios. A revisão documental de 10/11/2026 não executa os casos nem altera os estados das tarefas.
+Os checklists das TES de comprovação são roteiros para o setor de testes; seus responsáveis técnicos apoiam interfaces, montagem e diagnóstico. OBC-DH mantém ferramentas e regressões automatizadas de desenvolvimento, incluindo TES-011/012, sem que isso substitua o aceite dos ensaios. O prefixo TES não determina sozinho o executor: o cabeçalho identifica a responsabilidade. Revisões documentais não executam casos nem alteram estados por inferência.
 
 Antes do ensaio, preencher condições, entrada/procedimento e resultado esperado com base no contrato/requisito vigente. Depois, registrar observado e evidência. Usar uma linha/ficha por caso do checklist:
 
@@ -60,12 +93,13 @@ Antes do ensaio, preencher condições, entrada/procedimento e resultado esperad
 
 Marcar `[x]` somente quando o caso tiver evidência de aprovação. Rejeição prevista de entrada inválida pode ser sucesso do caso; falha inesperada não é aprovação por ser um teste de erro. Um limite ainda não acordado impede o aceite correspondente, sem justificar inventar um valor. Resultados parciais não concluem TES-008/TES-009/TES-010.
 
-Os roteiros arquivados conservam suas entradas e expectativas. No firmware atual, `ObcDataFlowCheck.py` substitui o uso operacional do roteiro da versão INT-004, sem modificar `ObcTtcCheck.py`.
+Os roteiros arquivados conservam suas entradas e expectativas. No firmware atual usar `ObcDownlinkCheck.py` e, como complemento, `ObcStationCheck.py`, conforme o guia. `ObcDataFlowCheck.py` exige a versão anterior a `request_log`/quadros `ac`; `ObcTtcCheck.py` exige a versão INT-004 anterior a `set_time`. Roteiro histórico incompatível não é regressão do firmware atual.
 
 ### Responsabilidades, correção e reexecução
 
 - **Setor de testes:** executar os procedimentos e registrar todos os acertos, falhas e impedimentos por cenário, com versão, entradas, resultado esperado, observado e evidências. Encaminhar o relatório completo ao responsável OBC-DH, incluindo os casos aprovados. Não corrigir firmware nem alterar entradas, critérios ou resultados esperados para obter aprovação. Dúvidas ou problemas no roteiro também devem ser relatados, sem ajuste unilateral.
 - **Responsável OBC-DH:** analisar os resultados, diagnosticar os problemas e realizar as correções de firmware necessárias, conforme as regras de discussão de AGENTS.md. Informar a nova versão e os casos afetados para reexecução. Questões de contrato ou de outros subsistemas devem ser tratadas com os responsáveis correspondentes.
+- **OBC-DH, desenvolvimento:** preparar e manter as ferramentas de ensaio, executar regressões automatizadas pertinentes à mudança e informar firmware/roteiro compatíveis ao setor de testes. Cada comportamento novo acompanha casos nominais, recusas, fronteiras e preservação de estado pertinentes. Reutilizar testes existentes antes de acrescentar cobertura; não antecipar funcionalidades sem contrato.
 - **Setor de testes, após a correção:** repetir os casos afetados e as regressões necessárias na versão indicada, conservando os critérios aprovados. Acrescentar os novos resultados sem apagar ou substituir relatórios, falhas e evidências anteriores. Aprovação de uma versão anterior não comprova o comportamento de um trecho alterado.
 
 Executar todos os casos ou entregar o relatório não conclui automaticamente uma TES. Falhas, impedimentos e casos não executados que impeçam os critérios do próprio escopo mantêm a tarefa aberta; o arquivo não deve ser movido para `done/`. Após as correções, registrar a aprovação dos casos necessários antes do encerramento. Obrigações de outro escopo continuam nas destinatárias, conforme a regra de encerramento por responsabilidade.
@@ -114,25 +148,25 @@ O inventário e a configuração base estão em [INT-001](03-integracao/done/INT
 
 ## Cobertura dos requisitos
 
-Esta tabela indica responsáveis pela implementação e pela comprovação. Não declara requisitos atendidos. Descrições, prioridades, associações, entradas e resultados esperados continuam em [REQUISITOS.md](../.agents/REQUISITOS.md).
+Esta tabela indica responsáveis pela implementação e pela comprovação. A redistribuição de 14/11 inclui INT-009 a INT-013; referências anteriores permanecem como origem, sem duplicar a obrigação extraída. TES-011/012 complementam regressões de desenvolvimento, sem substituir as evidências previstas. Não declara requisitos atendidos. Descrições, prioridades, associações, entradas e resultados esperados continuam em [REQUISITOS.md](../.agents/REQUISITOS.md).
 
 | Requisito | Implementação | Evidências previstas |
 |---|---|---|
-| REQ-OBC-001 | [INT-007](03-integracao/INT-007-comandos-modos-e-protecoes.md), [INT-008](03-integracao/INT-008-supervisao-e-retomada.md) | [TES-008](04-testes/TES-008-integracao.md) (teste TC original), [TES-010](04-testes/TES-010-missao-e-cobertura.md) (autonomia). |
-| REQ-OBC-002 | [INT-004](03-integracao/INT-004-ttc-e-umbilical.md), [INT-007](03-integracao/INT-007-comandos-modos-e-protecoes.md) | [TES-008](04-testes/TES-008-integracao.md). |
-| REQ-OBC-003 | [INT-005](03-integracao/INT-005-sensores-e-adcs.md), [INT-006](03-integracao/INT-006-fluxo-de-dados.md) | [TES-008](04-testes/TES-008-integracao.md) (inspeção TM). |
-| REQ-OBC-004 | [INT-007](03-integracao/INT-007-comandos-modos-e-protecoes.md) | [TES-008](04-testes/TES-008-integracao.md), [TES-009](04-testes/TES-009-falhas-e-recuperacao.md). |
-| REQ-OBC-005 | [COM-004](01-comunicacao/done/COM-004-uart-payload.md), [COM-005](01-comunicacao/done/COM-005-armazenamento-sd.md), [DAD-001](02-dados-e-tempo/done/DAD-001-modelos-e-formatos.md), [DAD-003](02-dados-e-tempo/done/DAD-003-registros-e-interpretacao.md), [INT-006](03-integracao/INT-006-fluxo-de-dados.md) | [TES-004](04-testes/done/TES-004-uart-software.md) a [TES-008](04-testes/TES-008-integracao.md). |
+| REQ-OBC-001 | [INT-007](03-integracao/INT-007-comandos-modos-e-protecoes.md), [INT-008](03-integracao/INT-008-supervisao-e-retomada.md), [INT-012](03-integracao/INT-012-watchdog-reset-obc.md), [INT-013](03-integracao/INT-013-retomada-operacional.md) | [TES-008](04-testes/TES-008-integracao.md) (teste TC original), [TES-010](04-testes/TES-010-missao-e-cobertura.md) (autonomia). |
+| REQ-OBC-002 | [INT-004](03-integracao/INT-004-ttc-e-umbilical.md), [INT-007](03-integracao/INT-007-comandos-modos-e-protecoes.md), [INT-011](03-integracao/INT-011-burn-wire-persistencia.md), [INT-012](03-integracao/INT-012-watchdog-reset-obc.md) | [TES-008](04-testes/TES-008-integracao.md). |
+| REQ-OBC-003 | [INT-005](03-integracao/INT-005-sensores-e-adcs.md), [INT-006](03-integracao/INT-006-fluxo-de-dados.md), [INT-009](03-integracao/INT-009-aquisicao-eps-termico.md) | [TES-008](04-testes/TES-008-integracao.md) (inspeção TM). |
+| REQ-OBC-004 | [INT-007](03-integracao/INT-007-comandos-modos-e-protecoes.md), [INT-010](03-integracao/INT-010-protecoes-energia-termico.md), [INT-013](03-integracao/INT-013-retomada-operacional.md) | [TES-008](04-testes/TES-008-integracao.md), [TES-009](04-testes/TES-009-falhas-e-recuperacao.md). |
+| REQ-OBC-005 | [COM-004](01-comunicacao/done/COM-004-uart-payload.md), [COM-005](01-comunicacao/done/COM-005-armazenamento-sd.md), [DAD-001](02-dados-e-tempo/done/DAD-001-modelos-e-formatos.md), [DAD-003](02-dados-e-tempo/done/DAD-003-registros-e-interpretacao.md), [INT-006](03-integracao/INT-006-fluxo-de-dados.md), [INT-013](03-integracao/INT-013-retomada-operacional.md) | [TES-004](04-testes/done/TES-004-uart-software.md) a [TES-008](04-testes/TES-008-integracao.md). |
 | REQ-OBC-006 | [DAD-002](02-dados-e-tempo/done/DAD-002-tempo-e-boots.md), [INT-006](03-integracao/INT-006-fluxo-de-dados.md) | [TES-007](04-testes/done/TES-007-dados-e-tempo.md), [TES-008](04-testes/TES-008-integracao.md) (ADS-B simulado e timestamp na TM). |
-| REQ-OBC-007 | [COM-003](01-comunicacao/done/COM-003-recuperacao-i2c.md), [INT-008](03-integracao/INT-008-supervisao-e-retomada.md) | [TES-009](04-testes/TES-009-falhas-e-recuperacao.md). |
-| REQ-OBC-008 | [INT-003](03-integracao/INT-003-inicializacao-central.md) | [TES-008](04-testes/TES-008-integracao.md) (boot). |
-| REQ-OBC-009 | [DAD-001](02-dados-e-tempo/done/DAD-001-modelos-e-formatos.md), [DAD-003](02-dados-e-tempo/done/DAD-003-registros-e-interpretacao.md), [INT-006](03-integracao/INT-006-fluxo-de-dados.md), [INT-008](03-integracao/INT-008-supervisao-e-retomada.md) | [TES-007](04-testes/done/TES-007-dados-e-tempo.md), [TES-009](04-testes/TES-009-falhas-e-recuperacao.md). |
-| REQ-OBC-010 | [DAD-002](02-dados-e-tempo/done/DAD-002-tempo-e-boots.md), [DAD-003](02-dados-e-tempo/done/DAD-003-registros-e-interpretacao.md), [INT-006](03-integracao/INT-006-fluxo-de-dados.md), [INT-008](03-integracao/INT-008-supervisao-e-retomada.md) | [TES-007](04-testes/done/TES-007-dados-e-tempo.md) a [TES-009](04-testes/TES-009-falhas-e-recuperacao.md). |
-| REQ-OBC-011 | [INT-005](03-integracao/INT-005-sensores-e-adcs.md), [INT-008](03-integracao/INT-008-supervisao-e-retomada.md) | [TES-005](04-testes/TES-005-uart-hardware.md), [TES-009](04-testes/TES-009-falhas-e-recuperacao.md). |
-| REQ-OBC-012 | [INT-007](03-integracao/INT-007-comandos-modos-e-protecoes.md) | [TES-008](04-testes/TES-008-integracao.md), [TES-010](04-testes/TES-010-missao-e-cobertura.md). |
-| REQ-NF-OBC-001 | [INT-007](03-integracao/INT-007-comandos-modos-e-protecoes.md) | [TES-008](04-testes/TES-008-integracao.md), [TES-010](04-testes/TES-010-missao-e-cobertura.md) (consumo contra cota EPS). |
+| REQ-OBC-007 | [COM-003](01-comunicacao/done/COM-003-recuperacao-i2c.md), [INT-008](03-integracao/INT-008-supervisao-e-retomada.md), [INT-012](03-integracao/INT-012-watchdog-reset-obc.md), [INT-013](03-integracao/INT-013-retomada-operacional.md) | [TES-009](04-testes/TES-009-falhas-e-recuperacao.md). |
+| REQ-OBC-008 | [INT-003](03-integracao/INT-003-inicializacao-central.md), [INT-013](03-integracao/INT-013-retomada-operacional.md) | [TES-008](04-testes/TES-008-integracao.md) (boot). |
+| REQ-OBC-009 | [DAD-001](02-dados-e-tempo/done/DAD-001-modelos-e-formatos.md), [DAD-003](02-dados-e-tempo/done/DAD-003-registros-e-interpretacao.md), [INT-006](03-integracao/INT-006-fluxo-de-dados.md), [INT-008](03-integracao/INT-008-supervisao-e-retomada.md), [INT-010](03-integracao/INT-010-protecoes-energia-termico.md), [INT-011](03-integracao/INT-011-burn-wire-persistencia.md), [INT-012](03-integracao/INT-012-watchdog-reset-obc.md), [INT-013](03-integracao/INT-013-retomada-operacional.md) | [TES-007](04-testes/done/TES-007-dados-e-tempo.md), [TES-009](04-testes/TES-009-falhas-e-recuperacao.md). |
+| REQ-OBC-010 | [DAD-002](02-dados-e-tempo/done/DAD-002-tempo-e-boots.md), [DAD-003](02-dados-e-tempo/done/DAD-003-registros-e-interpretacao.md), [INT-006](03-integracao/INT-006-fluxo-de-dados.md), [INT-008](03-integracao/INT-008-supervisao-e-retomada.md), [INT-010](03-integracao/INT-010-protecoes-energia-termico.md), [INT-011](03-integracao/INT-011-burn-wire-persistencia.md), [INT-012](03-integracao/INT-012-watchdog-reset-obc.md), [INT-013](03-integracao/INT-013-retomada-operacional.md) | [TES-007](04-testes/done/TES-007-dados-e-tempo.md) a [TES-009](04-testes/TES-009-falhas-e-recuperacao.md). |
+| REQ-OBC-011 | [INT-005](03-integracao/INT-005-sensores-e-adcs.md), [INT-008](03-integracao/INT-008-supervisao-e-retomada.md), [INT-009](03-integracao/INT-009-aquisicao-eps-termico.md) | [TES-005](04-testes/TES-005-uart-hardware.md), [TES-009](04-testes/TES-009-falhas-e-recuperacao.md). |
+| REQ-OBC-012 | [INT-007](03-integracao/INT-007-comandos-modos-e-protecoes.md), [INT-010](03-integracao/INT-010-protecoes-energia-termico.md) | [TES-008](04-testes/TES-008-integracao.md), [TES-010](04-testes/TES-010-missao-e-cobertura.md). |
+| REQ-NF-OBC-001 | [INT-007](03-integracao/INT-007-comandos-modos-e-protecoes.md), [INT-010](03-integracao/INT-010-protecoes-energia-termico.md) | [TES-008](04-testes/TES-008-integracao.md), [TES-010](04-testes/TES-010-missao-e-cobertura.md) (consumo contra cota EPS). |
 | REQ-NF-OBC-002 | [DAD-001](02-dados-e-tempo/done/DAD-001-modelos-e-formatos.md), [DAD-003](02-dados-e-tempo/done/DAD-003-registros-e-interpretacao.md), [INT-006](03-integracao/INT-006-fluxo-de-dados.md) | [TES-007](04-testes/done/TES-007-dados-e-tempo.md), [TES-008](04-testes/TES-008-integracao.md), [TES-010](04-testes/TES-010-missao-e-cobertura.md). |
-| REQ-NF-OBC-003 | [DAD-002](02-dados-e-tempo/done/DAD-002-tempo-e-boots.md), [DAD-003](02-dados-e-tempo/done/DAD-003-registros-e-interpretacao.md), [INT-006](03-integracao/INT-006-fluxo-de-dados.md), [INT-008](03-integracao/INT-008-supervisao-e-retomada.md) | [TES-007](04-testes/done/TES-007-dados-e-tempo.md), [TES-009](04-testes/TES-009-falhas-e-recuperacao.md). |
-| REQ-NF-OBC-004 | [COM-005](01-comunicacao/done/COM-005-armazenamento-sd.md), [DAD-003](02-dados-e-tempo/done/DAD-003-registros-e-interpretacao.md), [INT-008](03-integracao/INT-008-supervisao-e-retomada.md) | [TES-006](04-testes/TES-006-sd-hardware.md), [TES-009](04-testes/TES-009-falhas-e-recuperacao.md). |
+| REQ-NF-OBC-003 | [DAD-002](02-dados-e-tempo/done/DAD-002-tempo-e-boots.md), [DAD-003](02-dados-e-tempo/done/DAD-003-registros-e-interpretacao.md), [INT-006](03-integracao/INT-006-fluxo-de-dados.md), [INT-008](03-integracao/INT-008-supervisao-e-retomada.md), [INT-012](03-integracao/INT-012-watchdog-reset-obc.md), [INT-013](03-integracao/INT-013-retomada-operacional.md) | [TES-007](04-testes/done/TES-007-dados-e-tempo.md), [TES-009](04-testes/TES-009-falhas-e-recuperacao.md). |
+| REQ-NF-OBC-004 | [COM-005](01-comunicacao/done/COM-005-armazenamento-sd.md), [DAD-003](02-dados-e-tempo/done/DAD-003-registros-e-interpretacao.md), [INT-008](03-integracao/INT-008-supervisao-e-retomada.md), [INT-011](03-integracao/INT-011-burn-wire-persistencia.md), [INT-013](03-integracao/INT-013-retomada-operacional.md) | [TES-006](04-testes/TES-006-sd-hardware.md), [TES-009](04-testes/TES-009-falhas-e-recuperacao.md). |
 
 REQ-OBC-013 continua como proposta no Design Package, pendente de incorporação formal. [TES-010](04-testes/TES-010-missao-e-cobertura.md) acompanha a condição de missão anterior aos ensaios ambientais, sem ampliar silenciosamente o catálogo de 16 requisitos.

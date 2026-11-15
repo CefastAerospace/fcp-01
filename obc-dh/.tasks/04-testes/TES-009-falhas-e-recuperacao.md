@@ -1,7 +1,9 @@
 # TES-009 — Falhas, recuperação e integridade
 
 **Estado:** Pendente
-**Responsáveis:** OBC-DH, EPS e demais setores envolvidos
+**Responsável pela execução e comprovação:** Setor de testes
+**Responsáveis técnicos de apoio:** OBC-DH, EPS e demais setores envolvidos
+**Responsável pelas ferramentas e regressões de desenvolvimento:** OBC-DH
 
 Complemento de limites em 11/11/2026: nova bancada comprovou NO_MEMORY,
 preservação integral do snapshot anterior por CRC no contexto proprietário
@@ -26,6 +28,20 @@ ou reinício da estação; não encerra os cenários originais desta tarefa.
 
 A execução e o relato dos ensaios cabem ao setor de testes; a análise e as correções de firmware cabem ao responsável OBC-DH, com apoio dos setores envolvidos. Seguir as [responsabilidades e regras de reexecução](../README.md#responsabilidades-correção-e-reexecução).
 
+
+## Prontidão vigente — 14/11/2026
+
+A retomada local do escritor e os diagnósticos UART/processamento/escritor/I2C já possuem evidências na INT-008. Nas atualizações históricas abaixo, “reabilitação do escritor pendente” refere-se à situação anterior; não apaga a implementação de 13/11. Watchdog e retomada operacional continuam não implementados, agora em INT-012/013.
+
+| Cenário original | Implementação consumida após redistribuição |
+|---|---|
+| SDA/SCL presos | COM-003; política dos consumidores INT-005/009; supervisão INT-008 |
+| UART e interrupção SD | COM-004/005 e fluxo INT-006; recuperação local do escritor INT-008 |
+| Travamento/perda de comunicação/reset | INT-008 para diagnóstico/recuperação local; INT-012 para watchdog/reset |
+| Retomada persistente de missão/tempo/atuações | INT-006/007/011/013; INT-012 quando o reset for produzido pelo watchdog |
+
+Condições, entradas, resultados esperados e limites dos casos originais permanecem intactos abaixo. Esta correspondência substitui somente a alocação de responsabilidades e dependências dos IDs anteriores. Espera legítima, falta de ADS-B, silêncio de TC e transporte indisponível continuam situações distintas. OBC mantém regressões; a comprovação física e independente cabe ao setor de testes.
+
 ## Objetivo
 
 Comprovar recuperação e efeitos sobre dados/estados após falhas.
@@ -46,8 +62,8 @@ Executar os cenários abaixo separadamente, incluindo limites de detecção/recu
 | SDA/SCL presos e retorno do I2C | [COM-003](../01-comunicacao/done/COM-003-recuperacao-i2c.md) | Método de injeção aprovado com EPS/ADCS; conferir tentativas, timeouts, pedidos pendentes e retorno do serviço. | Pendente |
 | Desconexão e excesso UART | [COM-004](../01-comunicacao/done/COM-004-uart-payload.md) | Usar taxas e limites acordados; conferir recuperação do receptor e sinalização das perdas. | Pendente |
 | Interrupção durante escrita no SD | [COM-005](../01-comunicacao/done/COM-005-armazenamento-sd.md) | Método acordado com EPS; avaliar arquivos incompletos e FAT32, não apenas fechamento normal ou conteúdo de um registro. | Pendente |
-| Travamento, perda de comunicação e reinicialização | [INT-008](../03-integracao/INT-008-supervisao-e-retomada.md) | Medir detecção/recuperação, conferir falhas, horários e contagem de reinicializações; ausência ADS-B não significa enlace indisponível. | Pendente |
-| Retomada persistente de missão, tempo e atuações | [INT-006](../03-integracao/INT-006-fluxo-de-dados.md), [INT-007](../03-integracao/INT-007-comandos-modos-e-protecoes.md), [INT-008](../03-integracao/INT-008-supervisao-e-retomada.md) | Conferir boots, referências, registros, saídas e Burn Wire após reset/interrupção, sem repetir atuação indevida nem inventar intervalo desligado. | Pendente |
+| Travamento, perda de comunicação e reinicialização | [INT-008](../03-integracao/INT-008-supervisao-e-retomada.md), [INT-012](../03-integracao/INT-012-watchdog-reset-obc.md) | Medir detecção/recuperação, conferir falhas, horários e contagem de reinicializações; ausência ADS-B não significa enlace indisponível. | Pendente |
+| Retomada persistente de missão, tempo e atuações | [INT-006](../03-integracao/INT-006-fluxo-de-dados.md), [INT-007](../03-integracao/INT-007-comandos-modos-e-protecoes.md), [INT-008](../03-integracao/INT-008-supervisao-e-retomada.md), [INT-011](../03-integracao/INT-011-burn-wire-persistencia.md), [INT-013](../03-integracao/INT-013-retomada-operacional.md) | Conferir boots, referências, registros, saídas e Burn Wire após reset/interrupção, sem repetir atuação indevida nem inventar intervalo desligado. | Pendente |
 
 ## Critérios de conclusão
 

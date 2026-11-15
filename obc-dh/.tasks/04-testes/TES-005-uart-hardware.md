@@ -1,7 +1,9 @@
 # TES-005 — UART entre ESP32 e Raspberry Pi
 
 **Estado:** Em andamento
-**Responsáveis:** OBC-DH e Payload
+**Responsável pela execução e comprovação:** Setor de testes
+**Responsáveis técnicos de apoio:** OBC-DH e Payload
+**Responsável pelas ferramentas e regressões de desenvolvimento:** OBC-DH
 
 A execução e o relato dos ensaios cabem ao setor de testes; a análise e as correções de firmware cabem ao responsável OBC-DH, com apoio dos setores envolvidos. Seguir as [responsabilidades e regras de reexecução](../README.md#responsabilidades-correção-e-reexecução).
 

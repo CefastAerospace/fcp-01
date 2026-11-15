@@ -1,9 +1,16 @@
 # TES-010 — Missão completa e cobertura dos requisitos
 
 **Estado:** Pendente
-**Responsáveis:** OBC-DH e coordenação
+**Responsável pela execução e comprovação:** Setor de testes
+**Responsáveis técnicos de apoio:** OBC-DH e coordenação
+**Responsável pelas ferramentas e regressões de desenvolvimento:** OBC-DH
 
 A execução e o relato dos ensaios cabem ao setor de testes; a análise e as correções de firmware cabem ao responsável OBC-DH, com apoio dos setores envolvidos. Seguir as [responsabilidades e regras de reexecução](../README.md#responsabilidades-correção-e-reexecução).
+
+
+## Redistribuição de responsabilidades — 14/11/2026
+
+A missão completa consome aquisição EPS/Térmico (INT-009), proteções (INT-010), Burn Wire (INT-011), watchdog/reset (INT-012) e retomada operacional (INT-013), além das integrações já relacionadas. TES-011/012 são regressões de desenvolvimento mantidas pelo OBC; não substituem nem ampliam por inferência os critérios de missão. Checklist de 600 s, 16 requisitos, limites e resultados esperados originais permanecem intactos. Evidências anteriores continuam históricas, sem nova aprovação documental.
 
 ## Objetivo
 
@@ -15,7 +22,7 @@ Executar a missão contínua de dez minutos com registros, TC/TM e operação au
 
 ## Pré-requisitos
 
-- **Tarefas:** [INT-008](../03-integracao/INT-008-supervisao-e-retomada.md), [TES-001](done/TES-001-escalonamento-i2c.md), [TES-002](TES-002-executor-i2c.md), [TES-003](TES-003-i2c-hardware.md), [TES-004](done/TES-004-uart-software.md), [TES-005](TES-005-uart-hardware.md), [TES-006](TES-006-sd-hardware.md), [TES-007](done/TES-007-dados-e-tempo.md), [TES-008](TES-008-integracao.md), [TES-009](TES-009-falhas-e-recuperacao.md)
+- **Tarefas:** [INT-008](../03-integracao/INT-008-supervisao-e-retomada.md), [INT-009](../03-integracao/INT-009-aquisicao-eps-termico.md), [INT-010](../03-integracao/INT-010-protecoes-energia-termico.md), [INT-011](../03-integracao/INT-011-burn-wire-persistencia.md), [INT-012](../03-integracao/INT-012-watchdog-reset-obc.md), [INT-013](../03-integracao/INT-013-retomada-operacional.md), [TES-001](done/TES-001-escalonamento-i2c.md), [TES-002](TES-002-executor-i2c.md), [TES-003](TES-003-i2c-hardware.md), [TES-004](done/TES-004-uart-software.md), [TES-005](TES-005-uart-hardware.md), [TES-006](TES-006-sd-hardware.md), [TES-007](done/TES-007-dados-e-tempo.md), [TES-008](TES-008-integracao.md), [TES-009](TES-009-falhas-e-recuperacao.md)
 - **Condições externas:** Obter referências vigentes e limites de missão com coordenação e setores.
 
 ## Definições e condições

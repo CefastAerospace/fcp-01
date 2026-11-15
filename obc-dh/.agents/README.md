@@ -4,6 +4,8 @@ Software de bordo em C++ para ESP32, com Arduino/FreeRTOS. O OBC-DH coordena tel
 
 **Atualização: 11/11/2026, alterações locais sobre `f7af605`.** Integração OBC de entregas e `request_log` verificada no computador e na bancada USB após correção da admissão de memória. Aceites e ensaios com periféricos reais permanecem nas tarefas.
 
+**Organização vigente — 14/11/2026:** OBC mantém implementação, ferramentas e regressões; o setor de testes registra a comprovação dos ensaios. Aquisição EPS/Térmico, proteções, Burn Wire, watchdog/reset e retomada operacional têm entregas próprias nas INT-009/010/011/012/013. Supervisão e recuperação local permanecem na INT-008. TES-011/012 planejam execução reproduzível e cobertura do consumidor atual. A [correspondência](../.tasks/README.md#correspondência-das-entregas-redistribuídas) preserva origens e pendências; nenhuma tarefa ou requisito foi aprovado pela revisão.
+
 ## Mapa dos documentos
 
 | Documento | Fonte principal de informação |

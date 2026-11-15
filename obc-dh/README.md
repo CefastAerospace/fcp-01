@@ -2,6 +2,8 @@
 
 Núcleo de processamento do FCP-01: um ESP32 DevKit V1 coordena todos os subsistemas via FreeRTOS e organiza comandos, telemetria e registros da missão (§§3.4, 7.2).
 
+**Revisão das tarefas — 14/11/2026:** OBC mantém código, ferramentas e regressões; o setor de testes comprova os ensaios. INT-009/010/011/012/013 separam aquisição EPS/Térmico, proteções, Burn Wire, watchdog/reset e retomada operacional. TES-011/012 planejam regressões reproduzíveis e cobertura do consumidor. Consulte o [painel](.agents/TODO.md) e a [correspondência de obrigações](.tasks/README.md#correspondência-das-entregas-redistribuídas). Esta revisão é documental; as novas tarefas permanecem pendentes.
+
 ## Estado local — atualização de 11/11/2026
 
 **Diagnóstico I2C — 14/11/2026:** recorte local concluído: callback >100 ms

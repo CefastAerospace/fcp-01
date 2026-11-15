@@ -1,7 +1,9 @@
 # TES-008 — Boot, comandos, telemetria e convivência
 
 **Estado:** Pendente
-**Responsáveis:** OBC-DH e setores
+**Responsável pela execução e comprovação:** Setor de testes
+**Responsáveis técnicos de apoio:** OBC-DH e setores
+**Responsável pelas ferramentas e regressões de desenvolvimento:** OBC-DH
 
 Complemento de limites em 11/11/2026: Espressif32 fixado em 6.6.0, dez
 builds aprovados e regressões originais nativas/USB preservadas. As duas
@@ -26,6 +28,21 @@ Evidências e limites na [INT-006](../03-integracao/INT-006-fluxo-de-dados.md#es
 Critérios e casos anteriores preservados; a tarefa continua pendente.
 
 A execução e o relato dos ensaios cabem ao setor de testes; a análise e as correções de firmware cabem ao responsável OBC-DH, com apoio dos setores envolvidos. Seguir as [responsabilidades e regras de reexecução](../README.md#responsabilidades-correção-e-reexecução).
+
+
+## Prontidão vigente — 14/11/2026
+
+USB/cliente real, extração e limites simulados foram executados conforme os resultados de 11/11 preservados abaixo. As tabelas datadas anteriores que dizem “sem execução”, “extração pendente” ou indicam roteiros antigos descrevem o momento histórico, não a prontidão vigente. Usar `ObcDownlinkCheck.py` e o complemento `ObcStationCheck.py` conforme o guia; manter roteiros históricos intactos.
+
+| Cenário original | Implementação consumida após redistribuição |
+|---|---|
+| Boot/reset | INT-003; retomada operacional quando aplicável na INT-013 |
+| TC/ACK/umbilical | INT-004/006; reset comandado quando disponível na INT-012 |
+| Convivência FOC/I2C/rádio/SD | INT-004/005/006; aquisição EPS/Térmico pela INT-009 |
+| ADS-B/TM/extração e referência LoRa | INT-006; produtores de energia/atitude pela INT-005/009 |
+| Modos, energia, térmico e Burn Wire | INT-007/010/011; retomada após reset pela INT-013 |
+
+As condições, limites e checklists originais permanecem abaixo sem alteração. Usar a capacidade implementada correspondente para preparar/executar um caso independente, sem aguardar escopos não consumidos do mesmo ID. A aprovação de cada caso exige todas as condições daquele caso; recorte simulado não aprova seu caso físico. OBC mantém ferramentas/regressões, o setor de testes executa e registra a comprovação.
 
 ## Objetivo
 
@@ -53,7 +70,7 @@ Executar cada cenário assim que suas dependências estiverem prontas, preservan
 | Convivência FOC, I2C, rádio e armazenamento | [INT-004](../03-integracao/INT-004-ttc-e-umbilical.md), [INT-005](../03-integracao/INT-005-sensores-e-adcs.md), [COM-005](../01-comunicacao/done/COM-005-armazenamento-sd.md) | Limites ADCS acordados; medir atendimento do controle sob operações de rádio e SD, sem presumir que SPI separado elimina concorrência. | Pendente |
 | Fluxo ADS-B, TM e extração dos registros | [INT-006](../03-integracao/INT-006-fluxo-de-dados.md) | Injetar ADS-B simulado e demonstrar timestamp correto e legível na TM; inspecionar estrutura, integridade e ordenação de status/energia/atitude. Conferir registros e estatísticas extraídos. | Pendente |
 | Referência temporal real via LoRa | [INT-006](../03-integracao/INT-006-fluxo-de-dados.md) | Medir erro/resolução e efeito da latência/quantização contra os limites temporais, incluindo período sem sincronização e resets. | Pendente |
-| Modos, energia, térmico e Burn Wire | [INT-007](../03-integracao/INT-007-comandos-modos-e-protecoes.md) | Condições físicas e operacionais aprovadas. Conferir transições, recusa/duplicatas de comandos, retomada e consumo contra a cota EPS; preservar o mínimo de cinco ciclos bem-sucedidos do Burn Wire e confirmação física. | Pendente |
+| Modos, energia, térmico e Burn Wire | [INT-007](../03-integracao/INT-007-comandos-modos-e-protecoes.md), [INT-010](../03-integracao/INT-010-protecoes-energia-termico.md), [INT-011](../03-integracao/INT-011-burn-wire-persistencia.md) | Condições físicas e operacionais aprovadas. Conferir transições, recusa/duplicatas de comandos, retomada e consumo contra a cota EPS; preservar o mínimo de cinco ciclos bem-sucedidos do Burn Wire e confirmação física. | Pendente |
 
 ## Critérios de conclusão
 

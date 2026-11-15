@@ -1,55 +1,48 @@
-# INT-005 — Integração de sensores, encoder e ADCS
+# INT-005 — Integração ADCS, encoder e FOC
 
 **Estado:** Pendente
-**Responsáveis:** OBC-DH, ADCS, EPS e Térmico
+**Responsável pela implementação OBC:** OBC-DH
+**Responsável pelos algoritmos e limites:** ADCS
 
 ## Objetivo
 
-Integrar aquisição e controle no ESP32 central, preservando algoritmos e acesso coordenado ao I2C.
+Integrar atitude, luminosidade, encoder e controle ADCS no ESP32 central, preservando algoritmos e acesso coordenado ao I2C.
+
+## Redistribuição de 14/11/2026
+
+O escopo anterior incluía aquisição EPS/Térmico. Essa entrega e seus encaminhamentos DAD-001/COM-003 passam à [INT-009](INT-009-aquisicao-eps-termico.md). Esta INT conserva os consumidores ADCS e a conciliação da medição solar com a INT-009. Nenhuma integração foi implementada ou encerrada por esta revisão.
 
 ## Entrega
 
-Reutilizar drivers dos setores, incluindo EPS_INA219_Standard, e encaminhar consumidores I2C pelo serviço. Integrar LM75A conforme contrato próprio; biblioteca INA219 não implementa proteção térmica. Conferir aquisição de energia, atitude, encoder e medição solar. Não duplicar setup()/loop() ou reimplementar algoritmos. Preservar atendimento FOC independente de operações demoradas de rádio/SD.
+Reutilizar drivers e algoritmos ADCS; encaminhar consumidores I2C pelo serviço. Integrar aquisição de atitude, encoder e luminosidade, comandos, estado e falhas no firmware central. Não duplicar setup()/loop() nem reimplementar algoritmos. Preservar atendimento FOC independente de operações demoradas de rádio/SD. Integrar inicialização e falhas ao boot existente.
 
 ## Pré-requisitos
 
-- **Tarefas:** [COM-001](../01-comunicacao/done/COM-001-servico-i2c.md), [COM-002](../01-comunicacao/done/COM-002-prioridade-dinamica-i2c.md), [INT-002](done/INT-002-pinagem-en-motor.md), [INT-003](INT-003-inicializacao-central.md)
-- **Condições externas:** Confirmar inventário, montagem, aquisição e limites FOC com ADCS, EPS e Térmico.
+- **Tarefas/capacidades:** COM-001/002/003, INT-002 e coordenação de boot da INT-003. A capacidade de bancada já implementada pode ser usada antes do fechamento do boot de voo; dependências elétricas para atuação permanecem obrigatórias.
+- **Condições externas:** inventário/montagem ADCS, aquisição, orientação, comandos, status, condições de atuação e limites FOC/I2C acordados. EPS/Térmico fornecem seus dados na INT-009; não bloquear aquisição ADCS independente por implementação desses produtores.
 
 ## Definições e condições
 
-- Integrar inicialização no boot e todos os consumidores ao serviço; a bancada ADCS ainda usa `Wire` diretamente. Validar concorrência e falhas do executor, limites das operações e recuperação de SDA/SCL presos. Timeout de transferência não limita um callback completo nem recupera sozinho o barramento. Coordenar sensores e encoder sem interferir no atendimento FOC; limites dependem do acordo ADCS registrado nesta tarefa.
-- Conferir endereços de 7 bits e montagem: MPU9250 `0x68` com AD0 em GND; BH1750 #1 `0x23` com ADDR em GND e #2 `0x5C` com ADDR em VCC. Confirmar orientação e parâmetros de aquisição com ADCS.
-- Encoder AS5600/I2C `0x36` está definido no projeto e utilizado no código ADCS; conferir montagem e aquisição coordenada. Conferir endereços finais/configuração física dos 3x INA219 e 5x LM75A com EPS/Térmico; `0x40`/`0x41` e `0x48` são propostas anteriores, não mapa completo aprovado. Confirmar se o BMS oferece interface de aquisição e seus parâmetros, sem presumir endereço I2C.
-- Execução no mesmo ESP32 foi confirmada. Definir integração do firmware de bancada sem duplicar `setup()`/`loop()`, preservando algoritmos, comandos e responsabilidades; conferir papel da interface web na bancada e na missão.
-- Conciliar fases 27/26/25 do ADCS com U/V/W = 25/26/27 do OBC. Alterações de código serão feitas em implementação separada.
-- Definir frequência/latência FOC, aquisição e missão, prioridades/afinidade, sincronização do I2C, comandos, status, falhas e atuação por modo. Operações de rádio/SD não podem impedir atendimento do controle.
-- Resolver medição solar: ADC nos PDFs versus sensores digitais propostos. Definir responsável, grandezas e interface sem reservar ADC silenciosamente.
+- A bancada ADCS ainda usa `Wire` diretamente. Integrar todos os consumidores ADCS ao executor e coordenar sensores/encoder sem transações intercaladas. Timeout de transferência não limita um callback completo nem recupera sozinho o barramento.
+- Conferir MPU9250 `0x68` com AD0 em GND; BH1750 #1 `0x23` com ADDR em GND e #2 `0x5C` com ADDR em VCC. Confirmar orientação e parâmetros de aquisição com ADCS.
+- Encoder AS5600/I2C `0x36` está definido e usado no código ADCS; conferir montagem/aquisição coordenada.
+- Execução no mesmo ESP32 confirmada. Integrar firmware sem duplicar entradas; conferir o papel da interface web na bancada e na missão.
+- Conciliar fases 27/26/25 do ADCS com U/V/W = 25/26/27 do OBC. A revisão documental não altera código de fases.
+- Definir frequência/latência FOC, aquisição e missão, prioridades/afinidade, sincronização I2C e atuação por modo. Rádio/SD não podem impedir atendimento do controle.
+- Conciliar medição solar ADC nos PDFs versus sensores digitais com ADCS/EPS na INT-009; não reservar ADC silenciosamente.
+
+## Encaminhamentos recebidos
+
+- **DAD-001:** acordar mapeamento, unidades, disponibilidade, origens/códigos e dados ADCS. Campos de energia/temperatura e posições térmicas passam à INT-009.
+- **COM-003:** acordar frequência, latência e efeito da recuperação nos consumidores/encoder ADCS. Mapear erros em `ExecuteChecked`, prazos por pedido, conclusão de transações antes do retorno e reconfiguração após recuperação. A supervisão do serviço fica na INT-008; o caso de driver sem retorno, na INT-012.
+
+## Verificação de desenvolvimento
+
+OBC mantém regressões para acesso exclusivo, encaminhamento de resultados/falhas, dados inválidos, disponibilidade e reconfiguração. Preservar algoritmos ADCS e verificar build integrado, sem interpretar mocks como medição FOC.
 
 ## Critérios de conclusão
 
-Consumidores integrados e acesso a Wire coordenado, com build e verificações locais. Documentar versões, parâmetros, estados e falhas. Medições físicas e coexistência com rádio/SD pertencem a [TES-003](../04-testes/TES-003-i2c-hardware.md)/[TES-008](../04-testes/TES-008-integracao.md).
-
-## Encaminhamentos recebidos — 09/11/2026
-
-As origens abaixo encerraram seu escopo próprio. Estes itens continuam
-abertos nesta tarefa, com os setores responsáveis, antes do aceite da
-integração ou do ensaio correspondente. Não substituem os critérios e
-cenários originais e não mudam seu estado por conclusão da origem.
-
-| Origem concluída | Obrigação recebida | Situação |
-|---|---|---|
-| [DAD-001](../02-dados-e-tempo/done/DAD-001-modelos-e-formatos.md) | Obter os aceites de ADCS/EPS/Térmico para mapeamento, unidades, disponibilidade, posições térmicas, origens/códigos e dados dos sensores. | Pendente |
-
-## Encaminhamento recebido da COM-003 — 10/11/2026
-
-A [COM-003](../01-comunicacao/done/COM-003-recuperacao-i2c.md) encerrou sua
-implementação lógica e verificações locais. Permanece nesta integração o
-acordo da política e dos limites com ADCS/EPS/Térmico, incluindo frequência,
-latência e efeito da recuperação nos consumidores e no encoder. Integrar o
-mapeamento de erros dos drivers em `ExecuteChecked`, os prazos por pedido,
-a conclusão das transações antes do retorno do callback e a reconfiguração
-dos sensores após a recuperação. Esse encaminhamento permanece pendente.
+Consumidores ADCS integrados e acesso a Wire coordenado, contratos necessários documentados, build e regressões pertinentes aprovados. Registrar versões, parâmetros, estados e falhas. Comprovação física de sensores/FOC e coexistência com rádio/SD pertence às TES-003/008/009, sem condicionar o encerramento desta implementação à aprovação desses ensaios.
 
 ## Evidências
 
@@ -58,10 +51,7 @@ Nenhuma evidência de conclusão registrada. Ao executar, registrar versão, pro
 ## Referências
 
 - Requisitos relacionados: REQ-OBC-003, REQ-OBC-011. Implementação não equivale a requisito validado.
-- [adcs/src/adcs.cpp](../../../adcs/src/adcs.cpp)
-- [adcs/src/sensors.cpp](../../../adcs/src/sensors.cpp)
-- [adcs/src/motor_control.cpp](../../../adcs/src/motor_control.cpp)
-- [eps-tc/EPS_INA219_Standard/README.md](../../../eps-tc/EPS_INA219_Standard/README.md)
-- [obc-dh/.agents/PINAGEM.md](../../.agents/PINAGEM.md)
-- Origem no planejamento anterior: P-ADCS, P-BARRAMENTO, P-ENDERECOS, P-EPS-ELETRICA.
-- [Painel de tarefas](../../.agents/TODO.md); [organização e rastreabilidade](../README.md).
+- [ADCS](../../../adcs/README.md), [pinagem](../../.agents/PINAGEM.md), [arquitetura](../../.agents/ARCHITECTURE.md).
+- [TES-003](../04-testes/TES-003-i2c-hardware.md), [TES-008](../04-testes/TES-008-integracao.md), [TES-009](../04-testes/TES-009-falhas-e-recuperacao.md).
+- Origem no planejamento anterior: P-ADCS, P-BARRAMENTO, P-ENDERECOS, P-EPS-ELETRICA; parcela EPS/Térmico encaminhada à INT-009.
+- [Painel](../../.agents/TODO.md); [organização e rastreabilidade](../README.md).

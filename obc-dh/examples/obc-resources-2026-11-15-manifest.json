@@ -1,0 +1,145 @@
+{
+  "task": "INT-008",
+  "status": "Concluída",
+  "date": "2026-11-15",
+  "base_revision": "f112bc023625eef9ce5ff7502e5c6b276db9222d",
+  "version_note": "Base Git e fontes locais identificadas abaixo; sem commit desta entrega.",
+  "scope": "Supervisão e recuperação local dos recursos integrados. Não aprova ensaios físicos, watchdog ou retomada de missão.",
+  "hardware": {
+    "chip": "ESP32-D0WD-V3 rev 3.1",
+    "usb": "CH340 1A86:7523",
+    "port": "/dev/ttyUSB0",
+    "peripherals": "Somente ESP32/USB; rádio, cartão e Pi ausentes."
+  },
+  "toolchain": {
+    "platformio": "6.2.0",
+    "platform": "espressif32@6.6.0",
+    "arduino_esp32": "2.0.14",
+    "xtensa_gcc": "8.4.0",
+    "obc_arduinojson": "7.0.4 com patch controlado",
+    "ttc_test_arduinojson": "7.4.3",
+    "lora": "0.8.0",
+    "native_gcc": "16.2.1",
+    "native_python": "3.14.8"
+  },
+  "test_results": {
+    "ttc_original_native": 25,
+    "ttc_original_esp32": 17,
+    "ttc_diagnostics_esp32": 3,
+    "native_executables": 7,
+    "affected_firmware_builds": 7,
+    "previous_tracked_test_files_unchanged": 44,
+    "sanitizers": "ASan/UBSan/LeakSanitizer ativos fora da sandbox"
+  },
+  "firmware_images": {
+    "obc": {
+      "path": "obc-dh/.pio/build/obc/firmware.bin",
+      "sha256": "dcea52ad693794564f8f49c0edf9fb170f66e5b1d0c122b51e5c5c44eedfba29"
+    },
+    "int008-resources-check": {
+      "path": "obc-dh/.pio/build/int008-resources-check/firmware.bin",
+      "sha256": "c41505c7baa956f94ee57b2998f10d98ebfc2aae9cfb0b065cd9e00940956323"
+    },
+    "int006-ttc-check": {
+      "path": "obc-dh/.pio/build/int006-ttc-check/firmware.bin",
+      "sha256": "a083ea129fc7d0f4a1afe427dd5987248009d89cbaf4ea7fdf6c4144edab6bee"
+    },
+    "int008-health-check": {
+      "path": "obc-dh/.pio/build/int008-health-check/firmware.bin",
+      "sha256": "32148611316529c70894d762ec841c2d014be6e8d5b42829c50b37c86bab0a93"
+    },
+    "int008-i2c-health-check": {
+      "path": "obc-dh/.pio/build/int008-i2c-health-check/firmware.bin",
+      "sha256": "3e4a4348a7493f5c96a83c9e1139b4af20f5c583f98ced6330c9447c117ff355"
+    },
+    "int008-storage-check": {
+      "path": "obc-dh/.pio/build/int008-storage-check/firmware.bin",
+      "sha256": "10c6ea8790b72757909ebf5f83cefce9d692b8a8229f39c3e9a0bdfb633ad584"
+    },
+    "int006-memory-check": {
+      "path": "obc-dh/.pio/build/int006-memory-check/firmware.bin",
+      "sha256": "305ab3817180a249363ad3ea2b964eca9025ed0bf491604575b2cebfd3e29761"
+    }
+  },
+  "final_board_state": {
+    "environment": "obc",
+    "upload_hash_verified": true,
+    "verified_by": [
+      "ObcResourcesBenchCheck.py",
+      "ObcTaskHealthBenchCheck.py",
+      "ObcI2cHealthBenchCheck.py",
+      "ObcDownlinkCheck.py"
+    ]
+  },
+  "source_sha256": {
+    "obc-dh/headers/ObcDataFlowEsp32.h": "aa95947db4d008b045d4a40b5ed79f326042d161cb930c5c64938a06d065cb7a",
+    "obc-dh/headers/ObcResourceHealth.h": "40ac9d37b8b228ef5f34cf5a9dbc81a2589d78ba4d7604704530f1162473d0ad",
+    "obc-dh/headers/ObcResourcesBench.h": "cb729c708f920ab01250455d5f66ae957b5cd10e8633a0bd48455b368a577ebf",
+    "obc-dh/platformio.ini": "8ea798c4314ef52ef67fe9d708d7e941ad1be5a63da705bab444a7357af540b7",
+    "obc-dh/src/ObcDataFlowEsp32.cpp": "2e601cfd88e650f897e520c248e81e1e57510dba289eb8eff46cdf26b1cabdc1",
+    "obc-dh/src/ObcResourceHealth.cpp": "9c2b8c7ebecb33726bc899cdcfeca1dc405ec043412b6f2272a2fd60efc32742",
+    "obc-dh/src/ObcTtc.cpp": "10df083c0ca774b5718a5a71fc563bb20fcbb85b86d8448f0c8463b25459c7b8",
+    "obc-dh/src/bench/ObcDataFlowCheck.cpp": "24c286ee6e6406b00befc591a0cff99ace30b97aa885e496c0f2cc7dacaebffb",
+    "obc-dh/src/bench/ResourcesCheck.cpp": "95d4931531ba334355477b78fba21c9c768b096b870058775cccc09875cd1b9b",
+    "obc-dh/tests/ObcResourceHealthCheck.cpp": "71b1e2f649b9d174b9389e40a8f7e198185906621d9e3af01a30c5ac5e359a13",
+    "obc-dh/tests/ObcResourcesBenchCheck.py": "808983d63b288604380a518cbc204bee5523daa7b7aef73bb235bcb199a25f45",
+    "tt-c/include/Ttc.h": "61c1e8577c2851843f29137951dd3119796d7714cfbbf583969b86f3034daed7",
+    "tt-c/platformio.ini": "599a301984948896413ffbad6a27987d75838b18c2717752f1cec60e0ae87cbb",
+    "tt-c/src/Ttc.cpp": "4e9cbee26908f75b47119a6c73749c1158ef52516fd6663397e09d53cbd0d247",
+    "tt-c/test/test_diagnostics/test_main.cpp": "917364bfb9df643fc5d433b6a428fe42dd92a58ffc9a1ecca8691469abafc9a6"
+  },
+  "reports": {
+    "obc-dh/examples/obc-resources-2026-11-15-bench.json": {
+      "passed": true,
+      "sha256": "f54d4e0a9b74548ed5fe7c97b2d0440270ebfd9fe9a67822cc0c39790a91431f"
+    },
+    "obc-dh/examples/obc-resources-2026-11-15-downlink-obc.json": {
+      "passed": true,
+      "sha256": "c5c94d1ecdbe5720bd89e91e607a093d27dd0afcd192bc5b60e294b737ec7411"
+    },
+    "obc-dh/examples/obc-resources-2026-11-15-downlink-regression.json": {
+      "passed": true,
+      "sha256": "1b613a4cc7a42d3283280ced3703d37629038c09d706e51d450ae3b97c6a225e"
+    },
+    "obc-dh/examples/obc-resources-2026-11-15-downlink-restored.json": {
+      "passed": true,
+      "sha256": "93305868844befcfe9b3ba3f94d50aa10de682758c2af1918dbecc29e1d55a11"
+    },
+    "obc-dh/examples/obc-resources-2026-11-15-i2c-obc.json": {
+      "passed": true,
+      "sha256": "096d5afc03f15de6c60dbf45be3edfafa0824c9e9b504c388c1cc5cce7e2279b"
+    },
+    "obc-dh/examples/obc-resources-2026-11-15-i2c-regression.json": {
+      "passed": true,
+      "sha256": "9516f7c8e463d3a6f46e2bb19cab9f079b40c8b80c880da2af0a1960a1fc1bf7"
+    },
+    "obc-dh/examples/obc-resources-2026-11-15-memory-regression.json": {
+      "passed": true,
+      "sha256": "6f9d7423b3681603769a02ce164ebf7a27b3d65d329d781cfd54c5cc654e3a1f"
+    },
+    "obc-dh/examples/obc-resources-2026-11-15-obc.json": {
+      "passed": true,
+      "sha256": "1217d1df529cc2eb8d9456ba3db51b0e7a8466611d45f2b11b281743db7aace1"
+    },
+    "obc-dh/examples/obc-resources-2026-11-15-storage-regression.json": {
+      "passed": true,
+      "sha256": "7b2e015f29f5b26a98c77728731b9e58483589c5a8d46f4a18209598d4f14311"
+    },
+    "obc-dh/examples/obc-resources-2026-11-15-task-obc.json": {
+      "passed": true,
+      "sha256": "b0060f8ac4279a3a72544a6499d05d84d6fd2413353ebadb4e1b2889afafc1bb"
+    },
+    "obc-dh/examples/obc-resources-2026-11-15-task-regression.json": {
+      "passed": true,
+      "sha256": "f19574d03e5db7e7cf9a9c9842b7ba1e4b4841d86c59d9bc4aa7222e676cfd3b"
+    }
+  },
+  "preserved_initial_failure": "obc-dh/examples/obc-resources-2026-11-15-ttc-diagnostics.txt",
+  "approved_retry": "obc-dh/examples/obc-resources-2026-11-15-ttc-diagnostics-02.txt",
+  "procedure": "obc-dh/tools/README.md#supervisão-de-recursos-ttc-e-memória--15112026",
+  "remaining_tasks": {
+    "INT-012": "Watchdog/reset OBC",
+    "INT-013": "Retomada operacional",
+    "TES-009": "Comprovação independente por cenário, mantendo condições e critérios."
+  }
+}

@@ -1,0 +1,25 @@
+Verbosity level can be increased via `-v, -vv, or -vvv` option
+Collected 3 tests
+
+Processing test_diagnostics in esp32-diagnostics environment
+--------------------------------------------------------------------------------
+Building & Uploading...
+Testing...
+If you don't see any output for the first 10 secs, please reset board (press reset button)
+
+test/test_diagnostics/test_main.cpp:135: TestInitialAndContacts	[PASSED]
+test/test_diagnostics/test_main.cpp:91: TestManualProgressAndRadio: Unity 64-bit Support Disabled	[FAILED]
+test/test_diagnostics/test_main.cpp:112: TestTaskSnapshots: Expected TRUE Was FALSE	[FAILED]
+-------- esp32-diagnostics:test_diagnostics [FAILED] Took 10.36 seconds --------
+
+=================================== SUMMARY ===================================
+
+Environment        Test              Status    Duration
+-----------------  ----------------  --------  ------------
+esp32-diagnostics  test_diagnostics  FAILED    00:00:10.357
+______________________ esp32-diagnostics:test_diagnostics ______________________
+test/test_diagnostics/test_main.cpp:91:TestManualProgressAndRadio:FAIL: Unity 64-bit Support Disabled
+
+test/test_diagnostics/test_main.cpp:112:TestTaskSnapshots:FAIL: Expected TRUE Was FALSE
+
+============= 3 test cases: 2 failed, 1 succeeded in 00:00:10.357 =============

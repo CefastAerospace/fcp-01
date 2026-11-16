@@ -1,0 +1,14 @@
+Command: pio test -e esp32-diagnostics --upload-port /dev/ttyUSB0 --test-port /dev/ttyUSB0
+Testing...
+If you don't see any output for the first 10 secs, please reset board (press reset button)
+
+test/test_diagnostics/test_main.cpp:140: TestInitialAndContacts	[PASSED]
+test/test_diagnostics/test_main.cpp:141: TestManualProgressAndRadio	[PASSED]
+test/test_diagnostics/test_main.cpp:142: TestTaskSnapshots	[PASSED]
+-------- esp32-diagnostics:test_diagnostics [PASSED] Took 14.93 seconds --------
+
+=================================== SUMMARY ===================================
+Environment        Test              Status    Duration
+-----------------  ----------------  --------  ------------
+esp32-diagnostics  test_diagnostics  PASSED    00:00:14.928
+================== 3 test cases: 3 succeeded in 00:00:14.928 ==================

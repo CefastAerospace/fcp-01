@@ -1,5 +1,20 @@
 # OBC-DH — documentação e orientação
 
+**Conclusão INT-012 — 15/11/2026:** watchdog por progresso e reset comandado
+implementados/verificados no ESP32/USB. Quatorze casos novos, memória/esperas
+com watchdog armado e regressões originais passaram; `obc` restaurado e
+verificado. Limites, reprovação inicial e ajustes autorizados de bancada
+estão na task e no [guia](../tools/README.md#watchdog-e-reset-obc--15112026).
+TES-009 recebe o mecanismo para comprovação independente; TES-008 e INT-013
+mantêm efeitos elétricos e retomada de voo. Nenhuma TES mudou de estado.
+
+**Conclusão INT-008 — 15/11/2026:** supervisão e recuperação local dos
+recursos integrados concluídas, incluindo TT&C e memória/pilhas. Regressões
+aprovadas e `obc` restaurado/verificado. Procedimentos e matriz de entrega
+ao setor de testes estão no [guia](../tools/README.md#supervisão-de-recursos-ttc-e-memória--15112026).
+Watchdog/reset, retomada operacional e comprovação física permanecem nas
+INT-012/013 e TES correspondentes; não são aprovados por esta conclusão.
+
 Software de bordo em C++ para ESP32, com Arduino/FreeRTOS. O OBC-DH coordena telecomandos, telemetria, tempo e registros. O Payload executa no Raspberry Pi e se comunica por UART; o ADCS será integrado ao ESP32 central.
 
 **Atualização: 11/11/2026, alterações locais sobre `f7af605`.** Integração OBC de entregas e `request_log` verificada no computador e na bancada USB após correção da admissão de memória. Aceites e ensaios com periféricos reais permanecem nas tarefas.
@@ -31,7 +46,7 @@ Decisões ficam na arquitetura; formatos nos contratos compartilhados; procedime
 
 `main.cpp` inicia Serial a 115200 baud, reserva o boot na NVS, inicializa o serviço I2C e tenta montar o SD por `ObcStartup`. Depois inicia TT&C e a primeira etapa de `ObcDataFlowEsp32`. O `loop()` atende telecomandos e diagnósticos; não contém mais a espera de 100 ms da entrega inicial de INT-003. Falhas dos serviços independentes são diagnosticadas. Boot inválido ou falha de recursos pode impedir o fluxo; não fabricar identificação ou UTC.
 
-TT&C conserva sua tarefa e suas filas. O firmware atende `ping`, `get_status`, `request_tm`, `set_time` e `request_log`. TM é enviada sob demanda, no modo `bench`; dados indisponíveis são `null`. `set_time` aplica UTC em RAM e tenta registrar a referência separadamente. Entregas identificadas usam eventos TX e confirmação `cf`, com timeout provisório de 10 s. Modos de voo, sensores, atuadores e supervisão completa continuam nas respectivas integrações.
+TT&C conserva sua tarefa e suas filas. O firmware atende `ping`, `get_status`, `request_tm`, `set_time`, `request_log` e `reset_obc`. Reset usa temporizador nativo de 1.500 ms antes da tentativa de ACK; repetições não adiam prazo e falta de SD/ACK não o cancela. TM é enviada sob demanda, no modo `bench`; dados indisponíveis são `null`. `set_time` aplica UTC em RAM e tenta registrar a referência separadamente. Entregas identificadas usam eventos TX e confirmação `cf`, com timeout provisório de 10 s. Watchdog por progresso está implementado na INT-012; modos de voo, sensores e atuadores continuam nas respectivas integrações.
 
 UART2 tem transporte próprio; processamento e escritor SD usam tarefas separadas. O receptor aceita snapshots JSON completos no enquadramento FCPU local. ACK confirma aceitação em RAM. A gravação usa registros binários versionados, fila limitada e bloco exclusivo de snapshot. SD ausente, lento ou falho pode causar descartes contabilizados, sem exigir interromper recepção/TM. Isso não promete ausência de perdas ou recuperação automática.
 

@@ -177,6 +177,7 @@ namespace i2c {
             diagnostics.sda_high = result.sda_high;
             diagnostics.scl_high = result.scl_high;
             diagnostics.state = result.recovered ? SERVICE_STATE::READY : SERVICE_STATE::UNAVAILABLE;
+            diagnostics.worker_progress_ms = millis();
             if (result.recovered) Count(diagnostics.recovered);
             else {
                 Count(diagnostics.exhausted);
@@ -209,6 +210,7 @@ namespace i2c {
             }
 
             const uint32_t now_ms = millis();
+            diagnostics.worker_progress_ms = now_ms;
             const size_t selected = scheduling::SelectRequest(order, pending_count, now_ms);
             REQUEST* request = pending[selected];
             const bool expired = scheduling::IsExpired(request->order, now_ms);
@@ -266,6 +268,7 @@ namespace i2c {
             }
             request->result = result;
             request->state = REQUEST_STATE::DONE;
+            diagnostics.worker_progress_ms = millis();
             xSemaphoreGive(queue_mutex);
             xSemaphoreGive(request->completion);
             // Depois da conclusão, nenhum acesso ao contexto ou aos campos do pedido.
@@ -273,17 +276,18 @@ namespace i2c {
             return true;
         }
 
-        // Dorme sem trabalho; a notificação pertence exclusivamente a esta tarefa.
+        // Desperta ocioso para comprovar execução, sem transação no barramento.
         void RunWorker(
             void* context
         ) {
             (void)context;
             for (;;) {
-                ulTaskNotifyTake(pdTRUE, portMAX_DELAY);
+                ulTaskNotifyTake(pdTRUE, pdMS_TO_TICKS(1000));
                 for (;;) {
                     xSemaphoreTake(queue_mutex, portMAX_DELAY);
                     const bool recover = recovery_requested;
                     recovery_requested = false;
+                    diagnostics.worker_progress_ms = millis();
                     xSemaphoreGive(queue_mutex);
                     if (recover) RecoverService();
                     if (!ProcessNext()) break;
@@ -332,6 +336,7 @@ namespace i2c {
         }
         diagnostics = {};
         diagnostics.state = SERVICE_STATE::READY;
+        diagnostics.worker_progress_ms = millis();
 
         if (xTaskCreate(
                 RunWorker,
@@ -471,6 +476,7 @@ namespace i2c {
         xSemaphoreTake(queue_mutex, portMAX_DELAY);
         DIAGNOSTICS copy = diagnostics;
         copy.queued_requests = pending_count;
+        copy.worker_created = worker_task != nullptr;
         copy.sampled_ms = millis();
         xSemaphoreGive(queue_mutex);
         if (worker_task) copy.worker_stack_free_bytes = uxTaskGetStackHighWaterMark(worker_task);

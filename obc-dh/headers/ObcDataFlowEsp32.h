@@ -10,6 +10,12 @@
 #include "ObcStartup.h" // Relatório já produzido pelo boot central.
 #include "ObcTaskHealth.h" // Avaliação portátil e eventos diagnósticos das tarefas.
 #include "ObcI2cHealth.h" // Diagnóstico portátil de progresso e disponibilidade I2C.
+#include "ObcResourceHealth.h" // Avaliação portátil de TT&C, heap e pilhas.
+#include "ObcWatchdog.h" // Códigos de eventos da supervisão com ação de reset.
+#include "Ttc.h" // Cópia do diagnóstico publicado pelo proprietário do enlace.
+#ifdef OBC_RESOURCES_BENCH
+#include "ObcResourcesBench.h" // Injeções exclusivas da bancada de recursos.
+#endif
 #include "I2cBus.h" // Cópia coerente dos diagnósticos do executor existente.
 #include "PayloadReceiverEsp32.h" // Proprietário único de UART2 e Receiver.
 #include "ObcStorageEsp32.h" // Operações existentes sobre SD/HSPI.
@@ -51,6 +57,23 @@ namespace esp32 {
 
     /** @brief Avalia saúde a cada 100 ms; conserva diagnósticos periódicos de 1 s. */
     void ReportDiagnostics(
+    );
+
+    /** @brief Consome cópia TT&C a cada 100 ms e avalia memória a cada segundo. */
+    void ReportResourceHealth(
+        const LINK_DIAGNOSTICS& ttc
+    );
+
+    /** @brief Copia progresso UART/processamento/escritor sem aninhar locks. */
+    void GetTaskProgress(
+        obc_health::PROGRESS (&out)[obc_health::task_count]
+    );
+
+    /** @brief Tenta enfileirar evento 265/266; sem boot não fabrica identificação. */
+    void RecordWatchdogEvent(
+        obc_watchdog::CODE code,
+        bool fault,
+        const char* description
     );
 
     /** @brief Retira cópia para transporte integrado pelo TT&C; timeout é escolhido pelo chamador. */

@@ -54,6 +54,34 @@ struct LINK_STATS {
     uint32_t confirmations_dropped;  // Confirmações perdidas por fila cheia.
 };
 
+/** @brief Contato válido observado por meio; zero é um instante válido. */
+struct LINK_CONTACT {
+    bool seen;
+    uint32_t received_ms;
+};
+
+/**
+ * @brief Cópia da execução do proprietário, independente da chegada de TCs.
+ * @details Tempos em millis u32; sampled_ms é obtido sob o mesmo lock.
+ * task_started distingue Start() de Update() manual. Pilha só está
+ * disponível para a tarefa criada por Start(). Não acessa rádio ou UART.
+ */
+struct LINK_DIAGNOSTICS {
+    bool init_attempted;
+    bool initialized;
+    bool task_started;
+    bool updating;
+    bool radio_ready;
+    bool wired_ready;
+    uint32_t progress_ms;
+    uint32_t sampled_ms;
+    uint64_t completions;
+    uint32_t stack_free_bytes;
+    uint32_t radio_resets;
+    LINK_CONTACT rf_contact;
+    LINK_CONTACT wired_contact;
+};
+
 /**
  * @brief Gera o JSON do beacon (ex.: com ttc::BuildBeacon).
  *
@@ -323,6 +351,9 @@ public:
     bool IsTransmitting();
     LINK_STATS GetLinkStats();
 
+    /** @brief Copia diagnóstico protegido e mede pilha fora da seção crítica. */
+    LINK_DIAGNOSTICS GetDiagnostics();
+
     /**
      * @return true se as filas existem e o rádio passou na última
      * verificação de saúde.
@@ -358,6 +389,7 @@ private:
     DEDUP_SLOT dedup[ttc_dedup_slots] = {};
     size_t dedup_next = 0;
     LINK_STATS stats = {};
+    LINK_DIAGNOSTICS diagnostics = {};
     portMUX_TYPE stats_lock = portMUX_INITIALIZER_UNLOCKED;
     uint16_t rf_counter = 0;    // Só a task do enlace usa.
     uint16_t wired_counter = 0; // Só a task do enlace usa.
@@ -403,7 +435,13 @@ private:
      * @brief Repassa ao OBC uma confirmação de entrega do solo.
      */
     void HandleConfirmation(
-        const ttc::DELIVERY_ID& id
+        const ttc::DELIVERY_ID& id,
+        LINK_ORIGIN origin
+    );
+
+    /** @brief Publica contato sob stats_lock, inclusive duplicatas válidas. */
+    void MarkContact(
+        LINK_ORIGIN origin
     );
 
     /**

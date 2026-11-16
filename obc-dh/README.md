@@ -4,6 +4,33 @@ Núcleo de processamento do FCP-01: um ESP32 DevKit V1 coordena todos os subsist
 
 **Revisão das tarefas — 14/11/2026:** OBC mantém código, ferramentas e regressões; o setor de testes comprova os ensaios. INT-009/010/011/012/013 separam aquisição EPS/Térmico, proteções, Burn Wire, watchdog/reset e retomada operacional. TES-011/012 planejam regressões reproduzíveis e cobertura do consumidor. Consulte o [painel](.agents/TODO.md) e a [correspondência de obrigações](.tasks/README.md#correspondência-das-entregas-redistribuídas). Esta revisão é documental; as novas tarefas permanecem pendentes.
 
+## Estado local — 15/11/2026
+
+**INT-012 concluída no escopo ESP32/USB:** watchdog nativo alimentado por
+progresso real e `reset_obc` com temporizador de 1.500 ms implementados.
+Quatorze cenários novos, memória/esperas com watchdog armado e regressões
+originais passaram; 25 relatórios USB e 21 builds. `obc` restaurado e
+verificado, incluindo reset comandado no firmware normal. Falha inicial,
+diagnóstico e dois ajustes autorizados apenas na bancada foram preservados.
+As 48 validações anteriores continuam intactas. Procedimentos no
+[guia](tools/README.md#watchdog-e-reset-obc--15112026) e evidências na
+[INT-012](.tasks/03-integracao/done/INT-012-watchdog-reset-obc.md).
+Libera comprovação independente de watchdog/reset pela TES-009; efeitos
+elétricos e retomada de missão continuam em TES-008 e INT-013.
+
+INT-008 concluída no escopo de supervisão e recuperação local. TT&C publica
+progresso/contato por meio; OBC diagnostica rádio, memória/pilhas e recusas
+de alocação com os recursos existentes. Sete verificações nativas, 45 casos
+TT&C e sete builds aprovados, além das bancadas/regressões USB. `obc` foi
+restaurado e verificado sem periféricos. A reprovação inicial da suíte nova
+e a correção autorizada foram preservadas nas evidências da task.
+
+O [guia de entrega](tools/README.md#supervisão-de-recursos-ttc-e-memória--15112026)
+reúne firmware/roteiros compatíveis e casos disponíveis ao setor de testes.
+TES continuam abertas: periféricos físicos exigem condições próprias;
+watchdog/reset pertencem à INT-012 e retomada operacional à INT-013.
+Os registros datados abaixo descrevem a situação de cada entrega anterior.
+
 ## Estado local — atualização de 11/11/2026
 
 **Diagnóstico I2C — 14/11/2026:** recorte local concluído: callback >100 ms
@@ -12,7 +39,7 @@ recuperação. Núcleo portátil, bancada ESP32/USB e regressões originais de
 I2C, supervisão e downlink passaram; `obc` restaurado e verificado.
 Controlador/sinais simulados na bancada; não comprova sensores ou barramento
 físico. Procedimentos no [guia](tools/README.md#diagnóstico-i2c--14112026)
-e histórico preservado na [INT-008](.tasks/03-integracao/INT-008-supervisao-e-retomada.md).
+e histórico preservado na [INT-008](.tasks/03-integracao/done/INT-008-supervisao-e-retomada.md).
 
 **Complemento de 14/11/2026:** supervisão diagnóstica de progresso UART,
 processamento e escritor implementada, sem reset automático. Núcleo nativo
@@ -20,7 +47,7 @@ e cinco builds aprovados, além da bancada FreeRTOS/USB: cada tarefa produziu
 suspeita/retorno, sem falso alerta na varredura ou espera de recuperação SD.
 Regressões originais aprovadas; `obc` restaurado e verificado sem cartão.
 Recorte local concluído, com backend SD simulado; INT-008 permanece aberta.
-Limites, procedimentos e estado na [INT-008](.tasks/03-integracao/INT-008-supervisao-e-retomada.md).
+Limites, procedimentos e estado na [INT-008](.tasks/03-integracao/done/INT-008-supervisao-e-retomada.md).
 
 **Complemento de 13/11/2026:** retomada local do escritor SD implementada
 na INT-008: até três tentativas por episódio, separadas por 5 s, sem reboot
@@ -31,7 +58,7 @@ durável adicional corrigiu o caso, preservando as 32 admissões. A verificaçã
 compartilhada PC/ESP32 e a bancada integrada passaram; recorte local concluído.
 Supervisão completa e ensaios físicos permanecem pendentes. Procedimento
 no [guia](tools/README.md#retomada-do-escritor-sd--13112026) e evidências na
-[INT-008](.tasks/03-integracao/INT-008-supervisao-e-retomada.md).
+[INT-008](.tasks/03-integracao/done/INT-008-supervisao-e-retomada.md).
 
 Espressif32 fixado em 6.6.0. As novas bancadas de capacidade/memória
 passaram com um ESP32/USB: saturação de 32 entregas, perdas explícitas,

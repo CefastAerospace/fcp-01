@@ -79,6 +79,9 @@ namespace {
 #ifdef OBC_TASK_HEALTH_BENCH
             obc_health::bench::Before(obc_health::TASK::UART, obc_health::ACTIVITY::TRANSPORT);
 #endif
+#ifdef OBC_WATCHDOG_BENCH_CASE
+            obc_watchdog_bench::Before(obc_watchdog::RESOURCE::UART);
+#endif
             PumpTransport();
             portENTER_CRITICAL(&transport_lock);
             const uint64_t gap = now_ms - previous_ms;

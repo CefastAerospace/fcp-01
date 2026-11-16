@@ -1,0 +1,35 @@
+{
+  "task": "INT-012",
+  "state": "partial; stopped after unexpected bench failure per AGENTS.md rule 7",
+  "native_watchdog": "passed; UBSan; boundaries for five resources and time arithmetic",
+  "native_i2c": "passed; original executor/recovery check; UBSan",
+  "firmware_builds_passed": [
+    "obc",
+    "int012-watchdog-check"
+  ],
+  "normal_resources_before_bench": "passed",
+  "failed_bench": "obc-watchdog-2026-11-15-case-00-failed.json",
+  "failed_before_any_telecommand": true,
+  "restored_environment": "obc",
+  "restored_resources": "obc-watchdog-2026-11-15-normal-restored.json",
+  "restored_firmware_sha256": "b67d628bf92fb0ca7a0515b9f4b15b5b140a90628b05f2bd819f5c285c571502",
+  "existing_test_files_checked": 48,
+  "existing_test_files_changed": [],
+  "diagnosis": [
+    "Boot marker transmitted only through case=; UmbilicalLink.Init calls Serial.begin again, ending the prior UART driver before pending output drains.",
+    "Bench now initializes I2C before flow buffers. First buffer uses 32768 bytes; remaining largest byte block is 28660, below required second buffer of 31729. Production admission correctly leaves writer inactive."
+  ],
+  "proposed_not_applied": [
+    "Drain the bench boot marker with Serial.flush before TT&C reopens serial, without arbitrary sleeps or assertion changes.",
+    "Initialize I2C only in its isolated case 4; keep original simulated flow initialization for writer/waits/memory cases. Keep production boot order and buffer sizes."
+  ],
+  "unverified": [
+    "watchdog reset and actual timing",
+    "command reset and actual timing",
+    "isolated injected stalls",
+    "remaining bench variants",
+    "memory/waits with watchdog",
+    "remaining regressions"
+  ],
+  "closed": false
+}

@@ -15,6 +15,29 @@ namespace {
 
     // ─── HELPERS ──────────────────────────────────────────────────────
 
+    // Checkpoints ocorrem somente depois do retorno; chamada presa não alimenta.
+    obc_time::STATUS StartBoot(
+        uint64_t& boot_id
+    ) {
+        const auto result = obc_time::esp32::StartBoot(boot_id);
+        obc_watchdog::esp32::Checkpoint();
+        return result;
+    }
+
+    bool InitI2c(
+    ) {
+        const bool result = i2c::Init();
+        obc_watchdog::esp32::Checkpoint();
+        return result;
+    }
+
+    obc_storage::RESULT InitStorage(
+    ) {
+        const auto result = obc_storage::esp32::Init();
+        obc_watchdog::esp32::Checkpoint();
+        return result;
+    }
+
     // Emite diagnóstico uma vez, em linhas que o contrato umbilical permite
     // ignorar. Não publica TC/TM ou confunde tempo relativo com horário UTC.
     void LogStartup(
@@ -48,16 +71,20 @@ void setup(
 ) {
     // Não aguarda conexão do computador nem inicia missão ou atuadores.
     Serial.begin(115200);
+    obc_watchdog::esp32::Init();
     Serial.println("[OBC] Boot de bancada: tempo/NVS, I2C e SD");
     const obc_startup::INITIALIZERS initializers = {
-        obc_time::esp32::StartBoot,
-        i2c::Init,
-        obc_storage::esp32::Init
+        StartBoot,
+        InitI2c,
+        InitStorage
     };
     const obc_startup::STARTUP_REPORT report = obc_startup::Initialize(initializers);
     LogStartup(report);
     obc_ttc::Init();
+    obc_watchdog::esp32::Checkpoint();
     obc_flow::esp32::Init(report);
+    obc_watchdog::esp32::Checkpoint();
+    obc_watchdog::esp32::StartRuntime();
 }
 
 /**
@@ -67,4 +94,5 @@ void loop(
 ) {
     obc_ttc::Service();
     obc_flow::esp32::ReportDiagnostics();
+    obc_watchdog::esp32::Service(obc_ttc::GetDiagnostics());
 }

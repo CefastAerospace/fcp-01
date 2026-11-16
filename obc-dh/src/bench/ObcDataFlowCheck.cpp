@@ -121,6 +121,12 @@ namespace {
             Serial.printf("[FLOW-CHECK] FAIL: buffer alterado durante escrita\n");
             return {obc_storage::STATUS::WRITE_FAILED, 0, 0, 1};
         }
+#ifdef OBC_RESOURCES_BENCH
+        obc_resources_bench::ObserveRecord(bytes, size);
+#endif
+#ifdef OBC_WATCHDOG_BENCH_CASE
+        obc_watchdog_bench::ObserveRecord(bytes, size);
+#endif
 #ifdef OBC_TASK_HEALTH_BENCH
         if (size == 96 && !std::memcmp(bytes, obc_data::record_magic, 4)) {
             obc_record::RECORD event = {};
@@ -408,6 +414,12 @@ namespace esp32 {
 void StartBenchInput(
 ) {
     bench_requested.store(true);
+#ifdef OBC_WATCHDOG_BENCH_CASE
+    obc_watchdog_bench::Start();
+#endif
+#ifdef OBC_RESOURCES_BENCH
+    obc_resources_bench::Start();
+#endif
 #ifdef OBC_I2C_HEALTH_BENCH
     obc_flow::esp32::StartI2cHealthBench();
 #endif
@@ -482,6 +494,9 @@ size_t ReadBenchInput(
 void setup(
 ) {
     Serial.begin(115200);
+#ifdef OBC_WATCHDOG_ENABLED
+    obc_watchdog::esp32::Init();
+#endif
 #ifdef OBC_STORAGE_RECOVERY_BENCH
     const bool reservation = obc_delivery::check::CheckRecoveryReservation();
     Serial.printf("[DELIVERY-RECOVERY-CHECK] %s\n", reservation ? "PASS" : "FAIL");
@@ -503,16 +518,40 @@ void setup(
     Serial.printf("[FLOW-CHECK] ADS-B em RAM e SD lento simulados; sem ensaio ESP32-Pi/cartao\n");
     obc_startup::STARTUP_REPORT report = {};
     report.time_status = obc_time::esp32::StartBoot(report.boot_id);
+#ifdef OBC_WATCHDOG_BENCH_CASE
+    obc_watchdog_bench::Boot(report.boot_id);
+#endif
+#ifdef OBC_WATCHDOG_ENABLED
+    obc_watchdog::esp32::Checkpoint();
+#if defined(OBC_WATCHDOG_BENCH_CASE) && OBC_WATCHDOG_BENCH_CASE == 4
+    // Cenário I2C isolado: conserva os buffers originais nos demais ambientes.
+    report.i2c_ready = i2c::Init();
+    obc_watchdog::esp32::Checkpoint();
+#endif
+#endif
     report.storage_result.status = obc_storage::STATUS::OK;
     obc_ttc::Init();
+#ifdef OBC_WATCHDOG_ENABLED
+    obc_watchdog::esp32::Checkpoint();
+#endif
     obc_flow::esp32::Init(report);
+#ifdef OBC_WATCHDOG_ENABLED
+    obc_watchdog::esp32::Checkpoint();
+    obc_watchdog::esp32::StartRuntime();
+#endif
 }
 
 /** @brief Mantém o mesmo atendimento de comandos e diagnósticos do firmware central. */
 void loop(
 ) {
+#ifdef OBC_WATCHDOG_BENCH_CASE
+    obc_watchdog_bench::BeforeLoop();
+#endif
     obc_ttc::Service();
     obc_flow::esp32::ReportDiagnostics();
+#ifdef OBC_WATCHDOG_ENABLED
+    obc_watchdog::esp32::Service(obc_ttc::GetDiagnostics());
+#endif
 #if defined(OBC_DELIVERY_BENCH) && !defined(OBC_TTC_INTEGRATION_BENCH)
     // Transporte simulado no consumidor independente do escritor de 100 ms.
     static obc_delivery::DELIVERY delivery = {};

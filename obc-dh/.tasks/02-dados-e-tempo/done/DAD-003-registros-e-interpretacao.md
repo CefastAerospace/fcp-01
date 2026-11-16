@@ -26,7 +26,7 @@ A tabela conserva as obrigações e a situação registradas no encerramento. O 
 |---|---|---|
 | [INT-006](../../03-integracao/INT-006-fluxo-de-dados.md) | Integrar criação, gravação e extração de registros e referências temporais por boot, preservando formatos v1/v2 e leitura retrocompatível. | Pendente na destinatária |
 | [INT-007](../../03-integracao/INT-007-comandos-modos-e-protecoes.md) | Definir e implementar os estados duráveis de atuações/Burn Wire, autorização e confirmação; eventos existentes não substituem estado de retomada. Se precisar ampliar registros, versionar a extensão e verificar compatibilidade antes do uso. | Pendente na destinatária |
-| [INT-008](../../03-integracao/INT-008-supervisao-e-retomada.md) | Integrar retomada persistente por boot e falhas com os estados definidos em INT-007, sem deduzir autorização de atuação de eventos ou flags voláteis. | Pendente na destinatária |
+| [INT-008](../../03-integracao/done/INT-008-supervisao-e-retomada.md) | Integrar retomada persistente por boot e falhas com os estados definidos em INT-007, sem deduzir autorização de atuação de eventos ou flags voláteis. | Pendente na destinatária |
 | [TES-009](../../04-testes/TES-009-falhas-e-recuperacao.md) | Comprovar retomada e integridade sob reset/interrupção real, incluindo estados operacionais; recuperação lógica do leitor não é reparo de FAT32. | Pendente na destinatária |
 
 ## Situação atual da integração — 10/11/2026

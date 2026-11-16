@@ -1,0 +1,5 @@
+ObcWatchdogCheck: passed with UBSan, then ASan/UBSan/LeakSanitizer.
+Original I2cRecoveryCheck production executor: passed with UBSan, then ASan/UBSan/LeakSanitizer.
+ASan I2C output: [I2C-CHECK] PASS cycles=3 attempts=5 recovered=2 exhausted=1 stack=0 callback_max_us=1005719 context_queue_ms=1000 context_hold_ms=1005
+Original ObcStartupCheck: passed with UBSan; order, eight combinations and independent failures.
+No sanitizer disabled; ASan executions outside sandbox/ptrace.

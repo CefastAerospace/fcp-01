@@ -1,5 +1,246 @@
 # Codec e leitura de registros OBC v1/v2/v3
 
+## Watchdog e reset OBC — 15/11/2026
+
+A INT-012 usa o watchdog de tarefas do SDK instalado (IDF 4.x, Arduino
+ESP32 2.0.14), com timeout de 5 s e panic/reboot. Inscreve manualmente a
+tarefa loop, sem `enableLoopWDT`, sem remover IDLE0 e sem alterar o watchdog
+de interrupção. Arma depois de iniciar a serial e alimenta entre etapas
+concluídas do setup; chamada de inicializador bloqueada não alimenta.
+
+No runtime, a cada 100 ms como alvo, consulta cópias dos proprietários e
+alimenta somente se nenhum recurso criado exceder os seguintes limites.
+Tarefa inativa não bloqueia; espera/ociosidade legítima continua publicando
+progresso. Erro retornado, `NO_MEMORY`, rádio/SD ausente ou silêncio não
+significam travamento. Se o progresso retorna antes do disparo, a alimentação
+é retomada. Loop/coleta bloqueado também deixa de alimentar.
+
+| Recurso | Limite de ação, estritamente maior que |
+|---|---:|
+| UART | 500 ms |
+| Processamento | 5.000 ms |
+| Escritor, por operação | 10.000 ms |
+| Executor I2C | 2.000 ms |
+| TT&C | 5.000 ms |
+
+O executor I2C desperta ocioso a cada 1.000 ms e publica progresso antes/
+depois do atendimento e recuperação. Não executa transações extras, muda
+prioridades ou cancela callbacks. Diagnósticos anteriores mantêm seus
+limites. EVENT/FAULT 265 identifica suspensão/retomada por recurso.
+
+`reset_obc` agenda um `esp_timer` one-shot de 1.500.000 us, cujo callback
+executa `esp_restart()` no serviço nativo de timers. O prazo começa no
+agendamento bem-sucedido, antes de registro/ACK. Repetição não o adia. ACK
+recusado ou consumidor bloqueado não cancela o reset. Sem timer/agendamento,
+retorna `state_rejected`; argumentos diferentes de ausente/null/{} retornam
+`invalid_param`. Não espera SD, transmissão, confirmação ou filas vazias.
+EVENT 266 é tentativa de registro, não confirmação de persistência.
+
+Falhas ao armar watchdog ou criar timer são explícitas e independentes;
+execução degradada não satisfaz o aceite da INT. Reutiliza NVS/boot_count e
+causa de reset do BOOT; serial também mostra `reset_reason`. Não apaga NVS,
+fabrica boot ou restaura UTC de outro boot. Nenhuma garantia de saída elétrica
+segura, watchdog externo, partição alternativa ou retomada de missão.
+
+Todos os valores são provisórios de desenvolvimento, acordados pelo
+responsável OBC-DH para esta versão. Valores/política finais pertencem a
+OBC-DH, coordenação e setores afetados na INT-013; comprovação independente
+na TES-009. Tempo nominal até watchdog inclui limite mais 5 s, avaliação,
+panic e boot; não equivale a prazo certificado ou watchdog externo do DP.
+
+### Executar as bancadas
+
+Somente ESP32/USB, sem cartão/Pi/rádio. O fluxo/TT&C e FreeRTOS são reais;
+SD/Payload são simulados. Injeções são finitas e selecionadas na compilação,
+sem comando novo no firmware normal. Cookie RTC exclusivo de bancada,
+validado por caso/causa, impede repetir a injeção após o reset esperado.
+O cenário I2C inicializa seu executor e pode deixar escritor inativo;
+demais casos conservam os buffers originais do fluxo sem esse executor.
+O firmware normal conserva a sequência NVS–I2C–SD–TT&C–fluxo.
+
+| Caso | Ambiente | Verificação |
+|---|---|---|
+| 0 | `int012-watchdog-check` | Argumentos, reset, repetição e deduplicação |
+| 1 | `int012-uart-check` | UART sem progresso |
+| 2 | `int012-process-check` | Processamento sem progresso |
+| 3 | `int012-writer-check` | Escritor sem retorno da operação |
+| 4 | `int012-i2c-check` | Callback I2C sem retorno |
+| 5 | `int012-ttc-check` | TT&C sem retorno do transporte |
+| 6 | `int012-supervisor-check` | Loop sem progresso |
+| 7 | `int012-startup-check` | Inicializador sem retorno após reserva NVS |
+| 8 | `int012-resume-check` | UART retorna antes do disparo; eventos 265 |
+| 9 | `int012-ack-full-check` | Quatro vagas reais de ACK ocupadas |
+| 10 | `int012-reset-blocked-check` | Consumidor bloqueia depois do agendamento |
+| 11 | `int012-arm-error-check` | Falha de armamento explícita; timer independente |
+| 12 | `int012-timer-error-check` | Timer indisponível rejeita reset |
+| 13 | `int012-schedule-error-check` | Falha ao agendar não declara reset pendente |
+
+Selecionar ambiente e número correspondente. O roteiro reinicia por RTS;
+usar relatório novo, nunca sobrescrever evidência:
+
+```bash
+pio run -e int012-uart-check -t upload --upload-port /dev/ttyUSB0
+python3 tests/ObcWatchdogBenchCheck.py /dev/ttyUSB0 --case 1 \
+    --report /tmp/int012-uart-novo.json
+pio run -e int012-memory-check -t upload --upload-port /dev/ttyUSB0
+python3 tests/ObcLimitsCheck.py /dev/ttyUSB0 --case memory \
+    --report /tmp/int012-memory-novo.json
+pio run -e int012-waits-check -t upload --upload-port /dev/ttyUSB0
+python3 tests/ObcTaskHealthBenchCheck.py /dev/ttyUSB0 --bench \
+    --report /tmp/int012-waits-novo.json
+pio run -e obc -t upload --upload-port /dev/ttyUSB0
+python3 tests/ObcWatchdogBenchCheck.py /dev/ttyUSB0 --production \
+    --report /tmp/int012-obc-novo.json
+python3 tests/ObcResourcesBenchCheck.py /dev/ttyUSB0 \
+    --report /tmp/int012-obc-resources-novo.json
+```
+
+Restaurar e verificar `obc` também depois de falha. Verificações antigas
+de recursos/I2C/escritor/downlink foram executadas nos seus ambientes
+compatíveis, sem modificar scripts, vetores ou resultados esperados.
+
+Verificação portátil da decisão, executando ASan/LeakSanitizer fora de ptrace:
+
+```bash
+g++ -std=c++11 -Wall -Wextra -Werror \
+    -fsanitize=address,undefined -fno-sanitize-recover=undefined \
+    -fno-omit-frame-pointer -Iheaders \
+    src/ObcWatchdog.cpp tests/ObcWatchdogCheck.cpp -o /tmp/obc-watchdog-check
+/tmp/obc-watchdog-check
+```
+
+Os 14 cenários novos passaram. Timer medido em 1.500 ms nos quatro casos
+de bancada que reiniciam por comando; tolerância de desenvolvimento do
+roteiro é ±100 ms, retorno do boot entre 1.400 e 3.500 ms após agendamento.
+Pausa até novo boot: UART 5.911 ms, processamento 10.470 ms, escritor
+15.535 ms, I2C 7.554 ms, TT&C 10.542 ms, supervisor 5.482 ms e setup
+5.441 ms. São observações desta placa/versão, incluindo panic e boot.
+Pausas cedem CPU: comprovaram `ESP_RST_TASK_WDT` (6); comando comprovou
+`ESP_RST_SW` (3). Travamento de interrupção pode acionar outra proteção antes.
+Perfil de memória e esperas passou com watchdog armado e critérios originais.
+
+A reprovação inicial ocorreu antes de enviar TC: TT&C reabriu a serial
+antes de concluir marcador e a criação antecipada de I2C fragmentou o heap
+do escritor simulado. Após diagnóstico e autorização, somente a bancada
+passou a drenar o marcador e criar I2C no caso dedicado. Buffers, sequência
+de produção e as 48 validações preexistentes ficaram intactos.
+
+Evidências, hashes e casos liberados na
+[INT-012](../.tasks/03-integracao/done/INT-012-watchdog-reset-obc.md) e no
+[manifesto](../examples/obc-watchdog-2026-11-15-manifest.json).
+TES-009 recebe mecanismo/roteiro para comprovação independente; TES-008
+conserva verificação elétrica e INT-013 conserva retomada de voo.
+
+## Supervisão de recursos TT&C e memória — 15/11/2026
+
+`Ttc::GetDiagnostics()` fornece uma cópia protegida de inicialização,
+tarefa criada, início/conclusão de `Update`, ciclos concluídos, última
+disponibilidade observada do rádio, tentativas e contato válido RF/cabo.
+Mede a margem histórica da pilha fora do lock. Não acessa rádio/UART nem
+deduz progresso pela chegada de TCs. `Update` manual não fabrica uma tarefa.
+Os contatos possuem indicador de existência: millis zero é válido.
+
+O consumidor OBC encaminha a cópia a cada 100 ms como alvo, inclusive se o
+fluxo Payload estiver inativo. `ObcResourceHealth` avalia progresso TT&C
+separado da disponibilidade do rádio. Idade >2.000 ms produz suspect;
+novo avanço retorna a ok. Idade é modular u32: a primeira detecção deve
+ocorrer antes de um wrap completo; suspeita detectada persiste até avanço.
+O diagnóstico depende de o consumidor/loop e seus locks continuarem
+executando; não substitui watchdog global.
+
+Memória é avaliada a cada segundo. Os valores abaixo foram definidos pelo
+responsável para esta implementação, sem alterar aceitação de mensagens:
+
+| Métrica | Entrada | Retorno |
+|---|---|---|
+| Heap interno acessível por byte | Livre <8.192 bytes | Livre >=12.288 bytes |
+| Maior bloco desse heap | <4.096 bytes | >=6.144 bytes |
+| Margem histórica de pilha | <1.024 bytes por tarefa ativa | Alerta permanece durante a vida da tarefa |
+
+As métricas de heap usam `MALLOC_CAP_INTERNAL | MALLOC_CAP_8BIT`.
+O mínimo histórico de heap é informação, não condição de retorno. UART,
+processamento, escritor, executor I2C, TT&C e loop têm pilhas identificadas
+separadamente; tarefa ausente não é margem zero. O processamento publica
+recusas `NO_MEMORY` cumulativas/saturadas, sem depender do heap da próxima
+amostra. Rejeição conserva o snapshot anterior e a possibilidade de retomada.
+
+`[TTC-HEALTH]` separa progresso, rádio, prontidão cabeada, contato/idade por
+meio e contagem de tentativas. Silêncio não declara perda de enlace.
+`[MEMORY-HEALTH]` publica pressões, pilhas e recusas; os prefixos antigos
+permanecem. Transições usam EVENT/FAULT OBC 260–264, conforme o
+[catálogo](../../common/protocol/obc-data.md#event-e-fault). Sem boot válido,
+somente USB; fila/SD indisponíveis conservam perdas explícitas. Não existe
+reset por memória baixa ou recuperação adicional fora do proprietário.
+
+Verificação portátil, dentro de `obc-dh/`, com os sanitizadores ativos fora
+de ambiente com ptrace:
+
+```bash
+g++ -std=c++11 -Wall -Wextra -Werror \
+    -fsanitize=address,undefined -fno-sanitize-recover=undefined \
+    -fno-omit-frame-pointer -Iheaders \
+    src/ObcData.cpp src/ObcTime.cpp src/ObcRecordCodec.cpp \
+    src/ObcResourceHealth.cpp tests/ObcResourceHealthCheck.cpp \
+    -o /tmp/fcp01-resource-health-check
+/tmp/fcp01-resource-health-check
+```
+
+Na pasta `tt-c/`, as suítes originais continuam intactas. A suíte nova usa
+a API real, meios falsos e tarefa real no último caso:
+
+```bash
+pio test -e native
+pio test -e esp32 --upload-port /dev/ttyUSB0 --test-port /dev/ttyUSB0
+pio test -e esp32-diagnostics --upload-port /dev/ttyUSB0 --test-port /dev/ttyUSB0
+```
+
+Na pasta `obc-dh/`, com somente ESP32/USB e Python contendo pyserial:
+
+```bash
+pio run -e int008-resources-check -t upload --upload-port /dev/ttyUSB0
+python3 tests/ObcResourcesBenchCheck.py /dev/ttyUSB0 --bench \
+    --report /tmp/obc-resources-bench-novo.json
+pio run -e obc -t upload --upload-port /dev/ttyUSB0
+python3 tests/ObcResourcesBenchCheck.py /dev/ttyUSB0 \
+    --report /tmp/obc-resources-normal-novo.json
+python3 tests/ObcDownlinkCheck.py /dev/ttyUSB0 \
+    --report /tmp/obc-resources-downlink-novo.json
+```
+
+Usar nomes novos: os roteiros recusam sobrescrever relatórios. Cada upload
+substitui o firmware; restaurar e verificar `obc` também após falha.
+Selecionar a porta identificada na máquina, não presumir `/dev/ttyUSB0`.
+
+`int008-resources-check` reutiliza o fluxo e a tarefa TT&C reais. Seu rádio
+falso injeta TC RF, pausa finita de pelo menos 2.300 ms fora dos locks e
+indisponibilidade/retorno pelo mecanismo existente. Memória/pilhas são
+substituídas somente na cópia da bancada: pressão, banda de histerese,
+retorno, margem histórica e uma recusa entre amostras. Não exaure heap ou
+pilha físicos. A bancada de memória anterior continua responsável pela
+recusa real do parser e preservação/retomada do snapshot.
+
+O roteiro exige EVENT/FAULT 260–264 confirmados pelo backend SD simulado e
+ausência de reboot. A pausa deliberada TT&C impede atendimento normal:
+seu caso mede detecção/retorno; TC q<=200 ms, ACK<=2 s e quadros<=255 bytes
+são verificados antes/depois. Roteiros históricos de cadência normal não
+devem ser aplicados à fase de pausa desta bancada.
+
+### Entrega ao setor de testes
+
+| Caso disponível | Ferramenta | Limitação / condição |
+|---|---|---|
+| Progresso TT&C, rádio, memória/pilhas e eventos | `int008-resources-check` + `ObcResourcesBenchCheck.py --bench` | ESP32/USB; rádio, amostras de memória e SD simulados |
+| Diagnóstico normal sem periféricos | `obc` + `ObcResourcesBenchCheck.py` | Rádio indisponível é esperado; USB/progresso ativos, escritor inativo |
+| Progresso UART/processamento/escritor | `int008-health-check` + `ObcTaskHealthBenchCheck.py --bench` | Pausas/SD simulados; ver seção própria |
+| Diagnóstico/recuperação I2C | `int008-i2c-health-check` + `ObcI2cHealthBenchCheck.py --bench` | Controlador/GPIOs simulados; físico exige montagem e injeção acordadas |
+| Retomada limitada do escritor | `int008-storage-check` + `ObcStorageRecoveryBenchCheck.py` | Backend simulado; cartão/FAT32/alimentação são ensaios independentes |
+
+O setor de testes executa os casos, registra versão, montagem, entradas,
+esperado/observado e impedimentos. Os registros locais OBC não aprovam os
+ensaios por inferência. TES-009 mantém watchdog/reset dependentes de
+INT-012, retomada de missão/atuações de INT-013/011 e condições físicas de
+I2C/UART/SD. Nenhum checklist ou limite de aceitação foi alterado.
+
 ## Diagnóstico I2C — 14/11/2026
 
 `ObcI2cHealth` avalia os diagnósticos do executor no loop existente, com
@@ -78,7 +319,7 @@ de 91,924 ms, sem falso alerta na ociosidade/recuperação normal. Regressões
 nativas e USB originais passaram. `obc` restaurado e verificado nos três
 roteiros; restaurar também após eventual falha. A reprovação inicial da
 pausa, os dois ajustes autorizados e todos os relatórios estão na
-[INT-008](../.tasks/03-integracao/INT-008-supervisao-e-retomada.md).
+[INT-008](../.tasks/03-integracao/done/INT-008-supervisao-e-retomada.md).
 
 ## Supervisão diagnóstica das tarefas — 14/11/2026
 
@@ -156,7 +397,7 @@ alerta e `no_sd` esperado. Recorte local concluído, sem comprovar periféricos
 físicos, supervisão I2C/TT&C ou watchdog global. Restaurar e verificar obc
 após qualquer execução, inclusive em falha.
 
-Estado e evidências na [INT-008](../.tasks/03-integracao/INT-008-supervisao-e-retomada.md).
+Estado e evidências na [INT-008](../.tasks/03-integracao/done/INT-008-supervisao-e-retomada.md).
 
 ## Retomada do escritor SD — 13/11/2026
 
@@ -245,7 +486,7 @@ remontagem real, alimentação ou durabilidade em reset. Restaurar `obc`
 também após falha, preservando o diagnóstico antes de qualquer correção.
 
 Resultados e hashes estão na
-[INT-008](../.tasks/03-integracao/INT-008-supervisao-e-retomada.md).
+[INT-008](../.tasks/03-integracao/done/INT-008-supervisao-e-retomada.md).
 
 ## Limites de capacidade e memória — 11/11/2026
 

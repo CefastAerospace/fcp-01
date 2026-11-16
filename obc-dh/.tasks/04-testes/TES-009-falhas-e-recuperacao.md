@@ -29,6 +29,32 @@ ou reinício da estação; não encerra os cenários originais desta tarefa.
 A execução e o relato dos ensaios cabem ao setor de testes; a análise e as correções de firmware cabem ao responsável OBC-DH, com apoio dos setores envolvidos. Seguir as [responsabilidades e regras de reexecução](../README.md#responsabilidades-correção-e-reexecução).
 
 
+## Atualização de prontidão — 15/11/2026
+
+A INT-012 concluiu o mecanismo de watchdog/reset no escopo ESP32/USB.
+O [guia](../../tools/README.md#watchdog-e-reset-obc--15112026) e o
+[manifesto](../../examples/obc-watchdog-2026-11-15-manifest.json) entregam
+versão, injeções isoladas, relatórios e limites provisórios. OBC verificou
+travamentos, supervisor/boot, reset comandado independente de ACK/loop,
+novo boot/causa e regressões; essas são evidências de desenvolvimento.
+O cenário de watchdog/reset pode ser preparado/executado por testes com
+montagem e método próprios. Permanecem os critérios e estados originais;
+retomada de missão/atuações continua consumindo INT-011/013 e a verificação
+elétrica de boot/reset continua na TES-008.
+
+A [INT-008](../03-integracao/done/INT-008-supervisao-e-retomada.md) concluiu seu
+escopo de supervisão e recuperação local, incluindo TT&C e memória/pilhas.
+O [guia de entrega](../../tools/README.md#supervisão-de-recursos-ttc-e-memória--15112026)
+identifica firmware/roteiros compatíveis, injeções simuladas e casos
+disponíveis. OBC preservou a reprovação inicial, corrigiu a suíte nova após
+autorização e aprovou regressões nativas/ESP32/USB; obc foi restaurado e
+verificado. Esses resultados são verificação de desenvolvimento.
+
+Os cenários físicos mantêm montagem, método de injeção e critérios acordados.
+O cenário combinado de travamento/reinicialização ainda consome INT-012;
+retomada de missão/atuações consome INT-011/013. Nenhum checkbox, entrada,
+resultado esperado ou estado desta TES foi alterado pela conclusão da INT.
+
 ## Prontidão vigente — 14/11/2026
 
 A retomada local do escritor e os diagnósticos UART/processamento/escritor/I2C já possuem evidências na INT-008. Nas atualizações históricas abaixo, “reabilitação do escritor pendente” refere-se à situação anterior; não apaga a implementação de 13/11. Watchdog e retomada operacional continuam não implementados, agora em INT-012/013.
@@ -62,8 +88,8 @@ Executar os cenários abaixo separadamente, incluindo limites de detecção/recu
 | SDA/SCL presos e retorno do I2C | [COM-003](../01-comunicacao/done/COM-003-recuperacao-i2c.md) | Método de injeção aprovado com EPS/ADCS; conferir tentativas, timeouts, pedidos pendentes e retorno do serviço. | Pendente |
 | Desconexão e excesso UART | [COM-004](../01-comunicacao/done/COM-004-uart-payload.md) | Usar taxas e limites acordados; conferir recuperação do receptor e sinalização das perdas. | Pendente |
 | Interrupção durante escrita no SD | [COM-005](../01-comunicacao/done/COM-005-armazenamento-sd.md) | Método acordado com EPS; avaliar arquivos incompletos e FAT32, não apenas fechamento normal ou conteúdo de um registro. | Pendente |
-| Travamento, perda de comunicação e reinicialização | [INT-008](../03-integracao/INT-008-supervisao-e-retomada.md), [INT-012](../03-integracao/INT-012-watchdog-reset-obc.md) | Medir detecção/recuperação, conferir falhas, horários e contagem de reinicializações; ausência ADS-B não significa enlace indisponível. | Pendente |
-| Retomada persistente de missão, tempo e atuações | [INT-006](../03-integracao/INT-006-fluxo-de-dados.md), [INT-007](../03-integracao/INT-007-comandos-modos-e-protecoes.md), [INT-008](../03-integracao/INT-008-supervisao-e-retomada.md), [INT-011](../03-integracao/INT-011-burn-wire-persistencia.md), [INT-013](../03-integracao/INT-013-retomada-operacional.md) | Conferir boots, referências, registros, saídas e Burn Wire após reset/interrupção, sem repetir atuação indevida nem inventar intervalo desligado. | Pendente |
+| Travamento, perda de comunicação e reinicialização | [INT-008](../03-integracao/done/INT-008-supervisao-e-retomada.md), [INT-012](../03-integracao/done/INT-012-watchdog-reset-obc.md) | Medir detecção/recuperação, conferir falhas, horários e contagem de reinicializações; ausência ADS-B não significa enlace indisponível. | Pendente |
+| Retomada persistente de missão, tempo e atuações | [INT-006](../03-integracao/INT-006-fluxo-de-dados.md), [INT-007](../03-integracao/INT-007-comandos-modos-e-protecoes.md), [INT-008](../03-integracao/done/INT-008-supervisao-e-retomada.md), [INT-011](../03-integracao/INT-011-burn-wire-persistencia.md), [INT-013](../03-integracao/INT-013-retomada-operacional.md) | Conferir boots, referências, registros, saídas e Burn Wire após reset/interrupção, sem repetir atuação indevida nem inventar intervalo desligado. | Pendente |
 
 ## Critérios de conclusão
 

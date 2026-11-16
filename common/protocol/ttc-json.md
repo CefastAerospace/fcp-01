@@ -53,6 +53,17 @@ que não é TC ([detalhes](#entregas-identificadas-e-confirmação-do-solo)).
 | `test_tm` | `{"count":1000}` (1–2000) | Só bancada: rajada de TMs para o teste do REQ-TTC-003. |
 | `reset_obc` | — | Reinicia o OBC. |
 
+No firmware OBC de bancada da INT-012, `reset_obc` aceita `args` ausente,
+`null` ou objeto vazio; outros argumentos recebem `invalid_param`. O primeiro
+pedido válido agenda reset nominal em 1.500 ms, antes de tentar ACK `ok`.
+Repetições no mesmo boot não adiam o prazo. Falha de ACK não cancela o reset;
+timer indisponível ou falha ao agendar produz `state_rejected`. ACK confirma
+aceitação local, sem garantir transmissão/recepção ou persistência SD.
+Envelope, deduplicação TT&C e identificação de sequência permanecem iguais.
+Política de voo e efeitos elétricos/operacionais continuam nas integrações
+correspondentes. Firmware histórico que rejeitava o comando conserva seus
+roteiros e resultados esperados.
+
 ## Descida
 
 Todo pacote de descida recebe do TT&C o campo `n` (primeiro campo, inteiro 0–65535, com volta), atribuído no momento da transmissão. A sequência é estrita no ar e permite à estação terrena contar perdas (REQ-TTC-003). O OBC não preenche `n`.

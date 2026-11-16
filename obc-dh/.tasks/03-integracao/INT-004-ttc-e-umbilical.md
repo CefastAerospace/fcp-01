@@ -8,7 +8,7 @@
 
 Entrega desta INT: adaptador OBC–TT&C, comandos básicos, build/regressões pertinentes e contrato consumido identificado. O aceite conjunto das interfaces/unidades permanece engenharia OBC/TT&C; não é obrigação transferida ao setor de testes. Comprovação RF e dos tempos integrados continua na TES-008, sem bloquear o encerramento da implementação por si só. A capacidade de boot de bancada da INT-003 já é consumida; sua parte elétrica de voo não bloqueia o adaptador de bancada.
 
-As lacunas de regressão do consumidor atual ficam na [TES-012](../04-testes/TES-012-consumidor-telecomandos.md). `CMD_RESET_OBC` pertence à [INT-012](INT-012-watchdog-reset-obc.md). O aceite conjunto ainda está pendente; estado Em andamento preservado.
+As lacunas de regressão do consumidor atual ficam na [TES-012](../04-testes/TES-012-consumidor-telecomandos.md). `CMD_RESET_OBC` pertence à [INT-012](done/INT-012-watchdog-reset-obc.md). O aceite conjunto ainda está pendente; estado Em andamento preservado.
 
 ## Fixação do ambiente consumidor — 11/11/2026
 

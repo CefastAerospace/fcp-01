@@ -10,6 +10,7 @@
 #include "Ttc.h" // Ttc, TC_FRAME e contrato de TC/TM.
 #include "UmbilicalLink.h" // Transporte pela UART0/USB.
 #include "ObcDataFlowEsp32.h" // Estado integrado, referência UTC e registro da TM.
+#include "ObcWatchdogEsp32.h" // Agendamento do reset antes da tentativa de ACK.
 
 namespace obc_ttc {
 
@@ -30,9 +31,13 @@ namespace obc_ttc {
      * em RAM e tenta persistir a referência no fluxo. request_log encaminha
      * I/O ao escritor com prazo de 1 s e responde lg antes de confirmar
      * enfileiramento. Consome eventos TX e cf, e envia entregas com timeout
-     * provisório de 10 s. Outros comandos conhecidos recebem invalid_cmd.
+     * provisório de 10 s. reset_obc agenda reset em 1500 ms, com ACK best
+     * effort. Outros comandos conhecidos recebem invalid_cmd.
      * Não executa Update() nem ações de missão. Quando inativo, cede 20 ms.
      */
     void Service();
+
+    /** @brief Encaminha cópia protegida do proprietário, sem acessar o rádio. */
+    LINK_DIAGNOSTICS GetDiagnostics();
 
 } // namespace obc_ttc

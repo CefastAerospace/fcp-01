@@ -1,5 +1,39 @@
 # Arquitetura vigente do OBC-DH
 
+### Watchdog e reset comandado — 15/11/2026
+
+INT-012 concluída no mecanismo de bancada ESP32/USB. `ObcWatchdog` decide
+alimentação por cópias dos proprietários; adaptador ESP32 inscreve loop
+manualmente no task watchdog de 5 s, preservando IDLE0 e interrupt watchdog.
+Arma após iniciar serial, alimenta entre etapas concluídas do setup e, no
+runtime, avalia a cada 100 ms. Sem progresso acima de 500/5.000/10.000/2.000/
+5.000 ms para UART/processamento/escritor/I2C/TT&C, suspende alimentação;
+novo progresso antes do disparo a libera. Tarefas ausentes, recursos
+indisponíveis, espera/recuperação progredindo e NO_MEMORY não causam reset
+sozinhos. Supervisor ou coleta bloqueado deixa de alimentar.
+
+I2C publica progresso também após despertar ocioso de 1.000 ms, sem I/O
+extra ou alteração de prioridade/contexto. Os diagnósticos da INT-008
+mantêm seus limites e registros. GetTaskProgress/GetDiagnostics encaminham
+somente cópias protegidas; não há novo supervisor em tarefa própria.
+
+`reset_obc` é atendido pelo consumidor existente: argumentos ausentes/null/{}
+aceitos; primeiro pedido agenda esp_timer de 1.500 ms antes de registro/ACK,
+sem adiamento por repetição. Callback do serviço nativo executa esp_restart,
+mesmo se consumidor/ACK bloquear. Falha de timer/agendamento rejeita pedido;
+falhas de armamento/timer são independentes e explícitas. EVENT/FAULT 265
+e EVENT 266 reutilizam fila/diário; não condicionam reset ao sucesso do SD.
+Boot/NVS, causa e UTC desconhecido após reinício conservam mecanismos atuais.
+
+Verificação local: 14 cenários novos, perfis de memória/esperas armados,
+regressões e obc restaurado; reprovação e ajustes autorizados só na bancada
+preservados. Valores são provisórios do responsável, não parâmetros de voo.
+Procedimentos no [guia](../tools/README.md#watchdog-e-reset-obc--15112026),
+evidências na [INT-012](../.tasks/03-integracao/done/INT-012-watchdog-reset-obc.md).
+TES-009 comprova independentemente, TES-008 conserva efeitos elétricos e
+INT-013 conserva retomada de missão/estados duráveis. Não assume watchdog
+externo, firmware alternativo ou aprovação de voo.
+
 Este documento distingue decisões vigentes, comportamento implementado e integração prevista. Atualização de 11/11/2026 para integração OBC sobre `f7af605`; evidências de execução permanecem datadas nas tarefas. [REQUISITOS.md](REQUISITOS.md) preserva obrigações e validação; [TODO.md](TODO.md) reúne estado e dependências. Decisão documentada não comprova aceite externo ou teste físico.
 
 **Redistribuição documental — 14/11/2026:** implementação/regressões pertencem ao OBC e comprovação independente ao setor de testes. INT-005 conserva ADCS/encoder/FOC; INT-009 recebe aquisição EPS/Térmico. INT-007 conserva comandos/modos; INT-010 recebe proteções e INT-011, Burn Wire/estados duráveis. INT-008 conserva supervisão/recuperação local; INT-012 recebe watchdog/reset e INT-013, retomada operacional. TES-011/012 são ferramentas/regressões OBC ainda pendentes. A [correspondência](../.tasks/README.md#correspondência-das-entregas-redistribuídas) define as destinatárias dos encaminhamentos antigos. Nenhum comportamento do firmware mudou nesta revisão.
@@ -208,6 +242,44 @@ O adaptador usa mutex estático sem espera (`BUSY` na disputa), somente em conte
 `fsync` e repetição no arquivo lógico não garantem integridade física em queda de energia. Falha de montagem mantém indisponibilidade, sem reparo automático de FAT32. Em bancada, preservar cópia/imagem antes de reparo externo; usar o leitor existente em cópias de arquivos v1 para localizar registros íntegros. Confirmar módulo/alimentação com EPS e executar TES-006/TES-009 antes de afirmar comportamento físico. Políticas, evidências e limites estão em [COM-005](../.tasks/01-comunicacao/done/COM-005-armazenamento-sd.md).
 
 ## 6. Missão e supervisão
+
+### Diagnóstico de recursos TT&C/memória — 15/11/2026
+
+`Ttc::GetDiagnostics` publica uma cópia protegida da execução do proprietário:
+inicialização, tarefa criada, entrada/saída de Update, conclusões e última
+saúde observada do rádio. Contato válido RF/cabo possui existência e instante
+próprios; zero é válido. O getter não consulta drivers e mede margem de
+pilha fora do lock. Chamadas manuais de Update não fabricam tarefa criada.
+
+`ObcTtc::Service` encaminha a cópia ao fluxo com período alvo de 100 ms,
+inclusive se a recepção do Payload estiver inativa. `ObcResourceHealth`
+mantém a avaliação portátil: ausência de tarefa, suspeita de progresso
+>2.000 ms e indisponibilidade do rádio são distintas. Contato é informação
+por meio; silêncio não declara perda. Idade modular u32 exige detecção antes
+de um wrap completo; suspeita detectada persiste até novo avanço.
+
+Heap interno acessível por byte, maior bloco e pilhas são avaliados a cada
+segundo. Limites definidos pelo responsável nesta implementação: heap
+<8.192 bytes/retorno >=12.288; bloco <4.096/retorno >=6.144; margem histórica
+de pilha <1.024 bytes, retida durante a vida da tarefa. Tarefas ausentes não
+são margem zero; mínimo histórico de heap não impede retorno. UART,
+processamento, escritor, I2C, TT&C e loop são observados separadamente.
+O proprietário do processamento conta `NO_MEMORY` saturado, capturando
+recusas entre amostras sem modificar o parser ou o snapshot anterior.
+
+Transições usam EVENT/FAULT OBC 260–264 e o diário/fila existentes. Sem boot
+válido há somente USB; indisponibilidade e perdas não confirmam persistência.
+Prefixos `[TTC-HEALTH]`/`[MEMORY-HEALTH]` não mudam os logs antigos ou TM.
+Rádio mantém a recuperação do próprio TT&C; escritor mantém três tentativas
+por episódio/5 s; I2C mantém sua política e retomada explícita. Não há tarefa
+supervisora adicional, reset por memória baixa ou exclusão de tarefas.
+O mecanismo depende do loop e dos locks, sem substituir watchdog global.
+
+Catálogo no [contrato](../../common/protocol/obc-data.md#event-e-fault),
+procedimentos e matriz de entrega no
+[guia](../tools/README.md#supervisão-de-recursos-ttc-e-memória--15112026).
+Os resultados, a reprovação inicial e sua correção autorizada são preservados
+na INT-008; ensaios físicos, watchdog e retomada permanecem nas destinatárias.
 
 ### Diagnóstico do executor I2C — 14/11/2026
 

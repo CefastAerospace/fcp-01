@@ -13,7 +13,7 @@ condições físicas seguem nas tarefas destinatárias.
 | Destinatária | Obrigação encaminhada | Situação |
 |---|---|---|
 | [INT-005](../../03-integracao/INT-005-sensores-e-adcs.md) | Consolidar a política com ADCS/EPS/Térmico, ajustar limites aos consumidores, mapear falhas dos drivers e integrar reconfiguração de sensores e acesso exclusivo ao I2C. | Pendente na integração |
-| [INT-008](../../03-integracao/INT-008-supervisao-e-retomada.md) | Integrar diagnóstico e recuperação explícita ao supervisor, incluindo detecção e ação para callbacks ou chamadas do driver que permanecem executando. | Pendente na integração |
+| [INT-008](../../03-integracao/done/INT-008-supervisao-e-retomada.md) | Integrar diagnóstico e recuperação explícita ao supervisor, incluindo detecção e ação para callbacks ou chamadas do driver que permanecem executando. | Pendente na integração |
 | [TES-009](../../04-testes/TES-009-falhas-e-recuperacao.md) | Executar os ensaios de SDA/SCL presos, liberação e esgotamento, medir os limites na montagem e conferir efeitos sobre pedidos e retorno do serviço. | Pendente nos testes |
 
 ## Consolidação na integração e nos testes

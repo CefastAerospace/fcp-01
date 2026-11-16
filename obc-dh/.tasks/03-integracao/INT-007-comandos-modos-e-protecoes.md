@@ -17,7 +17,7 @@ O escopo anterior reunia modos, proteção energética/térmica, Burn Wire e ret
 | Comandos, transições e coordenação da missão | Esta INT-007 |
 | Proteções energéticas/térmicas, prioridades e retorno | [INT-010](INT-010-protecoes-energia-termico.md) |
 | Burn Wire, autorização, interlock, duplicatas e estados persistentes recebidos de DAD-003 | [INT-011](INT-011-burn-wire-persistencia.md) |
-| `CMD_RESET_OBC` | [INT-012](INT-012-watchdog-reset-obc.md) |
+| `CMD_RESET_OBC` | [INT-012](done/INT-012-watchdog-reset-obc.md) |
 | Retomada operacional de modos/missão após reset | [INT-013](INT-013-retomada-operacional.md) |
 
 Todas as obrigações permanecem pendentes nas destinatárias. A revisão não implementa modos nem altera critérios dos ensaios.

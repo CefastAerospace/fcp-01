@@ -1,16 +1,174 @@
 # INT-008 — Supervisão de recursos e recuperação local
 
-**Estado:** Em andamento — retomada local e diagnósticos de tarefas/I2C concluídos; demais recursos pendentes
+**Estado:** Concluída — supervisão e recuperação local do escopo vigente, 15/11/2026
 **Responsáveis:** OBC-DH e setores
+
+## Conclusão vigente — 15/11/2026
+
+Escopo próprio concluído sobre `f112bc023625eef9ce5ff7502e5c6b276db9222d`
+com as alterações locais desta entrega, sem commit. A supervisão dos recursos
+integrados cobre UART/processamento/escritor, executor I2C, TT&C e memória/
+pilhas. Recuperação permanece nos proprietários, com as políticas registradas
+abaixo. Watchdog/reset e retomada operacional continuam pendentes nas
+INT-012/013; não são condições faltantes desta implementação local.
+
+### Entregas e limites
+
+| Obrigação | Entrega concluída / política |
+|---|---|
+| Progresso das tarefas do fluxo | Diagnósticos existentes UART/processamento/escritor preservados; espera legítima e tarefa inativa distintas de travamento |
+| Executor I2C | Diagnóstico e disponibilidade existentes preservados; recuperação no executor, duas tentativas/orçamento cooperativo de 100 ms; retomada após esgotamento somente por pedido explícito |
+| Escritor SD | Recuperação local existente preservada: até três tentativas por episódio, 5 s antes de cada tentativa, novo segmento e preservação de caudas; esgotamento observável sem reboot |
+| TT&C | API diagnóstica no proprietário, progresso independente de tráfego, rádio/cabo separados e contato válido/idade por meio; suspeita >2.000 ms com retorno por avanço real |
+| Rádio | Recuperação existente do TT&C preservada: uma tentativa por verificação de saúde, com período alvo de 1 s; tentativas contínuas, indisponível até sucesso, sem contador fictício de esgotamento ou reset OBC |
+| Memória | Heap interno <8.192/retorno >=12.288 bytes; maior bloco <4.096/retorno >=6.144; pilha <1.024 bytes por tarefa ativa com alerta histórico retido; recusas NO_MEMORY cumulativas |
+| Registros | EVENT/FAULT OBC 260–264, fila/codec existentes, boot/tempo de avaliação; perdas explícitas, sem afirmar persistência quando SD/fila recusam |
+
+Critérios novos definidos pelo responsável nesta conversa para esta
+implementação. Silêncio não declara perda de contato; tarefas ausentes não
+são margem zero. Não há task adicional, reset por memória baixa, cancelamento
+de callbacks ou alteração de protocolo/TM/parser/admissões. Consumidores
+ADCS/EPS/Térmico ainda não integrados permanecem nas INT-005/009, com suas
+políticas e regressões próprias. Segurança elétrica e aceite de missão
+continuam nas entregas/ensaios correspondentes.
+
+### Correção autorizada e prova de conclusão
+
+Após o diagnóstico preservado abaixo, o responsável autorizou comparar os
+mesmos valores u64 em C++ com `TEST_ASSERT_TRUE`, sem cast/redução de bits,
+e preparar o rádio no caso seguinte antes de Start. O terceiro caso aguarda
+1.100 ms, executa Update e exige rádio disponível antes de criar a tarefa.
+Os três casos passaram na reexecução. Entradas e expectativas anteriores
+não foram alteradas; apenas o assert novo incompatível foi substituído e
+a pré-condição do novo caso explicitada. Não houve exclusão de casos.
+
+Ambiente: ESP32-D0WD-V3 rev 3.1/CH340 em `/dev/ttyUSB0`, somente USB,
+Espressif32 6.6.0/Arduino ESP32 2.0.14/GCC Xtensa 8.4.0. O consumidor OBC
+mantém ArduinoJson 7.0.4 com patch controlado e LoRa 0.8.0; suítes próprias
+TT&C mantêm ArduinoJson 7.4.3 resolvido por seu ambiente. Sanitizadores
+nativos ASan/UBSan/LeakSanitizer ativos fora da sandbox. Apenas o aviso
+preexistente `uartSetPins` do framework permaneceu.
+
+| Verificação | Resultado / evidência |
+|---|---|
+| API diagnóstica TT&C real | [3/3 aprovados na placa](../../../examples/obc-resources-2026-11-15-ttc-diagnostics-02.txt), incluindo contato válido/inválido, meios independentes, Update manual e cópias concorrentes da tarefa real |
+| Suítes TT&C originais | [42/42 aprovados](../../../examples/obc-resources-2026-11-15-ttc-regression.txt): 25 nativos e 17 ESP32, sem alterar seus arquivos |
+| Verificações nativas | [Sete executáveis aprovados](../../../examples/obc-resources-2026-11-15-native-regression.txt): tarefas, I2C, recursos, escritor, reserva de recuperação, downlink e executor I2C |
+| Bancada nova de recursos | [Aprovada](../../../examples/obc-resources-2026-11-15-bench.json): pausa de 2.300 ms, suspeita aos 2.018 ms e retorno; rádio indisponível independente de progresso; histerese/pilha/recusa; oito registros EVENT/FAULT 260–264 observados no backend simulado; 13 ACKs, q máximo 44 ms, resposta máxima 92,887 ms |
+| Downlink original | [Aprovado](../../../examples/obc-resources-2026-11-15-downlink-regression.json): sete entregas, retentativa e três arquivos; 44 ACKs, q máximo 53 ms e resposta máxima 444,238 ms |
+| Tarefas originais | [Aprovadas](../../../examples/obc-resources-2026-11-15-task-regression.json): pausas/retorno, varredura e espera SD preservadas; 115 ACKs, q máximo 94 ms e resposta máxima 148,977 ms |
+| I2C original | [Aprovado](../../../examples/obc-resources-2026-11-15-i2c-regression.json): contextos, indisponibilidade e retomada explícita preservados; 27 ACKs, q máximo 41 ms e resposta máxima 184,967 ms |
+| Recuperação do escritor original | [Aprovada](../../../examples/obc-resources-2026-11-15-storage-regression.json): seis tentativas, duas retomadas e um esgotamento; 363 ACKs, q máximo 84 ms e resposta máxima 606,845 ms |
+| Memória original | [Aprovada](../../../examples/obc-resources-2026-11-15-memory-regression.json): JSON máximo e snapshot denso READY, NO_MEMORY real preservando snapshot e retomada posterior; 11 leituras durante os casos; 70 ACKs, q máximo 51 ms e resposta máxima 696,338 ms |
+| Builds afetados | Sete aprovados: obc, recursos, integração TT&C, tarefas, I2C, escritor e memória. obc usa 32.672 bytes estáticos/430.737 bytes de flash, acréscimos de 168/3.276 sobre a base |
+| Firmware final | obc restaurado com hash de gravação verificado; roteiros [recursos](../../../examples/obc-resources-2026-11-15-obc.json), [tarefas](../../../examples/obc-resources-2026-11-15-task-obc.json), [I2C](../../../examples/obc-resources-2026-11-15-i2c-obc.json) e [downlink](../../../examples/obc-resources-2026-11-15-downlink-obc.json) aprovados sem periféricos |
+
+Os comandos sequenciais de upload/regressões finais estão no
+[registro USB](../../../examples/obc-resources-2026-11-15-usb-regression.txt).
+Os hashes de firmware, fontes e relatórios estão no
+[manifesto da entrega](../../../examples/obc-resources-2026-11-15-manifest.json).
+
+### Entrega ao setor de testes
+
+O [guia](../../../tools/README.md#supervisão-de-recursos-ttc-e-memória--15112026)
+reúne procedimentos, ambientes, resultados esperados e matriz de casos
+disponíveis. Preparação/regressão OBC não preenche checkboxes das TES.
+Diagnóstico e recuperação local podem ser comprovados no escopo disponível;
+cartão/FAT32, sinais I2C/UART, RF e alimentação requerem montagem e método
+acordados. Travamento com reinicialização depende da INT-012; retomada de
+missão/atuações depende das INT-011/013. A TES-009 inteira permanece aberta.
+
+Esta conclusão supera as pendências locais registradas nas seções
+históricas abaixo, sem apagar reprovações ou transferir decisões de
+engenharia ao setor de testes.
+
+## Histórico da interrupção TT&C/memória — 15/11/2026
+
+Plano autorizado sobre `f112bc023625eef9ce5ff7502e5c6b276db9222d`, sem commit.
+Responsável OBC aprovou extensão mínima da API TT&C e estes critérios para
+esta implementação: suspeita após >2.000 ms sem progresso; heap interno
+acessível por byte <8.192 bytes/retorno >=12.288; maior bloco <4.096/retorno
+>=6.144 bytes; margem histórica de pilha <1.024 bytes por tarefa ativa,
+retida durante sua vida. Contato RF/cabo informa existência/idade, sem
+declarar perda apenas por silêncio. São decisões desta entrega, não valores
+encontrados como acordos anteriores dos setores ou aprovação de voo.
+
+Implementados, ainda sem conclusão integral:
+
+- `Ttc::GetDiagnostics`, publicação de início/conclusão de Update, contato
+  válido separado RF/cabo, disponibilidade observada e pilha da tarefa.
+  Tarefas, protocolo, filas e recuperação do rádio preservados.
+- `ObcResourceHealth`: avaliação portátil de progresso, histerese de heap/
+  bloco, alerta histórico de pilha e recusas cumulativas de alocação.
+  Integração no consumidor/fluxo existentes, sem nova tarefa ou reset.
+- Diagnósticos `[TTC-HEALTH]`/`[MEMORY-HEALTH]` e EVENT/FAULT OBC 260–264
+  pelo diário/fila existentes. Formatos e validações anteriores preservados.
+- Bancada isolada `int008-resources-check`, roteiro USB novo e suíte
+  `esp32-diagnostics` para a API real TT&C. Injeções somente na bancada.
+
+Verificações concluídas até a interrupção:
+
+- Antes das alterações: regressões nativas originais de tarefas, I2C,
+  recuperação do escritor, downlink e executor I2C aprovadas com ASan/UBSan
+  e LeakSanitizer fora da sandbox. A primeira execução dentro da sandbox
+  foi impedida pelo ptrace; nenhum sanitizador foi desativado.
+- Verificação nativa nova `ObcResourceHealthCheck` aprovada com os mesmos
+  sanitizadores: fronteiras, wrap, histerese, pilhas, alocação e codec real.
+- Builds `obc` e `int008-resources-check` aprovados. `obc`: RAM estática
+  32.672 bytes, flash 430.737 bytes; bancada: 35.136/541.189 bytes.
+  Somente aviso preexistente `uartSetPins` do framework.
+- Suíte nova compilou, mas execução no ESP32 reprovou: um caso aprovado e
+  dois reprovados, conforme o diagnóstico abaixo. Nenhum teste anterior
+  foi alterado para esta implementação.
+
+### Diagnóstico da reprovação e ajuste proposto, não aplicado
+
+`TestInitialAndContacts` passou. `TestManualProgressAndRadio` interrompeu em
+`TEST_ASSERT_EQUAL_UINT64(before.completions + 20, sample.completions)`:
+`Unity 64-bit Support Disabled`. A configuração Unity do ambiente não
+habilita esse assert; a igualdade esperada não chegou a ser avaliada.
+
+O caso interrompido não alcançou `radio.available.store(true)`. Portanto,
+`TestTaskSnapshots` recebeu o rádio simulado indisponível e reprovou sua
+condição composta de tarefa/inicialização/rádio. Não há evidência de falha
+do mecanismo de progresso a partir dessas duas reprovações.
+
+Proposta para discussão: comparar os mesmos valores u64 em C++ com
+`TEST_ASSERT_TRUE(sample.completions == before.completions + 20)`, sem
+cast ou perda de bits, e explicitar as pré-condições de rádio no último
+caso para evitar falha em cascata. Nenhum desses ajustes foi aplicado.
+
+Conforme AGENTS.md, implementação interrompida após o diagnóstico. A
+bancada nova USB e as demais regressões/builds posteriores permanecem
+**não executados**. Não encerrar ou mover esta task; documentação final e
+pacote de liberação de testes ainda dependem de concluir as verificações.
+
+### Restauração e evidências preservadas
+
+ESP32-D0WD-V3 rev 3.1, CH340 `/dev/ttyUSB0`. Após a reprovação, firmware
+`obc` desta implementação restaurado com hash de gravação verificado;
+`ObcDownlinkCheck.py` original passou sem periféricos, mantendo suas
+entradas/expectativas. Nenhum watchdog/reset de missão foi implementado.
+
+- [Base nativa original](../../../examples/obc-resources-2026-11-15-native-baseline.txt).
+- [Suíte TT&C reprovada](../../../examples/obc-resources-2026-11-15-ttc-diagnostics.txt).
+- [Downlink original após restauração](../../../examples/obc-resources-2026-11-15-downlink-restored.json).
+
+SHA-256 dos builds até a interrupção:
+
+```text
+obc: dcea52ad693794564f8f49c0edf9fb170f66e5b1d0c122b51e5c5c44eedfba29
+int008-resources-check: c41505c7baa956f94ee57b2998f10d98ebfc2aae9cfb0b065cd9e00940956323
+```
 
 
 ## Escopo vigente — 14/11/2026
 
-Permanecem nesta INT a supervisão de recursos, diagnósticos e recuperação local, incluindo o escritor SD. Diagnósticos UART/processamento/escritor/I2C e retomada local já estão implementados nos recortes registrados. Restam diagnóstico OBC do TT&C, degradação de memória e políticas locais dos recursos ainda não cobertos; reutilizar métricas/recuperação dos proprietários, sem duplicar tarefas, drivers ou reset do SX1276.
+Permanecem nesta INT a supervisão de recursos, diagnósticos e recuperação local, incluindo o escritor SD. As pendências de TT&C/memória identificadas nesta redistribuição foram concluídas em 15/11/2026, conforme a conclusão acima. Métricas e recuperação dos proprietários foram reutilizadas, sem duplicar tarefas, drivers ou reset do SX1276.
 
-Watchdog e `CMD_RESET_OBC` passam à [INT-012](INT-012-watchdog-reset-obc.md). Retorno de modos/missão e estados duráveis após reset passam à [INT-013](INT-013-retomada-operacional.md), que recebe o encaminhamento DAD-003. Estados do Burn Wire pertencem à [INT-011](INT-011-burn-wire-persistencia.md).
+Watchdog e `CMD_RESET_OBC` passam à [INT-012](INT-012-watchdog-reset-obc.md). Retorno de modos/missão e estados duráveis após reset passam à [INT-013](../INT-013-retomada-operacional.md), que recebe o encaminhamento DAD-003. Estados do Burn Wire pertencem à [INT-011](../INT-011-burn-wire-persistencia.md).
 
-A INT-007 inteira deixa de ser predecessora desta supervisão local. Decisões dependentes de modo são consumidas somente na INT-013 ou na integração correspondente. Parâmetros provisórios seguem o [registro comum](../README.md#parâmetros-provisórios). Build e regressões pertinentes pertencem ao OBC; comprovação física permanece na TES-009. Estado Em andamento preservado.
+A INT-007 inteira deixa de ser predecessora desta supervisão local. Decisões dependentes de modo são consumidas somente na INT-013 ou na integração correspondente. Parâmetros provisórios seguem o [registro comum](../../README.md#parâmetros-provisórios). Build e regressões pertinentes pertencem ao OBC; comprovação física permanece na TES-009. O estado Em andamento da revisão de 14/11 foi substituído pela conclusão de 15/11.
 
 ## Histórico dos recortes anteriores à redistribuição
 
@@ -56,8 +214,8 @@ O firmware `obc` foi restaurado com hash de gravação verificado e passou
 no roteiro novo sem sensores: I2C ready/idle, sem suspeita ou recuperação.
 Relatórios novos, sem sobrescrever os resultados anteriores:
 
-- [Bancada reprovada](../../examples/obc-i2c-health-2026-11-14-bench.json).
-- [Firmware normal restaurado](../../examples/obc-i2c-health-2026-11-14-obc.json).
+- [Bancada reprovada](../../../examples/obc-i2c-health-2026-11-14-bench.json).
+- [Firmware normal restaurado](../../../examples/obc-i2c-health-2026-11-14-obc.json).
 
 ### Ajuste autorizado e reexecução aprovada
 
@@ -92,13 +250,13 @@ respectivamente. Essas medidas não representam pico completo de heap/pilhas.
 
 Relatórios da conclusão, preservando a reprovação e a primeira restauração:
 
-- [Bancada I2C aprovada](../../examples/obc-i2c-health-2026-11-14-bench-02.json).
-- [Regressão de recuperação I2C](../../examples/obc-i2c-health-2026-11-14-recovery-regression.json).
-- [Regressão de supervisão](../../examples/obc-i2c-health-2026-11-14-task-regression.json).
-- [Regressão de downlink](../../examples/obc-i2c-health-2026-11-14-downlink-regression.json).
-- [I2C no firmware normal](../../examples/obc-i2c-health-2026-11-14-obc-02.json).
-- [Supervisão no firmware normal](../../examples/obc-i2c-health-2026-11-14-task-obc.json).
-- [Downlink no firmware normal](../../examples/obc-i2c-health-2026-11-14-downlink-obc.json).
+- [Bancada I2C aprovada](../../../examples/obc-i2c-health-2026-11-14-bench-02.json).
+- [Regressão de recuperação I2C](../../../examples/obc-i2c-health-2026-11-14-recovery-regression.json).
+- [Regressão de supervisão](../../../examples/obc-i2c-health-2026-11-14-task-regression.json).
+- [Regressão de downlink](../../../examples/obc-i2c-health-2026-11-14-downlink-regression.json).
+- [I2C no firmware normal](../../../examples/obc-i2c-health-2026-11-14-obc-02.json).
+- [Supervisão no firmware normal](../../../examples/obc-i2c-health-2026-11-14-task-obc.json).
+- [Downlink no firmware normal](../../../examples/obc-i2c-health-2026-11-14-downlink-obc.json).
 
 SHA-256 dos firmwares utilizados na conclusão:
 
@@ -201,10 +359,10 @@ Fila cheia e indisponibilidade do SD conservam perdas explícitas.
 
 Relatórios novos, preservando as evidências de 13/11:
 
-- [Supervisão com injeções](../../examples/obc-task-health-2026-11-14-bench.json).
-- [Regressão original de bancada](../../examples/obc-task-health-2026-11-14-regression.json).
-- [Supervisão no firmware normal](../../examples/obc-task-health-2026-11-14-obc.json).
-- [Downlink original no firmware normal](../../examples/obc-task-health-2026-11-14-downlink-obc.json).
+- [Supervisão com injeções](../../../examples/obc-task-health-2026-11-14-bench.json).
+- [Regressão original de bancada](../../../examples/obc-task-health-2026-11-14-regression.json).
+- [Supervisão no firmware normal](../../../examples/obc-task-health-2026-11-14-obc.json).
+- [Downlink original no firmware normal](../../../examples/obc-task-health-2026-11-14-downlink-obc.json).
 
 SHA-256 dos firmwares utilizados:
 
@@ -219,7 +377,7 @@ a INT-008 permanece aberta e fora de `done/`. Não comprova SD físico,
 interoperabilidade Pi/RF, supervisão I2C/TT&C, watchdog global ou retomada
 operacional. O diagnóstico ainda depende do loop, escalonamento e locks.
 Procedimentos no
-[guia](../../tools/README.md#supervisão-diagnóstica-das-tarefas--14112026).
+[guia](../../../tools/README.md#supervisão-diagnóstica-das-tarefas--14112026).
 
 ## Recorte autorizado — retomada do escritor, 13/11/2026
 
@@ -251,7 +409,7 @@ Base Git `777b5f8`, com as alterações locais desta entrega. ESP32-D0WD-V3
 rev 3.1/CH340 em `/dev/ttyUSB0`, somente USB, sem Pi, rádio ou SD físicos.
 Plataforma Espressif32 6.6.0, Arduino ESP32 2.0.14, GCC Xtensa 8.4.0,
 ArduinoJson 7.0.4 e LoRa 0.8.0. Comandos reproduzíveis no
-[guia](../../tools/README.md#retomada-do-escritor-sd--13112026).
+[guia](../../../tools/README.md#retomada-do-escritor-sd--13112026).
 
 | Verificação | Resultado |
 |---|---|
@@ -274,9 +432,9 @@ Esses valores não representam taxa nominal ou conservação de todos os dados.
 
 Evidências permanentes, sem substituir relatórios anteriores:
 
-- [Bancada de recuperação](../../examples/obc-storage-recovery-2026-11-13-bench.json).
-- [Regressão USB](../../examples/obc-storage-recovery-2026-11-13-regression.json).
-- [Firmware normal restaurado](../../examples/obc-storage-recovery-2026-11-13-obc.json).
+- [Bancada de recuperação](../../../examples/obc-storage-recovery-2026-11-13-bench.json).
+- [Regressão USB](../../../examples/obc-storage-recovery-2026-11-13-regression.json).
+- [Firmware normal restaurado](../../../examples/obc-storage-recovery-2026-11-13-obc.json).
 
 SHA-256 dos firmwares verificados:
 
@@ -367,9 +525,9 @@ Os testes e expectativas anteriores não foram alterados.
 Procedimentos nativos/USB no guia de ferramentas. Evidências novas, mantendo
 os relatórios anteriores e o histórico do impedimento:
 
-- [Bancada após correção](../../examples/obc-storage-recovery-2026-11-13-bench-02.json).
-- [Regressão após correção](../../examples/obc-storage-recovery-2026-11-13-regression-02.json).
-- [Firmware final restaurado](../../examples/obc-storage-recovery-2026-11-13-obc-02.json).
+- [Bancada após correção](../../../examples/obc-storage-recovery-2026-11-13-bench-02.json).
+- [Regressão após correção](../../../examples/obc-storage-recovery-2026-11-13-regression-02.json).
+- [Firmware final restaurado](../../../examples/obc-storage-recovery-2026-11-13-obc-02.json).
 
 SHA-256 dos firmwares finais:
 
@@ -401,7 +559,7 @@ Supervisionar tarefas e recursos por progresso e disponibilidade. Reutilizar Get
 
 ## Pré-requisitos
 
-- **Tarefas/capacidades:** [COM-003](../01-comunicacao/done/COM-003-recuperacao-i2c.md), boot de bancada da INT-003, adaptador/métricas TT&C da INT-004 e diário/diagnósticos da INT-006. Esses recortes já disponíveis permitem trabalhar sem encerrar a INT-007. Integração de consumidores específicos depende de INT-005/009 apenas no recurso correspondente.
+- **Tarefas/capacidades:** [COM-003](../../01-comunicacao/done/COM-003-recuperacao-i2c.md), boot de bancada da INT-003, adaptador/métricas TT&C da INT-004 e diário/diagnósticos da INT-006. Esses recortes já disponíveis permitem trabalhar sem encerrar a INT-007. Integração de consumidores específicos depende de INT-005/009 apenas no recurso correspondente.
 - **Condições externas:** Definir saúde, tempos, tentativas e retomada com coordenação e setores.
 
 ## Definições e condições
@@ -411,7 +569,7 @@ Supervisionar tarefas e recursos por progresso e disponibilidade. Reutilizar Get
 
 ## Critérios de conclusão
 
-Supervisão e recuperação local do próprio escopo implementadas, limites/ações documentados, eventos encaminhados e build/regressões pertinentes aprovados. Persistência só é declarada com gravação confirmada. Comprovação independente dos tempos e integridade física após falhas pertence à [TES-009](../04-testes/TES-009-falhas-e-recuperacao.md) e não bloqueia por si só esta implementação. Watchdog e retomada operacional permanecem abertos nas INT-012/013.
+Supervisão e recuperação local do próprio escopo implementadas, limites/ações documentados, eventos encaminhados e build/regressões pertinentes aprovados. Persistência só é declarada com gravação confirmada. Comprovação independente dos tempos e integridade física após falhas pertence à [TES-009](../../04-testes/TES-009-falhas-e-recuperacao.md) e não bloqueia por si só esta implementação. Watchdog e retomada operacional permanecem abertos nas INT-012/013.
 
 ## Encaminhamentos recebidos — 09/11/2026
 
@@ -422,12 +580,12 @@ cenários originais e não mudam seu estado por conclusão da origem.
 
 | Origem concluída | Obrigação recebida | Situação |
 |---|---|---|
-| [COM-005](../01-comunicacao/done/COM-005-armazenamento-sd.md) | Integrar a política de retomada do escritor após falha/reset: preservar arquivos, End/Init e nome novo, sem apagar ou reutilizar conteúdo anterior. | Retomada local após falha concluída em 13/11, incluindo reserva com cache cheio; política operacional/reset e comprovação física pendentes |
-| [DAD-003](../02-dados-e-tempo/done/DAD-003-registros-e-interpretacao.md) | Integrar retomada persistente por boot e falhas, sem deduzir autorização de atuação de eventos ou flags voláteis. | Transferida, ainda pendente na [INT-013](INT-013-retomada-operacional.md); estados de atuação na [INT-011](INT-011-burn-wire-persistencia.md) |
+| [COM-005](../../01-comunicacao/done/COM-005-armazenamento-sd.md) | Integrar a política de retomada do escritor após falha/reset: preservar arquivos, End/Init e nome novo, sem apagar ou reutilizar conteúdo anterior. | Retomada local após falha concluída em 13/11, incluindo reserva com cache cheio; política operacional/reset e comprovação física pendentes |
+| [DAD-003](../../02-dados-e-tempo/done/DAD-003-registros-e-interpretacao.md) | Integrar retomada persistente por boot e falhas, sem deduzir autorização de atuação de eventos ou flags voláteis. | Transferida, ainda pendente na [INT-013](../INT-013-retomada-operacional.md); estados de atuação na [INT-011](../INT-011-burn-wire-persistencia.md) |
 
 ## Encaminhamento recebido da COM-003 — 10/11/2026
 
-A [COM-003](../01-comunicacao/done/COM-003-recuperacao-i2c.md) fornece recuperação
+A [COM-003](../../01-comunicacao/done/COM-003-recuperacao-i2c.md) fornece recuperação
 no executor, estado `UNAVAILABLE` após esgotamento, `GetDiagnostics` e
 `RequestRecovery`. Integrar esses recursos à supervisão e definir detecção
 por progresso, limites e ações para callbacks ou chamadas internas do driver
@@ -439,15 +597,16 @@ e EPS/Térmico continuam nas INT-005/009, sem eliminar a supervisão local desta
 
 ## Evidências
 
-As evidências dos recortes locais de retomada do escritor, diagnóstico das
-três tarefas e diagnóstico I2C estão acima. Supervisão dos demais recursos,
-watchdog e retomada operacional permanecem abertos; conservar critérios e dependências.
+As evidências dos recortes locais e da conclusão TT&C/memória estão acima.
+A supervisão e recuperação local do próprio escopo estão concluídas.
+Watchdog/reset permanecem na INT-012; retomada operacional na INT-013.
+Conservar os critérios e as dependências dos ensaios físicos.
 
 ## Referências
 
 - Requisitos relacionados: REQ-OBC-007, REQ-OBC-009, REQ-OBC-010, REQ-OBC-011, REQ-NF-OBC-003, REQ-NF-OBC-004. Implementação não equivale a requisito validado.
-- [tt-c/include/Ttc.h](../../../tt-c/include/Ttc.h)
-- [obc-dh/.agents/ARCHITECTURE.md](../../.agents/ARCHITECTURE.md)
-- [obc-dh/.agents/DEFINICOES_OBC_DP.md](../../.agents/DEFINICOES_OBC_DP.md)
+- [tt-c/include/Ttc.h](../../../../tt-c/include/Ttc.h)
+- [obc-dh/.agents/ARCHITECTURE.md](../../../.agents/ARCHITECTURE.md)
+- [obc-dh/.agents/DEFINICOES_OBC_DP.md](../../../.agents/DEFINICOES_OBC_DP.md)
 - Origem no planejamento anterior: P-MISSAO.
-- [Painel de tarefas](../../.agents/TODO.md); [organização e rastreabilidade](../README.md).
+- [Painel de tarefas](../../../.agents/TODO.md); [organização e rastreabilidade](../../README.md).

@@ -48,6 +48,7 @@ namespace {
     obc_health::REPORT health_reports[obc_health::task_count] = {};
     uint64_t last_health_ms = 0;
     bool health_sampled = false;
+    uint64_t allocation_failures = 0;
 
     // Tabelas reais/simuladas conservam seus contextos; a decoração só mede
     // entrada/retorno. Contexto vive na pilha permanente da tarefa escritora.
@@ -79,6 +80,9 @@ namespace {
         portEXIT_CRITICAL(&state_lock);
 #ifdef OBC_TASK_HEALTH_BENCH
         obc_health::bench::Before(obc_health::TASK::WRITER, activity);
+#endif
+#ifdef OBC_WATCHDOG_BENCH_CASE
+        if (activity == obc_health::ACTIVITY::WRITE) obc_watchdog_bench::Before(obc_watchdog::RESOURCE::WRITER);
 #endif
         return previous;
     }
@@ -247,6 +251,41 @@ namespace {
         }
     }
 
+    // Eventos reutilizam o diário e suas perdas; sem boot não há registro fabricado.
+    void RecordResourceEvent(
+        obc_resource_health::CODE code,
+        bool fault,
+        const char* description,
+        uint64_t now_ms
+    ) {
+        obc_record::RECORD record = {};
+        if (obc_resource_health::MakeEvent(code, fault, description, {boot_id, now_ms}, record)) SubmitRecord(record);
+    }
+
+    // Não aninha locks nem mede pilhas sob lock; tarefa ausente tem active=false.
+    obc_resource_health::MEMORY_SAMPLE SampleMemory(
+        const LINK_DIAGNOSTICS& ttc
+    ) {
+        obc_resource_health::MEMORY_SAMPLE sample = {};
+        sample.byte_heap = heap_caps_get_free_size(MALLOC_CAP_INTERNAL | MALLOC_CAP_8BIT);
+        sample.byte_largest = heap_caps_get_largest_free_block(MALLOC_CAP_INTERNAL | MALLOC_CAP_8BIT);
+        const auto uart = obc_payload::esp32::GetTransportStatistics();
+        const auto bus = i2c::GetDiagnostics();
+        sample.stacks[0] = {uart.progress.enabled, uart.stack_free_bytes};
+        sample.stacks[1] = {payload_task != nullptr, payload_task ? uxTaskGetStackHighWaterMark(payload_task) : 0U};
+        sample.stacks[2] = {writer_task != nullptr, writer_task ? uxTaskGetStackHighWaterMark(writer_task) : 0U};
+        sample.stacks[3] = {bus.state != i2c::SERVICE_STATE::UNINITIALIZED, bus.worker_stack_free_bytes};
+        sample.stacks[4] = {ttc.task_started, ttc.stack_free_bytes};
+        sample.stacks[5] = {true, uxTaskGetStackHighWaterMark(nullptr)};
+        portENTER_CRITICAL(&state_lock);
+        sample.allocation_failures = allocation_failures;
+        portEXIT_CRITICAL(&state_lock);
+#ifdef OBC_RESOURCES_BENCH
+        obc_resources_bench::OverrideMemory(sample);
+#endif
+        return sample;
+    }
+
     // Avaliação independente do boot/fluxo; sem boot válido só publica por USB.
     void ServiceI2cHealth(
         uint64_t now_ms
@@ -360,6 +399,9 @@ namespace {
 #ifdef OBC_TASK_HEALTH_BENCH
             obc_health::bench::Before(obc_health::TASK::PROCESS, obc_health::ACTIVITY::PROCESSING);
 #endif
+#ifdef OBC_WATCHDOG_BENCH_CASE
+            obc_watchdog_bench::Before(obc_watchdog::RESOURCE::PROCESS);
+#endif
             const obc_payload::STATUS status = obc_payload::esp32::Poll();
             if (status == obc_payload::STATUS::READY) PublishSnapshot(*receiver.GetSnapshot());
 #if defined(OBC_CAPACITY_BENCH) || defined(OBC_MEMORY_BENCH)
@@ -372,6 +414,7 @@ namespace {
 #endif
             const obc_payload::STATISTICS& observed = receiver.GetStatistics();
             portENTER_CRITICAL(&state_lock);
+            if (status == obc_payload::STATUS::NO_MEMORY && allocation_failures != UINT64_MAX) ++allocation_failures;
             state.SetPayloadStatistics(observed.complete_candidates, observed.rejected,
                 observed.missing_positions, observed.duplicates);
             parser_peak_bytes = observed.parser_peak_bytes;
@@ -749,6 +792,32 @@ bool SetTime(
     return true;
 }
 
+void GetTaskProgress(
+    obc_health::PROGRESS (&out)[obc_health::task_count]
+) {
+    portENTER_CRITICAL(&state_lock);
+    out[1] = process_progress;
+    out[2] = writer_progress;
+    portEXIT_CRITICAL(&state_lock);
+    out[0] = obc_payload::esp32::GetTransportStatistics().progress;
+}
+
+void RecordWatchdogEvent(
+    obc_watchdog::CODE code,
+    bool fault,
+    const char* description
+) {
+    if (!boot_id) return;
+    obc_record::RECORD record = {};
+    record.header = {1, fault ? obc_data::RECORD_TYPE::FAULT : obc_data::RECORD_TYPE::EVENT,
+        96, {boot_id, obc_time::esp32::GetMonotonicMs()}};
+    record.body.event.source = obc_data::SOURCE::OBC;
+    record.body.event.code = static_cast<uint16_t>(code);
+    record.body.event.severity = fault ? obc_data::SEVERITY::ERROR : obc_data::SEVERITY::INFO;
+    std::snprintf(record.body.event.description, sizeof(record.body.event.description), "%s", description);
+    SubmitRecord(record);
+}
+
 obc_data::TELEMETRY_DATA ComposeTelemetry(
     uint64_t& sampled_ms
 ) {
@@ -772,6 +841,76 @@ void RecordTelemetry(
         portENTER_CRITICAL(&state_lock);
         state.DropRecords();
         portEXIT_CRITICAL(&state_lock);
+    }
+}
+
+void ReportResourceHealth(
+    const LINK_DIAGNOSTICS& ttc
+) {
+    using namespace obc_resource_health;
+    static TtcMonitor ttc_monitor;
+    static MemoryMonitor memory_monitor;
+    static bool memory_sampled = false;
+    static uint64_t last_memory_ms = 0;
+    static uint64_t last_ttc_print_ms = 0;
+    const uint64_t now_ms = obc_time::esp32::GetMonotonicMs();
+    const TTC_SAMPLE ttc_sample = {ttc.init_attempted, ttc.initialized, ttc.task_started,
+        ttc.radio_ready, ttc.progress_ms, ttc.sampled_ms, ttc.completions};
+    const TTC_REPORT report = ttc_monitor.Evaluate(ttc_sample);
+    if (report.progress_changed || report.radio_changed || now_ms - last_ttc_print_ms >= 1000) {
+        Serial.printf("[TTC-HEALTH] state=%s radio=%s updating=%u wired_ready=%u age_ms=%lu limit_ms=%lu completions=%llu rf_seen=%u rf_age_ms=%lu wired_seen=%u wired_age_ms=%lu resets=%lu changed=%u monotonic_ms=%llu\n",
+            StateName(report.progress), StateName(report.radio), ttc.updating ? 1U : 0U, ttc.wired_ready ? 1U : 0U,
+            static_cast<unsigned long>(report.age_ms), static_cast<unsigned long>(ttc_limit_ms),
+            static_cast<unsigned long long>(ttc.completions), ttc.rf_contact.seen ? 1U : 0U,
+            static_cast<unsigned long>(ttc.rf_contact.seen ? ttc.sampled_ms - ttc.rf_contact.received_ms : 0),
+            ttc.wired_contact.seen ? 1U : 0U,
+            static_cast<unsigned long>(ttc.wired_contact.seen ? ttc.sampled_ms - ttc.wired_contact.received_ms : 0),
+            static_cast<unsigned long>(ttc.radio_resets), report.progress_changed || report.radio_changed ? 1U : 0U,
+            static_cast<unsigned long long>(now_ms));
+        if (now_ms - last_ttc_print_ms >= 1000) last_ttc_print_ms = now_ms;
+    }
+    char description[65];
+    if (report.progress_changed && report.progress != STATE::INACTIVE) {
+        std::snprintf(description, sizeof(description), "ttc %s age=%lu", StateName(report.progress),
+            static_cast<unsigned long>(report.age_ms));
+        RecordResourceEvent(CODE::TTC_PROGRESS, report.progress == STATE::SUSPECT, description, now_ms);
+    }
+    if (report.radio_changed && report.radio != STATE::INACTIVE) {
+        std::snprintf(description, sizeof(description), "radio %s resets=%lu", StateName(report.radio),
+            static_cast<unsigned long>(ttc.radio_resets));
+        RecordResourceEvent(CODE::RADIO, report.radio == STATE::UNAVAILABLE, description, now_ms);
+    }
+    if (memory_sampled && now_ms - last_memory_ms < memory_period_ms) return;
+    memory_sampled = true;
+    last_memory_ms = now_ms;
+    const MEMORY_SAMPLE sample = SampleMemory(ttc);
+    const MEMORY_REPORT memory = memory_monitor.Evaluate(sample);
+    Serial.printf("[MEMORY-HEALTH] byte_heap=%u byte_largest=%u heap_low=%u block_low=%u stack_low_mask=%u allocation_failures=%llu allocation_delta=%llu changed=%u monotonic_ms=%llu\n",
+        static_cast<unsigned>(sample.byte_heap), static_cast<unsigned>(sample.byte_largest),
+        memory.heap_low ? 1U : 0U, memory.block_low ? 1U : 0U, memory.stack_low_mask,
+        static_cast<unsigned long long>(sample.allocation_failures), static_cast<unsigned long long>(memory.allocation_delta),
+        memory.pressure_changed || memory.stack_new_mask || memory.allocation_delta ? 1U : 0U,
+        static_cast<unsigned long long>(now_ms));
+    if (memory.pressure_changed) {
+        std::snprintf(description, sizeof(description), "heap low=%u block_low=%u free=%u block=%u",
+            memory.heap_low ? 1U : 0U, memory.block_low ? 1U : 0U,
+            static_cast<unsigned>(sample.byte_heap), static_cast<unsigned>(sample.byte_largest));
+        RecordResourceEvent(CODE::HEAP, memory.heap_low || memory.block_low, description, now_ms);
+    }
+    for (size_t index = 0; index < stack_count; ++index) {
+        const auto& stack = sample.stacks[index];
+        Serial.printf("[MEMORY-HEALTH] task=%s active=%u stack_free=%lu low=%u monotonic_ms=%llu\n",
+            StackName(static_cast<STACK>(index)), stack.active ? 1U : 0U, static_cast<unsigned long>(stack.free_bytes),
+            (memory.stack_low_mask & (1U << index)) ? 1U : 0U, static_cast<unsigned long long>(now_ms));
+        if (!(memory.stack_new_mask & (1U << index))) continue;
+        std::snprintf(description, sizeof(description), "stack %s free=%lu limit=1024",
+            StackName(static_cast<STACK>(index)), static_cast<unsigned long>(stack.free_bytes));
+        RecordResourceEvent(CODE::STACK_MARGIN, true, description, now_ms);
+    }
+    if (memory.allocation_delta) {
+        std::snprintf(description, sizeof(description), "NO_MEMORY delta=%llu total=%llu",
+            static_cast<unsigned long long>(memory.allocation_delta), static_cast<unsigned long long>(sample.allocation_failures));
+        RecordResourceEvent(CODE::ALLOCATION, true, description, now_ms);
     }
 }
 

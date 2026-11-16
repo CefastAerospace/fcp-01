@@ -10,7 +10,7 @@ Retomar serviços, modos e estados duráveis após reset sem repetir atuações 
 
 ## Origem e limites
 
-Escopo extraído da [INT-008](INT-008-supervisao-e-retomada.md), incluindo o encaminhamento DAD-003, em 14/11/2026. A recuperação local do escritor permanece na INT-008; a [INT-012](INT-012-watchdog-reset-obc.md) produz o reset. Estados duráveis do Burn Wire pertencem à [INT-011](INT-011-burn-wire-persistencia.md).
+Escopo extraído da [INT-008](done/INT-008-supervisao-e-retomada.md), incluindo o encaminhamento DAD-003, em 14/11/2026. A recuperação local do escritor permanece na INT-008; a [INT-012](done/INT-012-watchdog-reset-obc.md) produz o reset. Estados duráveis do Burn Wire pertencem à [INT-011](INT-011-burn-wire-persistencia.md).
 
 ## Entrega
 

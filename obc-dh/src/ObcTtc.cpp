@@ -11,11 +11,17 @@ namespace {
 
     // ─── ELEMENTOS STATIC ─────────────────────────────────────────────
 
+#ifdef OBC_WATCHDOG_BENCH_CASE
+    obc_watchdog_bench::Radio radio;
+#elif defined(OBC_RESOURCES_BENCH)
+    obc_resources_bench::Radio radio;
+#else
     const RADIO_PINS radio_pins = {
         pinout::radio_sck, pinout::radio_miso, pinout::radio_mosi,
         pinout::radio_cs, pinout::radio_rst, pinout::radio_dio0
     };
     Sx1276Radio radio(radio_pins);
+#endif
     UmbilicalLink umbilical(Serial, 115200);
     Ttc link(radio, &umbilical);
     bool init_attempted = false;
@@ -24,6 +30,18 @@ namespace {
     constexpr uint32_t service_wait_ms = 20;
 
     // ─── HELPERS ──────────────────────────────────────────────────────
+
+    // O consumidor encaminha uma cópia; o supervisor nunca acessa o rádio.
+    void ServiceResourceHealth(
+    ) {
+        static bool sampled = false;
+        static uint32_t last_ms = 0;
+        const uint32_t now_ms = millis();
+        if (sampled && now_ms - last_ms < obc_resource_health::ttc_period_ms) return;
+        sampled = true;
+        last_ms = now_ms;
+        obc_flow::esp32::ReportResourceHealth(link.GetDiagnostics());
+    }
 
     // Mantém diagnóstico de recusa separado da execução de cada comando.
     void Acknowledge(
@@ -141,6 +159,7 @@ namespace {
             case ttc::CMD_GET_STATUS:
             case ttc::CMD_REQUEST_TELEMETRY:
             case ttc::CMD_SET_TIME:
+            case ttc::CMD_RESET_OBC:
                 break;
             default:
                 return ttc::ERR_INVALID_CMD;
@@ -163,6 +182,16 @@ namespace {
             return ttc::ERR_INVALID_PARAM;
         }
         if (tc.cmd == ttc::CMD_PING) return ttc::ACK_OK;
+        if (tc.cmd == ttc::CMD_RESET_OBC) {
+#ifdef OBC_WATCHDOG_BENCH_CASE
+            obc_watchdog_bench::BeforeReset(link);
+#endif
+            if (!obc_watchdog::esp32::RequestReset()) return ttc::ERR_STATE_REJECTED;
+#ifdef OBC_WATCHDOG_BENCH_CASE
+            obc_watchdog_bench::AfterReset();
+#endif
+            return ttc::ACK_OK;
+        }
         return SendCurrentTelemetry() ? ttc::ACK_OK : ttc::ERR_STATE_REJECTED;
     }
 
@@ -190,6 +219,7 @@ namespace {
     void Service(
     ) {
         if (!active) {
+            ServiceResourceHealth();
             delay(service_wait_ms);
             return;
         }
@@ -202,6 +232,10 @@ namespace {
         }
         ServiceLogResponse();
         ServiceDelivery();
+        ServiceResourceHealth();
     }
+
+    LINK_DIAGNOSTICS GetDiagnostics(
+    ) { return link.GetDiagnostics(); }
 
 } // namespace obc_ttc

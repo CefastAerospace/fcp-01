@@ -1,5 +1,18 @@
 # TODO — OBC-DH
 
+**Conclusão INT-012 — 15/11/2026:** watchdog por progresso e reset em 1.500 ms
+implementados no escopo ESP32/USB; 14 casos novos, memória/esperas armados,
+regressões e 21 builds aprovados. `obc` restaurado/verificado, incluindo reset
+comandado. Reprovação inicial e dois ajustes autorizados só na bancada
+preservados; 48 validações anteriores intactas. TES-009 recebe versão e
+procedimentos; seus critérios/estado permanecem. Retomada de voo INT-013.
+
+**Conclusão de implementação — 15/11/2026:** INT-008 encerrada após diagnóstico
+TT&C/memória, correção autorizada da suíte nova, sete verificações nativas,
+45 casos TT&C, sete builds e bancadas/regressões USB aprovadas. `obc`
+restaurado e verificado. Procedimentos/evidências na task; TES mantêm seus
+estados e critérios. Watchdog/reset e retomada continuam nas INT-012/013.
+
 **Revisão documental: 14/11/2026.** Implementação, contratos e comprovação independente têm critérios distintos. OBC mantém ferramentas e regressões; o setor de testes executa os ensaios. INT-009 a INT-013 e TES-011/012 foram criadas como **Pendente**. Nenhum estado anterior foi alterado, nenhum código/teste foi implementado ou executado e nenhum requisito foi aprovado por esta revisão.
 
 As [regras e a correspondência de obrigações](../.tasks/README.md#revisão-vigente--14112026) definem os escopos redistribuídos. Estados: **Pendente** = não iniciada; **Em andamento** = iniciada; **Bloqueada** = impedimento registrado durante execução; **Concluída** = critérios próprios atendidos e arquivo em `done/`. Disponibilidade de uma entrega parcial não encerra sua task nem os ensaios.
@@ -35,11 +48,11 @@ Cada ID aparece uma vez nas seções 1–4. A coluna de capacidades identifica o
 | INT-005 | [Integração ADCS, encoder e FOC](../.tasks/03-integracao/INT-005-sensores-e-adcs.md) | COM-001/002/003, INT-002 e boot INT-003 | Inventário, aquisição/FOC e política I2C ADCS. Comprovação TES-003/008/009 | Pendente |
 | INT-006 | [Fluxo Payload–tempo–SD–telemetria](../.tasks/03-integracao/INT-006-fluxo-de-dados.md) | COM-004/005, DAD-003 e adaptador INT-004 | Fluxo/extração USB disponíveis; contratos operacionais/semântica pendentes. Comprovação TES-005/006/008/009 | Em andamento |
 | INT-007 | [Comandos, modos e coordenação da missão](../.tasks/03-integracao/INT-007-comandos-modos-e-protecoes.md) | Consumidor INT-004 e estado/fluxo INT-006; ADCS INT-005 para suas ações | ConOps e comandos permitidos; proteções/atuações conectadas por INT-010/011. Comprovação TES-008/010 | Pendente |
-| INT-008 | [Supervisão de recursos e recuperação local](../.tasks/03-integracao/INT-008-supervisao-e-retomada.md) | COM-003, boot INT-003, métricas INT-004 e diário INT-006 | Recortes escritor/tarefas/I2C concluídos; TT&C/memória e demais recursos pendentes. Comprovação TES-009 | Em andamento |
+| INT-008 | [Supervisão de recursos e recuperação local](../.tasks/03-integracao/done/INT-008-supervisao-e-retomada.md) | COM-003, boot INT-003, métricas INT-004 e diário INT-006 | Escritor, tarefas, I2C, TT&C e memória/pilhas concluídos; regressões preservadas, obc restaurado e pacote de ensaio disponível. Comprovação física TES-009; watchdog INT-012 e retomada INT-013 | Concluída |
 | INT-009 | [Aquisição e integração EPS/Térmico](../.tasks/03-integracao/INT-009-aquisicao-eps-termico.md) | COM-001/002/003, DAD-001 e boot INT-003 | Drivers/contratos, endereços, unidades e aquisição dos setores. Comprovação TES-003/008/009 | Pendente |
 | INT-010 | [Proteções energéticas e térmicas](../.tasks/03-integracao/INT-010-protecoes-energia-termico.md) | Dados INT-009, controle INT-005 e modos INT-007 | Cota EPS, limiares, prioridades e retorno aprovados. Comprovação TES-008/010 | Pendente |
 | INT-011 | [Atuação e persistência do Burn Wire](../.tasks/03-integracao/INT-011-burn-wire-persistencia.md) | Boot INT-003, interlock INT-004, modos INT-007 e proteção INT-010 | Autorização, montagem, duração, confirmação e estados duráveis. Comprovação TES-008/009/010 | Pendente |
-| INT-012 | [Watchdog e reinicialização do OBC](../.tasks/03-integracao/INT-012-watchdog-reset-obc.md) | Boot de bancada INT-003, consumidor INT-004 e diagnósticos INT-008 | Prazos provisórios de desenvolvimento explícitos; política de voo pendente. Comprovação TES-009; retorno operacional INT-013 | Pendente |
+| INT-012 | [Watchdog e reinicialização do OBC](../.tasks/03-integracao/done/INT-012-watchdog-reset-obc.md) | Boot de bancada INT-003, consumidor INT-004 e diagnósticos INT-008 | Mecanismo/TC concluídos no ESP32/USB; prazos provisórios documentados, regressões aprovadas e obc restaurado. Comprovação TES-009; efeitos elétricos TES-008 e retorno operacional INT-013 | Concluída |
 | INT-013 | [Retomada operacional após reset](../.tasks/03-integracao/INT-013-retomada-operacional.md) | INT-003/006/007/008/011/012; INT-010 nas decisões energéticas | ConOps e estados duráveis/seguros. Comprovação TES-008/009/010 | Pendente |
 
 ## 4. Testes e regressões
@@ -65,10 +78,9 @@ Cada ID aparece uma vez nas seções 1–4. A coluna de capacidades identifica o
 |---|---|---|
 | 1 | TES-011: organizar execução das regressões nativas existentes | Sem placa; preservar vetores/expectativas, detectar falhas e dependências ausentes. É ferramenta de desenvolvimento OBC. |
 | 2 | TES-002: completar ferramenta do executor; TES-012: cobrir lacunas do consumidor atual | OBC implementa ferramentas e regressões; setor de testes mantém a comprovação formal TES-002/008/009. |
-| 3 | INT-008: diagnóstico TT&C/memória e recuperação local ainda faltante | Usar APIs/métricas existentes e limites provisórios registrados quando cabíveis; sem duplicar reset do rádio nem antecipar voo. |
-| 4 | INT-012: watchdog e reset comandado no boot de bancada | Reutilizar progresso existente; definir limites/ações e regressões. Não declara retomada operacional ou saída elétrica segura. |
-| 5 | INT-004/006: fechar contratos operacionais e implementar ajustes acordados | Aceites e semântica continuam engenharia; não transferir decisões ao setor de testes nem inventar contrato unilateralmente. |
-| 6 | INT-003/005/007/009/010/011/013: implementar após suas entradas disponíveis | A indisponibilidade de hardware não bloqueia toda lógica; contratos elétricos/FOC/energia/atuação indispensáveis continuam condições reais. |
+| 3 | INT-012 concluída: entregar mecanismo de watchdog/reset à TES-009 | Versão, parâmetros provisórios, injeções e relatórios disponíveis. Não declara retomada operacional ou saída elétrica segura. |
+| 4 | INT-004/006: fechar contratos operacionais e implementar ajustes acordados | Aceites e semântica continuam engenharia; não transferir decisões ao setor de testes nem inventar contrato unilateralmente. |
+| 5 | INT-003/005/007/009/010/011/013: implementar após suas entradas disponíveis | A indisponibilidade de hardware não bloqueia toda lógica; contratos elétricos/FOC/energia/atuação indispensáveis continuam condições reais. |
 
 A ordem orienta trabalho, não cria dependências novas. Os recortes anteriores de memória, cliente real, extração, estresse, escritor e diagnóstico não precisam ser recriados. Procedimentos atuais estão no [guia](../tools/README.md); mensagens já preparadas em [encaminhamentos de 11/11](../encaminhamentos-2026-11-11.md), sem envio externo.
 
@@ -83,8 +95,8 @@ OBC entrega versão, ferramenta, regressões pertinentes e instruções compatí
 | TES-003/005/006 | Preparar por dispositivo/interface; executar com montagem, ponta Pi/cartão, contratos e instrumentos necessários. |
 | TES-008: USB/fluxo/tempo | Recortes locais disponíveis; manter seus limites e a distinção em relação à montagem real. |
 | TES-008: demais casos | Boot INT-003, ADCS INT-005, aquisição INT-009, modos INT-007, proteção INT-010 e Burn Wire INT-011 conforme o caso. |
-| TES-009: recuperação local | COM-003/004/005 e recortes INT-006/008 disponíveis; faltam montagem, método de injeção e critérios por caso. |
-| TES-009: watchdog e retomada | Implementações INT-012/013 pendentes; atos críticos também consomem INT-011. |
+| TES-009: recuperação local | INT-008 concluída, com ferramentas/evidências no guia; comprovação por caso mantém montagem, método de injeção e critérios necessários. |
+| TES-009: watchdog e retomada | Watchdog/reset INT-012 disponível com versão/roteiros; montagem e comprovação por caso. Retomada INT-013 e atos críticos INT-011 continuam pendentes. |
 | TES-010 | Preparar procedimento/rastreabilidade; missão completa ainda não liberada pelas integrações e ensaios pendentes. |
 
 Nenhuma linha aprova ensaio ou altera entradas/resultados esperados. A [matriz dos 16 requisitos](../.tasks/README.md#cobertura-dos-requisitos) identifica separadamente implementação e comprovação.

@@ -1,0 +1,2812 @@
+{
+  "passed": true,
+  "bench": true,
+  "lines": [
+    "ets Jul 29 2019 12:21:46",
+    "rst:0x1 (POWERON_RESET),boot:0x13 (SPI_FAST_FLASH_BOOT)",
+    "configsip: 0, SPIWP:0xee",
+    "clk_drv:0x00,q_drv:0x00,d_drv:0x00,cs0_drv:0x00,hd_drv:0x00,wp_drv:0x00",
+    "mode:DIO, clock div:2",
+    "load:0x3fff0030,len:1184",
+    "load:0x40078000,len:13232",
+    "load:0x40080400,len:3028",
+    "entry 0x400805e4",
+    "[FLOW-CHECK] ADS-B em RAM e SD lento simulados; sem ensa[OBC] TT&C: radio=OK; umbilical=OK; tarefa=OK",
+    "[FLOW] RAM apos receptor: heap=182456 byte_heap=110792 byte_largest=47092",
+    "[FLOW] RAM apos bloco SD: bloco=1 heap=117924 byte_heap=46260 byte_largest=16372 stack_budget=19456 margin=4096 reserva=23552 parser_limit=98304",
+    "[FLOW] Recepcao=OK; SD=em inicializacao; heap=97340; maior_bloco=69620",
+    "[FLOW-CHECK] Arquivo simulado: boot_000000000000008b_00000000.bin",
+    "[MEMORY-HEALTH] byte_heap=25580 byte_largest=8180 heap_low=0 block_low=0 stack_low_mask=0 allocation_failures=0 allocation_delta=0 changed=0 monotonic_ms=84",
+    "[MEMORY-HEALTH] task=uart active=1 stack_free=2544 low=0 monotonic_ms=84",
+    "[MEMORY-HEALTH] task=process active=1 stack_free=7664 low=0 monotonic_ms=84",
+    "[MEMORY-HEALTH] task=writer active=1 stack_free=5400 low=0 monotonic_ms=84",
+    "[MEMORY-HEALTH] task=i2c active=0 stack_free=0 low=0 monotonic_ms=84",
+    "[MEMORY-HEALTH] task=ttc active=1 stack_free=6332 low=0 monotonic_ms=84",
+    "[MEMORY-HEALTH] task=loop active=1 stack_free=6060 low=0 monotonic_ms=84",
+    "[DELIVERY] recovery=1 data=0 confirm=0 corrupt=0 tails=0 orphan=0 cache_bytes=2912",
+    "[TTC-HEALTH] state=ok radio=ok updating=0 wired_ready=1 age_ms=19 limit_ms=2000 completions=48 rf_seen=1 rf_age_ms=946 wired_seen=0 wired_age_ms=0 resets=0 changed=0 monotonic_ms=1007",
+    "[FLOW] received=0 invalid=0 gaps=0 duplicates=0 written=2 failures=0 dropped=0 SD=1 status=0 poll_gap_ms=2 process_gap_ms=2 stack_rx=7664 stack_sd=5400 stack_uart=2544 uart_full=0",
+    "[FLOW-MEMORY] heap=97340 byte_heap=25676 byte_largest=8180 byte_min=21912 parser_peak_bytes=0 parser_limit_bytes=98304",
+    "[STORAGE] state=0 attempt=0 episodes=0 attempts=0 recovered=0 exhausted=0 lifecycle_failures=0 cause=0 end=0 status=0 monotonic_ms=1017",
+    "[HEALTH] task=uart state=ok activity=idle age_ms=0 limit_ms=100 completions=875 sampled_ms=946 changed=0",
+    "[HEALTH] task=process state=ok activity=idle age_ms=0 limit_ms=2000 completions=874 sampled_ms=946 changed=0",
+    "[HEALTH] task=writer state=ok activity=idle age_ms=20 limit_ms=5000 completions=42 sampled_ms=946 changed=0",
+    "[DELIVERY] occupied=0 peak=0 accepted=0 repeated=0 lost=0 storage_failures=0 attempts=0 tx_failures=0 confirmed=0 unknown=0 evicted=0 recovery_slot=0",
+    "[MEMORY-HEALTH] byte_heap=25676 byte_largest=8180 heap_low=0 block_low=0 stack_low_mask=0 allocation_failures=0 allocation_delta=0 changed=0 monotonic_ms=1113",
+    "[MEMORY-HEALTH] task=uart active=1 stack_free=2544 low=0 monotonic_ms=1113",
+    "[MEMORY-HEALTH] task=process active=1 stack_free=7664 low=0 monotonic_ms=1113",
+    "[MEMORY-HEALTH] task=writer active=1 stack_free=5400 low=0 monotonic_ms=1113",
+    "[MEMORY-HEALTH] task=i2c active=0 stack_free=0 low=0 monotonic_ms=1113",
+    "[MEMORY-HEALTH] task=ttc active=1 stack_free=6332 low=0 monotonic_ms=1113",
+    "[MEMORY-HEALTH] task=loop active=1 stack_free=5200 low=0 monotonic_ms=1113",
+    "[I2C-HEALTH] state=inactive service=uninitialized activity=inactive age_ms=0 limit_ms=0 sampled_ms=0 monotonic_ms=1156 changed=0 queued=0 cause=0 failure=0 cycles=0 recovered=0 exhausted=0",
+    "[TTC-HEALTH] state=ok radio=ok updating=0 wired_ready=1 age_ms=9 limit_ms=2000 completions=98 rf_seen=1 rf_age_ms=1965 wired_seen=0 wired_age_ms=0 resets=0 changed=0 monotonic_ms=2026",
+    "[FLOW] received=0 invalid=0 gaps=0 duplicates=0 written=3 failures=0 dropped=0 SD=1 status=0 poll_gap_ms=2 process_gap_ms=2 stack_rx=7664 stack_sd=5400 stack_uart=2544 uart_full=0",
+    "[FLOW-MEMORY] heap=97340 byte_heap=25676 byte_largest=8180 byte_min=21912 parser_peak_bytes=0 parser_limit_bytes=98304",
+    "[STORAGE] state=0 attempt=0 episodes=0 attempts=0 recovered=0 exhausted=0 lifecycle_failures=0 cause=0 end=0 status=0 monotonic_ms=2036",
+    "[HEALTH] task=uart state=ok activity=idle age_ms=0 limit_ms=100 completions=1894 sampled_ms=1965 changed=0",
+    "[HEALTH] task=process state=ok activity=idle age_ms=0 limit_ms=2000 completions=1893 sampled_ms=1965 changed=0",
+    "[HEALTH] task=writer state=ok activity=idle age_ms=20 limit_ms=5000 completions=90 sampled_ms=1965 changed=0",
+    "[DELIVERY] occupied=0 peak=0 accepted=0 repeated=0 lost=0 storage_failures=0 attempts=0 tx_failures=0 confirmed=0 unknown=0 evicted=0 recovery_slot=0",
+    "[MEMORY-HEALTH] byte_heap=25676 byte_largest=8180 heap_low=0 block_low=0 stack_low_mask=0 allocation_failures=0 allocation_delta=0 changed=0 monotonic_ms=2131",
+    "[MEMORY-HEALTH] task=uart active=1 stack_free=2544 low=0 monotonic_ms=2131",
+    "[MEMORY-HEALTH] task=process active=1 stack_free=7664 low=0 monotonic_ms=2131",
+    "[MEMORY-HEALTH] task=writer active=1 stack_free=5400 low=0 monotonic_ms=2131",
+    "[MEMORY-HEALTH] task=i2c active=0 stack_free=0 low=0 monotonic_ms=2131",
+    "[MEMORY-HEALTH] task=ttc active=1 stack_free=6332 low=0 monotonic_ms=2131",
+    "[MEMORY-HEALTH] task=loop active=1 stack_free=5200 low=0 monotonic_ms=2131",
+    "[I2C-HEALTH] state=inactive service=uninitialized activity=inactive age_ms=0 limit_ms=0 sampled_ms=0 monotonic_ms=2174 changed=0 queued=0 cause=0 failure=0 cycles=0 recovered=0 exhausted=0",
+    "[TTC-HEALTH] state=ok radio=ok updating=0 wired_ready=1 age_ms=9 limit_ms=2000 completions=148 rf_seen=1 rf_age_ms=2983 wired_seen=0 wired_age_ms=0 resets=0 changed=0 monotonic_ms=3044",
+    "[FLOW] received=0 invalid=0 gaps=0 duplicates=0 written=4 failures=0 dropped=0 SD=1 status=0 poll_gap_ms=2 process_gap_ms=2 stack_rx=7664 stack_sd=5400 stack_uart=2340 uart_full=0",
+    "[FLOW-MEMORY] heap=97340 byte_heap=25676 byte_largest=8180 byte_min=21912 parser_peak_bytes=0 parser_limit_bytes=98304",
+    "[STORAGE] state=0 attempt=0 episodes=0 attempts=0 recovered=0 exhausted=0 lifecycle_failures=0 cause=0 end=0 status=0 monotonic_ms=3054",
+    "[HEALTH] task=uart state=ok activity=idle age_ms=0 limit_ms=100 completions=2912 sampled_ms=2983 changed=0",
+    "[HEALTH] task=process state=ok activity=idle age_ms=0 limit_ms=2000 completions=2911 sampled_ms=2983 changed=0",
+    "[HEALTH] task=writer state=ok activity=idle age_ms=20 limit_ms=5000 completions=138 sampled_ms=2983 changed=0",
+    "[DELIVERY] occupied=0 peak=0 accepted=0 repeated=0 lost=0 storage_failures=0 attempts=0 tx_failures=0 confirmed=0 unknown=0 evicted=0 recovery_slot=0",
+    "{\"n\":0,\"t\":\"ack\",\"seq\":32323,\"cmd\":\"ping\",\"st\":\"ok\",\"q\":0}",
+    "[MEMORY-HEALTH] byte_heap=24608 byte_largest=8180 heap_low=0 block_low=0 stack_low_mask=0 allocation_failures=0 allocation_delta=0 changed=0 monotonic_ms=3161",
+    "[MEMORY-HEALTH] task=uart active=1 stack_free=2340 low=0 monotonic_ms=3161",
+    "[MEMORY-HEALTH] task=process active=1 stack_free=7664 low=0 monotonic_ms=3161",
+    "[MEMORY-HEALTH] task=writer active=1 stack_free=5400 low=0 monotonic_ms=3161",
+    "[MEMORY-HEALTH] task=i2c active=0 stack_free=0 low=0 monotonic_ms=3161",
+    "[MEMORY-HEALTH] task=ttc active=1 stack_free=6332 low=0 monotonic_ms=3161",
+    "[MEMORY-HEALTH] task=loop active=1 stack_free=5056 low=0 monotonic_ms=3161",
+    "{\"n\":1,\"t\":\"tm\",\"ts\":null,\"md\":\"bench\",\"vb\":null,\"ib\":null,\"vs\":null,\"is\":null,\"tp\":null,\"w\":null,\"az\":null,\"ac\":null,\"msg\":null,\"rssi\":-80,\"snr\":9.5,\"rx\":3,\"err\":0,\"rst\":0}",
+    "{\"n\":2,\"t\":\"ack\",\"seq\":32324,\"cmd\":\"request_tm\",\"st\":\"ok\",\"q\":43}",
+    "[I2C-HEALTH] state=inactive service=uninitialized activity=inactive age_ms=0 limit_ms=0 sampled_ms=0 monotonic_ms=3247 changed=0 queued=0 cause=0 failure=0 cycles=0 recovered=0 exhausted=0",
+    "{\"n\":3,\"t\":\"ack\",\"seq\":32325,\"cmd\":\"ping\",\"st\":\"ok\",\"q\":10}",
+    "{\"n\":4,\"t\":\"tm\",\"ts\":null,\"md\":\"bench\",\"vb\":null,\"ib\":null,\"vs\":null,\"is\":null,\"tp\":null,\"w\":null,\"az\":null,\"ac\":null,\"msg\":null,\"rssi\":-80,\"snr\":9.5,\"rx\":5,\"err\":0,\"rst\":0}",
+    "{\"n\":5,\"t\":\"ack\",\"seq\":32326,\"cmd\":\"request_tm\",\"st\":\"ok\",\"q\":0}",
+    "[FLOW-CHECK] v3 ts_available=0 ts=0 ac_available=0 ac=0 msg_available=0 stable=1",
+    "{\"n\":6,\"t\":\"ack\",\"seq\":32327,\"cmd\":\"ping\",\"st\":\"ok\",\"q\":0}",
+    "{\"n\":7,\"t\":\"tm\",\"ts\":null,\"md\":\"bench\",\"vb\":null,\"ib\":null,\"vs\":null,\"is\":null,\"tp\":null,\"w\":null,\"az\":null,\"ac\":null,\"msg\":null,\"rssi\":-80,\"snr\":9.5,\"rx\":7,\"err\":0,\"rst\":0}",
+    "{\"n\":8,\"t\":\"ack\",\"seq\":32328,\"cmd\":\"request_tm\",\"st\":\"ok\",\"q\":0}",
+    "[RESOURCE-CHECK] start=1",
+    "{\"n\":9,\"t\":\"ack\",\"seq\":32329,\"cmd\":\"set_time\",\"st\":\"ok\",\"q\":0}",
+    "[FLOW-CHECK] UTC recebida; inicio da injecao em 1000 ms",
+    "[FLOW-CHECK] v3 ts_available=0 ts=0 ac_available=0 ac=0 msg_available=0 stable=1",
+    "[FLOW-CHECK] v3 ts_available=0 ts=0 ac_available=0 ac=0 msg_available=0 stable=1",
+    "[FLOW] received=0 invalid=0 gaps=0 duplicates=0 written=9 failures=0 dropped=0 SD=1 status=0 poll_gap_ms=11 process_gap_ms=2 stack_rx=7632 stack_sd=5176 stack_uart=1332 uart_full=0",
+    "[FLOW-MEMORY] heap=97340 byte_heap=25676 byte_largest=8180 byte_min=21848 parser_peak_bytes=0 parser_limit_bytes=98304",
+    "[STORAGE] state=0 attempt=0 episodes=0 attempts=0 recovered=0 exhausted=0 lifecycle_failures=0 cause=0 end=0 status=0 monotonic_ms=4055",
+    "[HEALTH] task=uart state=ok activity=idle age_ms=0 limit_ms=100 completions=3893 sampled_ms=3974 changed=0",
+    "[HEALTH] task=process state=ok activity=idle age_ms=0 limit_ms=2000 completions=3902 sampled_ms=3974 changed=0",
+    "[HEALTH] task=writer state=ok activity=idle age_ms=4 limit_ms=5000 completions=175 sampled_ms=3974 changed=0",
+    "[DELIVERY] occupied=0 peak=0 accepted=0 repeated=0 lost=0 storage_failures=0 attempts=0 tx_failures=0 confirmed=0 unknown=0 evicted=0 recovery_slot=0",
+    "[TTC-HEALTH] state=ok radio=ok updating=0 wired_ready=1 age_ms=12 limit_ms=2000 completions=212 rf_seen=1 rf_age_ms=4090 wired_seen=1 wired_age_ms=783 resets=0 changed=0 monotonic_ms=4151",
+    "[MEMORY-HEALTH] byte_heap=25676 byte_largest=8180 heap_low=0 block_low=0 stack_low_mask=0 allocation_failures=0 allocation_delta=0 changed=0 monotonic_ms=4262",
+    "[MEMORY-HEALTH] task=uart active=1 stack_free=1332 low=0 monotonic_ms=4262",
+    "[MEMORY-HEALTH] task=process active=1 stack_free=7632 low=0 monotonic_ms=4262",
+    "[MEMORY-HEALTH] task=writer active=1 stack_free=5176 low=0 monotonic_ms=4262",
+    "[MEMORY-HEALTH] task=i2c active=0 stack_free=0 low=0 monotonic_ms=4262",
+    "[MEMORY-HEALTH] task=ttc active=1 stack_free=6332 low=0 monotonic_ms=4262",
+    "[MEMORY-HEALTH] task=loop active=1 stack_free=4972 low=0 monotonic_ms=4262",
+    "[I2C-HEALTH] state=inactive service=uninitialized activity=inactive age_ms=0 limit_ms=0 sampled_ms=0 monotonic_ms=4315 changed=0 queued=0 cause=0 failure=0 cycles=0 recovered=0 exhausted=0",
+    "{\"n\":10,\"t\":\"ac\",\"id\":[139,1],\"ts\":null,\"icao\":\"e49a48\",\"lat\":-20.10978,\"lon\":-44.37088,\"alt\":38000,\"vel\":null,\"hdg\":null,\"cnt\":null}",
+    "[FLOW-CHECK] Arquivo simulado: boot_000000000000008b_00000001.bin",
+    "{\"n\":11,\"t\":\"ac\",\"id\":[139,2],\"ts\":null,\"icao\":\"e4924a\",\"lat\":-19.80653,\"lon\":-43.49178,\"alt\":33000,\"vel\":null,\"hdg\":null,\"cnt\":null}",
+    "[FLOW-CHECK] Arquivo simulado: boot_000000000000008b_00000002.bin",
+    "[FLOW] received=9 invalid=0 gaps=0 duplicates=1 written=14 failures=0 dropped=6 SD=1 status=0 poll_gap_ms=11 process_gap_ms=21 stack_rx=3152 stack_sd=5176 stack_uart=1332 uart_full=244",
+    "[FLOW-MEMORY] heap=97340 byte_heap=25676 byte_largest=8180 byte_min=16276 parser_peak_bytes=7190 parser_limit_bytes=98304",
+    "[STORAGE] state=0 attempt=0 episodes=0 attempts=0 recovered=0 exhausted=0 lifecycle_failures=0 cause=0 end=0 status=0 monotonic_ms=5067",
+    "[HEALTH] task=uart state=ok activity=idle age_ms=0 limit_ms=100 completions=4929 sampled_ms=5011 changed=0",
+    "[HEALTH] task=process state=ok activity=idle age_ms=0 limit_ms=2000 completions=4564 sampled_ms=5011 changed=0",
+    "[HEALTH] task=writer state=ok activity=write age_ms=39 limit_ms=5000 completions=209 sampled_ms=5011 changed=0",
+    "[DELIVERY] occupied=7 peak=7 accepted=7 repeated=56 lost=0 storage_failures=0 attempts=2 tx_failures=0 confirmed=2 unknown=0 evicted=0 recovery_slot=0",
+    "[TTC-HEALTH] state=ok radio=ok updating=0 wired_ready=1 age_ms=13 limit_ms=2000 completions=263 rf_seen=1 rf_age_ms=5116 wired_seen=1 wired_age_ms=380 resets=0 changed=0 monotonic_ms=5177",
+    "{\"n\":12,\"t\":\"ac\",\"id\":[139,3],\"ts\":null,\"icao\":\"e495b2\",\"lat\":null,\"lon\":null,\"alt\":13050,\"vel\":null,\"hdg\":null,\"cnt\":null}",
+    "[MEMORY-HEALTH] byte_heap=25676 byte_largest=8180 heap_low=0 block_low=0 stack_low_mask=0 allocation_failures=0 allocation_delta=0 changed=0 monotonic_ms=5293",
+    "[MEMORY-HEALTH] task=uart active=1 stack_free=1332 low=0 monotonic_ms=5293",
+    "[MEMORY-HEALTH] task=process active=1 stack_free=3104 low=0 monotonic_ms=5293",
+    "[MEMORY-HEALTH] task=writer active=1 stack_free=5176 low=0 monotonic_ms=5293",
+    "[MEMORY-HEALTH] task=i2c active=0 stack_free=0 low=0 monotonic_ms=5293",
+    "[MEMORY-HEALTH] task=ttc active=1 stack_free=6188 low=0 monotonic_ms=5293",
+    "[MEMORY-HEALTH] task=loop active=1 stack_free=4924 low=0 monotonic_ms=5293",
+    "[I2C-HEALTH] state=inactive service=uninitialized activity=inactive age_ms=0 limit_ms=0 sampled_ms=0 monotonic_ms=5340 changed=0 queued=0 cause=0 failure=0 cycles=0 recovered=0 exhausted=0",
+    "[FLOW-CHECK] Arquivo simulado: boot_000000000000008b_00000003.bin",
+    "{\"n\":13,\"t\":\"ac\",\"id\":[139,4],\"ts\":null,\"icao\":\"e49fb3\",\"lat\":-20.07603,\"lon\":-44.37643,\"alt\":14200,\"vel\":null,\"hdg\":null,\"cnt\":null}",
+    "[FLOW-CHECK] Arquivo simulado: boot_000000000000008b_00000004.bin",
+    "[FLOW] received=22 invalid=0 gaps=0 duplicates=1 written=24 failures=0 dropped=17 SD=1 status=0 poll_gap_ms=11 process_gap_ms=21 stack_rx=3104 stack_sd=5176 stack_uart=1332 uart_full=600",
+    "[FLOW-MEMORY] heap=97340 byte_heap=25676 byte_largest=8180 byte_min=15320 parser_peak_bytes=7190 parser_limit_bytes=98304",
+    "[STORAGE] state=0 attempt=0 episodes=0 attempts=0 recovered=0 exhausted=0 lifecycle_failures=0 cause=0 end=0 status=0 monotonic_ms=6071",
+    "[HEALTH] task=uart state=ok activity=idle age_ms=0 limit_ms=100 completions=5948 sampled_ms=6031 changed=0",
+    "[HEALTH] task=process state=ok activity=idle age_ms=0 limit_ms=2000 completions=4964 sampled_ms=6031 changed=0",
+    "[HEALTH] task=writer state=ok activity=write age_ms=19 limit_ms=5000 completions=239 sampled_ms=6031 changed=0",
+    "[DELIVERY] occupied=6 peak=7 accepted=7 repeated=140 lost=0 storage_failures=0 attempts=4 tx_failures=0 confirmed=4 unknown=0 evicted=0 recovery_slot=0",
+    "[TTC-HEALTH] state=ok radio=ok updating=0 wired_ready=1 age_ms=12 limit_ms=2000 completions=313 rf_seen=1 rf_age_ms=6128 wired_seen=1 wired_age_ms=461 resets=0 changed=0 monotonic_ms=6189",
+    "{\"n\":14,\"t\":\"ac\",\"id\":[139,5],\"ts\":null,\"icao\":\"e491a2\",\"lat\":null,\"lon\":null,\"alt\":35025,\"vel\":null,\"hdg\":null,\"cnt\":null}",
+    "[MEMORY-HEALTH] byte_heap=25676 byte_largest=8180 heap_low=0 block_low=0 stack_low_mask=0 allocation_failures=0 allocation_delta=0 changed=0 monotonic_ms=6302",
+    "[MEMORY-HEALTH] task=uart active=1 stack_free=1332 low=0 monotonic_ms=6302",
+    "[MEMORY-HEALTH] task=process active=1 stack_free=3104 low=0 monotonic_ms=6302",
+    "[MEMORY-HEALTH] task=writer active=1 stack_free=5176 low=0 monotonic_ms=6302",
+    "[MEMORY-HEALTH] task=i2c active=0 stack_free=0 low=0 monotonic_ms=6302",
+    "[MEMORY-HEALTH] task=ttc active=1 stack_free=6188 low=0 monotonic_ms=6302",
+    "[MEMORY-HEALTH] task=loop active=1 stack_free=4924 low=0 monotonic_ms=6302",
+    "[I2C-HEALTH] state=inactive service=uninitialized activity=inactive age_ms=0 limit_ms=0 sampled_ms=0 monotonic_ms=6385 changed=0 queued=0 cause=0 failure=0 cycles=0 recovered=0 exhausted=0",
+    "[FLOW-CHECK] Arquivo simulado: boot_000000000000008b_00000005.bin",
+    "{\"n\":15,\"t\":\"ac\",\"id\":[139,6],\"ts\":null,\"icao\":\"e4970f\",\"lat\":null,\"lon\":null,\"alt\":null,\"vel\":null,\"hdg\":null,\"cnt\":null}",
+    "[FLOW-CHECK] Arquivo simulado: boot_000000000000008b_00000006.bin",
+    "[FLOW] received=24 invalid=1 gaps=0 duplicates=1 written=33 failures=0 dropped=18 SD=1 status=0 poll_gap_ms=11 process_gap_ms=21 stack_rx=3104 stack_sd=5176 stack_uart=1332 uart_full=606",
+    "[FLOW-MEMORY] heap=97340 byte_heap=25676 byte_largest=8180 byte_min=15320 parser_peak_bytes=7190 parser_limit_bytes=98304",
+    "[STORAGE] state=0 attempt=0 episodes=0 attempts=0 recovered=0 exhausted=0 lifecycle_failures=0 cause=0 end=0 status=0 monotonic_ms=7084",
+    "[HEALTH] task=uart state=ok activity=idle age_ms=0 limit_ms=100 completions=6920 sampled_ms=7003 changed=0",
+    "[HEALTH] task=process state=ok activity=idle age_ms=0 limit_ms=2000 completions=5901 sampled_ms=7003 changed=0",
+    "[HEALTH] task=writer state=ok activity=write age_ms=75 limit_ms=5000 completions=276 sampled_ms=7003 changed=0",
+    "[DELIVERY] occupied=4 peak=7 accepted=7 repeated=140 lost=0 storage_failures=0 attempts=6 tx_failures=0 confirmed=6 unknown=0 evicted=0 recovery_slot=0",
+    "{\"n\":16,\"t\":\"ac\",\"id\":[139,7],\"ts\":null,\"icao\":\"e49830\",\"lat\":null,\"lon\":null,\"alt\":36000,\"vel\":null,\"hdg\":null,\"cnt\":null}",
+    "[TTC-HEALTH] state=ok radio=ok updating=0 wired_ready=1 age_ms=2 limit_ms=2000 completions=369 rf_seen=1 rf_age_ms=7221 wired_seen=1 wired_age_ms=81 resets=0 changed=0 monotonic_ms=7282",
+    "[FLOW-CHECK] Arquivo simulado: boot_000000000000008b_00000007.bin",
+    "[MEMORY-HEALTH] byte_heap=25676 byte_largest=8180 heap_low=0 block_low=0 stack_low_mask=0 allocation_failures=0 allocation_delta=0 changed=0 monotonic_ms=7393",
+    "[RESOURCE-CHECK] pause_begin=1",
+    "[MEMORY-HEALTH] task=uart active=1 stack_free=1332 low=0 monotonic_ms=7393",
+    "[MEMORY-HEALTH] task=process active=1 stack_free=3104 low=0 monotonic_ms=7393",
+    "[MEMORY-HEALTH] task=writer active=1 stack_free=5176 low=0 monotonic_ms=7393",
+    "[MEMORY-HEALTH] task=i2c active=0 stack_free=0 low=0 monotonic_ms=7393",
+    "[MEMORY-HEALTH] task=ttc active=1 stack_free=6188 low=0 monotonic_ms=7393",
+    "[MEMORY-HEALTH] task=loop active=1 stack_free=4924 low=0 monotonic_ms=7393",
+    "[I2C-HEALTH] state=inactive service=uninitialized activity=inactive age_ms=0 limit_ms=0 sampled_ms=0 monotonic_ms=7446 changed=0 queued=0 cause=0 failure=0 cycles=0 recovered=0 exhausted=0",
+    "[FLOW-CHECK] Arquivo simulado: boot_000000000000008b_00000008.bin",
+    "[FLOW-CHECK] Arquivo simulado: boot_000000000000008b_00000009.bin",
+    "[FLOW] received=24 invalid=1 gaps=0 duplicates=1 written=44 failures=0 dropped=18 SD=1 status=0 poll_gap_ms=11 process_gap_ms=21 stack_rx=3104 stack_sd=5176 stack_uart=1332 uart_full=606",
+    "[FLOW-MEMORY] heap=97340 byte_heap=25676 byte_largest=8180 byte_min=15320 parser_peak_bytes=7190 parser_limit_bytes=98304",
+    "[STORAGE] state=0 attempt=0 episodes=0 attempts=0 recovered=0 exhausted=0 lifecycle_failures=0 cause=0 end=0 status=0 monotonic_ms=8104",
+    "[HEALTH] task=uart state=ok activity=idle age_ms=0 limit_ms=100 completions=7980 sampled_ms=8063 changed=0",
+    "[HEALTH] task=process state=ok activity=idle age_ms=0 limit_ms=2000 completions=6961 sampled_ms=8063 changed=0",
+    "[HEALTH] task=writer state=ok activity=write age_ms=17 limit_ms=5000 completions=326 sampled_ms=8063 changed=0",
+    "[DELIVERY] occupied=3 peak=7 accepted=7 repeated=140 lost=0 storage_failures=0 attempts=7 tx_failures=0 confirmed=7 unknown=0 evicted=0 recovery_slot=0",
+    "[TTC-HEALTH] state=ok radio=ok updating=1 wired_ready=1 age_ms=920 limit_ms=2000 completions=374 rf_seen=1 rf_age_ms=8259 wired_seen=1 wired_age_ms=1119 resets=0 changed=0 monotonic_ms=8320",
+    "[MEMORY-HEALTH] byte_heap=25676 byte_largest=8180 heap_low=0 block_low=0 stack_low_mask=0 allocation_failures=0 allocation_delta=0 changed=0 monotonic_ms=8431",
+    "[MEMORY-HEALTH] task=uart active=1 stack_free=1332 low=0 monotonic_ms=8431",
+    "[MEMORY-HEALTH] task=process active=1 stack_free=3104 low=0 monotonic_ms=8431",
+    "[MEMORY-HEALTH] task=writer active=1 stack_free=5176 low=0 monotonic_ms=8431",
+    "[MEMORY-HEALTH] task=i2c active=0 stack_free=0 low=0 monotonic_ms=8431",
+    "[MEMORY-HEALTH] task=ttc active=1 stack_free=6188 low=0 monotonic_ms=8431",
+    "[MEMORY-HEALTH] task=loop active=1 stack_free=4924 low=0 monotonic_ms=8431",
+    "[FLOW-CHECK] Arquivo simulado: boot_000000000000008b_0000000a.bin",
+    "[I2C-HEALTH] state=inactive service=uninitialized activity=inactive age_ms=0 limit_ms=0 sampled_ms=0 monotonic_ms=8514 changed=0 queued=0 cause=0 failure=0 cycles=0 recovered=0 exhausted=0",
+    "[FLOW-CHECK] Arquivo simulado: boot_000000000000008b_0000000b.bin",
+    "[FLOW-CHECK] Arquivo simulado: boot_000000000000008b_0000000c.bin",
+    "[FLOW] received=24 invalid=1 gaps=0 duplicates=1 written=54 failures=0 dropped=18 SD=1 status=0 poll_gap_ms=11 process_gap_ms=21 stack_rx=3104 stack_sd=5176 stack_uart=1332 uart_full=606",
+    "[FLOW-MEMORY] heap=97340 byte_heap=25676 byte_largest=8180 byte_min=15320 parser_peak_bytes=7190 parser_limit_bytes=98304",
+    "[STORAGE] state=0 attempt=0 episodes=0 attempts=0 recovered=0 exhausted=0 lifecycle_failures=0 cause=0 end=0 status=0 monotonic_ms=9111",
+    "[HEALTH] task=uart state=ok activity=idle age_ms=0 limit_ms=100 completions=8947 sampled_ms=9030 changed=0",
+    "[HEALTH] task=process state=ok activity=idle age_ms=0 limit_ms=2000 completions=7928 sampled_ms=9030 changed=0",
+    "[HEALTH] task=writer state=ok activity=write age_ms=25 limit_ms=5000 completions=342 sampled_ms=9030 changed=0",
+    "[DELIVERY] occupied=2 peak=7 accepted=7 repeated=140 lost=0 storage_failures=0 attempts=7 tx_failures=0 confirmed=7 unknown=0 evicted=0 recovery_slot=0",
+    "[TTC-HEALTH] state=suspect radio=ok updating=1 wired_ready=1 age_ms=2008 limit_ms=2000 completions=374 rf_seen=1 rf_age_ms=9347 wired_seen=1 wired_age_ms=2207 resets=0 changed=1 monotonic_ms=9408",
+    "[FLOW-CHECK] Arquivo simulado: boot_000000000000008b_0000000d.bin",
+    "[MEMORY-HEALTH] byte_heap=25676 byte_largest=8180 heap_low=0 block_low=0 stack_low_mask=0 allocation_failures=0 allocation_delta=0 changed=0 monotonic_ms=9520",
+    "[MEMORY-HEALTH] task=uart active=1 stack_free=1332 low=0 monotonic_ms=9520",
+    "[MEMORY-HEALTH] task=process active=1 stack_free=3104 low=0 monotonic_ms=9520",
+    "[MEMORY-HEALTH] task=writer active=1 stack_free=5176 low=0 monotonic_ms=9520",
+    "[MEMORY-HEALTH] task=i2c active=0 stack_free=0 low=0 monotonic_ms=9520",
+    "[MEMORY-HEALTH] task=ttc active=1 stack_free=6188 low=0 monotonic_ms=9520",
+    "[MEMORY-HEALTH] task=loop active=1 stack_free=4924 low=0 monotonic_ms=9520",
+    "[I2C-HEALTH] state=inactive service=uninitialized activity=inactive age_ms=0 limit_ms=0 sampled_ms=0 monotonic_ms=9563 changed=0 queued=0 cause=0 failure=0 cycles=0 recovered=0 exhausted=0",
+    "[RESOURCE-CHECK] pause_end=1 elapsed_ms=2300",
+    "[TT&C] ERRO: SX1276 sem resposta ou fora de RX, reinicializando.",
+    "[TTC-HEALTH] state=ok radio=ok updating=0 wired_ready=1 age_ms=19 limit_ms=2000 completions=375 rf_seen=1 rf_age_ms=9664 wired_seen=1 wired_age_ms=2524 resets=0 changed=1 monotonic_ms=9725",
+    "[RESOURCE-CHECK] record_code=260 kind=fault",
+    "[TTC-HEALTH] state=ok radio=unavailable updating=0 wired_ready=1 age_ms=2 limit_ms=2000 completions=381 rf_seen=1 rf_age_ms=9766 wired_seen=1 wired_age_ms=2626 resets=1 changed=1 monotonic_ms=9827",
+    "[FLOW-CHECK] Arquivo simulado: boot_000000000000008b_0000000e.bin",
+    "[FLOW] received=24 invalid=1 gaps=0 duplicates=1 written=62 failures=0 dropped=18 SD=1 status=0 poll_gap_ms=11 process_gap_ms=21 stack_rx=3104 stack_sd=5176 stack_uart=1332 uart_full=606",
+    "[FLOW-MEMORY] heap=97340 byte_heap=25676 byte_largest=8180 byte_min=15320 parser_peak_bytes=7190 parser_limit_bytes=98304",
+    "[STORAGE] state=0 attempt=0 episodes=0 attempts=0 recovered=0 exhausted=0 lifecycle_failures=0 cause=0 end=0 status=0 monotonic_ms=10119",
+    "[HEALTH] task=uart state=ok activity=idle age_ms=0 limit_ms=100 completions=9996 sampled_ms=10079 changed=0",
+    "[HEALTH] task=process state=ok activity=idle age_ms=0 limit_ms=2000 completions=8977 sampled_ms=10079 changed=0",
+    "[HEALTH] task=writer state=ok activity=write age_ms=70 limit_ms=5000 completions=360 sampled_ms=10079 changed=0",
+    "[DELIVERY] occupied=0 peak=7 accepted=7 repeated=140 lost=0 storage_failures=0 attempts=7 tx_failures=0 confirmed=7 unknown=0 evicted=0 recovery_slot=0",
+    "[RESOURCE-CHECK] record_code=260 kind=event",
+    "[RESOURCE-CHECK] record_code=261 kind=fault",
+    "[TTC-HEALTH] state=ok radio=unavailable updating=0 wired_ready=1 age_ms=3 limit_ms=2000 completions=410 rf_seen=1 rf_age_ms=10355 wired_seen=1 wired_age_ms=3215 resets=1 changed=0 monotonic_ms=10416",
+    "[MEMORY-HEALTH] byte_heap=25676 byte_largest=8180 heap_low=0 block_low=0 stack_low_mask=0 allocation_failures=0 allocation_delta=0 changed=0 monotonic_ms=10527",
+    "[MEMORY-HEALTH] task=uart active=1 stack_free=1332 low=0 monotonic_ms=10527",
+    "[MEMORY-HEALTH] task=process active=1 stack_free=3104 low=0 monotonic_ms=10527",
+    "[MEMORY-HEALTH] task=writer active=1 stack_free=5176 low=0 monotonic_ms=10527",
+    "[MEMORY-HEALTH] task=i2c active=0 stack_free=0 low=0 monotonic_ms=10527",
+    "[MEMORY-HEALTH] task=ttc active=1 stack_free=6188 low=0 monotonic_ms=10527",
+    "[MEMORY-HEALTH] task=loop active=1 stack_free=4924 low=0 monotonic_ms=10527",
+    "[I2C-HEALTH] state=inactive service=uninitialized activity=inactive age_ms=0 limit_ms=0 sampled_ms=0 monotonic_ms=10580 changed=0 queued=0 cause=0 failure=0 cycles=0 recovered=0 exhausted=0",
+    "[TT&C] ERRO: SX1276 sem resposta ou fora de RX, reinicializando.",
+    "[FLOW] received=24 invalid=1 gaps=0 duplicates=1 written=68 failures=0 dropped=18 SD=1 status=0 poll_gap_ms=11 process_gap_ms=21 stack_rx=3104 stack_sd=5176 stack_uart=1332 uart_full=606",
+    "[FLOW-MEMORY] heap=97340 byte_heap=25676 byte_largest=8180 byte_min=15320 parser_peak_bytes=7190 parser_limit_bytes=98304",
+    "[STORAGE] state=0 attempt=0 episodes=0 attempts=0 recovered=0 exhausted=0 lifecycle_failures=0 cause=0 end=0 status=0 monotonic_ms=11136",
+    "[HEALTH] task=uart state=ok activity=idle age_ms=0 limit_ms=100 completions=11012 sampled_ms=11095 changed=0",
+    "[HEALTH] task=process state=ok activity=idle age_ms=0 limit_ms=2000 completions=9993 sampled_ms=11095 changed=0",
+    "[HEALTH] task=writer state=ok activity=idle age_ms=20 limit_ms=5000 completions=402 sampled_ms=11095 changed=0",
+    "[DELIVERY] occupied=0 peak=7 accepted=7 repeated=140 lost=0 storage_failures=0 attempts=7 tx_failures=0 confirmed=7 unknown=0 evicted=0 recovery_slot=0",
+    "[TTC-HEALTH] state=ok radio=unavailable updating=0 wired_ready=1 age_ms=3 limit_ms=2000 completions=461 rf_seen=1 rf_age_ms=11391 wired_seen=1 wired_age_ms=4251 resets=2 changed=0 monotonic_ms=11452",
+    "[MEMORY-HEALTH] byte_heap=25676 byte_largest=8180 heap_low=0 block_low=0 stack_low_mask=0 allocation_failures=0 allocation_delta=0 changed=0 monotonic_ms=11563",
+    "[MEMORY-HEALTH] task=uart active=1 stack_free=1332 low=0 monotonic_ms=11563",
+    "[MEMORY-HEALTH] task=process active=1 stack_free=3104 low=0 monotonic_ms=11563",
+    "[MEMORY-HEALTH] task=writer active=1 stack_free=5176 low=0 monotonic_ms=11563",
+    "[MEMORY-HEALTH] task=i2c active=0 stack_free=0 low=0 monotonic_ms=11563",
+    "[MEMORY-HEALTH] task=ttc active=1 stack_free=6188 low=0 monotonic_ms=11563",
+    "[MEMORY-HEALTH] task=loop active=1 stack_free=4892 low=0 monotonic_ms=11563",
+    "[I2C-HEALTH] state=inactive service=uninitialized activity=inactive age_ms=0 limit_ms=0 sampled_ms=0 monotonic_ms=11656 changed=0 queued=0 cause=0 failure=0 cycles=0 recovered=0 exhausted=0",
+    "[TT&C] ERRO: SX1276 sem resposta ou fora de RX, reinicializando.",
+    "[FLOW] received=24 invalid=1 gaps=0 duplicates=1 written=69 failures=0 dropped=18 SD=1 status=0 poll_gap_ms=11 process_gap_ms=21 stack_rx=3104 stack_sd=5176 stack_uart=1332 uart_full=606",
+    "[FLOW-MEMORY] heap=97340 byte_heap=25676 byte_largest=8180 byte_min=15320 parser_peak_bytes=7190 parser_limit_bytes=98304",
+    "[STORAGE] state=0 attempt=0 episodes=0 attempts=0 recovered=0 exhausted=0 lifecycle_failures=0 cause=0 end=0 status=0 monotonic_ms=12152",
+    "[HEALTH] task=uart state=ok activity=idle age_ms=0 limit_ms=100 completions=11988 sampled_ms=12071 changed=0",
+    "[HEALTH] task=process state=ok activity=idle age_ms=0 limit_ms=2000 completions=10969 sampled_ms=12071 changed=0",
+    "[HEALTH] task=writer state=ok activity=idle age_ms=14 limit_ms=5000 completions=448 sampled_ms=12071 changed=0",
+    "[DELIVERY] occupied=0 peak=7 accepted=7 repeated=140 lost=0 storage_failures=0 attempts=7 tx_failures=0 confirmed=7 unknown=0 evicted=0 recovery_slot=0",
+    "[TTC-HEALTH] state=ok radio=unavailable updating=0 wired_ready=1 age_ms=4 limit_ms=2000 completions=515 rf_seen=1 rf_age_ms=12489 wired_seen=1 wired_age_ms=5349 resets=3 changed=0 monotonic_ms=12550",
+    "[MEMORY-HEALTH] byte_heap=25676 byte_largest=8180 heap_low=0 block_low=0 stack_low_mask=0 allocation_failures=0 allocation_delta=0 changed=0 monotonic_ms=12661",
+    "[MEMORY-HEALTH] task=uart active=1 stack_free=1332 low=0 monotonic_ms=12661",
+    "[MEMORY-HEALTH] task=process active=1 stack_free=3104 low=0 monotonic_ms=12661",
+    "[MEMORY-HEALTH] task=writer active=1 stack_free=5176 low=0 monotonic_ms=12661",
+    "[MEMORY-HEALTH] task=i2c active=0 stack_free=0 low=0 monotonic_ms=12661",
+    "[MEMORY-HEALTH] task=ttc active=1 stack_free=6188 low=0 monotonic_ms=12661",
+    "[MEMORY-HEALTH] task=loop active=1 stack_free=4892 low=0 monotonic_ms=12661",
+    "[I2C-HEALTH] state=inactive service=uninitialized activity=inactive age_ms=0 limit_ms=0 sampled_ms=0 monotonic_ms=12714 changed=0 queued=0 cause=0 failure=0 cycles=0 recovered=0 exhausted=0",
+    "[TT&C] ERRO: SX1276 sem resposta ou fora de RX, reinicializando.",
+    "[FLOW] received=24 invalid=1 gaps=0 duplicates=1 written=70 failures=0 dropped=18 SD=1 status=0 poll_gap_ms=11 process_gap_ms=21 stack_rx=3104 stack_sd=5176 stack_uart=1332 uart_full=606",
+    "[FLOW-MEMORY] heap=97340 byte_heap=25676 byte_largest=8180 byte_min=15320 parser_peak_bytes=7190 parser_limit_bytes=98304",
+    "[STORAGE] state=0 attempt=0 episodes=0 attempts=0 recovered=0 exhausted=0 lifecycle_failures=0 cause=0 end=0 status=0 monotonic_ms=13169",
+    "[HEALTH] task=uart state=ok activity=idle age_ms=0 limit_ms=100 completions=13045 sampled_ms=13128 changed=0",
+    "[HEALTH] task=process state=ok activity=idle age_ms=0 limit_ms=2000 completions=12026 sampled_ms=13128 changed=0",
+    "[HEALTH] task=writer state=ok activity=idle age_ms=15 limit_ms=5000 completions=498 sampled_ms=13128 changed=0",
+    "[DELIVERY] occupied=0 peak=7 accepted=7 repeated=140 lost=0 storage_failures=0 attempts=7 tx_failures=0 confirmed=7 unknown=0 evicted=0 recovery_slot=0",
+    "[TTC-HEALTH] state=ok radio=unavailable updating=0 wired_ready=1 age_ms=5 limit_ms=2000 completions=566 rf_seen=1 rf_age_ms=13526 wired_seen=1 wired_age_ms=6386 resets=4 changed=0 monotonic_ms=13587",
+    "[MEMORY-HEALTH] byte_heap=25676 byte_largest=8180 heap_low=0 block_low=0 stack_low_mask=0 allocation_failures=0 allocation_delta=0 changed=0 monotonic_ms=13698",
+    "[MEMORY-HEALTH] task=uart active=1 stack_free=1332 low=0 monotonic_ms=13698",
+    "[MEMORY-HEALTH] task=process active=1 stack_free=3104 low=0 monotonic_ms=13698",
+    "[MEMORY-HEALTH] task=writer active=1 stack_free=5176 low=0 monotonic_ms=13698",
+    "[MEMORY-HEALTH] task=i2c active=0 stack_free=0 low=0 monotonic_ms=13698",
+    "[MEMORY-HEALTH] task=ttc active=1 stack_free=6188 low=0 monotonic_ms=13698",
+    "[MEMORY-HEALTH] task=loop active=1 stack_free=4892 low=0 monotonic_ms=13698",
+    "[TT&C] ERRO: SX1276 sem resposta ou fora de RX, reinicializando.",
+    "[I2C-HEALTH] state=inactive service=uninitialized activity=inactive age_ms=0 limit_ms=0 sampled_ms=0 monotonic_ms=13791 changed=0 queued=0 cause=0 failure=0 cycles=0 recovered=0 exhausted=0",
+    "[FLOW] received=24 invalid=1 gaps=0 duplicates=1 written=71 failures=0 dropped=18 SD=1 status=0 poll_gap_ms=11 process_gap_ms=21 stack_rx=3104 stack_sd=5176 stack_uart=1332 uart_full=606",
+    "[FLOW-MEMORY] heap=97340 byte_heap=25676 byte_largest=8180 byte_min=15320 parser_peak_bytes=7190 parser_limit_bytes=98304",
+    "[STORAGE] state=0 attempt=0 episodes=0 attempts=0 recovered=0 exhausted=0 lifecycle_failures=0 cause=0 end=0 status=0 monotonic_ms=14186",
+    "[HEALTH] task=uart state=ok activity=idle age_ms=0 limit_ms=100 completions=14022 sampled_ms=14105 changed=0",
+    "[HEALTH] task=process state=ok activity=idle age_ms=0 limit_ms=2000 completions=13003 sampled_ms=14105 changed=0",
+    "[HEALTH] task=writer state=ok activity=idle age_ms=16 limit_ms=5000 completions=544 sampled_ms=14105 changed=0",
+    "[DELIVERY] occupied=0 peak=7 accepted=7 repeated=140 lost=0 storage_failures=0 attempts=7 tx_failures=0 confirmed=7 unknown=0 evicted=0 recovery_slot=0",
+    "[TTC-HEALTH] state=ok radio=unavailable updating=0 wired_ready=1 age_ms=5 limit_ms=2000 completions=620 rf_seen=1 rf_age_ms=14624 wired_seen=1 wired_age_ms=7484 resets=5 changed=0 monotonic_ms=14685",
+    "[RESOURCE-CHECK] radio_return=1",
+    "[MEMORY-HEALTH] byte_heap=25676 byte_largest=8180 heap_low=0 block_low=0 stack_low_mask=0 allocation_failures=0 allocation_delta=0 changed=0 monotonic_ms=14796",
+    "[MEMORY-HEALTH] task=uart active=1 stack_free=1332 low=0 monotonic_ms=14796",
+    "[MEMORY-HEALTH] task=process active=1 stack_free=3104 low=0 monotonic_ms=14796",
+    "[MEMORY-HEALTH] task=writer active=1 stack_free=5176 low=0 monotonic_ms=14796",
+    "[MEMORY-HEALTH] task=i2c active=0 stack_free=0 low=0 monotonic_ms=14796",
+    "[MEMORY-HEALTH] task=ttc active=1 stack_free=6188 low=0 monotonic_ms=14796",
+    "[MEMORY-HEALTH] task=loop active=1 stack_free=4892 low=0 monotonic_ms=14796",
+    "[I2C-HEALTH] state=inactive service=uninitialized activity=inactive age_ms=0 limit_ms=0 sampled_ms=0 monotonic_ms=14849 changed=0 queued=0 cause=0 failure=0 cycles=0 recovered=0 exhausted=0",
+    "[TTC-HEALTH] state=ok radio=ok updating=0 wired_ready=1 age_ms=12 limit_ms=2000 completions=630 rf_seen=1 rf_age_ms=14840 wired_seen=1 wired_age_ms=7700 resets=5 changed=1 monotonic_ms=14901",
+    "[RESOURCE-CHECK] record_code=261 kind=event",
+    "[FLOW] received=24 invalid=1 gaps=0 duplicates=1 written=73 failures=0 dropped=18 SD=1 status=0 poll_gap_ms=11 process_gap_ms=21 stack_rx=3104 stack_sd=5176 stack_uart=1332 uart_full=606",
+    "[FLOW-MEMORY] heap=97340 byte_heap=25676 byte_largest=8180 byte_min=15320 parser_peak_bytes=7190 parser_limit_bytes=98304",
+    "[STORAGE] state=0 attempt=0 episodes=0 attempts=0 recovered=0 exhausted=0 lifecycle_failures=0 cause=0 end=0 status=0 monotonic_ms=15193",
+    "[HEALTH] task=uart state=ok activity=idle age_ms=0 limit_ms=100 completions=15070 sampled_ms=15153 changed=0",
+    "[HEALTH] task=process state=ok activity=idle age_ms=0 limit_ms=2000 completions=14051 sampled_ms=15153 changed=0",
+    "[HEALTH] task=writer state=ok activity=idle age_ms=20 limit_ms=5000 completions=591 sampled_ms=15153 changed=0",
+    "[DELIVERY] occupied=0 peak=7 accepted=7 repeated=140 lost=0 storage_failures=0 attempts=7 tx_failures=0 confirmed=7 unknown=0 evicted=0 recovery_slot=0",
+    "[TTC-HEALTH] state=ok radio=ok updating=0 wired_ready=1 age_ms=15 limit_ms=2000 completions=669 rf_seen=1 rf_age_ms=15631 wired_seen=1 wired_age_ms=8491 resets=5 changed=0 monotonic_ms=15692",
+    "[MEMORY-HEALTH] byte_heap=25676 byte_largest=8180 heap_low=0 block_low=0 stack_low_mask=0 allocation_failures=0 allocation_delta=0 changed=0 monotonic_ms=15803",
+    "[MEMORY-HEALTH] task=uart active=1 stack_free=1332 low=0 monotonic_ms=15803",
+    "[MEMORY-HEALTH] task=process active=1 stack_free=3104 low=0 monotonic_ms=15803",
+    "[MEMORY-HEALTH] task=writer active=1 stack_free=5176 low=0 monotonic_ms=15803",
+    "[MEMORY-HEALTH] task=i2c active=0 stack_free=0 low=0 monotonic_ms=15803",
+    "[MEMORY-HEALTH] task=ttc active=1 stack_free=6188 low=0 monotonic_ms=15803",
+    "[MEMORY-HEALTH] task=loop active=1 stack_free=4892 low=0 monotonic_ms=15803",
+    "[I2C-HEALTH] state=inactive service=uninitialized activity=inactive age_ms=0 limit_ms=0 sampled_ms=0 monotonic_ms=15856 changed=0 queued=0 cause=0 failure=0 cycles=0 recovered=0 exhausted=0",
+    "[FLOW] received=24 invalid=1 gaps=0 duplicates=1 written=74 failures=0 dropped=18 SD=1 status=0 poll_gap_ms=11 process_gap_ms=21 stack_rx=3104 stack_sd=5176 stack_uart=1332 uart_full=606",
+    "[FLOW-MEMORY] heap=97340 byte_heap=25676 byte_largest=8180 byte_min=15320 parser_peak_bytes=7190 parser_limit_bytes=98304",
+    "[STORAGE] state=0 attempt=0 episodes=0 attempts=0 recovered=0 exhausted=0 lifecycle_failures=0 cause=0 end=0 status=0 monotonic_ms=16210",
+    "[HEALTH] task=uart state=ok activity=idle age_ms=0 limit_ms=100 completions=16086 sampled_ms=16169 changed=0",
+    "[HEALTH] task=process state=ok activity=idle age_ms=0 limit_ms=2000 completions=15067 sampled_ms=16169 changed=0",
+    "[HEALTH] task=writer state=ok activity=idle age_ms=15 limit_ms=5000 completions=639 sampled_ms=16169 changed=0",
+    "[DELIVERY] occupied=0 peak=7 accepted=7 repeated=140 lost=0 storage_failures=0 attempts=7 tx_failures=0 confirmed=7 unknown=0 evicted=0 recovery_slot=0",
+    "[TTC-HEALTH] state=ok radio=ok updating=0 wired_ready=1 age_ms=16 limit_ms=2000 completions=720 rf_seen=1 rf_age_ms=16668 wired_seen=1 wired_age_ms=9528 resets=5 changed=0 monotonic_ms=16729",
+    "[MEMORY-HEALTH] byte_heap=25676 byte_largest=8180 heap_low=0 block_low=0 stack_low_mask=0 allocation_failures=0 allocation_delta=0 changed=0 monotonic_ms=16840",
+    "[MEMORY-HEALTH] task=uart active=1 stack_free=1332 low=0 monotonic_ms=16840",
+    "[MEMORY-HEALTH] task=process active=1 stack_free=3104 low=0 monotonic_ms=16840",
+    "[MEMORY-HEALTH] task=writer active=1 stack_free=5176 low=0 monotonic_ms=16840",
+    "[MEMORY-HEALTH] task=i2c active=0 stack_free=0 low=0 monotonic_ms=16840",
+    "[MEMORY-HEALTH] task=ttc active=1 stack_free=6188 low=0 monotonic_ms=16840",
+    "[MEMORY-HEALTH] task=loop active=1 stack_free=4892 low=0 monotonic_ms=16840",
+    "[I2C-HEALTH] state=inactive service=uninitialized activity=inactive age_ms=0 limit_ms=0 sampled_ms=0 monotonic_ms=16933 changed=0 queued=0 cause=0 failure=0 cycles=0 recovered=0 exhausted=0",
+    "[FLOW] received=24 invalid=1 gaps=0 duplicates=1 written=75 failures=0 dropped=18 SD=1 status=0 poll_gap_ms=11 process_gap_ms=21 stack_rx=3104 stack_sd=5176 stack_uart=1332 uart_full=606",
+    "[FLOW-MEMORY] heap=97340 byte_heap=25676 byte_largest=8180 byte_min=15320 parser_peak_bytes=7190 parser_limit_bytes=98304",
+    "[STORAGE] state=0 attempt=0 episodes=0 attempts=0 recovered=0 exhausted=0 lifecycle_failures=0 cause=0 end=0 status=0 monotonic_ms=17227",
+    "[HEALTH] task=uart state=ok activity=idle age_ms=0 limit_ms=100 completions=17063 sampled_ms=17146 changed=0",
+    "[HEALTH] task=process state=ok activity=idle age_ms=0 limit_ms=2000 completions=16044 sampled_ms=17146 changed=0",
+    "[HEALTH] task=writer state=ok activity=idle age_ms=16 limit_ms=5000 completions=685 sampled_ms=17146 changed=0",
+    "[DELIVERY] occupied=0 peak=7 accepted=7 repeated=140 lost=0 storage_failures=0 attempts=7 tx_failures=0 confirmed=7 unknown=0 evicted=0 recovery_slot=0",
+    "[TTC-HEALTH] state=ok radio=ok updating=0 wired_ready=1 age_ms=16 limit_ms=2000 completions=774 rf_seen=1 rf_age_ms=17766 wired_seen=1 wired_age_ms=10626 resets=5 changed=0 monotonic_ms=17827",
+    "[RESOURCE-CHECK] memory=low",
+    "[MEMORY-HEALTH] byte_heap=8191 byte_largest=4095 heap_low=1 block_low=1 stack_low_mask=0 allocation_failures=0 allocation_delta=0 changed=1 monotonic_ms=17938",
+    "[MEMORY-HEALTH] task=uart active=1 stack_free=1332 low=0 monotonic_ms=17938",
+    "[MEMORY-HEALTH] task=process active=1 stack_free=3104 low=0 monotonic_ms=17938",
+    "[MEMORY-HEALTH] task=writer active=1 stack_free=5176 low=0 monotonic_ms=17938",
+    "[MEMORY-HEALTH] task=i2c active=0 stack_free=0 low=0 monotonic_ms=17938",
+    "[MEMORY-HEALTH] task=ttc active=1 stack_free=6188 low=0 monotonic_ms=17938",
+    "[MEMORY-HEALTH] task=loop active=1 stack_free=4892 low=0 monotonic_ms=17938",
+    "[I2C-HEALTH] state=inactive service=uninitialized activity=inactive age_ms=0 limit_ms=0 sampled_ms=0 monotonic_ms=17991 changed=0 queued=0 cause=0 failure=0 cycles=0 recovered=0 exhausted=0",
+    "[RESOURCE-CHECK] record_code=262 kind=fault",
+    "[FLOW] received=24 invalid=1 gaps=0 duplicates=1 written=77 failures=0 dropped=18 SD=1 status=0 poll_gap_ms=11 process_gap_ms=21 stack_rx=3104 stack_sd=5176 stack_uart=1332 uart_full=606",
+    "[FLOW-MEMORY] heap=97340 byte_heap=25676 byte_largest=8180 byte_min=15320 parser_peak_bytes=7190 parser_limit_bytes=98304",
+    "[STORAGE] state=0 attempt=0 episodes=0 attempts=0 recovered=0 exhausted=0 lifecycle_failures=0 cause=0 end=0 status=0 monotonic_ms=18245",
+    "[HEALTH] task=uart state=ok activity=idle age_ms=0 limit_ms=100 completions=18121 sampled_ms=18204 changed=0",
+    "[HEALTH] task=process state=ok activity=idle age_ms=0 limit_ms=2000 completions=17102 sampled_ms=18204 changed=0",
+    "[HEALTH] task=writer state=ok activity=idle age_ms=13 limit_ms=5000 completions=733 sampled_ms=18204 changed=0",
+    "[DELIVERY] occupied=0 peak=7 accepted=7 repeated=140 lost=0 storage_failures=0 attempts=7 tx_failures=0 confirmed=7 unknown=0 evicted=0 recovery_slot=0",
+    "[TTC-HEALTH] state=ok radio=ok updating=0 wired_ready=1 age_ms=17 limit_ms=2000 completions=825 rf_seen=1 rf_age_ms=18804 wired_seen=1 wired_age_ms=11664 resets=5 changed=0 monotonic_ms=18865",
+    "[RESOURCE-CHECK] memory=band",
+    "[MEMORY-HEALTH] byte_heap=10000 byte_largest=5000 heap_low=1 block_low=1 stack_low_mask=0 allocation_failures=0 allocation_delta=0 changed=0 monotonic_ms=18976",
+    "[MEMORY-HEALTH] task=uart active=1 stack_free=1332 low=0 monotonic_ms=18976",
+    "[MEMORY-HEALTH] task=process active=1 stack_free=3104 low=0 monotonic_ms=18976",
+    "[MEMORY-HEALTH] task=writer active=1 stack_free=5176 low=0 monotonic_ms=18976",
+    "[MEMORY-HEALTH] task=i2c active=0 stack_free=0 low=0 monotonic_ms=18976",
+    "[MEMORY-HEALTH] task=ttc active=1 stack_free=6188 low=0 monotonic_ms=18976",
+    "[MEMORY-HEALTH] task=loop active=1 stack_free=4892 low=0 monotonic_ms=18976",
+    "[I2C-HEALTH] state=inactive service=uninitialized activity=inactive age_ms=0 limit_ms=0 sampled_ms=0 monotonic_ms=19069 changed=0 queued=0 cause=0 failure=0 cycles=0 recovered=0 exhausted=0",
+    "[FLOW] received=24 invalid=1 gaps=0 duplicates=1 written=78 failures=0 dropped=18 SD=1 status=0 poll_gap_ms=11 process_gap_ms=21 stack_rx=3104 stack_sd=5176 stack_uart=1332 uart_full=606",
+    "[FLOW-MEMORY] heap=97340 byte_heap=25676 byte_largest=8180 byte_min=15320 parser_peak_bytes=7190 parser_limit_bytes=98304",
+    "[STORAGE] state=0 attempt=0 episodes=0 attempts=0 recovered=0 exhausted=0 lifecycle_failures=0 cause=0 end=0 status=0 monotonic_ms=19262",
+    "[HEALTH] task=uart state=ok activity=idle age_ms=0 limit_ms=100 completions=19098 sampled_ms=19181 changed=0",
+    "[HEALTH] task=process state=ok activity=idle age_ms=0 limit_ms=2000 completions=18079 sampled_ms=19181 changed=0",
+    "[HEALTH] task=writer state=ok activity=idle age_ms=16 limit_ms=5000 completions=779 sampled_ms=19181 changed=0",
+    "[DELIVERY] occupied=0 peak=7 accepted=7 repeated=140 lost=0 storage_failures=0 attempts=7 tx_failures=0 confirmed=7 unknown=0 evicted=0 recovery_slot=0",
+    "[TTC-HEALTH] state=ok radio=ok updating=0 wired_ready=1 age_ms=17 limit_ms=2000 completions=879 rf_seen=1 rf_age_ms=19902 wired_seen=1 wired_age_ms=12762 resets=5 changed=0 monotonic_ms=19963",
+    "[RESOURCE-CHECK] memory=return",
+    "[MEMORY-HEALTH] byte_heap=12288 byte_largest=6144 heap_low=0 block_low=0 stack_low_mask=0 allocation_failures=0 allocation_delta=0 changed=1 monotonic_ms=20074",
+    "[MEMORY-HEALTH] task=uart active=1 stack_free=1332 low=0 monotonic_ms=20074",
+    "[MEMORY-HEALTH] task=process active=1 stack_free=3104 low=0 monotonic_ms=20074",
+    "[MEMORY-HEALTH] task=writer active=1 stack_free=5176 low=0 monotonic_ms=20074",
+    "[MEMORY-HEALTH] task=i2c active=0 stack_free=0 low=0 monotonic_ms=20074",
+    "[MEMORY-HEALTH] task=ttc active=1 stack_free=6188 low=0 monotonic_ms=20074",
+    "[MEMORY-HEALTH] task=loop active=1 stack_free=4892 low=0 monotonic_ms=20074",
+    "[I2C-HEALTH] state=inactive service=uninitialized activity=inactive age_ms=0 limit_ms=0 sampled_ms=0 monotonic_ms=20127 changed=0 queued=0 cause=0 failure=0 cycles=0 recovered=0 exhausted=0",
+    "[RESOURCE-CHECK] record_code=262 kind=event",
+    "[FLOW] received=24 invalid=1 gaps=0 duplicates=1 written=80 failures=0 dropped=18 SD=1 status=0 poll_gap_ms=11 process_gap_ms=21 stack_rx=3104 stack_sd=5176 stack_uart=1332 uart_full=606",
+    "[FLOW-MEMORY] heap=97340 byte_heap=25676 byte_largest=8180 byte_min=15320 parser_peak_bytes=7190 parser_limit_bytes=98304",
+    "[STORAGE] state=0 attempt=0 episodes=0 attempts=0 recovered=0 exhausted=0 lifecycle_failures=0 cause=0 end=0 status=0 monotonic_ms=20280",
+    "[HEALTH] task=uart state=ok activity=idle age_ms=0 limit_ms=100 completions=20156 sampled_ms=20239 changed=0",
+    "[HEALTH] task=process state=ok activity=idle age_ms=0 limit_ms=2000 completions=19137 sampled_ms=20239 changed=0",
+    "[HEALTH] task=writer state=ok activity=idle age_ms=12 limit_ms=5000 completions=827 sampled_ms=20239 changed=0",
+    "[DELIVERY] occupied=0 peak=7 accepted=7 repeated=140 lost=0 storage_failures=0 attempts=7 tx_failures=0 confirmed=7 unknown=0 evicted=0 recovery_slot=0",
+    "[TTC-HEALTH] state=ok radio=ok updating=0 wired_ready=1 age_ms=18 limit_ms=2000 completions=930 rf_seen=1 rf_age_ms=20940 wired_seen=1 wired_age_ms=13800 resets=5 changed=0 monotonic_ms=21001",
+    "[RESOURCE-CHECK] stack=low",
+    "[MEMORY-HEALTH] byte_heap=25676 byte_largest=8180 heap_low=0 block_low=0 stack_low_mask=4 allocation_failures=0 allocation_delta=0 changed=1 monotonic_ms=21112",
+    "[MEMORY-HEALTH] task=uart active=1 stack_free=1332 low=0 monotonic_ms=21112",
+    "[MEMORY-HEALTH] task=process active=1 stack_free=3104 low=0 monotonic_ms=21112",
+    "[MEMORY-HEALTH] task=writer active=1 stack_free=1023 low=1 monotonic_ms=21112",
+    "[MEMORY-HEALTH] task=i2c active=0 stack_free=0 low=0 monotonic_ms=21112",
+    "[MEMORY-HEALTH] task=ttc active=1 stack_free=6188 low=0 monotonic_ms=21112",
+    "[MEMORY-HEALTH] task=loop active=1 stack_free=4892 low=0 monotonic_ms=21112",
+    "[I2C-HEALTH] state=inactive service=uninitialized activity=inactive age_ms=0 limit_ms=0 sampled_ms=0 monotonic_ms=21205 changed=0 queued=0 cause=0 failure=0 cycles=0 recovered=0 exhausted=0",
+    "[RESOURCE-CHECK] record_code=263 kind=fault",
+    "[FLOW] received=24 invalid=1 gaps=0 duplicates=1 written=82 failures=0 dropped=18 SD=1 status=0 poll_gap_ms=11 process_gap_ms=21 stack_rx=3104 stack_sd=5176 stack_uart=1332 uart_full=606",
+    "[FLOW-MEMORY] heap=97340 byte_heap=25676 byte_largest=8180 byte_min=15320 parser_peak_bytes=7190 parser_limit_bytes=98304",
+    "[STORAGE] state=0 attempt=0 episodes=0 attempts=0 recovered=0 exhausted=0 lifecycle_failures=0 cause=0 end=0 status=0 monotonic_ms=21297",
+    "[HEALTH] task=uart state=ok activity=idle age_ms=1 limit_ms=100 completions=21132 sampled_ms=21216 changed=0",
+    "[HEALTH] task=process state=ok activity=idle age_ms=1 limit_ms=2000 completions=20113 sampled_ms=21216 changed=0",
+    "[HEALTH] task=writer state=ok activity=write age_ms=72 limit_ms=5000 completions=870 sampled_ms=21216 changed=0",
+    "[DELIVERY] occupied=0 peak=7 accepted=7 repeated=140 lost=0 storage_failures=0 attempts=7 tx_failures=0 confirmed=7 unknown=0 evicted=0 recovery_slot=0",
+    "[TTC-HEALTH] state=ok radio=ok updating=0 wired_ready=1 age_ms=18 limit_ms=2000 completions=984 rf_seen=1 rf_age_ms=22038 wired_seen=1 wired_age_ms=14898 resets=5 changed=0 monotonic_ms=22099",
+    "[RESOURCE-CHECK] stack=historical",
+    "[MEMORY-HEALTH] byte_heap=25676 byte_largest=8180 heap_low=0 block_low=0 stack_low_mask=4 allocation_failures=0 allocation_delta=0 changed=0 monotonic_ms=22210",
+    "[MEMORY-HEALTH] task=uart active=1 stack_free=1332 low=0 monotonic_ms=22210",
+    "[MEMORY-HEALTH] task=process active=1 stack_free=3104 low=0 monotonic_ms=22210",
+    "[MEMORY-HEALTH] task=writer active=1 stack_free=4096 low=1 monotonic_ms=22210",
+    "[MEMORY-HEALTH] task=i2c active=0 stack_free=0 low=0 monotonic_ms=22210",
+    "[MEMORY-HEALTH] task=ttc active=1 stack_free=6188 low=0 monotonic_ms=22210",
+    "[MEMORY-HEALTH] task=loop active=1 stack_free=4892 low=0 monotonic_ms=22210",
+    "[I2C-HEALTH] state=inactive service=uninitialized activity=inactive age_ms=0 limit_ms=0 sampled_ms=0 monotonic_ms=22263 changed=0 queued=0 cause=0 failure=0 cycles=0 recovered=0 exhausted=0",
+    "[FLOW] received=24 invalid=1 gaps=0 duplicates=1 written=83 failures=0 dropped=18 SD=1 status=0 poll_gap_ms=11 process_gap_ms=21 stack_rx=3104 stack_sd=5176 stack_uart=1332 uart_full=606",
+    "[FLOW-MEMORY] heap=97340 byte_heap=25676 byte_largest=8180 byte_min=15320 parser_peak_bytes=7190 parser_limit_bytes=98304",
+    "[STORAGE] state=0 attempt=0 episodes=0 attempts=0 recovered=0 exhausted=0 lifecycle_failures=0 cause=0 end=0 status=0 monotonic_ms=22315",
+    "[HEALTH] task=uart state=ok activity=idle age_ms=0 limit_ms=100 completions=22190 sampled_ms=22273 changed=0",
+    "[HEALTH] task=process state=ok activity=idle age_ms=0 limit_ms=2000 completions=21171 sampled_ms=22273 changed=0",
+    "[HEALTH] task=writer state=ok activity=idle age_ms=14 limit_ms=5000 completions=921 sampled_ms=22273 changed=0",
+    "[DELIVERY] occupied=0 peak=7 accepted=7 repeated=140 lost=0 storage_failures=0 attempts=7 tx_failures=0 confirmed=7 unknown=0 evicted=0 recovery_slot=0",
+    "[TTC-HEALTH] state=ok radio=ok updating=0 wired_ready=1 age_ms=19 limit_ms=2000 completions=1035 rf_seen=1 rf_age_ms=23076 wired_seen=1 wired_age_ms=15936 resets=5 changed=0 monotonic_ms=23137",
+    "[RESOURCE-CHECK] allocation=1",
+    "[MEMORY-HEALTH] byte_heap=25676 byte_largest=8180 heap_low=0 block_low=0 stack_low_mask=4 allocation_failures=1 allocation_delta=1 changed=1 monotonic_ms=23248",
+    "[MEMORY-HEALTH] task=uart active=1 stack_free=1332 low=0 monotonic_ms=23248",
+    "[MEMORY-HEALTH] task=process active=1 stack_free=3104 low=0 monotonic_ms=23248",
+    "[MEMORY-HEALTH] task=writer active=1 stack_free=5176 low=1 monotonic_ms=23248",
+    "[MEMORY-HEALTH] task=i2c active=0 stack_free=0 low=0 monotonic_ms=23248",
+    "[MEMORY-HEALTH] task=ttc active=1 stack_free=6188 low=0 monotonic_ms=23248",
+    "[MEMORY-HEALTH] task=loop active=1 stack_free=4892 low=0 monotonic_ms=23248",
+    "[FLOW] received=24 invalid=1 gaps=0 duplicates=1 written=84 failures=0 dropped=18 SD=1 status=0 poll_gap_ms=11 process_gap_ms=21 stack_rx=3104 stack_sd=5176 stack_uart=1332 uart_full=606",
+    "[FLOW-MEMORY] heap=97340 byte_heap=25676 byte_largest=8180 byte_min=15320 parser_peak_bytes=7190 parser_limit_bytes=98304",
+    "[STORAGE] state=0 attempt=0 episodes=0 attempts=0 recovered=0 exhausted=0 lifecycle_failures=0 cause=0 end=0 status=0 monotonic_ms=23321",
+    "[HEALTH] task=uart state=ok activity=idle age_ms=0 limit_ms=100 completions=23144 sampled_ms=23227 changed=0",
+    "[HEALTH] task=process state=ok activity=idle age_ms=0 limit_ms=2000 completions=22125 sampled_ms=23227 changed=0",
+    "[HEALTH] task=writer state=ok activity=idle age_ms=10 limit_ms=5000 completions=966 sampled_ms=23227 changed=0",
+    "[DELIVERY] occupied=0 peak=7 accepted=7 repeated=140 lost=0 storage_failures=0 attempts=7 tx_failures=0 confirmed=7 unknown=0 evicted=0 recovery_slot=0",
+    "[RESOURCE-CHECK] record_code=264 kind=fault",
+    "[I2C-HEALTH] state=inactive service=uninitialized activity=inactive age_ms=0 limit_ms=0 sampled_ms=0 monotonic_ms=23416 changed=0 queued=0 cause=0 failure=0 cycles=0 recovered=0 exhausted=0",
+    "[TTC-HEALTH] state=ok radio=ok updating=0 wired_ready=1 age_ms=19 limit_ms=2000 completions=1089 rf_seen=1 rf_age_ms=24173 wired_seen=1 wired_age_ms=17033 resets=5 changed=0 monotonic_ms=24234",
+    "[FLOW] received=24 invalid=1 gaps=0 duplicates=1 written=86 failures=0 dropped=18 SD=1 status=0 poll_gap_ms=11 process_gap_ms=21 stack_rx=3104 stack_sd=5176 stack_uart=1332 uart_full=606",
+    "[FLOW-MEMORY] heap=97340 byte_heap=25676 byte_largest=8180 byte_min=15320 parser_peak_bytes=7190 parser_limit_bytes=98304",
+    "[STORAGE] state=0 attempt=0 episodes=0 attempts=0 recovered=0 exhausted=0 lifecycle_failures=0 cause=0 end=0 status=0 monotonic_ms=24324",
+    "[HEALTH] task=uart state=ok activity=idle age_ms=1 limit_ms=100 completions=24160 sampled_ms=24244 changed=0",
+    "[HEALTH] task=process state=ok activity=idle age_ms=1 limit_ms=2000 completions=23141 sampled_ms=24244 changed=0",
+    "[HEALTH] task=writer state=ok activity=idle age_ms=2 limit_ms=5000 completions=1013 sampled_ms=24244 changed=0",
+    "[DELIVERY] occupied=0 peak=7 accepted=7 repeated=140 lost=0 storage_failures=0 attempts=7 tx_failures=0 confirmed=7 unknown=0 evicted=0 recovery_slot=0",
+    "[RESOURCE-CHECK] done=1",
+    "[MEMORY-HEALTH] byte_heap=25676 byte_largest=8180 heap_low=0 block_low=0 stack_low_mask=4 allocation_failures=1 allocation_delta=0 changed=0 monotonic_ms=24419",
+    "[MEMORY-HEALTH] task=uart active=1 stack_free=1332 low=0 monotonic_ms=24419",
+    "[MEMORY-HEALTH] task=process active=1 stack_free=3104 low=0 monotonic_ms=24419",
+    "[MEMORY-HEALTH] task=writer active=1 stack_free=5176 low=1 monotonic_ms=24419",
+    "[MEMORY-HEALTH] task=i2c active=0 stack_free=0 low=0 monotonic_ms=24419",
+    "[MEMORY-HEALTH] task=ttc active=1 stack_free=6188 low=0 monotonic_ms=24419",
+    "[MEMORY-HEALTH] task=loop active=1 stack_free=4892 low=0 monotonic_ms=24419",
+    "[I2C-HEALTH] state=inactive service=uninitialized activity=inactive age_ms=0 limit_ms=0 sampled_ms=0 monotonic_ms=24472 changed=0 queued=0 cause=0 failure=0 cycles=0 recovered=0 exhausted=0",
+    "[TTC-HEALTH] state=ok radio=ok updating=0 wired_ready=1 age_ms=20 limit_ms=2000 completions=1143 rf_seen=1 rf_age_ms=25271 wired_seen=1 wired_age_ms=18131 resets=5 changed=0 monotonic_ms=25332",
+    "[FLOW] received=24 invalid=1 gaps=0 duplicates=1 written=87 failures=0 dropped=18 SD=1 status=0 poll_gap_ms=11 process_gap_ms=21 stack_rx=3104 stack_sd=5176 stack_uart=1332 uart_full=606",
+    "[FLOW-MEMORY] heap=97340 byte_heap=25676 byte_largest=8180 byte_min=15320 parser_peak_bytes=7190 parser_limit_bytes=98304",
+    "[STORAGE] state=0 attempt=0 episodes=0 attempts=0 recovered=0 exhausted=0 lifecycle_failures=0 cause=0 end=0 status=0 monotonic_ms=25342",
+    "[HEALTH] task=uart state=ok activity=idle age_ms=0 limit_ms=100 completions=25208 sampled_ms=25291 changed=0",
+    "[HEALTH] task=process state=ok activity=idle age_ms=0 limit_ms=2000 completions=24189 sampled_ms=25291 changed=0",
+    "[HEALTH] task=writer state=ok activity=idle age_ms=20 limit_ms=5000 completions=1062 sampled_ms=25291 changed=0",
+    "[DELIVERY] occupied=0 peak=7 accepted=7 repeated=140 lost=0 storage_failures=0 attempts=7 tx_failures=0 confirmed=7 unknown=0 evicted=0 recovery_slot=0",
+    "[MEMORY-HEALTH] byte_heap=25676 byte_largest=8180 heap_low=0 block_low=0 stack_low_mask=4 allocation_failures=1 allocation_delta=0 changed=0 monotonic_ms=25447",
+    "[MEMORY-HEALTH] task=uart active=1 stack_free=1332 low=0 monotonic_ms=25447",
+    "[MEMORY-HEALTH] task=process active=1 stack_free=3104 low=0 monotonic_ms=25447",
+    "[MEMORY-HEALTH] task=writer active=1 stack_free=5176 low=1 monotonic_ms=25447",
+    "[MEMORY-HEALTH] task=i2c active=0 stack_free=0 low=0 monotonic_ms=25447",
+    "[MEMORY-HEALTH] task=ttc active=1 stack_free=6188 low=0 monotonic_ms=25447",
+    "[MEMORY-HEALTH] task=loop active=1 stack_free=4892 low=0 monotonic_ms=25447",
+    "[I2C-HEALTH] state=inactive service=uninitialized activity=inactive age_ms=0 limit_ms=0 sampled_ms=0 monotonic_ms=25500 changed=0 queued=0 cause=0 failure=0 cycles=0 recovered=0 exhausted=0",
+    "[TTC-HEALTH] state=ok radio=ok updating=0 wired_ready=1 age_ms=9 limit_ms=2000 completions=1194 rf_seen=1 rf_age_ms=26298 wired_seen=1 wired_age_ms=19158 resets=5 changed=0 monotonic_ms=26359",
+    "[FLOW] received=24 invalid=1 gaps=0 duplicates=1 written=88 failures=0 dropped=18 SD=1 status=0 poll_gap_ms=11 process_gap_ms=21 stack_rx=3104 stack_sd=5176 stack_uart=1332 uart_full=606",
+    "[FLOW-MEMORY] heap=97340 byte_heap=25676 byte_largest=8180 byte_min=15320 parser_peak_bytes=7190 parser_limit_bytes=98304",
+    "[STORAGE] state=0 attempt=0 episodes=0 attempts=0 recovered=0 exhausted=0 lifecycle_failures=0 cause=0 end=0 status=0 monotonic_ms=26369",
+    "[HEALTH] task=uart state=ok activity=idle age_ms=0 limit_ms=100 completions=26235 sampled_ms=26318 changed=0",
+    "[HEALTH] task=process state=ok activity=idle age_ms=0 limit_ms=2000 completions=25216 sampled_ms=26318 changed=0",
+    "[HEALTH] task=writer state=ok activity=idle age_ms=15 limit_ms=5000 completions=1111 sampled_ms=26318 changed=0",
+    "[DELIVERY] occupied=0 peak=7 accepted=7 repeated=140 lost=0 storage_failures=0 attempts=7 tx_failures=0 confirmed=7 unknown=0 evicted=0 recovery_slot=0",
+    "[MEMORY-HEALTH] byte_heap=25676 byte_largest=8180 heap_low=0 block_low=0 stack_low_mask=4 allocation_failures=1 allocation_delta=0 changed=0 monotonic_ms=26474",
+    "[MEMORY-HEALTH] task=uart active=1 stack_free=1332 low=0 monotonic_ms=26474",
+    "[MEMORY-HEALTH] task=process active=1 stack_free=3104 low=0 monotonic_ms=26474",
+    "[MEMORY-HEALTH] task=writer active=1 stack_free=5176 low=1 monotonic_ms=26474",
+    "[MEMORY-HEALTH] task=i2c active=0 stack_free=0 low=0 monotonic_ms=26474",
+    "[MEMORY-HEALTH] task=ttc active=1 stack_free=6188 low=0 monotonic_ms=26474",
+    "[MEMORY-HEALTH] task=loop active=1 stack_free=4892 low=0 monotonic_ms=26474",
+    "[I2C-HEALTH] state=inactive service=uninitialized activity=inactive age_ms=0 limit_ms=0 sampled_ms=0 monotonic_ms=26527 changed=0 queued=0 cause=0 failure=0 cycles=0 recovered=0 exhausted=0",
+    "[TTC-HEALTH] state=ok radio=ok updating=0 wired_ready=1 age_ms=9 limit_ms=2000 completions=1245 rf_seen=1 rf_age_ms=27325 wired_seen=1 wired_age_ms=20185 resets=5 changed=0 monotonic_ms=27386",
+    "[FLOW] received=24 invalid=1 gaps=0 duplicates=1 written=89 failures=0 dropped=18 SD=1 status=0 poll_gap_ms=11 process_gap_ms=21 stack_rx=3104 stack_sd=5176 stack_uart=1332 uart_full=606",
+    "[FLOW-MEMORY] heap=97340 byte_heap=25676 byte_largest=8180 byte_min=15320 parser_peak_bytes=7190 parser_limit_bytes=98304",
+    "[STORAGE] state=0 attempt=0 episodes=0 attempts=0 recovered=0 exhausted=0 lifecycle_failures=0 cause=0 end=0 status=0 monotonic_ms=27396",
+    "[HEALTH] task=uart state=ok activity=idle age_ms=0 limit_ms=100 completions=27262 sampled_ms=27345 changed=0",
+    "[HEALTH] task=process state=ok activity=idle age_ms=0 limit_ms=2000 completions=26243 sampled_ms=27345 changed=0",
+    "[HEALTH] task=writer state=ok activity=idle age_ms=15 limit_ms=5000 completions=1160 sampled_ms=27345 changed=0",
+    "[DELIVERY] occupied=0 peak=7 accepted=7 repeated=140 lost=0 storage_failures=0 attempts=7 tx_failures=0 confirmed=7 unknown=0 evicted=0 recovery_slot=0",
+    "[MEMORY-HEALTH] byte_heap=25676 byte_largest=8180 heap_low=0 block_low=0 stack_low_mask=4 allocation_failures=1 allocation_delta=0 changed=0 monotonic_ms=27501",
+    "[MEMORY-HEALTH] task=uart active=1 stack_free=1332 low=0 monotonic_ms=27501",
+    "[MEMORY-HEALTH] task=process active=1 stack_free=3104 low=0 monotonic_ms=27501",
+    "[MEMORY-HEALTH] task=writer active=1 stack_free=5176 low=1 monotonic_ms=27501",
+    "[MEMORY-HEALTH] task=i2c active=0 stack_free=0 low=0 monotonic_ms=27501",
+    "[MEMORY-HEALTH] task=ttc active=1 stack_free=6188 low=0 monotonic_ms=27501",
+    "[MEMORY-HEALTH] task=loop active=1 stack_free=4892 low=0 monotonic_ms=27501",
+    "[I2C-HEALTH] state=inactive service=uninitialized activity=inactive age_ms=0 limit_ms=0 sampled_ms=0 monotonic_ms=27554 changed=0 queued=0 cause=0 failure=0 cycles=0 recovered=0 exhausted=0",
+    "[TTC-HEALTH] state=ok radio=ok updating=0 wired_ready=1 age_ms=9 limit_ms=2000 completions=1296 rf_seen=1 rf_age_ms=28352 wired_seen=1 wired_age_ms=21212 resets=5 changed=0 monotonic_ms=28413",
+    "[FLOW] received=24 invalid=1 gaps=0 duplicates=1 written=90 failures=0 dropped=18 SD=1 status=0 poll_gap_ms=11 process_gap_ms=21 stack_rx=3104 stack_sd=5176 stack_uart=1332 uart_full=606",
+    "[FLOW-MEMORY] heap=97340 byte_heap=25676 byte_largest=8180 byte_min=15320 parser_peak_bytes=7190 parser_limit_bytes=98304",
+    "[STORAGE] state=0 attempt=0 episodes=0 attempts=0 recovered=0 exhausted=0 lifecycle_failures=0 cause=0 end=0 status=0 monotonic_ms=28423",
+    "[HEALTH] task=uart state=ok activity=idle age_ms=0 limit_ms=100 completions=28289 sampled_ms=28372 changed=0",
+    "[HEALTH] task=process state=ok activity=idle age_ms=0 limit_ms=2000 completions=27270 sampled_ms=28372 changed=0",
+    "[HEALTH] task=writer state=ok activity=idle age_ms=15 limit_ms=5000 completions=1209 sampled_ms=28372 changed=0",
+    "[DELIVERY] occupied=0 peak=7 accepted=7 repeated=140 lost=0 storage_failures=0 attempts=7 tx_failures=0 confirmed=7 unknown=0 evicted=0 recovery_slot=0",
+    "[MEMORY-HEALTH] byte_heap=25676 byte_largest=8180 heap_low=0 block_low=0 stack_low_mask=4 allocation_failures=1 allocation_delta=0 changed=0 monotonic_ms=28528",
+    "[MEMORY-HEALTH] task=uart active=1 stack_free=1332 low=0 monotonic_ms=28528",
+    "[MEMORY-HEALTH] task=process active=1 stack_free=3104 low=0 monotonic_ms=28528",
+    "[MEMORY-HEALTH] task=writer active=1 stack_free=5176 low=1 monotonic_ms=28528",
+    "[MEMORY-HEALTH] task=i2c active=0 stack_free=0 low=0 monotonic_ms=28528",
+    "[MEMORY-HEALTH] task=ttc active=1 stack_free=6188 low=0 monotonic_ms=28528",
+    "[MEMORY-HEALTH] task=loop active=1 stack_free=4892 low=0 monotonic_ms=28528",
+    "[I2C-HEALTH] state=inactive service=uninitialized activity=inactive age_ms=0 limit_ms=0 sampled_ms=0 monotonic_ms=28581 changed=0 queued=0 cause=0 failure=0 cycles=0 recovered=0 exhausted=0",
+    "[TTC-HEALTH] state=ok radio=ok updating=0 wired_ready=1 age_ms=9 limit_ms=2000 completions=1347 rf_seen=1 rf_age_ms=29379 wired_seen=1 wired_age_ms=22239 resets=5 changed=0 monotonic_ms=29440",
+    "[FLOW] received=24 invalid=1 gaps=0 duplicates=1 written=91 failures=0 dropped=18 SD=1 status=0 poll_gap_ms=11 process_gap_ms=21 stack_rx=3104 stack_sd=5176 stack_uart=1332 uart_full=606",
+    "[FLOW-MEMORY] heap=97340 byte_heap=25676 byte_largest=8180 byte_min=15320 parser_peak_bytes=7190 parser_limit_bytes=98304",
+    "[STORAGE] state=0 attempt=0 episodes=0 attempts=0 recovered=0 exhausted=0 lifecycle_failures=0 cause=0 end=0 status=0 monotonic_ms=29450",
+    "[HEALTH] task=uart state=ok activity=idle age_ms=0 limit_ms=100 completions=29316 sampled_ms=29399 changed=0",
+    "[HEALTH] task=process state=ok activity=idle age_ms=0 limit_ms=2000 completions=28297 sampled_ms=29399 changed=0",
+    "[HEALTH] task=writer state=ok activity=idle age_ms=15 limit_ms=5000 completions=1258 sampled_ms=29399 changed=0",
+    "[DELIVERY] occupied=0 peak=7 accepted=7 repeated=140 lost=0 storage_failures=0 attempts=7 tx_failures=0 confirmed=7 unknown=0 evicted=0 recovery_slot=0",
+    "{\"n\":17,\"t\":\"ack\",\"seq\":32330,\"cmd\":\"ping\",\"st\":\"ok\",\"q\":42}",
+    "[MEMORY-HEALTH] byte_heap=25648 byte_largest=8180 heap_low=0 block_low=0 stack_low_mask=4 allocation_failures=1 allocation_delta=0 changed=0 monotonic_ms=29557",
+    "[MEMORY-HEALTH] task=uart active=1 stack_free=1332 low=0 monotonic_ms=29557",
+    "[MEMORY-HEALTH] task=process active=1 stack_free=3104 low=0 monotonic_ms=29557",
+    "[MEMORY-HEALTH] task=writer active=1 stack_free=5176 low=1 monotonic_ms=29557",
+    "[MEMORY-HEALTH] task=i2c active=0 stack_free=0 low=0 monotonic_ms=29557",
+    "[MEMORY-HEALTH] task=ttc active=1 stack_free=6188 low=0 monotonic_ms=29557",
+    "[MEMORY-HEALTH] task=loop active=1 stack_free=4892 low=0 monotonic_ms=29557",
+    "{\"n\":18,\"t\":\"tm\",\"ts\":1700000026,\"md\":\"bench\",\"vb\":null,\"ib\":null,\"vs\":null,\"is\":null,\"tp\":null,\"w\":null,\"az\":null,\"ac\":0,\"msg\":null,\"rssi\":-80,\"snr\":9.5,\"rx\":10,\"err\":0,\"rst\":5}",
+    "{\"n\":19,\"t\":\"ack\",\"seq\":32331,\"cmd\":\"request_tm\",\"st\":\"ok\",\"q\":53}",
+    "[I2C-HEALTH] state=inactive service=uninitialized activity=inactive age_ms=0 limit_ms=0 sampled_ms=0 monotonic_ms=29642 changed=0 queued=0 cause=0 failure=0 cycles=0 recovered=0 exhausted=0",
+    "{\"n\":20,\"t\":\"ack\",\"seq\":32332,\"cmd\":\"ping\",\"st\":\"ok\",\"q\":10}",
+    "{\"n\":21,\"t\":\"tm\",\"ts\":1700000026,\"md\":\"bench\",\"vb\":null,\"ib\":null,\"vs\":null,\"is\":null,\"tp\":null,\"w\":null,\"az\":null,\"ac\":0,\"msg\":null,\"rssi\":-80,\"snr\":9.5,\"rx\":12,\"err\":0,\"rst\":5}",
+    "{\"n\":22,\"t\":\"ack\",\"seq\":32333,\"cmd\":\"request_tm\",\"st\":\"ok\",\"q\":0}",
+    "{\"n\":23,\"t\":\"ack\",\"seq\":32334,\"cmd\":\"ping\",\"st\":\"ok\",\"q\":0}",
+    "[FLOW-CHECK] v3 ts_available=1 ts=1700000026 ac_available=1 ac=0 msg_available=0 stable=1",
+    "{\"n\":24,\"t\":\"tm\",\"ts\":1700000026,\"md\":\"bench\",\"vb\":null,\"ib\":null,\"vs\":null,\"is\":null,\"tp\":null,\"w\":null,\"az\":null,\"ac\":0,\"msg\":null,\"rssi\":-80,\"snr\":9.5,\"rx\":14,\"err\":0,\"rst\":5}",
+    "{\"n\":25,\"t\":\"ack\",\"seq\":32335,\"cmd\":\"request_tm\",\"st\":\"ok\",\"q\":0}"
+  ],
+  "ttc": [
+    {
+      "state": "ok",
+      "radio": "ok",
+      "updating": 0,
+      "wired_ready": 1,
+      "age_ms": 19,
+      "limit_ms": 2000,
+      "completions": 48,
+      "rf_seen": 1,
+      "rf_age_ms": 946,
+      "wired_seen": 0,
+      "wired_age_ms": 0,
+      "resets": 0,
+      "changed": 0,
+      "monotonic_ms": 1007
+    },
+    {
+      "state": "ok",
+      "radio": "ok",
+      "updating": 0,
+      "wired_ready": 1,
+      "age_ms": 9,
+      "limit_ms": 2000,
+      "completions": 98,
+      "rf_seen": 1,
+      "rf_age_ms": 1965,
+      "wired_seen": 0,
+      "wired_age_ms": 0,
+      "resets": 0,
+      "changed": 0,
+      "monotonic_ms": 2026
+    },
+    {
+      "state": "ok",
+      "radio": "ok",
+      "updating": 0,
+      "wired_ready": 1,
+      "age_ms": 9,
+      "limit_ms": 2000,
+      "completions": 148,
+      "rf_seen": 1,
+      "rf_age_ms": 2983,
+      "wired_seen": 0,
+      "wired_age_ms": 0,
+      "resets": 0,
+      "changed": 0,
+      "monotonic_ms": 3044
+    },
+    {
+      "state": "ok",
+      "radio": "ok",
+      "updating": 0,
+      "wired_ready": 1,
+      "age_ms": 12,
+      "limit_ms": 2000,
+      "completions": 212,
+      "rf_seen": 1,
+      "rf_age_ms": 4090,
+      "wired_seen": 1,
+      "wired_age_ms": 783,
+      "resets": 0,
+      "changed": 0,
+      "monotonic_ms": 4151
+    },
+    {
+      "state": "ok",
+      "radio": "ok",
+      "updating": 0,
+      "wired_ready": 1,
+      "age_ms": 13,
+      "limit_ms": 2000,
+      "completions": 263,
+      "rf_seen": 1,
+      "rf_age_ms": 5116,
+      "wired_seen": 1,
+      "wired_age_ms": 380,
+      "resets": 0,
+      "changed": 0,
+      "monotonic_ms": 5177
+    },
+    {
+      "state": "ok",
+      "radio": "ok",
+      "updating": 0,
+      "wired_ready": 1,
+      "age_ms": 12,
+      "limit_ms": 2000,
+      "completions": 313,
+      "rf_seen": 1,
+      "rf_age_ms": 6128,
+      "wired_seen": 1,
+      "wired_age_ms": 461,
+      "resets": 0,
+      "changed": 0,
+      "monotonic_ms": 6189
+    },
+    {
+      "state": "ok",
+      "radio": "ok",
+      "updating": 0,
+      "wired_ready": 1,
+      "age_ms": 2,
+      "limit_ms": 2000,
+      "completions": 369,
+      "rf_seen": 1,
+      "rf_age_ms": 7221,
+      "wired_seen": 1,
+      "wired_age_ms": 81,
+      "resets": 0,
+      "changed": 0,
+      "monotonic_ms": 7282
+    },
+    {
+      "state": "ok",
+      "radio": "ok",
+      "updating": 1,
+      "wired_ready": 1,
+      "age_ms": 920,
+      "limit_ms": 2000,
+      "completions": 374,
+      "rf_seen": 1,
+      "rf_age_ms": 8259,
+      "wired_seen": 1,
+      "wired_age_ms": 1119,
+      "resets": 0,
+      "changed": 0,
+      "monotonic_ms": 8320
+    },
+    {
+      "state": "suspect",
+      "radio": "ok",
+      "updating": 1,
+      "wired_ready": 1,
+      "age_ms": 2008,
+      "limit_ms": 2000,
+      "completions": 374,
+      "rf_seen": 1,
+      "rf_age_ms": 9347,
+      "wired_seen": 1,
+      "wired_age_ms": 2207,
+      "resets": 0,
+      "changed": 1,
+      "monotonic_ms": 9408
+    },
+    {
+      "state": "ok",
+      "radio": "ok",
+      "updating": 0,
+      "wired_ready": 1,
+      "age_ms": 19,
+      "limit_ms": 2000,
+      "completions": 375,
+      "rf_seen": 1,
+      "rf_age_ms": 9664,
+      "wired_seen": 1,
+      "wired_age_ms": 2524,
+      "resets": 0,
+      "changed": 1,
+      "monotonic_ms": 9725
+    },
+    {
+      "state": "ok",
+      "radio": "unavailable",
+      "updating": 0,
+      "wired_ready": 1,
+      "age_ms": 2,
+      "limit_ms": 2000,
+      "completions": 381,
+      "rf_seen": 1,
+      "rf_age_ms": 9766,
+      "wired_seen": 1,
+      "wired_age_ms": 2626,
+      "resets": 1,
+      "changed": 1,
+      "monotonic_ms": 9827
+    },
+    {
+      "state": "ok",
+      "radio": "unavailable",
+      "updating": 0,
+      "wired_ready": 1,
+      "age_ms": 3,
+      "limit_ms": 2000,
+      "completions": 410,
+      "rf_seen": 1,
+      "rf_age_ms": 10355,
+      "wired_seen": 1,
+      "wired_age_ms": 3215,
+      "resets": 1,
+      "changed": 0,
+      "monotonic_ms": 10416
+    },
+    {
+      "state": "ok",
+      "radio": "unavailable",
+      "updating": 0,
+      "wired_ready": 1,
+      "age_ms": 3,
+      "limit_ms": 2000,
+      "completions": 461,
+      "rf_seen": 1,
+      "rf_age_ms": 11391,
+      "wired_seen": 1,
+      "wired_age_ms": 4251,
+      "resets": 2,
+      "changed": 0,
+      "monotonic_ms": 11452
+    },
+    {
+      "state": "ok",
+      "radio": "unavailable",
+      "updating": 0,
+      "wired_ready": 1,
+      "age_ms": 4,
+      "limit_ms": 2000,
+      "completions": 515,
+      "rf_seen": 1,
+      "rf_age_ms": 12489,
+      "wired_seen": 1,
+      "wired_age_ms": 5349,
+      "resets": 3,
+      "changed": 0,
+      "monotonic_ms": 12550
+    },
+    {
+      "state": "ok",
+      "radio": "unavailable",
+      "updating": 0,
+      "wired_ready": 1,
+      "age_ms": 5,
+      "limit_ms": 2000,
+      "completions": 566,
+      "rf_seen": 1,
+      "rf_age_ms": 13526,
+      "wired_seen": 1,
+      "wired_age_ms": 6386,
+      "resets": 4,
+      "changed": 0,
+      "monotonic_ms": 13587
+    },
+    {
+      "state": "ok",
+      "radio": "unavailable",
+      "updating": 0,
+      "wired_ready": 1,
+      "age_ms": 5,
+      "limit_ms": 2000,
+      "completions": 620,
+      "rf_seen": 1,
+      "rf_age_ms": 14624,
+      "wired_seen": 1,
+      "wired_age_ms": 7484,
+      "resets": 5,
+      "changed": 0,
+      "monotonic_ms": 14685
+    },
+    {
+      "state": "ok",
+      "radio": "ok",
+      "updating": 0,
+      "wired_ready": 1,
+      "age_ms": 12,
+      "limit_ms": 2000,
+      "completions": 630,
+      "rf_seen": 1,
+      "rf_age_ms": 14840,
+      "wired_seen": 1,
+      "wired_age_ms": 7700,
+      "resets": 5,
+      "changed": 1,
+      "monotonic_ms": 14901
+    },
+    {
+      "state": "ok",
+      "radio": "ok",
+      "updating": 0,
+      "wired_ready": 1,
+      "age_ms": 15,
+      "limit_ms": 2000,
+      "completions": 669,
+      "rf_seen": 1,
+      "rf_age_ms": 15631,
+      "wired_seen": 1,
+      "wired_age_ms": 8491,
+      "resets": 5,
+      "changed": 0,
+      "monotonic_ms": 15692
+    },
+    {
+      "state": "ok",
+      "radio": "ok",
+      "updating": 0,
+      "wired_ready": 1,
+      "age_ms": 16,
+      "limit_ms": 2000,
+      "completions": 720,
+      "rf_seen": 1,
+      "rf_age_ms": 16668,
+      "wired_seen": 1,
+      "wired_age_ms": 9528,
+      "resets": 5,
+      "changed": 0,
+      "monotonic_ms": 16729
+    },
+    {
+      "state": "ok",
+      "radio": "ok",
+      "updating": 0,
+      "wired_ready": 1,
+      "age_ms": 16,
+      "limit_ms": 2000,
+      "completions": 774,
+      "rf_seen": 1,
+      "rf_age_ms": 17766,
+      "wired_seen": 1,
+      "wired_age_ms": 10626,
+      "resets": 5,
+      "changed": 0,
+      "monotonic_ms": 17827
+    },
+    {
+      "state": "ok",
+      "radio": "ok",
+      "updating": 0,
+      "wired_ready": 1,
+      "age_ms": 17,
+      "limit_ms": 2000,
+      "completions": 825,
+      "rf_seen": 1,
+      "rf_age_ms": 18804,
+      "wired_seen": 1,
+      "wired_age_ms": 11664,
+      "resets": 5,
+      "changed": 0,
+      "monotonic_ms": 18865
+    },
+    {
+      "state": "ok",
+      "radio": "ok",
+      "updating": 0,
+      "wired_ready": 1,
+      "age_ms": 17,
+      "limit_ms": 2000,
+      "completions": 879,
+      "rf_seen": 1,
+      "rf_age_ms": 19902,
+      "wired_seen": 1,
+      "wired_age_ms": 12762,
+      "resets": 5,
+      "changed": 0,
+      "monotonic_ms": 19963
+    },
+    {
+      "state": "ok",
+      "radio": "ok",
+      "updating": 0,
+      "wired_ready": 1,
+      "age_ms": 18,
+      "limit_ms": 2000,
+      "completions": 930,
+      "rf_seen": 1,
+      "rf_age_ms": 20940,
+      "wired_seen": 1,
+      "wired_age_ms": 13800,
+      "resets": 5,
+      "changed": 0,
+      "monotonic_ms": 21001
+    },
+    {
+      "state": "ok",
+      "radio": "ok",
+      "updating": 0,
+      "wired_ready": 1,
+      "age_ms": 18,
+      "limit_ms": 2000,
+      "completions": 984,
+      "rf_seen": 1,
+      "rf_age_ms": 22038,
+      "wired_seen": 1,
+      "wired_age_ms": 14898,
+      "resets": 5,
+      "changed": 0,
+      "monotonic_ms": 22099
+    },
+    {
+      "state": "ok",
+      "radio": "ok",
+      "updating": 0,
+      "wired_ready": 1,
+      "age_ms": 19,
+      "limit_ms": 2000,
+      "completions": 1035,
+      "rf_seen": 1,
+      "rf_age_ms": 23076,
+      "wired_seen": 1,
+      "wired_age_ms": 15936,
+      "resets": 5,
+      "changed": 0,
+      "monotonic_ms": 23137
+    },
+    {
+      "state": "ok",
+      "radio": "ok",
+      "updating": 0,
+      "wired_ready": 1,
+      "age_ms": 19,
+      "limit_ms": 2000,
+      "completions": 1089,
+      "rf_seen": 1,
+      "rf_age_ms": 24173,
+      "wired_seen": 1,
+      "wired_age_ms": 17033,
+      "resets": 5,
+      "changed": 0,
+      "monotonic_ms": 24234
+    },
+    {
+      "state": "ok",
+      "radio": "ok",
+      "updating": 0,
+      "wired_ready": 1,
+      "age_ms": 20,
+      "limit_ms": 2000,
+      "completions": 1143,
+      "rf_seen": 1,
+      "rf_age_ms": 25271,
+      "wired_seen": 1,
+      "wired_age_ms": 18131,
+      "resets": 5,
+      "changed": 0,
+      "monotonic_ms": 25332
+    },
+    {
+      "state": "ok",
+      "radio": "ok",
+      "updating": 0,
+      "wired_ready": 1,
+      "age_ms": 9,
+      "limit_ms": 2000,
+      "completions": 1194,
+      "rf_seen": 1,
+      "rf_age_ms": 26298,
+      "wired_seen": 1,
+      "wired_age_ms": 19158,
+      "resets": 5,
+      "changed": 0,
+      "monotonic_ms": 26359
+    },
+    {
+      "state": "ok",
+      "radio": "ok",
+      "updating": 0,
+      "wired_ready": 1,
+      "age_ms": 9,
+      "limit_ms": 2000,
+      "completions": 1245,
+      "rf_seen": 1,
+      "rf_age_ms": 27325,
+      "wired_seen": 1,
+      "wired_age_ms": 20185,
+      "resets": 5,
+      "changed": 0,
+      "monotonic_ms": 27386
+    },
+    {
+      "state": "ok",
+      "radio": "ok",
+      "updating": 0,
+      "wired_ready": 1,
+      "age_ms": 9,
+      "limit_ms": 2000,
+      "completions": 1296,
+      "rf_seen": 1,
+      "rf_age_ms": 28352,
+      "wired_seen": 1,
+      "wired_age_ms": 21212,
+      "resets": 5,
+      "changed": 0,
+      "monotonic_ms": 28413
+    },
+    {
+      "state": "ok",
+      "radio": "ok",
+      "updating": 0,
+      "wired_ready": 1,
+      "age_ms": 9,
+      "limit_ms": 2000,
+      "completions": 1347,
+      "rf_seen": 1,
+      "rf_age_ms": 29379,
+      "wired_seen": 1,
+      "wired_age_ms": 22239,
+      "resets": 5,
+      "changed": 0,
+      "monotonic_ms": 29440
+    }
+  ],
+  "memory": [
+    {
+      "byte_heap": 25580,
+      "byte_largest": 8180,
+      "heap_low": 0,
+      "block_low": 0,
+      "stack_low_mask": 0,
+      "allocation_failures": 0,
+      "allocation_delta": 0,
+      "changed": 0,
+      "monotonic_ms": 84
+    },
+    {
+      "task": "uart",
+      "active": 1,
+      "stack_free": 2544,
+      "low": 0,
+      "monotonic_ms": 84
+    },
+    {
+      "task": "process",
+      "active": 1,
+      "stack_free": 7664,
+      "low": 0,
+      "monotonic_ms": 84
+    },
+    {
+      "task": "writer",
+      "active": 1,
+      "stack_free": 5400,
+      "low": 0,
+      "monotonic_ms": 84
+    },
+    {
+      "task": "i2c",
+      "active": 0,
+      "stack_free": 0,
+      "low": 0,
+      "monotonic_ms": 84
+    },
+    {
+      "task": "ttc",
+      "active": 1,
+      "stack_free": 6332,
+      "low": 0,
+      "monotonic_ms": 84
+    },
+    {
+      "task": "loop",
+      "active": 1,
+      "stack_free": 6060,
+      "low": 0,
+      "monotonic_ms": 84
+    },
+    {
+      "byte_heap": 25676,
+      "byte_largest": 8180,
+      "heap_low": 0,
+      "block_low": 0,
+      "stack_low_mask": 0,
+      "allocation_failures": 0,
+      "allocation_delta": 0,
+      "changed": 0,
+      "monotonic_ms": 1113
+    },
+    {
+      "task": "uart",
+      "active": 1,
+      "stack_free": 2544,
+      "low": 0,
+      "monotonic_ms": 1113
+    },
+    {
+      "task": "process",
+      "active": 1,
+      "stack_free": 7664,
+      "low": 0,
+      "monotonic_ms": 1113
+    },
+    {
+      "task": "writer",
+      "active": 1,
+      "stack_free": 5400,
+      "low": 0,
+      "monotonic_ms": 1113
+    },
+    {
+      "task": "i2c",
+      "active": 0,
+      "stack_free": 0,
+      "low": 0,
+      "monotonic_ms": 1113
+    },
+    {
+      "task": "ttc",
+      "active": 1,
+      "stack_free": 6332,
+      "low": 0,
+      "monotonic_ms": 1113
+    },
+    {
+      "task": "loop",
+      "active": 1,
+      "stack_free": 5200,
+      "low": 0,
+      "monotonic_ms": 1113
+    },
+    {
+      "byte_heap": 25676,
+      "byte_largest": 8180,
+      "heap_low": 0,
+      "block_low": 0,
+      "stack_low_mask": 0,
+      "allocation_failures": 0,
+      "allocation_delta": 0,
+      "changed": 0,
+      "monotonic_ms": 2131
+    },
+    {
+      "task": "uart",
+      "active": 1,
+      "stack_free": 2544,
+      "low": 0,
+      "monotonic_ms": 2131
+    },
+    {
+      "task": "process",
+      "active": 1,
+      "stack_free": 7664,
+      "low": 0,
+      "monotonic_ms": 2131
+    },
+    {
+      "task": "writer",
+      "active": 1,
+      "stack_free": 5400,
+      "low": 0,
+      "monotonic_ms": 2131
+    },
+    {
+      "task": "i2c",
+      "active": 0,
+      "stack_free": 0,
+      "low": 0,
+      "monotonic_ms": 2131
+    },
+    {
+      "task": "ttc",
+      "active": 1,
+      "stack_free": 6332,
+      "low": 0,
+      "monotonic_ms": 2131
+    },
+    {
+      "task": "loop",
+      "active": 1,
+      "stack_free": 5200,
+      "low": 0,
+      "monotonic_ms": 2131
+    },
+    {
+      "byte_heap": 24608,
+      "byte_largest": 8180,
+      "heap_low": 0,
+      "block_low": 0,
+      "stack_low_mask": 0,
+      "allocation_failures": 0,
+      "allocation_delta": 0,
+      "changed": 0,
+      "monotonic_ms": 3161
+    },
+    {
+      "task": "uart",
+      "active": 1,
+      "stack_free": 2340,
+      "low": 0,
+      "monotonic_ms": 3161
+    },
+    {
+      "task": "process",
+      "active": 1,
+      "stack_free": 7664,
+      "low": 0,
+      "monotonic_ms": 3161
+    },
+    {
+      "task": "writer",
+      "active": 1,
+      "stack_free": 5400,
+      "low": 0,
+      "monotonic_ms": 3161
+    },
+    {
+      "task": "i2c",
+      "active": 0,
+      "stack_free": 0,
+      "low": 0,
+      "monotonic_ms": 3161
+    },
+    {
+      "task": "ttc",
+      "active": 1,
+      "stack_free": 6332,
+      "low": 0,
+      "monotonic_ms": 3161
+    },
+    {
+      "task": "loop",
+      "active": 1,
+      "stack_free": 5056,
+      "low": 0,
+      "monotonic_ms": 3161
+    },
+    {
+      "byte_heap": 25676,
+      "byte_largest": 8180,
+      "heap_low": 0,
+      "block_low": 0,
+      "stack_low_mask": 0,
+      "allocation_failures": 0,
+      "allocation_delta": 0,
+      "changed": 0,
+      "monotonic_ms": 4262
+    },
+    {
+      "task": "uart",
+      "active": 1,
+      "stack_free": 1332,
+      "low": 0,
+      "monotonic_ms": 4262
+    },
+    {
+      "task": "process",
+      "active": 1,
+      "stack_free": 7632,
+      "low": 0,
+      "monotonic_ms": 4262
+    },
+    {
+      "task": "writer",
+      "active": 1,
+      "stack_free": 5176,
+      "low": 0,
+      "monotonic_ms": 4262
+    },
+    {
+      "task": "i2c",
+      "active": 0,
+      "stack_free": 0,
+      "low": 0,
+      "monotonic_ms": 4262
+    },
+    {
+      "task": "ttc",
+      "active": 1,
+      "stack_free": 6332,
+      "low": 0,
+      "monotonic_ms": 4262
+    },
+    {
+      "task": "loop",
+      "active": 1,
+      "stack_free": 4972,
+      "low": 0,
+      "monotonic_ms": 4262
+    },
+    {
+      "byte_heap": 25676,
+      "byte_largest": 8180,
+      "heap_low": 0,
+      "block_low": 0,
+      "stack_low_mask": 0,
+      "allocation_failures": 0,
+      "allocation_delta": 0,
+      "changed": 0,
+      "monotonic_ms": 5293
+    },
+    {
+      "task": "uart",
+      "active": 1,
+      "stack_free": 1332,
+      "low": 0,
+      "monotonic_ms": 5293
+    },
+    {
+      "task": "process",
+      "active": 1,
+      "stack_free": 3104,
+      "low": 0,
+      "monotonic_ms": 5293
+    },
+    {
+      "task": "writer",
+      "active": 1,
+      "stack_free": 5176,
+      "low": 0,
+      "monotonic_ms": 5293
+    },
+    {
+      "task": "i2c",
+      "active": 0,
+      "stack_free": 0,
+      "low": 0,
+      "monotonic_ms": 5293
+    },
+    {
+      "task": "ttc",
+      "active": 1,
+      "stack_free": 6188,
+      "low": 0,
+      "monotonic_ms": 5293
+    },
+    {
+      "task": "loop",
+      "active": 1,
+      "stack_free": 4924,
+      "low": 0,
+      "monotonic_ms": 5293
+    },
+    {
+      "byte_heap": 25676,
+      "byte_largest": 8180,
+      "heap_low": 0,
+      "block_low": 0,
+      "stack_low_mask": 0,
+      "allocation_failures": 0,
+      "allocation_delta": 0,
+      "changed": 0,
+      "monotonic_ms": 6302
+    },
+    {
+      "task": "uart",
+      "active": 1,
+      "stack_free": 1332,
+      "low": 0,
+      "monotonic_ms": 6302
+    },
+    {
+      "task": "process",
+      "active": 1,
+      "stack_free": 3104,
+      "low": 0,
+      "monotonic_ms": 6302
+    },
+    {
+      "task": "writer",
+      "active": 1,
+      "stack_free": 5176,
+      "low": 0,
+      "monotonic_ms": 6302
+    },
+    {
+      "task": "i2c",
+      "active": 0,
+      "stack_free": 0,
+      "low": 0,
+      "monotonic_ms": 6302
+    },
+    {
+      "task": "ttc",
+      "active": 1,
+      "stack_free": 6188,
+      "low": 0,
+      "monotonic_ms": 6302
+    },
+    {
+      "task": "loop",
+      "active": 1,
+      "stack_free": 4924,
+      "low": 0,
+      "monotonic_ms": 6302
+    },
+    {
+      "byte_heap": 25676,
+      "byte_largest": 8180,
+      "heap_low": 0,
+      "block_low": 0,
+      "stack_low_mask": 0,
+      "allocation_failures": 0,
+      "allocation_delta": 0,
+      "changed": 0,
+      "monotonic_ms": 7393
+    },
+    {
+      "task": "uart",
+      "active": 1,
+      "stack_free": 1332,
+      "low": 0,
+      "monotonic_ms": 7393
+    },
+    {
+      "task": "process",
+      "active": 1,
+      "stack_free": 3104,
+      "low": 0,
+      "monotonic_ms": 7393
+    },
+    {
+      "task": "writer",
+      "active": 1,
+      "stack_free": 5176,
+      "low": 0,
+      "monotonic_ms": 7393
+    },
+    {
+      "task": "i2c",
+      "active": 0,
+      "stack_free": 0,
+      "low": 0,
+      "monotonic_ms": 7393
+    },
+    {
+      "task": "ttc",
+      "active": 1,
+      "stack_free": 6188,
+      "low": 0,
+      "monotonic_ms": 7393
+    },
+    {
+      "task": "loop",
+      "active": 1,
+      "stack_free": 4924,
+      "low": 0,
+      "monotonic_ms": 7393
+    },
+    {
+      "byte_heap": 25676,
+      "byte_largest": 8180,
+      "heap_low": 0,
+      "block_low": 0,
+      "stack_low_mask": 0,
+      "allocation_failures": 0,
+      "allocation_delta": 0,
+      "changed": 0,
+      "monotonic_ms": 8431
+    },
+    {
+      "task": "uart",
+      "active": 1,
+      "stack_free": 1332,
+      "low": 0,
+      "monotonic_ms": 8431
+    },
+    {
+      "task": "process",
+      "active": 1,
+      "stack_free": 3104,
+      "low": 0,
+      "monotonic_ms": 8431
+    },
+    {
+      "task": "writer",
+      "active": 1,
+      "stack_free": 5176,
+      "low": 0,
+      "monotonic_ms": 8431
+    },
+    {
+      "task": "i2c",
+      "active": 0,
+      "stack_free": 0,
+      "low": 0,
+      "monotonic_ms": 8431
+    },
+    {
+      "task": "ttc",
+      "active": 1,
+      "stack_free": 6188,
+      "low": 0,
+      "monotonic_ms": 8431
+    },
+    {
+      "task": "loop",
+      "active": 1,
+      "stack_free": 4924,
+      "low": 0,
+      "monotonic_ms": 8431
+    },
+    {
+      "byte_heap": 25676,
+      "byte_largest": 8180,
+      "heap_low": 0,
+      "block_low": 0,
+      "stack_low_mask": 0,
+      "allocation_failures": 0,
+      "allocation_delta": 0,
+      "changed": 0,
+      "monotonic_ms": 9520
+    },
+    {
+      "task": "uart",
+      "active": 1,
+      "stack_free": 1332,
+      "low": 0,
+      "monotonic_ms": 9520
+    },
+    {
+      "task": "process",
+      "active": 1,
+      "stack_free": 3104,
+      "low": 0,
+      "monotonic_ms": 9520
+    },
+    {
+      "task": "writer",
+      "active": 1,
+      "stack_free": 5176,
+      "low": 0,
+      "monotonic_ms": 9520
+    },
+    {
+      "task": "i2c",
+      "active": 0,
+      "stack_free": 0,
+      "low": 0,
+      "monotonic_ms": 9520
+    },
+    {
+      "task": "ttc",
+      "active": 1,
+      "stack_free": 6188,
+      "low": 0,
+      "monotonic_ms": 9520
+    },
+    {
+      "task": "loop",
+      "active": 1,
+      "stack_free": 4924,
+      "low": 0,
+      "monotonic_ms": 9520
+    },
+    {
+      "byte_heap": 25676,
+      "byte_largest": 8180,
+      "heap_low": 0,
+      "block_low": 0,
+      "stack_low_mask": 0,
+      "allocation_failures": 0,
+      "allocation_delta": 0,
+      "changed": 0,
+      "monotonic_ms": 10527
+    },
+    {
+      "task": "uart",
+      "active": 1,
+      "stack_free": 1332,
+      "low": 0,
+      "monotonic_ms": 10527
+    },
+    {
+      "task": "process",
+      "active": 1,
+      "stack_free": 3104,
+      "low": 0,
+      "monotonic_ms": 10527
+    },
+    {
+      "task": "writer",
+      "active": 1,
+      "stack_free": 5176,
+      "low": 0,
+      "monotonic_ms": 10527
+    },
+    {
+      "task": "i2c",
+      "active": 0,
+      "stack_free": 0,
+      "low": 0,
+      "monotonic_ms": 10527
+    },
+    {
+      "task": "ttc",
+      "active": 1,
+      "stack_free": 6188,
+      "low": 0,
+      "monotonic_ms": 10527
+    },
+    {
+      "task": "loop",
+      "active": 1,
+      "stack_free": 4924,
+      "low": 0,
+      "monotonic_ms": 10527
+    },
+    {
+      "byte_heap": 25676,
+      "byte_largest": 8180,
+      "heap_low": 0,
+      "block_low": 0,
+      "stack_low_mask": 0,
+      "allocation_failures": 0,
+      "allocation_delta": 0,
+      "changed": 0,
+      "monotonic_ms": 11563
+    },
+    {
+      "task": "uart",
+      "active": 1,
+      "stack_free": 1332,
+      "low": 0,
+      "monotonic_ms": 11563
+    },
+    {
+      "task": "process",
+      "active": 1,
+      "stack_free": 3104,
+      "low": 0,
+      "monotonic_ms": 11563
+    },
+    {
+      "task": "writer",
+      "active": 1,
+      "stack_free": 5176,
+      "low": 0,
+      "monotonic_ms": 11563
+    },
+    {
+      "task": "i2c",
+      "active": 0,
+      "stack_free": 0,
+      "low": 0,
+      "monotonic_ms": 11563
+    },
+    {
+      "task": "ttc",
+      "active": 1,
+      "stack_free": 6188,
+      "low": 0,
+      "monotonic_ms": 11563
+    },
+    {
+      "task": "loop",
+      "active": 1,
+      "stack_free": 4892,
+      "low": 0,
+      "monotonic_ms": 11563
+    },
+    {
+      "byte_heap": 25676,
+      "byte_largest": 8180,
+      "heap_low": 0,
+      "block_low": 0,
+      "stack_low_mask": 0,
+      "allocation_failures": 0,
+      "allocation_delta": 0,
+      "changed": 0,
+      "monotonic_ms": 12661
+    },
+    {
+      "task": "uart",
+      "active": 1,
+      "stack_free": 1332,
+      "low": 0,
+      "monotonic_ms": 12661
+    },
+    {
+      "task": "process",
+      "active": 1,
+      "stack_free": 3104,
+      "low": 0,
+      "monotonic_ms": 12661
+    },
+    {
+      "task": "writer",
+      "active": 1,
+      "stack_free": 5176,
+      "low": 0,
+      "monotonic_ms": 12661
+    },
+    {
+      "task": "i2c",
+      "active": 0,
+      "stack_free": 0,
+      "low": 0,
+      "monotonic_ms": 12661
+    },
+    {
+      "task": "ttc",
+      "active": 1,
+      "stack_free": 6188,
+      "low": 0,
+      "monotonic_ms": 12661
+    },
+    {
+      "task": "loop",
+      "active": 1,
+      "stack_free": 4892,
+      "low": 0,
+      "monotonic_ms": 12661
+    },
+    {
+      "byte_heap": 25676,
+      "byte_largest": 8180,
+      "heap_low": 0,
+      "block_low": 0,
+      "stack_low_mask": 0,
+      "allocation_failures": 0,
+      "allocation_delta": 0,
+      "changed": 0,
+      "monotonic_ms": 13698
+    },
+    {
+      "task": "uart",
+      "active": 1,
+      "stack_free": 1332,
+      "low": 0,
+      "monotonic_ms": 13698
+    },
+    {
+      "task": "process",
+      "active": 1,
+      "stack_free": 3104,
+      "low": 0,
+      "monotonic_ms": 13698
+    },
+    {
+      "task": "writer",
+      "active": 1,
+      "stack_free": 5176,
+      "low": 0,
+      "monotonic_ms": 13698
+    },
+    {
+      "task": "i2c",
+      "active": 0,
+      "stack_free": 0,
+      "low": 0,
+      "monotonic_ms": 13698
+    },
+    {
+      "task": "ttc",
+      "active": 1,
+      "stack_free": 6188,
+      "low": 0,
+      "monotonic_ms": 13698
+    },
+    {
+      "task": "loop",
+      "active": 1,
+      "stack_free": 4892,
+      "low": 0,
+      "monotonic_ms": 13698
+    },
+    {
+      "byte_heap": 25676,
+      "byte_largest": 8180,
+      "heap_low": 0,
+      "block_low": 0,
+      "stack_low_mask": 0,
+      "allocation_failures": 0,
+      "allocation_delta": 0,
+      "changed": 0,
+      "monotonic_ms": 14796
+    },
+    {
+      "task": "uart",
+      "active": 1,
+      "stack_free": 1332,
+      "low": 0,
+      "monotonic_ms": 14796
+    },
+    {
+      "task": "process",
+      "active": 1,
+      "stack_free": 3104,
+      "low": 0,
+      "monotonic_ms": 14796
+    },
+    {
+      "task": "writer",
+      "active": 1,
+      "stack_free": 5176,
+      "low": 0,
+      "monotonic_ms": 14796
+    },
+    {
+      "task": "i2c",
+      "active": 0,
+      "stack_free": 0,
+      "low": 0,
+      "monotonic_ms": 14796
+    },
+    {
+      "task": "ttc",
+      "active": 1,
+      "stack_free": 6188,
+      "low": 0,
+      "monotonic_ms": 14796
+    },
+    {
+      "task": "loop",
+      "active": 1,
+      "stack_free": 4892,
+      "low": 0,
+      "monotonic_ms": 14796
+    },
+    {
+      "byte_heap": 25676,
+      "byte_largest": 8180,
+      "heap_low": 0,
+      "block_low": 0,
+      "stack_low_mask": 0,
+      "allocation_failures": 0,
+      "allocation_delta": 0,
+      "changed": 0,
+      "monotonic_ms": 15803
+    },
+    {
+      "task": "uart",
+      "active": 1,
+      "stack_free": 1332,
+      "low": 0,
+      "monotonic_ms": 15803
+    },
+    {
+      "task": "process",
+      "active": 1,
+      "stack_free": 3104,
+      "low": 0,
+      "monotonic_ms": 15803
+    },
+    {
+      "task": "writer",
+      "active": 1,
+      "stack_free": 5176,
+      "low": 0,
+      "monotonic_ms": 15803
+    },
+    {
+      "task": "i2c",
+      "active": 0,
+      "stack_free": 0,
+      "low": 0,
+      "monotonic_ms": 15803
+    },
+    {
+      "task": "ttc",
+      "active": 1,
+      "stack_free": 6188,
+      "low": 0,
+      "monotonic_ms": 15803
+    },
+    {
+      "task": "loop",
+      "active": 1,
+      "stack_free": 4892,
+      "low": 0,
+      "monotonic_ms": 15803
+    },
+    {
+      "byte_heap": 25676,
+      "byte_largest": 8180,
+      "heap_low": 0,
+      "block_low": 0,
+      "stack_low_mask": 0,
+      "allocation_failures": 0,
+      "allocation_delta": 0,
+      "changed": 0,
+      "monotonic_ms": 16840
+    },
+    {
+      "task": "uart",
+      "active": 1,
+      "stack_free": 1332,
+      "low": 0,
+      "monotonic_ms": 16840
+    },
+    {
+      "task": "process",
+      "active": 1,
+      "stack_free": 3104,
+      "low": 0,
+      "monotonic_ms": 16840
+    },
+    {
+      "task": "writer",
+      "active": 1,
+      "stack_free": 5176,
+      "low": 0,
+      "monotonic_ms": 16840
+    },
+    {
+      "task": "i2c",
+      "active": 0,
+      "stack_free": 0,
+      "low": 0,
+      "monotonic_ms": 16840
+    },
+    {
+      "task": "ttc",
+      "active": 1,
+      "stack_free": 6188,
+      "low": 0,
+      "monotonic_ms": 16840
+    },
+    {
+      "task": "loop",
+      "active": 1,
+      "stack_free": 4892,
+      "low": 0,
+      "monotonic_ms": 16840
+    },
+    {
+      "byte_heap": 8191,
+      "byte_largest": 4095,
+      "heap_low": 1,
+      "block_low": 1,
+      "stack_low_mask": 0,
+      "allocation_failures": 0,
+      "allocation_delta": 0,
+      "changed": 1,
+      "monotonic_ms": 17938
+    },
+    {
+      "task": "uart",
+      "active": 1,
+      "stack_free": 1332,
+      "low": 0,
+      "monotonic_ms": 17938
+    },
+    {
+      "task": "process",
+      "active": 1,
+      "stack_free": 3104,
+      "low": 0,
+      "monotonic_ms": 17938
+    },
+    {
+      "task": "writer",
+      "active": 1,
+      "stack_free": 5176,
+      "low": 0,
+      "monotonic_ms": 17938
+    },
+    {
+      "task": "i2c",
+      "active": 0,
+      "stack_free": 0,
+      "low": 0,
+      "monotonic_ms": 17938
+    },
+    {
+      "task": "ttc",
+      "active": 1,
+      "stack_free": 6188,
+      "low": 0,
+      "monotonic_ms": 17938
+    },
+    {
+      "task": "loop",
+      "active": 1,
+      "stack_free": 4892,
+      "low": 0,
+      "monotonic_ms": 17938
+    },
+    {
+      "byte_heap": 10000,
+      "byte_largest": 5000,
+      "heap_low": 1,
+      "block_low": 1,
+      "stack_low_mask": 0,
+      "allocation_failures": 0,
+      "allocation_delta": 0,
+      "changed": 0,
+      "monotonic_ms": 18976
+    },
+    {
+      "task": "uart",
+      "active": 1,
+      "stack_free": 1332,
+      "low": 0,
+      "monotonic_ms": 18976
+    },
+    {
+      "task": "process",
+      "active": 1,
+      "stack_free": 3104,
+      "low": 0,
+      "monotonic_ms": 18976
+    },
+    {
+      "task": "writer",
+      "active": 1,
+      "stack_free": 5176,
+      "low": 0,
+      "monotonic_ms": 18976
+    },
+    {
+      "task": "i2c",
+      "active": 0,
+      "stack_free": 0,
+      "low": 0,
+      "monotonic_ms": 18976
+    },
+    {
+      "task": "ttc",
+      "active": 1,
+      "stack_free": 6188,
+      "low": 0,
+      "monotonic_ms": 18976
+    },
+    {
+      "task": "loop",
+      "active": 1,
+      "stack_free": 4892,
+      "low": 0,
+      "monotonic_ms": 18976
+    },
+    {
+      "byte_heap": 12288,
+      "byte_largest": 6144,
+      "heap_low": 0,
+      "block_low": 0,
+      "stack_low_mask": 0,
+      "allocation_failures": 0,
+      "allocation_delta": 0,
+      "changed": 1,
+      "monotonic_ms": 20074
+    },
+    {
+      "task": "uart",
+      "active": 1,
+      "stack_free": 1332,
+      "low": 0,
+      "monotonic_ms": 20074
+    },
+    {
+      "task": "process",
+      "active": 1,
+      "stack_free": 3104,
+      "low": 0,
+      "monotonic_ms": 20074
+    },
+    {
+      "task": "writer",
+      "active": 1,
+      "stack_free": 5176,
+      "low": 0,
+      "monotonic_ms": 20074
+    },
+    {
+      "task": "i2c",
+      "active": 0,
+      "stack_free": 0,
+      "low": 0,
+      "monotonic_ms": 20074
+    },
+    {
+      "task": "ttc",
+      "active": 1,
+      "stack_free": 6188,
+      "low": 0,
+      "monotonic_ms": 20074
+    },
+    {
+      "task": "loop",
+      "active": 1,
+      "stack_free": 4892,
+      "low": 0,
+      "monotonic_ms": 20074
+    },
+    {
+      "byte_heap": 25676,
+      "byte_largest": 8180,
+      "heap_low": 0,
+      "block_low": 0,
+      "stack_low_mask": 4,
+      "allocation_failures": 0,
+      "allocation_delta": 0,
+      "changed": 1,
+      "monotonic_ms": 21112
+    },
+    {
+      "task": "uart",
+      "active": 1,
+      "stack_free": 1332,
+      "low": 0,
+      "monotonic_ms": 21112
+    },
+    {
+      "task": "process",
+      "active": 1,
+      "stack_free": 3104,
+      "low": 0,
+      "monotonic_ms": 21112
+    },
+    {
+      "task": "writer",
+      "active": 1,
+      "stack_free": 1023,
+      "low": 1,
+      "monotonic_ms": 21112
+    },
+    {
+      "task": "i2c",
+      "active": 0,
+      "stack_free": 0,
+      "low": 0,
+      "monotonic_ms": 21112
+    },
+    {
+      "task": "ttc",
+      "active": 1,
+      "stack_free": 6188,
+      "low": 0,
+      "monotonic_ms": 21112
+    },
+    {
+      "task": "loop",
+      "active": 1,
+      "stack_free": 4892,
+      "low": 0,
+      "monotonic_ms": 21112
+    },
+    {
+      "byte_heap": 25676,
+      "byte_largest": 8180,
+      "heap_low": 0,
+      "block_low": 0,
+      "stack_low_mask": 4,
+      "allocation_failures": 0,
+      "allocation_delta": 0,
+      "changed": 0,
+      "monotonic_ms": 22210
+    },
+    {
+      "task": "uart",
+      "active": 1,
+      "stack_free": 1332,
+      "low": 0,
+      "monotonic_ms": 22210
+    },
+    {
+      "task": "process",
+      "active": 1,
+      "stack_free": 3104,
+      "low": 0,
+      "monotonic_ms": 22210
+    },
+    {
+      "task": "writer",
+      "active": 1,
+      "stack_free": 4096,
+      "low": 1,
+      "monotonic_ms": 22210
+    },
+    {
+      "task": "i2c",
+      "active": 0,
+      "stack_free": 0,
+      "low": 0,
+      "monotonic_ms": 22210
+    },
+    {
+      "task": "ttc",
+      "active": 1,
+      "stack_free": 6188,
+      "low": 0,
+      "monotonic_ms": 22210
+    },
+    {
+      "task": "loop",
+      "active": 1,
+      "stack_free": 4892,
+      "low": 0,
+      "monotonic_ms": 22210
+    },
+    {
+      "byte_heap": 25676,
+      "byte_largest": 8180,
+      "heap_low": 0,
+      "block_low": 0,
+      "stack_low_mask": 4,
+      "allocation_failures": 1,
+      "allocation_delta": 1,
+      "changed": 1,
+      "monotonic_ms": 23248
+    },
+    {
+      "task": "uart",
+      "active": 1,
+      "stack_free": 1332,
+      "low": 0,
+      "monotonic_ms": 23248
+    },
+    {
+      "task": "process",
+      "active": 1,
+      "stack_free": 3104,
+      "low": 0,
+      "monotonic_ms": 23248
+    },
+    {
+      "task": "writer",
+      "active": 1,
+      "stack_free": 5176,
+      "low": 1,
+      "monotonic_ms": 23248
+    },
+    {
+      "task": "i2c",
+      "active": 0,
+      "stack_free": 0,
+      "low": 0,
+      "monotonic_ms": 23248
+    },
+    {
+      "task": "ttc",
+      "active": 1,
+      "stack_free": 6188,
+      "low": 0,
+      "monotonic_ms": 23248
+    },
+    {
+      "task": "loop",
+      "active": 1,
+      "stack_free": 4892,
+      "low": 0,
+      "monotonic_ms": 23248
+    },
+    {
+      "byte_heap": 25676,
+      "byte_largest": 8180,
+      "heap_low": 0,
+      "block_low": 0,
+      "stack_low_mask": 4,
+      "allocation_failures": 1,
+      "allocation_delta": 0,
+      "changed": 0,
+      "monotonic_ms": 24419
+    },
+    {
+      "task": "uart",
+      "active": 1,
+      "stack_free": 1332,
+      "low": 0,
+      "monotonic_ms": 24419
+    },
+    {
+      "task": "process",
+      "active": 1,
+      "stack_free": 3104,
+      "low": 0,
+      "monotonic_ms": 24419
+    },
+    {
+      "task": "writer",
+      "active": 1,
+      "stack_free": 5176,
+      "low": 1,
+      "monotonic_ms": 24419
+    },
+    {
+      "task": "i2c",
+      "active": 0,
+      "stack_free": 0,
+      "low": 0,
+      "monotonic_ms": 24419
+    },
+    {
+      "task": "ttc",
+      "active": 1,
+      "stack_free": 6188,
+      "low": 0,
+      "monotonic_ms": 24419
+    },
+    {
+      "task": "loop",
+      "active": 1,
+      "stack_free": 4892,
+      "low": 0,
+      "monotonic_ms": 24419
+    },
+    {
+      "byte_heap": 25676,
+      "byte_largest": 8180,
+      "heap_low": 0,
+      "block_low": 0,
+      "stack_low_mask": 4,
+      "allocation_failures": 1,
+      "allocation_delta": 0,
+      "changed": 0,
+      "monotonic_ms": 25447
+    },
+    {
+      "task": "uart",
+      "active": 1,
+      "stack_free": 1332,
+      "low": 0,
+      "monotonic_ms": 25447
+    },
+    {
+      "task": "process",
+      "active": 1,
+      "stack_free": 3104,
+      "low": 0,
+      "monotonic_ms": 25447
+    },
+    {
+      "task": "writer",
+      "active": 1,
+      "stack_free": 5176,
+      "low": 1,
+      "monotonic_ms": 25447
+    },
+    {
+      "task": "i2c",
+      "active": 0,
+      "stack_free": 0,
+      "low": 0,
+      "monotonic_ms": 25447
+    },
+    {
+      "task": "ttc",
+      "active": 1,
+      "stack_free": 6188,
+      "low": 0,
+      "monotonic_ms": 25447
+    },
+    {
+      "task": "loop",
+      "active": 1,
+      "stack_free": 4892,
+      "low": 0,
+      "monotonic_ms": 25447
+    },
+    {
+      "byte_heap": 25676,
+      "byte_largest": 8180,
+      "heap_low": 0,
+      "block_low": 0,
+      "stack_low_mask": 4,
+      "allocation_failures": 1,
+      "allocation_delta": 0,
+      "changed": 0,
+      "monotonic_ms": 26474
+    },
+    {
+      "task": "uart",
+      "active": 1,
+      "stack_free": 1332,
+      "low": 0,
+      "monotonic_ms": 26474
+    },
+    {
+      "task": "process",
+      "active": 1,
+      "stack_free": 3104,
+      "low": 0,
+      "monotonic_ms": 26474
+    },
+    {
+      "task": "writer",
+      "active": 1,
+      "stack_free": 5176,
+      "low": 1,
+      "monotonic_ms": 26474
+    },
+    {
+      "task": "i2c",
+      "active": 0,
+      "stack_free": 0,
+      "low": 0,
+      "monotonic_ms": 26474
+    },
+    {
+      "task": "ttc",
+      "active": 1,
+      "stack_free": 6188,
+      "low": 0,
+      "monotonic_ms": 26474
+    },
+    {
+      "task": "loop",
+      "active": 1,
+      "stack_free": 4892,
+      "low": 0,
+      "monotonic_ms": 26474
+    },
+    {
+      "byte_heap": 25676,
+      "byte_largest": 8180,
+      "heap_low": 0,
+      "block_low": 0,
+      "stack_low_mask": 4,
+      "allocation_failures": 1,
+      "allocation_delta": 0,
+      "changed": 0,
+      "monotonic_ms": 27501
+    },
+    {
+      "task": "uart",
+      "active": 1,
+      "stack_free": 1332,
+      "low": 0,
+      "monotonic_ms": 27501
+    },
+    {
+      "task": "process",
+      "active": 1,
+      "stack_free": 3104,
+      "low": 0,
+      "monotonic_ms": 27501
+    },
+    {
+      "task": "writer",
+      "active": 1,
+      "stack_free": 5176,
+      "low": 1,
+      "monotonic_ms": 27501
+    },
+    {
+      "task": "i2c",
+      "active": 0,
+      "stack_free": 0,
+      "low": 0,
+      "monotonic_ms": 27501
+    },
+    {
+      "task": "ttc",
+      "active": 1,
+      "stack_free": 6188,
+      "low": 0,
+      "monotonic_ms": 27501
+    },
+    {
+      "task": "loop",
+      "active": 1,
+      "stack_free": 4892,
+      "low": 0,
+      "monotonic_ms": 27501
+    },
+    {
+      "byte_heap": 25676,
+      "byte_largest": 8180,
+      "heap_low": 0,
+      "block_low": 0,
+      "stack_low_mask": 4,
+      "allocation_failures": 1,
+      "allocation_delta": 0,
+      "changed": 0,
+      "monotonic_ms": 28528
+    },
+    {
+      "task": "uart",
+      "active": 1,
+      "stack_free": 1332,
+      "low": 0,
+      "monotonic_ms": 28528
+    },
+    {
+      "task": "process",
+      "active": 1,
+      "stack_free": 3104,
+      "low": 0,
+      "monotonic_ms": 28528
+    },
+    {
+      "task": "writer",
+      "active": 1,
+      "stack_free": 5176,
+      "low": 1,
+      "monotonic_ms": 28528
+    },
+    {
+      "task": "i2c",
+      "active": 0,
+      "stack_free": 0,
+      "low": 0,
+      "monotonic_ms": 28528
+    },
+    {
+      "task": "ttc",
+      "active": 1,
+      "stack_free": 6188,
+      "low": 0,
+      "monotonic_ms": 28528
+    },
+    {
+      "task": "loop",
+      "active": 1,
+      "stack_free": 4892,
+      "low": 0,
+      "monotonic_ms": 28528
+    },
+    {
+      "byte_heap": 25648,
+      "byte_largest": 8180,
+      "heap_low": 0,
+      "block_low": 0,
+      "stack_low_mask": 4,
+      "allocation_failures": 1,
+      "allocation_delta": 0,
+      "changed": 0,
+      "monotonic_ms": 29557
+    },
+    {
+      "task": "uart",
+      "active": 1,
+      "stack_free": 1332,
+      "low": 0,
+      "monotonic_ms": 29557
+    },
+    {
+      "task": "process",
+      "active": 1,
+      "stack_free": 3104,
+      "low": 0,
+      "monotonic_ms": 29557
+    },
+    {
+      "task": "writer",
+      "active": 1,
+      "stack_free": 5176,
+      "low": 1,
+      "monotonic_ms": 29557
+    },
+    {
+      "task": "i2c",
+      "active": 0,
+      "stack_free": 0,
+      "low": 0,
+      "monotonic_ms": 29557
+    },
+    {
+      "task": "ttc",
+      "active": 1,
+      "stack_free": 6188,
+      "low": 0,
+      "monotonic_ms": 29557
+    },
+    {
+      "task": "loop",
+      "active": 1,
+      "stack_free": 4892,
+      "low": 0,
+      "monotonic_ms": 29557
+    }
+  ],
+  "markers": [
+    {
+      "start": 1
+    },
+    {
+      "pause_begin": 1
+    },
+    {
+      "pause_end": 1,
+      "elapsed_ms": 2300
+    },
+    {
+      "record_code": 260,
+      "kind": "fault"
+    },
+    {
+      "record_code": 260,
+      "kind": "event"
+    },
+    {
+      "record_code": 261,
+      "kind": "fault"
+    },
+    {
+      "radio_return": 1
+    },
+    {
+      "record_code": 261,
+      "kind": "event"
+    },
+    {
+      "memory": "low"
+    },
+    {
+      "record_code": 262,
+      "kind": "fault"
+    },
+    {
+      "memory": "band"
+    },
+    {
+      "memory": "return"
+    },
+    {
+      "record_code": 262,
+      "kind": "event"
+    },
+    {
+      "stack": "low"
+    },
+    {
+      "record_code": 263,
+      "kind": "fault"
+    },
+    {
+      "stack": "historical"
+    },
+    {
+      "allocation": 1
+    },
+    {
+      "record_code": 264,
+      "kind": "fault"
+    },
+    {
+      "done": 1
+    }
+  ],
+  "exchanges": [
+    {
+      "ack": {
+        "n": 0,
+        "t": "ack",
+        "seq": 32323,
+        "cmd": "ping",
+        "st": "ok",
+        "q": 0
+      },
+      "response_ms": 30.017
+    },
+    {
+      "ack": {
+        "n": 2,
+        "t": "ack",
+        "seq": 32324,
+        "cmd": "request_tm",
+        "st": "ok",
+        "q": 43
+      },
+      "response_ms": 91.084
+    },
+    {
+      "ack": {
+        "n": 3,
+        "t": "ack",
+        "seq": 32325,
+        "cmd": "ping",
+        "st": "ok",
+        "q": 10
+      },
+      "response_ms": 32.821
+    },
+    {
+      "ack": {
+        "n": 5,
+        "t": "ack",
+        "seq": 32326,
+        "cmd": "request_tm",
+        "st": "ok",
+        "q": 0
+      },
+      "response_ms": 32.568
+    },
+    {
+      "ack": {
+        "n": 6,
+        "t": "ack",
+        "seq": 32327,
+        "cmd": "ping",
+        "st": "ok",
+        "q": 0
+      },
+      "response_ms": 18.119
+    },
+    {
+      "ack": {
+        "n": 8,
+        "t": "ack",
+        "seq": 32328,
+        "cmd": "request_tm",
+        "st": "ok",
+        "q": 0
+      },
+      "response_ms": 35.902
+    },
+    {
+      "ack": {
+        "n": 9,
+        "t": "ack",
+        "seq": 32329,
+        "cmd": "set_time",
+        "st": "ok",
+        "q": 0
+      },
+      "response_ms": 17.711
+    },
+    {
+      "ack": {
+        "n": 17,
+        "t": "ack",
+        "seq": 32330,
+        "cmd": "ping",
+        "st": "ok",
+        "q": 42
+      },
+      "response_ms": 88.125
+    },
+    {
+      "ack": {
+        "n": 19,
+        "t": "ack",
+        "seq": 32331,
+        "cmd": "request_tm",
+        "st": "ok",
+        "q": 53
+      },
+      "response_ms": 90.652
+    },
+    {
+      "ack": {
+        "n": 20,
+        "t": "ack",
+        "seq": 32332,
+        "cmd": "ping",
+        "st": "ok",
+        "q": 10
+      },
+      "response_ms": 31.501
+    },
+    {
+      "ack": {
+        "n": 22,
+        "t": "ack",
+        "seq": 32333,
+        "cmd": "request_tm",
+        "st": "ok",
+        "q": 0
+      },
+      "response_ms": 32.939
+    },
+    {
+      "ack": {
+        "n": 23,
+        "t": "ack",
+        "seq": 32334,
+        "cmd": "ping",
+        "st": "ok",
+        "q": 0
+      },
+      "response_ms": 13.589
+    },
+    {
+      "ack": {
+        "n": 25,
+        "t": "ack",
+        "seq": 32335,
+        "cmd": "request_tm",
+        "st": "ok",
+        "q": 0
+      },
+      "response_ms": 39.375
+    }
+  ],
+  "checks": [
+    "Ttc real: pausa finita e retorno, radio independente de progresso",
+    "contato por meio e silencio sem inferir perda",
+    "histerese de heap/bloco, alerta historico de pilha e recusa entre amostras",
+    "EVENT/FAULT 260..264 confirmados pelo backend simulado, sem reboot",
+    "TC normal antes/depois: q<=200 ms, ACK<=2 s, quadros<=255 bytes"
+  ]
+}

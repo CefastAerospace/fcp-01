@@ -1,0 +1,15 @@
+COMMAND ['g++', '-std=c++11', '-Wall', '-Wextra', '-Werror', '-fsanitize=address,undefined', '-fno-sanitize-recover=undefined', '-fno-omit-frame-pointer', '-Iheaders', '-I../tt-c/include', '-I.pio/libdeps/obc/ArduinoJson/src', 'src/ObcData.cpp', 'src/ObcTime.cpp', 'src/ObcRecordCodec.cpp', 'src/ObcTaskHealth.cpp', 'tests/ObcTaskHealthCheck.cpp', '-o', '/tmp/fcp01-int008-resources-quQFs5/baseline-task-health']
+COMMAND ['/tmp/fcp01-int008-resources-quQFs5/baseline-task-health']
+Saude OBC: limites, inicio/espera, falta de progresso, retorno e eventos aprovados
+COMMAND ['g++', '-std=c++11', '-Wall', '-Wextra', '-Werror', '-fsanitize=address,undefined', '-fno-sanitize-recover=undefined', '-fno-omit-frame-pointer', '-Iheaders', '-I../tt-c/include', '-I.pio/libdeps/obc/ArduinoJson/src', 'src/ObcData.cpp', 'src/ObcTime.cpp', 'src/ObcRecordCodec.cpp', 'src/ObcI2cHealth.cpp', 'tests/ObcI2cHealthCheck.cpp', '-o', '/tmp/fcp01-int008-resources-quQFs5/baseline-i2c-health']
+COMMAND ['/tmp/fcp01-int008-resources-quQFs5/baseline-i2c-health']
+Saude I2C: limites, ociosidade, recuperacao, wrap, transicoes e registros aprovados
+COMMAND ['g++', '-std=c++11', '-Wall', '-Wextra', '-Werror', '-fsanitize=address,undefined', '-fno-sanitize-recover=undefined', '-fno-omit-frame-pointer', '-Iheaders', '-I../tt-c/include', '-I.pio/libdeps/obc/ArduinoJson/src', 'src/ObcData.cpp', 'src/ObcTime.cpp', 'src/ObcRecordCodec.cpp', 'src/ObcStorage.cpp', 'src/ObcDataFlow.cpp', 'src/ObcDelivery.cpp', 'tests/ObcStorageRecoveryCheck.cpp', '-o', '/tmp/fcp01-int008-resources-quQFs5/baseline-storage-recovery']
+COMMAND ['/tmp/fcp01-int008-resources-quQFs5/baseline-storage-recovery']
+Retomada SD: prazos, episodios, esgotamento, metadados, arquivos e IDs aprovados
+COMMAND ['g++', '-std=c++11', '-Wall', '-Wextra', '-Werror', '-fsanitize=address,undefined', '-fno-sanitize-recover=undefined', '-fno-omit-frame-pointer', '-Iheaders', '-I../tt-c/include', '-I.pio/libdeps/obc/ArduinoJson/src', 'src/ObcDownlink.cpp', 'src/ObcStorage.cpp', '../tt-c/src/TtcProtocol.cpp', 'tests/ObcDownlinkCheck.cpp', '-o', '/tmp/fcp01-int008-resources-quQFs5/baseline-downlink']
+COMMAND ['/tmp/fcp01-int008-resources-quQFs5/baseline-downlink']
+ObcDownlinkCheck: mapping, mailbox and real file extraction passed
+COMMAND ['g++', '-std=c++11', '-Wall', '-Wextra', '-Werror', '-fsanitize=address,undefined', '-fno-sanitize-recover=undefined', '-fno-omit-frame-pointer', '-Iheaders', '-I../tt-c/include', '-I.pio/libdeps/obc/ArduinoJson/src', '-pthread', '-DOBC_I2C_RECOVERY_CHECK', '-Itests/native', 'src/I2cRecovery.cpp', 'src/I2cBus.cpp', 'tests/native/NativeI2cRuntime.cpp', 'src/bench/I2cRecoveryCheck.cpp', '-o', '/tmp/fcp01-int008-resources-quQFs5/baseline-i2c-recovery']
+COMMAND ['/tmp/fcp01-int008-resources-quQFs5/baseline-i2c-recovery']
+[I2C-CHECK] PASS cycles=3 attempts=5 recovered=2 exhausted=1 stack=0 callback_max_us=1005162 context_queue_ms=1000 context_hold_ms=1005

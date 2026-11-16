@@ -80,6 +80,8 @@ namespace i2c {
         uint64_t operation_failures;
         uint32_t recovery_started_ms;
         uint32_t sampled_ms;
+        bool worker_created;
+        uint32_t worker_progress_ms;
     };
 
     /**

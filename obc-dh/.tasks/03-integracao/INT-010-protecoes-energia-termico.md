@@ -10,7 +10,7 @@ Aplicar proteções e prioridades operacionais conforme limites de energia e tem
 
 ## Origem e limites
 
-Escopo extraído da [INT-007](INT-007-comandos-modos-e-protecoes.md) em 14/11/2026. A [INT-009](INT-009-aquisicao-eps-termico.md) fornece aquisição; a INT-007 coordena modos. Watchdog de tarefas pertence à [INT-012](INT-012-watchdog-reset-obc.md), não à proteção térmica.
+Escopo extraído da [INT-007](INT-007-comandos-modos-e-protecoes.md) em 14/11/2026. A [INT-009](INT-009-aquisicao-eps-termico.md) fornece aquisição; a INT-007 coordena modos. Watchdog de tarefas pertence à [INT-012](done/INT-012-watchdog-reset-obc.md), não à proteção térmica.
 
 ## Entrega
 

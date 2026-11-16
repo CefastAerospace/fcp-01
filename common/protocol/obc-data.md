@@ -280,6 +280,48 @@ uma recuperação em curso conserva o estado de serviço `recovering`. A primeir
 amostra normal não gera evento; amostras repetidas não repetem o registro.
 Sem boot válido há somente diagnóstico USB. Não há ação automática associada.
 
+Desde 15/11/2026, os diagnósticos de recursos acrescentam os códigos OBC
+abaixo, reutilizando EVENT/FAULT v1 de 96 bytes. Não há alteração de layout,
+de TM JSON ou dos códigos anteriores.
+
+| Código OBC | Diagnóstico | Registro |
+|---|---|---|
+| 260 | Progresso da tarefa TT&C | FAULT/error em suspeita; EVENT/info no retorno |
+| 261 | Disponibilidade observada do rádio | FAULT/error em indisponibilidade; EVENT/info no retorno |
+| 262 | Heap interno por byte e maior bloco | FAULT/error em mudança para pressão; EVENT/info quando ambas as condições normalizam |
+| 263 | Margem histórica de pilha, identificada na descrição | FAULT/error uma vez por tarefa ao cruzar o limite |
+| 264 | Recusa `NO_MEMORY` do processamento | FAULT/error com quantidade desde a última amostra e total cumulativo |
+| 265 | Alimentação do watchdog por recurso | FAULT/error ao suspender por falta de progresso; EVENT/info ao retomar |
+| 266 | Solicitação `reset_obc` aceita | EVENT/info após agendar o temporizador, antes da tentativa de ACK |
+
+Os códigos 265/266 pertencem à INT-012. Conservam o layout v1 de 96 bytes,
+boot reservado e instante monotônico; tentativa de enfileiramento não
+confirma persistência. O reset não espera SD, drenagem ou recepção do ACK.
+Os limites de ação do watchdog são separados dos limites diagnósticos
+256–264; condições de memória/rádio indisponível não acionam reset sozinhas.
+
+Progresso TT&C é publicado pelo proprietário antes/depois de `Update`,
+independentemente de TC recebido. Silêncio do solo, rádio indisponível e
+tarefa sem progresso são estados distintos. Contato RF/cabo tem indicador
+explícito de existência e instante próprio; zero é válido. Idade do contato
+é informação, sem timeout de perda implícito.
+
+Limites definidos pelo responsável para esta implementação: progresso
+TT&C >2.000 ms; heap interno acessível por byte <8.192 bytes, com retorno
+>=12.288; maior bloco <4.096 bytes, com retorno >=6.144; margem histórica
+de pilha <1.024 bytes por tarefa ativa. Alerta de pilha permanece durante a
+vida da tarefa; recuperação do heap não o limpa. Avaliação TT&C tem período
+alvo de 100 ms e memória/pilhas de 1 s. Recusas entre amostras são
+contabilizadas pelo processamento, mesmo que o heap já tenha recuperado.
+Os limites não garantem todos os máximos simultâneos nem substituem os
+critérios anteriores de latência, UART ou aceitação do parser.
+
+Mudanças observadas não repetem eventos em amostras estáveis. Fila cheia,
+SD ausente ou falha de escrita preservam perdas explícitas; diagnóstico
+não confirma persistência. Não há reset por memória baixa, cancelamento de
+tarefa ou nova política de recuperação do rádio. Procedimento e limitações
+estão no [guia de recursos](../../obc-dh/tools/README.md#supervisão-de-recursos-ttc-e-memória--15112026).
+
 ```json
 {"version":1,"type":"event","boot_id":1,"monotonic_ms":5000,"data":{"source":1,"code":1,"severity":0,"description":"startup"}}
 {"version":1,"type":"fault","boot_id":1,"monotonic_ms":5000,"data":{"source":7,"code":1,"severity":2,"description":"sd unavailable"}}

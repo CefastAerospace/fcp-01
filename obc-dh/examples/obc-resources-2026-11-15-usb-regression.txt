@@ -1,0 +1,296 @@
+COMMAND ['pio', 'run', '-e', 'int008-storage-check', '-t', 'upload', '--upload-port', '/dev/ttyUSB0']
+Processing int008-storage-check (platform: espressif32@6.6.0; board: esp32doit-devkit-v1; framework: arduino)
+--------------------------------------------------------------------------------
+Verbose mode can be enabled via `-v, --verbose` option
+CONFIGURATION: https://docs.platformio.org/page/boards/espressif32/esp32doit-devkit-v1.html
+PLATFORM: Espressif 32 (6.6.0) > DOIT ESP32 DEVKIT V1
+HARDWARE: ESP32 240MHz, 320KB RAM, 4MB Flash
+DEBUG: Current (cmsis-dap) External (cmsis-dap, esp-bridge, esp-prog, iot-bus-jtag, jlink, minimodule, olimex-arm-usb-ocd, olimex-arm-usb-ocd-h, olimex-arm-usb-tiny-h, olimex-jtag-tiny, tumpa)
+PACKAGES: 
+ - framework-arduinoespressif32 @ 3.20014.231204 (2.0.14) 
+ - tool-esptoolpy @ 1.40501.0 (4.5.1) 
+ - tool-mkfatfs @ 2.0.1 
+ - tool-mklittlefs @ 1.203.210628 (2.3) 
+ - tool-mkspiffs @ 2.230.0 (2.30) 
+ - toolchain-xtensa-esp32 @ 8.4.0+2021r2-patch5
+LDF: Library Dependency Finder -> https://bit.ly/configure-pio-ldf
+LDF Modes: Finder ~ chain, Compatibility ~ soft
+Found 36 compatible libraries
+Scanning dependencies...
+Dependency Graph
+|-- ArduinoJson @ 7.0.4
+|-- LoRa @ 0.8.0
+|-- tt-c @ 0.1.0
+|-- Wire @ 2.0.0
+|-- SD @ 2.0.0
+|-- SPI @ 2.0.0
+Building in release mode
+Compiling .pio/build/int008-storage-check/src/ObcResourceHealth.cpp.o
+Retrieving maximum program size .pio/build/int008-storage-check/firmware.elf
+Checking size .pio/build/int008-storage-check/firmware.elf
+Advanced Memory Usage is available via "PlatformIO Home > Project Inspect"
+RAM:   [=         ]  12.2% (used 39920 bytes from 327680 bytes)
+Flash: [====      ]  42.1% (used 552117 bytes from 1310720 bytes)
+Configuring upload protocol...
+AVAILABLE: cmsis-dap, esp-bridge, esp-prog, espota, esptool, iot-bus-jtag, jlink, minimodule, olimex-arm-usb-ocd, olimex-arm-usb-ocd-h, olimex-arm-usb-tiny-h, olimex-jtag-tiny, tumpa
+CURRENT: upload_protocol = esptool
+Looking for upload port...
+Using manually specified: /dev/ttyUSB0
+Uploading .pio/build/int008-storage-check/firmware.bin
+esptool.py v4.5.1
+Serial port /dev/ttyUSB0
+Connecting....
+Chip is ESP32-D0WD-V3 (revision v3.1)
+Features: WiFi, BT, Dual Core, 240MHz, VRef calibration in efuse, Coding Scheme None
+Crystal is 40MHz
+MAC: 10:06:1c:81:ca:68
+Uploading stub...
+Running stub...
+Stub running...
+Changing baud rate to 460800
+Changed.
+Configuring flash size...
+Flash will be erased from 0x00001000 to 0x00005fff...
+Flash will be erased from 0x00008000 to 0x00008fff...
+Flash will be erased from 0x0000e000 to 0x0000ffff...
+Flash will be erased from 0x00010000 to 0x00096fff...
+Compressed 17536 bytes to 12202...
+Writing at 0x00001000... (100 %)
+Wrote 17536 bytes (12202 compressed) at 0x00001000 in 0.6 seconds (effective 253.5 kbit/s)...
+Hash of data verified.
+Compressed 3072 bytes to 146...
+Writing at 0x00008000... (100 %)
+Wrote 3072 bytes (146 compressed) at 0x00008000 in 0.1 seconds (effective 469.2 kbit/s)...
+Hash of data verified.
+Compressed 8192 bytes to 47...
+Writing at 0x0000e000... (100 %)
+Wrote 8192 bytes (47 compressed) at 0x0000e000 in 0.1 seconds (effective 718.4 kbit/s)...
+Hash of data verified.
+Compressed 552480 bytes to 225907...
+Writing at 0x00010000... (7 %)
+Writing at 0x00043ddd... (14 %)
+Writing at 0x0005145b... (21 %)
+Writing at 0x00055ff5... (28 %)
+Writing at 0x0005b078... (35 %)
+Writing at 0x00060602... (42 %)
+Writing at 0x00065f14... (50 %)
+Writing at 0x0006b12e... (57 %)
+Writing at 0x0007070a... (64 %)
+Writing at 0x00075e4c... (71 %)
+Writing at 0x0007e5c2... (78 %)
+Writing at 0x000865c1... (85 %)
+Writing at 0x0008d022... (92 %)
+Writing at 0x00092670... (100 %)
+Wrote 552480 bytes (225907 compressed) at 0x00010000 in 7.4 seconds (effective 598.9 kbit/s)...
+Hash of data verified.
+
+Leaving...
+Hard resetting via RTS pin...
+========================= [SUCCESS] Took 14.36 seconds =========================
+
+Environment           Status    Duration
+--------------------  --------  ------------
+int008-storage-check  SUCCESS   00:00:14.356
+========================= 1 succeeded in 00:00:14.356 =========================
+COMMAND ['/home/o-grande-kayky/.local/share/uv/tools/platformio/bin/python', 'tests/ObcStorageRecoveryBenchCheck.py', '/dev/ttyUSB0', '--report', 'examples/obc-resources-2026-11-15-storage-regression.json']
+ObcStorageRecoveryBenchCheck passed; examples/obc-resources-2026-11-15-storage-regression.json
+COMMAND ['pio', 'run', '-e', 'int006-memory-check', '-t', 'upload', '--upload-port', '/dev/ttyUSB0']
+Processing int006-memory-check (platform: espressif32@6.6.0; board: esp32doit-devkit-v1; framework: arduino)
+--------------------------------------------------------------------------------
+Verbose mode can be enabled via `-v, --verbose` option
+CONFIGURATION: https://docs.platformio.org/page/boards/espressif32/esp32doit-devkit-v1.html
+PLATFORM: Espressif 32 (6.6.0) > DOIT ESP32 DEVKIT V1
+HARDWARE: ESP32 240MHz, 320KB RAM, 4MB Flash
+DEBUG: Current (cmsis-dap) External (cmsis-dap, esp-bridge, esp-prog, iot-bus-jtag, jlink, minimodule, olimex-arm-usb-ocd, olimex-arm-usb-ocd-h, olimex-arm-usb-tiny-h, olimex-jtag-tiny, tumpa)
+PACKAGES: 
+ - framework-arduinoespressif32 @ 3.20014.231204 (2.0.14) 
+ - tool-esptoolpy @ 1.40501.0 (4.5.1) 
+ - tool-mkfatfs @ 2.0.1 
+ - tool-mklittlefs @ 1.203.210628 (2.3) 
+ - tool-mkspiffs @ 2.230.0 (2.30) 
+ - toolchain-xtensa-esp32 @ 8.4.0+2021r2-patch5
+LDF: Library Dependency Finder -> https://bit.ly/configure-pio-ldf
+LDF Modes: Finder ~ chain, Compatibility ~ soft
+Found 36 compatible libraries
+Scanning dependencies...
+Dependency Graph
+|-- ArduinoJson @ 7.0.4
+|-- LoRa @ 0.8.0
+|-- tt-c @ 0.1.0
+|-- Wire @ 2.0.0
+|-- SD @ 2.0.0
+|-- SPI @ 2.0.0
+Building in release mode
+Compiling .pio/build/int006-memory-check/src/ObcResourceHealth.cpp.o
+Retrieving maximum program size .pio/build/int006-memory-check/firmware.elf
+Checking size .pio/build/int006-memory-check/firmware.elf
+Advanced Memory Usage is available via "PlatformIO Home > Project Inspect"
+RAM:   [=         ]  10.9% (used 35760 bytes from 327680 bytes)
+Flash: [====      ]  42.2% (used 553749 bytes from 1310720 bytes)
+Configuring upload protocol...
+AVAILABLE: cmsis-dap, esp-bridge, esp-prog, espota, esptool, iot-bus-jtag, jlink, minimodule, olimex-arm-usb-ocd, olimex-arm-usb-ocd-h, olimex-arm-usb-tiny-h, olimex-jtag-tiny, tumpa
+CURRENT: upload_protocol = esptool
+Looking for upload port...
+Using manually specified: /dev/ttyUSB0
+Uploading .pio/build/int006-memory-check/firmware.bin
+esptool.py v4.5.1
+Serial port /dev/ttyUSB0
+Connecting....
+Chip is ESP32-D0WD-V3 (revision v3.1)
+Features: WiFi, BT, Dual Core, 240MHz, VRef calibration in efuse, Coding Scheme None
+Crystal is 40MHz
+MAC: 10:06:1c:81:ca:68
+Uploading stub...
+Running stub...
+Stub running...
+Changing baud rate to 460800
+Changed.
+Configuring flash size...
+Flash will be erased from 0x00001000 to 0x00005fff...
+Flash will be erased from 0x00008000 to 0x00008fff...
+Flash will be erased from 0x0000e000 to 0x0000ffff...
+Flash will be erased from 0x00010000 to 0x00097fff...
+Compressed 17536 bytes to 12202...
+Writing at 0x00001000... (100 %)
+Wrote 17536 bytes (12202 compressed) at 0x00001000 in 0.5 seconds (effective 256.2 kbit/s)...
+Hash of data verified.
+Compressed 3072 bytes to 146...
+Writing at 0x00008000... (100 %)
+Wrote 3072 bytes (146 compressed) at 0x00008000 in 0.0 seconds (effective 523.1 kbit/s)...
+Hash of data verified.
+Compressed 8192 bytes to 47...
+Writing at 0x0000e000... (100 %)
+Wrote 8192 bytes (47 compressed) at 0x0000e000 in 0.1 seconds (effective 676.1 kbit/s)...
+Hash of data verified.
+Compressed 554112 bytes to 222532...
+Writing at 0x00010000... (7 %)
+Writing at 0x00045bf6... (14 %)
+Writing at 0x00052289... (21 %)
+Writing at 0x00056d2a... (28 %)
+Writing at 0x0005bcc2... (35 %)
+Writing at 0x000614f1... (42 %)
+Writing at 0x00066bd3... (50 %)
+Writing at 0x0006c251... (57 %)
+Writing at 0x000714f4... (64 %)
+Writing at 0x00076acd... (71 %)
+Writing at 0x0007ef96... (78 %)
+Writing at 0x0008939c... (85 %)
+Writing at 0x0008e96f... (92 %)
+Writing at 0x00093fb4... (100 %)
+Wrote 554112 bytes (222532 compressed) at 0x00010000 in 7.3 seconds (effective 605.6 kbit/s)...
+Hash of data verified.
+
+Leaving...
+Hard resetting via RTS pin...
+========================= [SUCCESS] Took 13.84 seconds =========================
+
+Environment          Status    Duration
+-------------------  --------  ------------
+int006-memory-check  SUCCESS   00:00:13.845
+========================= 1 succeeded in 00:00:13.845 =========================
+COMMAND ['/home/o-grande-kayky/.local/share/uv/tools/platformio/bin/python', 'tests/ObcLimitsCheck.py', '/dev/ttyUSB0', '--case', 'memory', '--report', 'examples/obc-resources-2026-11-15-memory-regression.json']
+ObcLimitsCheck memory passed; examples/obc-resources-2026-11-15-memory-regression.json
+COMMAND ['pio', 'run', '-e', 'obc', '-t', 'upload', '--upload-port', '/dev/ttyUSB0']
+Processing obc (platform: espressif32@6.6.0; board: esp32doit-devkit-v1; framework: arduino)
+--------------------------------------------------------------------------------
+Verbose mode can be enabled via `-v, --verbose` option
+CONFIGURATION: https://docs.platformio.org/page/boards/espressif32/esp32doit-devkit-v1.html
+PLATFORM: Espressif 32 (6.6.0) > DOIT ESP32 DEVKIT V1
+HARDWARE: ESP32 240MHz, 320KB RAM, 4MB Flash
+DEBUG: Current (cmsis-dap) External (cmsis-dap, esp-bridge, esp-prog, iot-bus-jtag, jlink, minimodule, olimex-arm-usb-ocd, olimex-arm-usb-ocd-h, olimex-arm-usb-tiny-h, olimex-jtag-tiny, tumpa)
+PACKAGES: 
+ - framework-arduinoespressif32 @ 3.20014.231204 (2.0.14) 
+ - tool-esptoolpy @ 1.40501.0 (4.5.1) 
+ - tool-mkfatfs @ 2.0.1 
+ - tool-mklittlefs @ 1.203.210628 (2.3) 
+ - tool-mkspiffs @ 2.230.0 (2.30) 
+ - toolchain-xtensa-esp32 @ 8.4.0+2021r2-patch5
+LDF: Library Dependency Finder -> https://bit.ly/configure-pio-ldf
+LDF Modes: Finder ~ chain, Compatibility ~ soft
+Found 36 compatible libraries
+Scanning dependencies...
+Dependency Graph
+|-- ArduinoJson @ 7.0.4
+|-- LoRa @ 0.8.0
+|-- tt-c @ 0.1.0
+|-- Wire @ 2.0.0
+|-- SD @ 2.0.0
+|-- SPI @ 2.0.0
+Building in release mode
+Compiling .pio/build/obc/src/ObcResourceHealth.cpp.o
+Retrieving maximum program size .pio/build/obc/firmware.elf
+Checking size .pio/build/obc/firmware.elf
+Advanced Memory Usage is available via "PlatformIO Home > Project Inspect"
+RAM:   [=         ]  10.0% (used 32672 bytes from 327680 bytes)
+Flash: [===       ]  32.9% (used 430737 bytes from 1310720 bytes)
+Configuring upload protocol...
+AVAILABLE: cmsis-dap, esp-bridge, esp-prog, espota, esptool, iot-bus-jtag, jlink, minimodule, olimex-arm-usb-ocd, olimex-arm-usb-ocd-h, olimex-arm-usb-tiny-h, olimex-jtag-tiny, tumpa
+CURRENT: upload_protocol = esptool
+Looking for upload port...
+Using manually specified: /dev/ttyUSB0
+Uploading .pio/build/obc/firmware.bin
+esptool.py v4.5.1
+Serial port /dev/ttyUSB0
+Connecting....
+Chip is ESP32-D0WD-V3 (revision v3.1)
+Features: WiFi, BT, Dual Core, 240MHz, VRef calibration in efuse, Coding Scheme None
+Crystal is 40MHz
+MAC: 10:06:1c:81:ca:68
+Uploading stub...
+Running stub...
+Stub running...
+Changing baud rate to 460800
+Changed.
+Configuring flash size...
+Flash will be erased from 0x00001000 to 0x00005fff...
+Flash will be erased from 0x00008000 to 0x00008fff...
+Flash will be erased from 0x0000e000 to 0x0000ffff...
+Flash will be erased from 0x00010000 to 0x00079fff...
+Compressed 17536 bytes to 12202...
+Writing at 0x00001000... (100 %)
+Wrote 17536 bytes (12202 compressed) at 0x00001000 in 0.5 seconds (effective 257.4 kbit/s)...
+Hash of data verified.
+Compressed 3072 bytes to 146...
+Writing at 0x00008000... (100 %)
+Wrote 3072 bytes (146 compressed) at 0x00008000 in 0.1 seconds (effective 464.9 kbit/s)...
+Hash of data verified.
+Compressed 8192 bytes to 47...
+Writing at 0x0000e000... (100 %)
+Wrote 8192 bytes (47 compressed) at 0x0000e000 in 0.1 seconds (effective 668.3 kbit/s)...
+Hash of data verified.
+Compressed 431104 bytes to 260797...
+Writing at 0x00010000... (6 %)
+Writing at 0x0001aef0... (12 %)
+Writing at 0x000291b3... (18 %)
+Writing at 0x0002e540... (25 %)
+Writing at 0x000339db... (31 %)
+Writing at 0x000385e2... (37 %)
+Writing at 0x0003d793... (43 %)
+Writing at 0x00042f59... (50 %)
+Writing at 0x00048894... (56 %)
+Writing at 0x0004da89... (62 %)
+Writing at 0x00052efc... (68 %)
+Writing at 0x000583fd... (75 %)
+Writing at 0x0005dd41... (81 %)
+Writing at 0x0006633e... (87 %)
+Writing at 0x0006e921... (93 %)
+Writing at 0x00074023... (100 %)
+Wrote 431104 bytes (260797 compressed) at 0x00010000 in 6.5 seconds (effective 533.7 kbit/s)...
+Hash of data verified.
+
+Leaving...
+Hard resetting via RTS pin...
+========================= [SUCCESS] Took 12.97 seconds =========================
+
+Environment    Status    Duration
+-------------  --------  ------------
+obc            SUCCESS   00:00:12.973
+========================= 1 succeeded in 00:00:12.973 =========================
+COMMAND ['/home/o-grande-kayky/.local/share/uv/tools/platformio/bin/python', 'tests/ObcResourcesBenchCheck.py', '/dev/ttyUSB0', '--report', 'examples/obc-resources-2026-11-15-obc.json']
+ObcResourcesBenchCheck passed; examples/obc-resources-2026-11-15-obc.json
+COMMAND ['/home/o-grande-kayky/.local/share/uv/tools/platformio/bin/python', 'tests/ObcTaskHealthBenchCheck.py', '/dev/ttyUSB0', '--report', 'examples/obc-resources-2026-11-15-task-obc.json']
+ObcTaskHealthBenchCheck passed; examples/obc-resources-2026-11-15-task-obc.json
+COMMAND ['/home/o-grande-kayky/.local/share/uv/tools/platformio/bin/python', 'tests/ObcI2cHealthBenchCheck.py', '/dev/ttyUSB0', '--report', 'examples/obc-resources-2026-11-15-i2c-obc.json']
+ObcI2cHealthBenchCheck passed; examples/obc-resources-2026-11-15-i2c-obc.json
+COMMAND ['/home/o-grande-kayky/.local/share/uv/tools/platformio/bin/python', 'tests/ObcDownlinkCheck.py', '/dev/ttyUSB0', '--report', 'examples/obc-resources-2026-11-15-downlink-obc.json']
+ObcDownlinkCheck passed; examples/obc-resources-2026-11-15-downlink-obc.json

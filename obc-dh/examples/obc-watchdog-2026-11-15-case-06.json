@@ -1,0 +1,894 @@
+{
+  "passed": true,
+  "case": 6,
+  "production": false,
+  "lines": [
+    {
+      "host_s": 37300.613532989,
+      "text": "ets Jul 29 2019 12:21:46"
+    },
+    {
+      "host_s": 37300.619121719,
+      "text": "rst:0x1 (POWERON_RESET),boot:0x13 (SPI_FAST_FLASH_BOOT)"
+    },
+    {
+      "host_s": 37300.621626541,
+      "text": "configsip: 0, SPIWP:0xee"
+    },
+    {
+      "host_s": 37300.627711497,
+      "text": "clk_drv:0x00,q_drv:0x00,d_drv:0x00,cs0_drv:0x00,hd_drv:0x00,wp_drv:0x00"
+    },
+    {
+      "host_s": 37300.630554747,
+      "text": "mode:DIO, clock div:2"
+    },
+    {
+      "host_s": 37300.632710322,
+      "text": "load:0x3fff0030,len:1184"
+    },
+    {
+      "host_s": 37300.635573265,
+      "text": "load:0x40078000,len:13232"
+    },
+    {
+      "host_s": 37300.636038227,
+      "text": "load:0x40080400,len:3028"
+    },
+    {
+      "host_s": 37300.63893072,
+      "text": "entry 0x400805e4"
+    },
+    {
+      "host_s": 37300.92847516,
+      "text": "[WATCHDOG] armed=1 timeout_ms=5000 error=0 reset_reason=1"
+    },
+    {
+      "host_s": 37300.933973304,
+      "text": "[WATCHDOG] reset_timer_ready=1 error=0"
+    },
+    {
+      "host_s": 37300.939425991,
+      "text": "[FLOW-CHECK] ADS-B em RAM e SD lento simulados; sem ensaio ESP32-Pi/cartao"
+    },
+    {
+      "host_s": 37300.949687592,
+      "text": "[WATCHDOG-CHECK] case=6 boot_id=108 reset_reason=1 resumed=0 previous_boot=0 timer_fired_ms=0 monotonic_ms=78"
+    },
+    {
+      "host_s": 37300.954579876,
+      "text": "[OBC] TT&C: radio=indisponivel; umbilical=OK; tarefa=OK"
+    },
+    {
+      "host_s": 37300.960232463,
+      "text": "[FLOW] RAM apos receptor: heap=182380 byte_heap=110716 byte_largest=47092"
+    },
+    {
+      "host_s": 37300.974254872,
+      "text": "[FLOW] RAM apos bloco SD: bloco=1 heap=117848 byte_heap=46184 byte_largest=16372 stack_budget=19456 margin=4096 reserva=23552 parser_limit=98304"
+    },
+    {
+      "host_s": 37300.980145747,
+      "text": "[FLOW] Recepcao=OK; SD=em inicializacao; heap=97264; maior_bloco=69620"
+    },
+    {
+      "host_s": 37300.98639602,
+      "text": "[FLOW-CHECK] Arquivo simulado: boot_000000000000006c_00000000.bin"
+    },
+    {
+      "host_s": 37301.009962747,
+      "text": "[TTC-HEALTH] state=ok radio=unavailable updating=0 wired_ready=1 age_ms=0 limit_ms=2000 completions=3 rf_seen=0 rf_age_ms=0 wired_seen=1 wired_age_ms=0 resets=0 changed=1 monotonic_ms=133"
+    },
+    {
+      "host_s": 37301.023850769,
+      "text": "[MEMORY-HEALTH] byte_heap=25600 byte_largest=8180 heap_low=0 block_low=0 stack_low_mask=0 allocation_failures=0 allocation_delta=0 changed=0 monotonic_ms=133"
+    },
+    {
+      "host_s": 37301.032122679,
+      "text": "[MEMORY-HEALTH] task=uart active=1 stack_free=2544 low=0 monotonic_ms=133"
+    },
+    {
+      "host_s": 37301.037685721,
+      "text": "[MEMORY-HEALTH] task=process active=1 stack_free=7600 low=0 monotonic_ms=133"
+    },
+    {
+      "host_s": 37301.043263764,
+      "text": "[MEMORY-HEALTH] task=writer active=1 stack_free=5400 low=0 monotonic_ms=133"
+    },
+    {
+      "host_s": 37301.051368168,
+      "text": "[MEMORY-HEALTH] task=i2c active=0 stack_free=0 low=0 monotonic_ms=133"
+    },
+    {
+      "host_s": 37301.056939518,
+      "text": "[MEMORY-HEALTH] task=ttc active=1 stack_free=6840 low=0 monotonic_ms=133"
+    },
+    {
+      "host_s": 37301.062626723,
+      "text": "[MEMORY-HEALTH] task=loop active=1 stack_free=4960 low=0 monotonic_ms=133"
+    },
+    {
+      "host_s": 37301.068729663,
+      "text": "{\"n\":0,\"t\":\"ack\",\"seq\":1001,\"cmd\":\"ping\",\"st\":\"ok\",\"q\":66}"
+    },
+    {
+      "host_s": 37301.086126791,
+      "text": "[WATCHDOG-CHECK] start=1 case=6"
+    },
+    {
+      "host_s": 37301.090965427,
+      "text": "{\"n\":1,\"t\":\"ack\",\"seq\":1002,\"cmd\":\"set_time\",\"st\":\"ok\",\"q\":0}"
+    },
+    {
+      "host_s": 37301.096442546,
+      "text": "[FLOW-CHECK] UTC recebida; inicio da injecao em 1000 ms"
+    },
+    {
+      "host_s": 37301.102659474,
+      "text": "[WATCHDOG-CHECK] pause=supervisor duration_ms=8000 monotonic_ms=234"
+    },
+    {
+      "host_s": 37301.110408609,
+      "text": "[DELIVERY] recovery=1 data=0 confirm=0 corrupt=0 tails=0 orphan=0 cache_bytes=2912"
+    },
+    {
+      "host_s": 37301.871051109,
+      "text": "[TT&C] ERRO: SX1276 sem resposta ou fora de RX, reinicializando."
+    },
+    {
+      "host_s": 37302.269421085,
+      "text": "[FLOW-CHECK] Arquivo simulado: boot_000000000000006c_00000001.bin"
+    },
+    {
+      "host_s": 37302.575366005,
+      "text": "[FLOW-CHECK] Arquivo simulado: boot_000000000000006c_00000002.bin"
+    },
+    {
+      "host_s": 37302.871135411,
+      "text": "[TT&C] ERRO: SX1276 sem resposta ou fora de RX, reinicializando."
+    },
+    {
+      "host_s": 37302.882768109,
+      "text": "[FLOW-CHECK] Arquivo simulado: boot_000000000000006c_00000003.bin"
+    },
+    {
+      "host_s": 37303.205561901,
+      "text": "[FLOW-CHECK] Arquivo simulado: boot_000000000000006c_00000004.bin"
+    },
+    {
+      "host_s": 37303.511784593,
+      "text": "[FLOW-CHECK] Arquivo simulado: boot_000000000000006c_00000005.bin"
+    },
+    {
+      "host_s": 37303.818969247,
+      "text": "[FLOW-CHECK] Arquivo simulado: boot_000000000000006c_00000006.bin"
+    },
+    {
+      "host_s": 37303.871071076,
+      "text": "[TT&C] ERRO: SX1276 sem resposta ou fora de RX, reinicializando."
+    },
+    {
+      "host_s": 37304.120937607,
+      "text": "[FLOW-CHECK] Arquivo simulado: boot_000000000000006c_00000007.bin"
+    },
+    {
+      "host_s": 37304.871127126,
+      "text": "[TT&C] ERRO: SX1276 sem resposta ou fora de RX, reinicializando."
+    },
+    {
+      "host_s": 37305.871245276,
+      "text": "[TT&C] ERRO: SX1276 sem resposta ou fora de RX, reinicializando."
+    },
+    {
+      "host_s": 37306.068883221,
+      "text": "E (10528) task_wdt: Task watchdog got triggered. The following tasks did not reset the watchdog in time:"
+    },
+    {
+      "host_s": 37306.071738142,
+      "text": "E (10528) task_wdt:  - loopTask (CPU 1)"
+    },
+    {
+      "host_s": 37306.076990736,
+      "text": "E (10528) task_wdt: Tasks currently running:"
+    },
+    {
+      "host_s": 37306.079764302,
+      "text": "E (10528) task_wdt: CPU 0: IDLE"
+    },
+    {
+      "host_s": 37306.083178846,
+      "text": "E (10528) task_wdt: CPU 1: IDLE"
+    },
+    {
+      "host_s": 37306.085821492,
+      "text": "E (10528) task_wdt: Aborting."
+    },
+    {
+      "host_s": 37306.088338243,
+      "text": "abort() was called at PC 0x400e8d6d on core 0"
+    },
+    {
+      "host_s": 37306.093829376,
+      "text": "Backtrace: 0x4008354d:0x3ffbea7c |<-CORRUPTED"
+    },
+    {
+      "host_s": 37306.097966571,
+      "text": "ELF file SHA256: cdadc769c9c9aaf2"
+    },
+    {
+      "host_s": 37306.249838482,
+      "text": "Rebooting..."
+    },
+    {
+      "host_s": 37306.252505506,
+      "text": "ets Jul 29 2019 12:21:46"
+    },
+    {
+      "host_s": 37306.257399157,
+      "text": "rst:0xc (SW_CPU_RESET),boot:0x13 (SPI_FAST_FLASH_BOOT)"
+    },
+    {
+      "host_s": 37306.257821101,
+      "text": "configsip: 0, SPIWP:0xee"
+    },
+    {
+      "host_s": 37306.266415204,
+      "text": "clk_drv:0x00,q_drv:0x00,d_drv:0x00,cs0_drv:0x00,hd_drv:0x00,wp_drv:0x00"
+    },
+    {
+      "host_s": 37306.266799327,
+      "text": "mode:DIO, clock div:2"
+    },
+    {
+      "host_s": 37306.269262993,
+      "text": "load:0x3fff0030,len:1184"
+    },
+    {
+      "host_s": 37306.271444885,
+      "text": "load:0x40078000,len:13232"
+    },
+    {
+      "host_s": 37306.275881868,
+      "text": "load:0x40080400,len:3028"
+    },
+    {
+      "host_s": 37306.276223751,
+      "text": "entry 0x400805e4"
+    },
+    {
+      "host_s": 37306.563563232,
+      "text": "[WATCHDOG] armed=1 timeout_ms=5000 error=0 reset_reason=6"
+    },
+    {
+      "host_s": 37306.569141286,
+      "text": "[WATCHDOG] reset_timer_ready=1 error=0"
+    },
+    {
+      "host_s": 37306.574619552,
+      "text": "[FLOW-CHECK] ADS-B em RAM e SD lento simulados; sem ensaio ESP32-Pi/cartao"
+    },
+    {
+      "host_s": 37306.584270617,
+      "text": "[WATCHDOG-CHECK] case=6 boot_id=109 reset_reason=6 resumed=1 previous_boot=108 timer_fired_ms=0 monotonic_ms=76"
+    },
+    {
+      "host_s": 37306.589560146,
+      "text": "[OBC] TT&C: radio=indisponivel; umbilical=OK; tarefa=OK"
+    },
+    {
+      "host_s": 37306.595467626,
+      "text": "[FLOW] RAM apos receptor: heap=182380 byte_heap=110716 byte_largest=47092"
+    },
+    {
+      "host_s": 37306.609024343,
+      "text": "[FLOW] RAM apos bloco SD: bloco=1 heap=117848 byte_heap=46184 byte_largest=16372 stack_budget=19456 margin=4096 reserva=23552 parser_limit=98304"
+    },
+    {
+      "host_s": 37306.614978888,
+      "text": "[FLOW] Recepcao=OK; SD=em inicializacao; heap=97264; maior_bloco=69620"
+    },
+    {
+      "host_s": 37306.62148286,
+      "text": "[FLOW-CHECK] Arquivo simulado: boot_000000000000006d_00000000.bin"
+    },
+    {
+      "host_s": 37306.644928629,
+      "text": "[TTC-HEALTH] state=ok radio=unavailable updating=1 wired_ready=1 age_ms=2 limit_ms=2000 completions=2 rf_seen=0 rf_age_ms=0 wired_seen=0 wired_age_ms=0 resets=0 changed=1 monotonic_ms=131"
+    },
+    {
+      "host_s": 37306.658977954,
+      "text": "[MEMORY-HEALTH] byte_heap=25600 byte_largest=8180 heap_low=0 block_low=0 stack_low_mask=0 allocation_failures=0 allocation_delta=0 changed=0 monotonic_ms=131"
+    },
+    {
+      "host_s": 37306.666876709,
+      "text": "[MEMORY-HEALTH] task=uart active=1 stack_free=2544 low=0 monotonic_ms=131"
+    },
+    {
+      "host_s": 37306.672630888,
+      "text": "[MEMORY-HEALTH] task=process active=1 stack_free=7632 low=0 monotonic_ms=131"
+    },
+    {
+      "host_s": 37306.678779794,
+      "text": "[MEMORY-HEALTH] task=writer active=1 stack_free=5400 low=0 monotonic_ms=131"
+    },
+    {
+      "host_s": 37306.686275165,
+      "text": "[MEMORY-HEALTH] task=i2c active=0 stack_free=0 low=0 monotonic_ms=131"
+    },
+    {
+      "host_s": 37306.691947617,
+      "text": "[MEMORY-HEALTH] task=ttc active=1 stack_free=6840 low=0 monotonic_ms=131"
+    },
+    {
+      "host_s": 37306.697615451,
+      "text": "[MEMORY-HEALTH] task=loop active=1 stack_free=4960 low=0 monotonic_ms=131"
+    },
+    {
+      "host_s": 37306.714356633,
+      "text": "{\"n\":0,\"t\":\"tm\",\"ts\":null,\"md\":\"bench\",\"vb\":null,\"ib\":null,\"vs\":null,\"is\":null,\"tp\":null,\"w\":null,\"az\":null,\"ac\":null,\"msg\":null,\"rssi\":null,\"snr\":null,\"rx\":1,\"err\":0,\"rst\":0}"
+    },
+    {
+      "host_s": 37306.717217529,
+      "text": "[TT&C] Falha no TX de 175 bytes."
+    },
+    {
+      "host_s": 37306.722513166,
+      "text": "{\"n\":1,\"t\":\"ack\",\"seq\":1003,\"cmd\":\"request_tm\",\"st\":\"ok\",\"q\":66}"
+    },
+    {
+      "host_s": 37306.73029006,
+      "text": "[DELIVERY] recovery=1 data=0 confirm=0 corrupt=0 tails=0 orphan=0 cache_bytes=2912"
+    },
+    {
+      "host_s": 37307.521493453,
+      "text": "[FLOW] received=0 invalid=0 gaps=0 duplicates=0 written=2 failures=0 dropped=2 SD=1 status=0 poll_gap_ms=2 process_gap_ms=2 stack_rx=7632 stack_sd=5400 stack_uart=2544 uart_full=0"
+    },
+    {
+      "host_s": 37307.532872962,
+      "text": "[FLOW-MEMORY] heap=97264 byte_heap=25600 byte_largest=8180 byte_min=22032 parser_peak_bytes=0 parser_limit_bytes=98304"
+    },
+    {
+      "host_s": 37307.538144792,
+      "text": "[TT&C] ERRO: SX1276 sem resposta ou fora de RX, reinicializando."
+    },
+    {
+      "host_s": 37307.549476808,
+      "text": "[STORAGE] state=0 attempt=0 episodes=0 attempts=0 recovered=0 exhausted=0 lifecycle_failures=0 cause=0 end=0 status=0 monotonic_ms=1007"
+    },
+    {
+      "host_s": 37307.557806089,
+      "text": "[HEALTH] task=uart state=ok activity=idle age_ms=0 limit_ms=100 completions=835 sampled_ms=944 changed=0"
+    },
+    {
+      "host_s": 37307.568666268,
+      "text": "[HEALTH] task=process state=ok activity=idle age_ms=0 limit_ms=2000 completions=835 sampled_ms=944 changed=0"
+    },
+    {
+      "host_s": 37307.577126292,
+      "text": "[HEALTH] task=writer state=ok activity=idle age_ms=21 limit_ms=5000 completions=39 sampled_ms=944 changed=0"
+    },
+    {
+      "host_s": 37307.591444452,
+      "text": "[DELIVERY] occupied=0 peak=0 accepted=0 repeated=0 lost=0 storage_failures=0 attempts=0 tx_failures=0 confirmed=0 unknown=0 evicted=0 recovery_slot=0"
+    },
+    {
+      "host_s": 37307.626893006,
+      "text": "[TTC-HEALTH] state=ok radio=unavailable updating=0 wired_ready=1 age_ms=2 limit_ms=2000 completions=53 rf_seen=0 rf_age_ms=0 wired_seen=1 wired_age_ms=982 resets=1 changed=0 monotonic_ms=1113"
+    },
+    {
+      "host_s": 37307.64526075,
+      "text": "[I2C-HEALTH] state=inactive service=uninitialized activity=inactive age_ms=0 limit_ms=0 sampled_ms=0 monotonic_ms=1124 changed=0 queued=0 cause=0 failure=0 cycles=0 recovered=0 exhausted=0"
+    },
+    {
+      "host_s": 37307.741665333,
+      "text": "[MEMORY-HEALTH] byte_heap=25600 byte_largest=8180 heap_low=0 block_low=0 stack_low_mask=0 allocation_failures=0 allocation_delta=0 changed=0 monotonic_ms=1229"
+    },
+    {
+      "host_s": 37307.750057228,
+      "text": "[MEMORY-HEALTH] task=uart active=1 stack_free=2544 low=0 monotonic_ms=1229"
+    },
+    {
+      "host_s": 37307.755310064,
+      "text": "[MEMORY-HEALTH] task=process active=1 stack_free=7632 low=0 monotonic_ms=1229"
+    },
+    {
+      "host_s": 37307.763760933,
+      "text": "[MEMORY-HEALTH] task=writer active=1 stack_free=5400 low=0 monotonic_ms=1229"
+    },
+    {
+      "host_s": 37307.769172683,
+      "text": "[MEMORY-HEALTH] task=i2c active=0 stack_free=0 low=0 monotonic_ms=1229"
+    },
+    {
+      "host_s": 37307.77479392,
+      "text": "[MEMORY-HEALTH] task=ttc active=1 stack_free=6204 low=0 monotonic_ms=1229"
+    },
+    {
+      "host_s": 37307.782164341,
+      "text": "[MEMORY-HEALTH] task=loop active=1 stack_free=4960 low=0 monotonic_ms=1229"
+    },
+    {
+      "host_s": 37308.532959966,
+      "text": "[FLOW] received=0 invalid=0 gaps=0 duplicates=0 written=4 failures=0 dropped=2 SD=1 status=0 poll_gap_ms=2 process_gap_ms=2 stack_rx=7632 stack_sd=5400 stack_uart=2544 uart_full=0"
+    },
+    {
+      "host_s": 37308.543974584,
+      "text": "[FLOW-MEMORY] heap=97264 byte_heap=25600 byte_largest=8180 byte_min=22032 parser_peak_bytes=0 parser_limit_bytes=98304"
+    },
+    {
+      "host_s": 37308.549793607,
+      "text": "[TT&C] ERRO: SX1276 sem resposta ou fora de RX, reinicializando."
+    },
+    {
+      "host_s": 37308.560444397,
+      "text": "[STORAGE] state=0 attempt=0 episodes=0 attempts=0 recovered=0 exhausted=0 lifecycle_failures=0 cause=0 end=0 status=0 monotonic_ms=2018"
+    },
+    {
+      "host_s": 37308.568992893,
+      "text": "[HEALTH] task=uart state=ok activity=idle age_ms=0 limit_ms=100 completions=1908 sampled_ms=2018 changed=0"
+    },
+    {
+      "host_s": 37308.580408401,
+      "text": "[HEALTH] task=process state=ok activity=idle age_ms=0 limit_ms=2000 completions=1908 sampled_ms=2018 changed=0"
+    },
+    {
+      "host_s": 37308.588340161,
+      "text": "[HEALTH] task=writer state=ok activity=idle age_ms=21 limit_ms=5000 completions=85 sampled_ms=2018 changed=0"
+    },
+    {
+      "host_s": 37308.602826099,
+      "text": "[DELIVERY] occupied=0 peak=0 accepted=0 repeated=0 lost=0 storage_failures=0 attempts=0 tx_failures=0 confirmed=0 unknown=0 evicted=0 recovery_slot=0"
+    },
+    {
+      "host_s": 37308.640316112,
+      "text": "[TTC-HEALTH] state=ok radio=unavailable updating=0 wired_ready=1 age_ms=2 limit_ms=2000 completions=102 rf_seen=0 rf_age_ms=0 wired_seen=1 wired_age_ms=1993 resets=2 changed=0 monotonic_ms=2124"
+    },
+    {
+      "host_s": 37308.65659933,
+      "text": "[I2C-HEALTH] state=inactive service=uninitialized activity=inactive age_ms=0 limit_ms=0 sampled_ms=0 monotonic_ms=2135 changed=0 queued=0 cause=0 failure=0 cycles=0 recovered=0 exhausted=0"
+    },
+    {
+      "host_s": 37308.752885643,
+      "text": "[MEMORY-HEALTH] byte_heap=25600 byte_largest=8180 heap_low=0 block_low=0 stack_low_mask=0 allocation_failures=0 allocation_delta=0 changed=0 monotonic_ms=2240"
+    },
+    {
+      "host_s": 37308.760491004,
+      "text": "[MEMORY-HEALTH] task=uart active=1 stack_free=2544 low=0 monotonic_ms=2240"
+    },
+    {
+      "host_s": 37308.766802667,
+      "text": "[MEMORY-HEALTH] task=process active=1 stack_free=7632 low=0 monotonic_ms=2240"
+    },
+    {
+      "host_s": 37308.77460614,
+      "text": "[MEMORY-HEALTH] task=writer active=1 stack_free=5400 low=0 monotonic_ms=2240"
+    },
+    {
+      "host_s": 37308.779874307,
+      "text": "[MEMORY-HEALTH] task=i2c active=0 stack_free=0 low=0 monotonic_ms=2240"
+    },
+    {
+      "host_s": 37308.785780608,
+      "text": "[MEMORY-HEALTH] task=ttc active=1 stack_free=6204 low=0 monotonic_ms=2240"
+    },
+    {
+      "host_s": 37308.792942196,
+      "text": "[MEMORY-HEALTH] task=loop active=1 stack_free=4924 low=0 monotonic_ms=2240"
+    },
+    {
+      "host_s": 37309.543783608,
+      "text": "[FLOW] received=0 invalid=0 gaps=0 duplicates=0 written=5 failures=0 dropped=2 SD=1 status=0 poll_gap_ms=2 process_gap_ms=2 stack_rx=7584 stack_sd=5400 stack_uart=2544 uart_full=0"
+    },
+    {
+      "host_s": 37309.554575143,
+      "text": "[FLOW-MEMORY] heap=97264 byte_heap=25600 byte_largest=8180 byte_min=22032 parser_peak_bytes=0 parser_limit_bytes=98304"
+    },
+    {
+      "host_s": 37309.560169694,
+      "text": "[TT&C] ERRO: SX1276 sem resposta ou fora de RX, reinicializando."
+    },
+    {
+      "host_s": 37309.571413646,
+      "text": "[STORAGE] state=0 attempt=0 episodes=0 attempts=0 recovered=0 exhausted=0 lifecycle_failures=0 cause=0 end=0 status=0 monotonic_ms=3029"
+    },
+    {
+      "host_s": 37309.579833082,
+      "text": "[HEALTH] task=uart state=ok activity=idle age_ms=0 limit_ms=100 completions=2919 sampled_ms=3029 changed=0"
+    },
+    {
+      "host_s": 37309.590790685,
+      "text": "[HEALTH] task=process state=ok activity=idle age_ms=0 limit_ms=2000 completions=2919 sampled_ms=3029 changed=0"
+    },
+    {
+      "host_s": 37309.599631262,
+      "text": "[HEALTH] task=writer state=ok activity=idle age_ms=21 limit_ms=5000 completions=131 sampled_ms=3029 changed=0"
+    },
+    {
+      "host_s": 37309.613837878,
+      "text": "[DELIVERY] occupied=0 peak=0 accepted=0 repeated=0 lost=0 storage_failures=0 attempts=0 tx_failures=0 confirmed=0 unknown=0 evicted=0 recovery_slot=0"
+    },
+    {
+      "host_s": 37309.651734024,
+      "text": "[TTC-HEALTH] state=ok radio=unavailable updating=0 wired_ready=1 age_ms=2 limit_ms=2000 completions=151 rf_seen=0 rf_age_ms=0 wired_seen=1 wired_age_ms=3004 resets=3 changed=0 monotonic_ms=3135"
+    },
+    {
+      "host_s": 37309.667933731,
+      "text": "[I2C-HEALTH] state=inactive service=uninitialized activity=inactive age_ms=0 limit_ms=0 sampled_ms=0 monotonic_ms=3146 changed=0 queued=0 cause=0 failure=0 cycles=0 recovered=0 exhausted=0"
+    },
+    {
+      "host_s": 37309.763604463,
+      "text": "[MEMORY-HEALTH] byte_heap=25600 byte_largest=8180 heap_low=0 block_low=0 stack_low_mask=0 allocation_failures=0 allocation_delta=0 changed=0 monotonic_ms=3251"
+    },
+    {
+      "host_s": 37309.771497198,
+      "text": "[MEMORY-HEALTH] task=uart active=1 stack_free=2544 low=0 monotonic_ms=3251"
+    },
+    {
+      "host_s": 37309.777630791,
+      "text": "[MEMORY-HEALTH] task=process active=1 stack_free=7584 low=0 monotonic_ms=3251"
+    },
+    {
+      "host_s": 37309.785562933,
+      "text": "[MEMORY-HEALTH] task=writer active=1 stack_free=5400 low=0 monotonic_ms=3251"
+    },
+    {
+      "host_s": 37309.79096543,
+      "text": "[MEMORY-HEALTH] task=i2c active=0 stack_free=0 low=0 monotonic_ms=3251"
+    },
+    {
+      "host_s": 37309.79664201,
+      "text": "[MEMORY-HEALTH] task=ttc active=1 stack_free=6204 low=0 monotonic_ms=3251"
+    },
+    {
+      "host_s": 37309.80386285,
+      "text": "[MEMORY-HEALTH] task=loop active=1 stack_free=4924 low=0 monotonic_ms=3251"
+    },
+    {
+      "host_s": 37310.554665922,
+      "text": "[FLOW] received=0 invalid=0 gaps=0 duplicates=0 written=6 failures=0 dropped=2 SD=1 status=0 poll_gap_ms=2 process_gap_ms=2 stack_rx=7584 stack_sd=5400 stack_uart=2544 uart_full=0"
+    },
+    {
+      "host_s": 37310.565620057,
+      "text": "[FLOW-MEMORY] heap=97264 byte_heap=25600 byte_largest=8180 byte_min=22032 parser_peak_bytes=0 parser_limit_bytes=98304"
+    },
+    {
+      "host_s": 37310.571329112,
+      "text": "[TT&C] ERRO: SX1276 sem resposta ou fora de RX, reinicializando."
+    },
+    {
+      "host_s": 37310.582562893,
+      "text": "[STORAGE] state=0 attempt=0 episodes=0 attempts=0 recovered=0 exhausted=0 lifecycle_failures=0 cause=0 end=0 status=0 monotonic_ms=4040"
+    },
+    {
+      "host_s": 37310.590857683,
+      "text": "[HEALTH] task=uart state=ok activity=idle age_ms=0 limit_ms=100 completions=3929 sampled_ms=4040 changed=0"
+    },
+    {
+      "host_s": 37310.602366893,
+      "text": "[HEALTH] task=process state=ok activity=idle age_ms=0 limit_ms=2000 completions=3929 sampled_ms=4040 changed=0"
+    },
+    {
+      "host_s": 37310.610510143,
+      "text": "[HEALTH] task=writer state=ok activity=idle age_ms=21 limit_ms=5000 completions=177 sampled_ms=4040 changed=0"
+    },
+    {
+      "host_s": 37310.624901976,
+      "text": "[DELIVERY] occupied=0 peak=0 accepted=0 repeated=0 lost=0 storage_failures=0 attempts=0 tx_failures=0 confirmed=0 unknown=0 evicted=0 recovery_slot=0"
+    },
+    {
+      "host_s": 37310.662271756,
+      "text": "[TTC-HEALTH] state=ok radio=unavailable updating=0 wired_ready=1 age_ms=2 limit_ms=2000 completions=200 rf_seen=0 rf_age_ms=0 wired_seen=1 wired_age_ms=4015 resets=4 changed=0 monotonic_ms=4146"
+    },
+    {
+      "host_s": 37310.678516479,
+      "text": "[I2C-HEALTH] state=inactive service=uninitialized activity=inactive age_ms=0 limit_ms=0 sampled_ms=0 monotonic_ms=4157 changed=0 queued=0 cause=0 failure=0 cycles=0 recovered=0 exhausted=0"
+    },
+    {
+      "host_s": 37310.774610223,
+      "text": "[MEMORY-HEALTH] byte_heap=25600 byte_largest=8180 heap_low=0 block_low=0 stack_low_mask=0 allocation_failures=0 allocation_delta=0 changed=0 monotonic_ms=4262"
+    },
+    {
+      "host_s": 37310.782617244,
+      "text": "[MEMORY-HEALTH] task=uart active=1 stack_free=2544 low=0 monotonic_ms=4262"
+    },
+    {
+      "host_s": 37310.788376003,
+      "text": "[MEMORY-HEALTH] task=process active=1 stack_free=7584 low=0 monotonic_ms=4262"
+    },
+    {
+      "host_s": 37310.796736376,
+      "text": "[MEMORY-HEALTH] task=writer active=1 stack_free=5400 low=0 monotonic_ms=4262"
+    },
+    {
+      "host_s": 37310.802479554,
+      "text": "[MEMORY-HEALTH] task=i2c active=0 stack_free=0 low=0 monotonic_ms=4262"
+    },
+    {
+      "host_s": 37310.807786231,
+      "text": "[MEMORY-HEALTH] task=ttc active=1 stack_free=6204 low=0 monotonic_ms=4262"
+    },
+    {
+      "host_s": 37310.815530525,
+      "text": "[MEMORY-HEALTH] task=loop active=1 stack_free=4924 low=0 monotonic_ms=4262"
+    },
+    {
+      "host_s": 37311.565585212,
+      "text": "[FLOW] received=0 invalid=0 gaps=0 duplicates=0 written=7 failures=0 dropped=2 SD=1 status=0 poll_gap_ms=2 process_gap_ms=2 stack_rx=7584 stack_sd=5400 stack_uart=2544 uart_full=0"
+    },
+    {
+      "host_s": 37311.576614611,
+      "text": "[FLOW-MEMORY] heap=97264 byte_heap=25600 byte_largest=8180 byte_min=22032 parser_peak_bytes=0 parser_limit_bytes=98304"
+    },
+    {
+      "host_s": 37311.582366202,
+      "text": "[TT&C] ERRO: SX1276 sem resposta ou fora de RX, reinicializando."
+    },
+    {
+      "host_s": 37311.593397118,
+      "text": "[STORAGE] state=0 attempt=0 episodes=0 attempts=0 recovered=0 exhausted=0 lifecycle_failures=0 cause=0 end=0 status=0 monotonic_ms=5051"
+    },
+    {
+      "host_s": 37311.601928118,
+      "text": "[HEALTH] task=uart state=ok activity=idle age_ms=0 limit_ms=100 completions=4940 sampled_ms=5051 changed=0"
+    },
+    {
+      "host_s": 37311.613391014,
+      "text": "[HEALTH] task=process state=ok activity=idle age_ms=0 limit_ms=2000 completions=4939 sampled_ms=5051 changed=0"
+    },
+    {
+      "host_s": 37311.621309469,
+      "text": "[HEALTH] task=writer state=ok activity=idle age_ms=21 limit_ms=5000 completions=223 sampled_ms=5051 changed=0"
+    },
+    {
+      "host_s": 37311.635882723,
+      "text": "[DELIVERY] occupied=0 peak=0 accepted=0 repeated=0 lost=0 storage_failures=0 attempts=0 tx_failures=0 confirmed=0 unknown=0 evicted=0 recovery_slot=0"
+    },
+    {
+      "host_s": 37311.673270002,
+      "text": "[TTC-HEALTH] state=ok radio=unavailable updating=0 wired_ready=1 age_ms=2 limit_ms=2000 completions=249 rf_seen=0 rf_age_ms=0 wired_seen=1 wired_age_ms=5026 resets=5 changed=0 monotonic_ms=5157"
+    },
+    {
+      "host_s": 37311.689681134,
+      "text": "[I2C-HEALTH] state=inactive service=uninitialized activity=inactive age_ms=0 limit_ms=0 sampled_ms=0 monotonic_ms=5168 changed=0 queued=0 cause=0 failure=0 cycles=0 recovered=0 exhausted=0"
+    },
+    {
+      "host_s": 37311.785496413,
+      "text": "[MEMORY-HEALTH] byte_heap=25600 byte_largest=8180 heap_low=0 block_low=0 stack_low_mask=0 allocation_failures=0 allocation_delta=0 changed=0 monotonic_ms=5273"
+    },
+    {
+      "host_s": 37311.793646041,
+      "text": "[MEMORY-HEALTH] task=uart active=1 stack_free=2544 low=0 monotonic_ms=5273"
+    },
+    {
+      "host_s": 37311.799853607,
+      "text": "[MEMORY-HEALTH] task=process active=1 stack_free=7584 low=0 monotonic_ms=5273"
+    },
+    {
+      "host_s": 37311.807338625,
+      "text": "[MEMORY-HEALTH] task=writer active=1 stack_free=5400 low=0 monotonic_ms=5273"
+    },
+    {
+      "host_s": 37311.813577293,
+      "text": "[MEMORY-HEALTH] task=i2c active=0 stack_free=0 low=0 monotonic_ms=5273"
+    },
+    {
+      "host_s": 37311.818683476,
+      "text": "[MEMORY-HEALTH] task=ttc active=1 stack_free=6204 low=0 monotonic_ms=5273"
+    },
+    {
+      "host_s": 37311.826182131,
+      "text": "[MEMORY-HEALTH] task=loop active=1 stack_free=4924 low=0 monotonic_ms=5273"
+    },
+    {
+      "host_s": 37312.576684268,
+      "text": "[FLOW] received=0 invalid=0 gaps=0 duplicates=0 written=8 failures=0 dropped=2 SD=1 status=0 poll_gap_ms=2 process_gap_ms=2 stack_rx=7584 stack_sd=5400 stack_uart=2544 uart_full=0"
+    },
+    {
+      "host_s": 37312.587695693,
+      "text": "[FLOW-MEMORY] heap=97264 byte_heap=25600 byte_largest=8180 byte_min=22032 parser_peak_bytes=0 parser_limit_bytes=98304"
+    },
+    {
+      "host_s": 37312.593446349,
+      "text": "[TT&C] ERRO: SX1276 sem resposta ou fora de RX, reinicializando."
+    },
+    {
+      "host_s": 37312.604433475,
+      "text": "[STORAGE] state=0 attempt=0 episodes=0 attempts=0 recovered=0 exhausted=0 lifecycle_failures=0 cause=0 end=0 status=0 monotonic_ms=6062"
+    },
+    {
+      "host_s": 37312.613367051,
+      "text": "[HEALTH] task=uart state=ok activity=idle age_ms=0 limit_ms=100 completions=5950 sampled_ms=6062 changed=0"
+    },
+    {
+      "host_s": 37312.623863825,
+      "text": "[HEALTH] task=process state=ok activity=idle age_ms=0 limit_ms=2000 completions=5949 sampled_ms=6062 changed=0"
+    },
+    {
+      "host_s": 37312.632652287,
+      "text": "[HEALTH] task=writer state=ok activity=idle age_ms=21 limit_ms=5000 completions=269 sampled_ms=6062 changed=0"
+    },
+    {
+      "host_s": 37312.647617725,
+      "text": "[DELIVERY] occupied=0 peak=0 accepted=0 repeated=0 lost=0 storage_failures=0 attempts=0 tx_failures=0 confirmed=0 unknown=0 evicted=0 recovery_slot=0"
+    },
+    {
+      "host_s": 37312.684697579,
+      "text": "[TTC-HEALTH] state=ok radio=unavailable updating=0 wired_ready=1 age_ms=2 limit_ms=2000 completions=298 rf_seen=0 rf_age_ms=0 wired_seen=1 wired_age_ms=6037 resets=6 changed=0 monotonic_ms=6168"
+    },
+    {
+      "host_s": 37312.700451765,
+      "text": "[I2C-HEALTH] state=inactive service=uninitialized activity=inactive age_ms=0 limit_ms=0 sampled_ms=0 monotonic_ms=6179 changed=0 queued=0 cause=0 failure=0 cycles=0 recovered=0 exhausted=0"
+    },
+    {
+      "host_s": 37312.796661577,
+      "text": "[MEMORY-HEALTH] byte_heap=25600 byte_largest=8180 heap_low=0 block_low=0 stack_low_mask=0 allocation_failures=0 allocation_delta=0 changed=0 monotonic_ms=6284"
+    },
+    {
+      "host_s": 37312.804509554,
+      "text": "[MEMORY-HEALTH] task=uart active=1 stack_free=2544 low=0 monotonic_ms=6284"
+    },
+    {
+      "host_s": 37312.810271343,
+      "text": "[MEMORY-HEALTH] task=process active=1 stack_free=7584 low=0 monotonic_ms=6284"
+    },
+    {
+      "host_s": 37312.818845113,
+      "text": "[MEMORY-HEALTH] task=writer active=1 stack_free=5400 low=0 monotonic_ms=6284"
+    },
+    {
+      "host_s": 37312.824136865,
+      "text": "[MEMORY-HEALTH] task=i2c active=0 stack_free=0 low=0 monotonic_ms=6284"
+    },
+    {
+      "host_s": 37312.830163513,
+      "text": "[MEMORY-HEALTH] task=ttc active=1 stack_free=6204 low=0 monotonic_ms=6284"
+    },
+    {
+      "host_s": 37312.837724602,
+      "text": "[MEMORY-HEALTH] task=loop active=1 stack_free=4924 low=0 monotonic_ms=6284"
+    },
+    {
+      "host_s": 37312.842478772,
+      "text": "{\"n\":2,\"t\":\"ack\",\"seq\":1004,\"cmd\":\"ping\",\"st\":\"ok\",\"q\":10}"
+    }
+  ],
+  "markers": [
+    {
+      "armed": 1,
+      "timeout_ms": 5000,
+      "error": 0,
+      "reset_reason": 1,
+      "host_s": 37300.92847516
+    },
+    {
+      "reset_timer_ready": 1,
+      "error": 0,
+      "host_s": 37300.933973304
+    },
+    {
+      "case": 6,
+      "boot_id": 108,
+      "reset_reason": 1,
+      "resumed": 0,
+      "previous_boot": 0,
+      "timer_fired_ms": 0,
+      "monotonic_ms": 78,
+      "host_s": 37300.949687592
+    },
+    {
+      "start": 1,
+      "case": 6,
+      "host_s": 37301.086126791
+    },
+    {
+      "pause": "supervisor",
+      "duration_ms": 8000,
+      "monotonic_ms": 234,
+      "host_s": 37301.102659474
+    },
+    {
+      "armed": 1,
+      "timeout_ms": 5000,
+      "error": 0,
+      "reset_reason": 6,
+      "host_s": 37306.563563232
+    },
+    {
+      "reset_timer_ready": 1,
+      "error": 0,
+      "host_s": 37306.569141286
+    },
+    {
+      "case": 6,
+      "boot_id": 109,
+      "reset_reason": 6,
+      "resumed": 1,
+      "previous_boot": 108,
+      "timer_fired_ms": 0,
+      "monotonic_ms": 76,
+      "host_s": 37306.584270617
+    }
+  ],
+  "boots": [
+    {
+      "case": 6,
+      "boot_id": 108,
+      "reset_reason": 1,
+      "resumed": 0,
+      "previous_boot": 0,
+      "timer_fired_ms": 0,
+      "monotonic_ms": 78,
+      "host_s": 37300.949687592
+    },
+    {
+      "case": 6,
+      "boot_id": 109,
+      "reset_reason": 6,
+      "resumed": 1,
+      "previous_boot": 108,
+      "timer_fired_ms": 0,
+      "monotonic_ms": 76,
+      "host_s": 37306.584270617
+    }
+  ],
+  "acks": [
+    {
+      "n": 0,
+      "t": "ack",
+      "seq": 1001,
+      "cmd": "ping",
+      "st": "ok",
+      "q": 66
+    },
+    {
+      "n": 1,
+      "t": "ack",
+      "seq": 1002,
+      "cmd": "set_time",
+      "st": "ok",
+      "q": 0
+    },
+    {
+      "n": 1,
+      "t": "ack",
+      "seq": 1003,
+      "cmd": "request_tm",
+      "st": "ok",
+      "q": 66
+    },
+    {
+      "n": 2,
+      "t": "ack",
+      "seq": 1004,
+      "cmd": "ping",
+      "st": "ok",
+      "q": 10
+    }
+  ],
+  "telemetry": [
+    {
+      "n": 0,
+      "t": "tm",
+      "ts": null,
+      "md": "bench",
+      "vb": null,
+      "ib": null,
+      "vs": null,
+      "is": null,
+      "tp": null,
+      "w": null,
+      "az": null,
+      "ac": null,
+      "msg": null,
+      "rssi": null,
+      "snr": null,
+      "rx": 1,
+      "err": 0,
+      "rst": 0
+    }
+  ],
+  "checks": [
+    "novo boot confirmado, causa esperada, UTC desconhecido e retorno estavel sem SD",
+    "travamento finito acionou watchdog de tarefas antes de retornar"
+  ]
+}

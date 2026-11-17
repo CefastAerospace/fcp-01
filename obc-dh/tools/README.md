@@ -1,5 +1,130 @@
 # Codec e leitura de registros OBC v1/v2/v3
 
+## INA219 de bancada — 16/11/2026
+
+**Situação atual:** recorte INA219 de bancada concluído. Com o ESP32 livre
+de ligações externas, o mesmo firmware/roteiro da execução 02 passou na
+[execução USB 03](../examples/obc-eps-2026-11-16-usb-03.json), sem alterar
+código ou critérios: 30,039 s, 54 ACKs, 27 TMs, `q` máximo 94 ms e resposta
+máxima 171,718 ms. Foram observadas 32 amostras de saúde com serviço READY;
+menor margem de pilha EPS de 2.656 bytes e novas tentativas entre 5.002 e
+5.011 ms. A falha SCL_LOW não se repetiu nessa condição; a ligação externa
+responsável não foi identificada. Reprovações anteriores permanecem abaixo.
+
+O [obc restaurado 03](../examples/obc-eps-2026-11-16-restored-03.json) passou
+no roteiro original: seis ACKs, `q` máximo 10 ms e resposta máxima 97,340 ms.
+[Manifesto final](../examples/obc-eps-2026-11-16-usb-03-manifest.json) conserva
+hashes e comparação das versões. A INT-009 permanece aberta por contratos,
+TM operacional e LM75A; sensores reais e montagem integrada não foram
+aprovados por essa bancada.
+
+`int009-ina219-check` reutiliza o boot central e habilita a aquisição dos três
+INA219 somente por `OBC_EPS_BENCH`. `obc` continua padrão e não inicia essa
+aquisição. Os valores permanecem em RAM/USB; TM operacional e SD não recebem
+campos EPS nesta etapa. LM75A e proteções não estão implementados por este
+recorte. Estado e limitações na [INT-009](../.tasks/03-integracao/INT-009-aquisicao-eps-termico.md).
+
+O driver usa `CEFAST::eps`; o namespace anterior `CEFAST::EPS` colidia com a
+macro Xtensa `EPS=192`. Consumidores precisam atualizar o nome. Calibração,
+cálculos e funções existentes permanecem; o framework não foi modificado.
+`begin(wire, channel)` configura um sensor e `GetI2cDiagnostic()` conserva
+etapa, registrador, código de Wire e quantidade recebida. Leitura curta é
+`READ_INCOMPLETE`, sem inventar NACK ou timeout não exposto por `requestFrom`.
+
+A tarefa EPS (Core 1/prioridade 1/pilha inicial de 4 KiB) é proprietária do
+driver; I/O ocorre exclusivamente no executor I2C, sem logs ou espera de
+conversão nos callbacks. Configuração e aquisição são solicitações separadas.
+As cópias protegidas não contêm I/O. Falha de um canal não invalida os demais;
+mudança do ciclo de recuperação exige nova configuração antes de outra leitura.
+
+Parâmetros provisórios: endereços Solar/Bateria/Geral `0x40`/`0x41`/`0x44`,
+aquisição a cada 1.000 ms, tentativa offline a cada 5.000 ms, amostra antiga
+após 3.000 ms, conversão após 2 ms, prioridade de pedido 0 e fila de até
+100 ms. Não são aprovações elétricas ou limites de proteção. Corrente em A
+conserva VIN+ para VIN− positiva; as tensões VIN− e VIN+ são identificadas
+separadamente, sem escolher seu mapeamento operacional.
+
+`[EPS]` informa canal, disponibilidade, idade, último resultado e valores;
+sem amostra válida, as medições são `null`. Histórico conservado após falha
+não é leitura disponível. `[EPS-HEALTH]` informa progresso, resultados e
+margem de pilha; não acrescenta reset automático por falha do sensor.
+
+Verificação nativa dentro de `obc-dh/`, com ASan/LeakSanitizer fora de ptrace:
+
+```bash
+g++ -std=c++11 -Wall -Wextra -Werror \
+    -fsanitize=address,undefined -fno-sanitize-recover=undefined \
+    -Itests/eps_native -Iheaders -I../eps-tc/EPS_INA219_Standard/src \
+    src/ObcEps.cpp ../eps-tc/EPS_INA219_Standard/src/EPS_INA219.cpp \
+    tests/ObcEpsCheck.cpp -o /tmp/fcp01-eps-check
+/tmp/fcp01-eps-check
+g++ -std=c++11 -Wall -Wextra -Werror -DEPS=192 \
+    -fsanitize=address,undefined -fno-sanitize-recover=undefined \
+    -Itests/eps_native -Iheaders -I../eps-tc/EPS_INA219_Standard/src \
+    src/ObcEps.cpp ../eps-tc/EPS_INA219_Standard/src/EPS_INA219.cpp \
+    tests/ObcEpsCheck.cpp -o /tmp/fcp01-eps-macro-check
+/tmp/fcp01-eps-macro-check
+pio run -e obc -e int009-ina219-check
+```
+
+Ambos os testes EPS, regressões existentes de boot/escalonamento/saúde I2C/
+watchdog e os dois builds passaram. Comandos, saídas e hashes estão no
+[relatório local versionado](../examples/obc-eps-2026-11-16-native.json).
+O nome `native` identifica a comprovação dos testes; o relatório também
+conserva metadados dos builds e registra explicitamente USB não executado.
+
+Bancada de desenvolvimento, somente ESP32/USB, sem sensores ou outros
+periféricos externos. Use um Python com pyserial; nesta máquina está no
+ambiente do PlatformIO (`~/.local/share/uv/tools/platformio/bin/python`).
+Substitua `/dev/ttyUSB0` pela porta identificada e use relatórios novos:
+
+```bash
+pio run -e int009-ina219-check -t upload --upload-port /dev/ttyUSB0
+python3 tests/ObcEpsBenchCheck.py /dev/ttyUSB0 \
+    --report /tmp/obc-eps-usb-novo.json
+pio run -e obc -t upload --upload-port /dev/ttyUSB0
+python3 tests/ObcDownlinkCheck.py /dev/ttyUSB0 \
+    --report /tmp/obc-eps-normal-novo.json
+```
+
+O roteiro observa 30 s: executor pronto, aquisição ativa, três canais
+indisponíveis com medições `null`, cadência de nova tentativa de pelo menos
+5.000 ms, progresso contínuo e TC/TM com entrega ≤200 ms e resposta ≤2 s.
+Registra a margem de pilha, sem apresentá-la como comprovação de pior caso.
+Relatório é exclusivo e conserva falhas. Restaurar e verificar `obc` também
+se o roteiro falhar; ele não realiza upload/restauração automaticamente.
+
+Na etapa anterior não havia porta ESP32 disponível: nenhum upload, execução
+USB ou restauração física foi realizado. Sintaxe e `--help` do roteiro
+foram verificados com o Python do PlatformIO/pyserial 3.5. O Python global
+não possui pyserial instalado. O recorte continua aberto até execução USB;
+isso não altera ensaios, critérios ou estados das TES.
+
+Após conexão da placa, a [primeira execução USB](../examples/obc-eps-2026-11-16-usb.json)
+reprovou durante a coleta inicial: primeiro canal `SOLAR` com `address=0x00`
+em vez de `0x40`. O diagnóstico pode executar antes da primeira publicação
+do worker e ler o snapshot compartilhado zerado. Não é aceite do endereço
+zero ou motivo para alterar o roteiro. Naquela execução, a correção de
+inicialização/publicação aguardava discussão; nenhum código ou critério
+foi alterado durante a coleta reprovada.
+O [firmware normal restaurado](../examples/obc-eps-2026-11-16-restored.json)
+passou no roteiro original: seis ACKs, `q` máximo 11 ms e resposta máxima
+67,133 ms. [Manifesto USB](../examples/obc-eps-2026-11-16-usb-manifest.json)
+conserva placa, hashes e resultados. O recorte continua aberto.
+
+O ajuste de publicação foi autorizado e implementado: metadados existem
+antes da criação da tarefa e o diagnóstico informa `starting` até a
+primeira rodada publicada. A [segunda execução, com o mesmo roteiro](../examples/obc-eps-2026-11-16-usb-02.json),
+superou a falha de endereço zero, mas reprovou em `service=3` (UNAVAILABLE).
+Primeira configuração retornou timeout (`Wire status=5`); o executor
+registrou recuperação esgotada com `cause=5 failure=5` (SCL_LOW).
+A causa elétrica ainda precisava de confirmação nessa etapa. Não alterar expectativas,
+polarização ou recuperação sem diagnóstico e discussão com o responsável.
+O [obc restaurado 02](../examples/obc-eps-2026-11-16-restored-02.json) passou
+no roteiro original: seis ACKs, `q` máximo 31 ms e resposta máxima 72,826 ms.
+O [manifesto 02](../examples/obc-eps-2026-11-16-usb-02-manifest.json) registra
+hashes e a preservação dos roteiros. O recorte permanece aberto.
+
 ## Watchdog e reset OBC — 15/11/2026
 
 A INT-012 usa o watchdog de tarefas do SDK instalado (IDF 4.x, Arduino

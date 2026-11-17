@@ -1,0 +1,171 @@
+{
+  "passed": false,
+  "duration_s": 30,
+  "lines": [
+    {
+      "host_s": 16109.232402819,
+      "text": "ets Jul 29 2019 12:21:46"
+    },
+    {
+      "host_s": 16109.232753739,
+      "text": "rst:0x1 (POWERON_RESET),boot:0x13 (SPI_FAST_FLASH_BOOT)"
+    },
+    {
+      "host_s": 16109.232850191,
+      "text": "configsip: 0, SPIWP:0xee"
+    },
+    {
+      "host_s": 16109.233105666,
+      "text": "clk_drv:0x00,q_drv:0x00,d_drv:0x00,cs0_drv:0x00,hd_drv:0x00,wp_drv:0x00"
+    },
+    {
+      "host_s": 16109.233188643,
+      "text": "mode:DIO, clock div:2"
+    },
+    {
+      "host_s": 16109.233282651,
+      "text": "load:0x3fff0030,len:1184"
+    },
+    {
+      "host_s": 16109.233373577,
+      "text": "load:0x40078000,len:13232"
+    },
+    {
+      "host_s": 16109.233459394,
+      "text": "load:0x40080400,len:3028"
+    },
+    {
+      "host_s": 16109.233520919,
+      "text": "entry 0x400805e4"
+    },
+    {
+      "host_s": 16109.233708924,
+      "text": "[WATCHDOG] armed=1 timeout_ms=5000 error=0 reset_reason=1"
+    },
+    {
+      "host_s": 16109.233839548,
+      "text": "[WATCHDOG] reset_timer_ready=1 error=0"
+    },
+    {
+      "host_s": 16109.233982874,
+      "text": "[OBC] Boot de bancada: tempo/NVS, I2C e SD"
+    },
+    {
+      "host_s": 16109.23431825,
+      "text": "[   571][E][sd_diskio.cpp:805] sdcard_mount(): f_mount failed: (3) The physical drive cannot work"
+    },
+    {
+      "host_s": 16109.234526585,
+      "text": "[  1072][E][sd_diskio.cpp:126] sdSelectCard(): Select Failed"
+    },
+    {
+      "host_s": 16109.234657718,
+      "text": "[OBC] Tempo/NVS: OK; boot_id=149"
+    },
+    {
+      "host_s": 16109.234867808,
+      "text": "[OBC] I2C: OK; estado do controlador/executor, sem verificar sensores"
+    },
+    {
+      "host_s": 16109.235070529,
+      "text": "[OBC] SD: indisponivel; status=11; errno=0; bytes=0; tentativas=0"
+    },
+    {
+      "host_s": 16109.235253569,
+      "text": "[OBC] Tempo monotonic_ms=[TT&C] ERRO: SX1276 nao responde."
+    },
+    {
+      "host_s": 16109.235606644,
+      "text": "[TT&C] ERRO: SX1276 sem resposta ou fora de RX, reinicializando.[OBC] TT&C: radio=indisponivel; umbilical=OK; tarefa=OK"
+    },
+    {
+      "host_s": 16109.235837376,
+      "text": "[FLOW] RAM apos receptor: heap=171068 byte_heap=106932 byte_largest=47092"
+    },
+    {
+      "host_s": 16109.236042159,
+      "text": "[FLOW] Recepcao=OK; SD=indisponivel; heap=159052; maior_bloco=63476"
+    },
+    {
+      "host_s": 16109.236206239,
+      "text": "[EPS] init=iniciada; parametros provisorios de bancada"
+    },
+    {
+      "host_s": 16109.236314854,
+      "text": "[TT&C] ERRO: SX1276 nao responde."
+    },
+    {
+      "host_s": 16109.236881122,
+      "text": "[TTC-HEALTH] state=ok radio=unavailable updating=0 wired_ready=1 age_ms=12 limit_ms=2000 completions=1 rf_seen=0 rf_age_ms=0 wired_seen=0 wired_age_ms=0 resets=1 changed=1 monotonic_ms=1159"
+    },
+    {
+      "host_s": 16109.237351889,
+      "text": "[MEMORY-HEALTH] byte_heap=90444 byte_largest=47092 heap_low=0 block_low=0 stack_low_mask=0 allocation_failures=0 allocation_delta=0 changed=0 monotonic_ms=1159"
+    },
+    {
+      "host_s": 16109.237576142,
+      "text": "[MEMORY-HEALTH] task=uart active=1 stack_free=2204 low=0 monotonic_ms=1159"
+    },
+    {
+      "host_s": 16109.237810747,
+      "text": "[MEMORY-HEALTH] task=process active=1 stack_free=7660 low=0 monotonic_ms=1159"
+    },
+    {
+      "host_s": 16109.238033498,
+      "text": "[MEMORY-HEALTH] task=writer active=0 stack_free=0 low=0 monotonic_ms=1159"
+    },
+    {
+      "host_s": 16109.238253971,
+      "text": "[MEMORY-HEALTH] task=i2c active=1 stack_free=2796 low=0 monotonic_ms=1159"
+    },
+    {
+      "host_s": 16109.238473524,
+      "text": "[MEMORY-HEALTH] task=ttc active=1 stack_free=7368 low=0 monotonic_ms=1159"
+    },
+    {
+      "host_s": 16109.238694403,
+      "text": "[MEMORY-HEALTH] task=loop active=1 stack_free=4960 low=0 monotonic_ms=1159"
+    },
+    {
+      "host_s": 16109.239224148,
+      "text": "[I2C-HEALTH] state=ok service=ready activity=callback age_ms=85 limit_ms=100 sampled_ms=1224 monotonic_ms=1224 changed=0 queued=0 cause=0 failure=0 cycles=0 recovered=0 exhausted=0"
+    },
+    {
+      "host_s": 16109.239745065,
+      "text": "[FLOW] received=0 invalid=0 gaps=0 duplicates=0 written=0 failures=1 dropped=2 SD=0 status=11 poll_gap_ms=1 process_gap_ms=2 stack_rx=7660 stack_sd=0 stack_uart=2204 uart_full=0"
+    },
+    {
+      "host_s": 16109.240109257,
+      "text": "[FLOW-MEMORY] heap=154580 byte_heap=90444 byte_largest=47092 byte_min=88868 parser_peak_bytes=0 parser_limit_bytes=98304"
+    },
+    {
+      "host_s": 16109.240507095,
+      "text": "[STORAGE] state=0 attempt=0 episodes=0 attempts=0 recovered=0 exhausted=0 lifecycle_failures=0 cause=0 end=0 status=0 monotonic_ms=1224"
+    },
+    {
+      "host_s": 16109.240818763,
+      "text": "[HEALTH] task=uart state=ok activity=idle age_ms=1 limit_ms=100 completions=108 sampled_ms=1235 changed=0"
+    },
+    {
+      "host_s": 16109.241147087,
+      "text": "[HEALTH] task=process state=ok activity=idle age_ms=1 limit_ms=2000 completions=107 sampled_ms=1235 changed=0"
+    },
+    {
+      "host_s": 16109.241489619,
+      "text": "[HEALTH] task=writer state=inactive activity=inactive age_ms=0 limit_ms=5000 completions=0 sampled_ms=1235 changed=0"
+    },
+    {
+      "host_s": 16109.241927819,
+      "text": "[DELIVERY] occupied=0 peak=0 accepted=0 repeated=0 lost=0 storage_failures=1 attempts=0 tx_failures=0 confirmed=0 unknown=0 evicted=0 recovery_slot=0"
+    },
+    {
+      "host_s": 16109.242505317,
+      "text": "[EPS] channel=SOLAR address=0x00 available=0 has_valid=0 age_ms=0 attempted_ms=0 last_valid_ms=0 driver=OK result=0 phase=0 status=0 received=0 vin_minus_V=null vin_plus_V=null shunt_mV=null current_A=null power_minus_W=null power_plus_W=null"
+    }
+  ],
+  "channels": {},
+  "health": [],
+  "exchanges": [],
+  "telemetry": [],
+  "error": "AssertionError: {'channel': 'SOLAR', 'address': '0x00', 'available': '0', 'has_valid': '0', 'age_ms': '0', 'attempted_ms': '0', 'last_valid_ms': '0', 'driver': 'OK', 'result': '0', 'phase': '0', 'status': '0', 'received': '0', 'vin_minus_V': 'null', 'vin_plus_V': 'null', 'shunt_mV': 'null', 'current_A': 'null', 'power_minus_W': 'null', 'power_plus_W': 'null'}"
+}

@@ -1,5 +1,15 @@
 # OBC-DH — documentação e orientação
 
+**INT-009 — 16/11/2026:** aquisição INA219 disponível somente no ambiente
+`int009-ina219-check`. Namespace do driver corrigido para `CEFAST::eps`;
+seis verificações nativas e dois builds aprovados. Publicação inicial
+corrigida após discussão; reprovações anteriores preservadas. Com a placa
+livre, o mesmo firmware/roteiro passou em 30 s: 54 ACKs, 27 TMs e margem
+mínima de pilha EPS observada de 2.656 bytes. `obc` foi restaurado e passou
+no roteiro USB original. Recorte de bancada concluído; a INT-009 continua
+aberta por contratos/TM operacional/LM75A. Procedimento e
+limitações no [guia](../tools/README.md#ina219-de-bancada--16112026).
+
 **Conclusão INT-012 — 15/11/2026:** watchdog por progresso e reset comandado
 implementados/verificados no ESP32/USB. Quatorze casos novos, memória/esperas
 com watchdog armado e regressões originais passaram; `obc` restaurado e

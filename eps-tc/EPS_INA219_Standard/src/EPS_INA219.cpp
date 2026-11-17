@@ -2,8 +2,14 @@
 
 #include <math.h>
 
+// ─── ATENÇÃO ──────────────────────────────────────────────────────
+/*
+ * O funcionamento detalhado das funções e as características dos
+ * elementos desse módulo são abordados em "EPS_INA219.h".
+ */
+
 namespace CEFAST {
-namespace EPS {
+namespace eps {
 
 EPS_INA219::EPS_INA219()
     : _wire(nullptr),
@@ -36,6 +42,7 @@ bool EPS_INA219::begin(TwoWire& wire) {
 }
 
 bool EPS_INA219::reinitialize(INAChannel channel) {
+    i2c_diagnostic_ = {};
     if (!_initialized || _wire == nullptr || !validChannel(channel)) {
         return false;
     }
@@ -66,6 +73,7 @@ uint8_t EPS_INA219::address(INAChannel channel) const {
 }
 
 INAReading EPS_INA219::read(INAChannel channel) {
+    i2c_diagnostic_ = {};
     INAReading out;
 
     out.channel = channel;
@@ -285,6 +293,7 @@ bool EPS_INA219::setPowerSave(
     INAChannel channel,
     bool enabled
 ) {
+    i2c_diagnostic_ = {};
     if (!_initialized || _wire == nullptr || !validChannel(channel)) {
         return false;
     }
@@ -458,43 +467,77 @@ bool EPS_INA219::configureStandard(INAChannel channel) {
     return true;
 }
 
+// Público: extensão aditiva; a inicialização dos três canais permanece disponível.
+bool EPS_INA219::begin(
+    TwoWire& wire,
+    INAChannel channel
+) {
+    i2c_diagnostic_ = {};
+    if (!validChannel(channel)) return false;
+    _wire = &wire;
+    _initialized = true;
+    return reinitialize(channel);
+}
+
+// Público: o chamador copia antes de iniciar outra operação do driver.
+I2C_DIAGNOSTIC EPS_INA219::GetI2cDiagnostic(
+) const { return i2c_diagnostic_; }
+
+// Privado: encerra também as escritas incompletas antes de liberar o executor.
 bool EPS_INA219::writeRegister(
     uint8_t address,
     uint8_t reg,
     uint16_t value
 ) {
+    i2c_diagnostic_ = {};
+    i2c_diagnostic_.phase = I2C_PHASE::WRITE;
+    i2c_diagnostic_.reg = reg;
     if (_wire == nullptr) {
+        i2c_diagnostic_.failed = true;
         return false;
     }
 
     _wire->beginTransmission(address);
 
     if (_wire->write(reg) != 1) {
-        _wire->endTransmission(true);
+        i2c_diagnostic_.phase = I2C_PHASE::BUFFER;
+        i2c_diagnostic_.failed = true;
+        i2c_diagnostic_.status = _wire->endTransmission(true);
         return false;
     }
 
     if (_wire->write(
             static_cast<uint8_t>(value >> 8)) != 1) {
-        _wire->endTransmission(true);
+        i2c_diagnostic_.phase = I2C_PHASE::BUFFER;
+        i2c_diagnostic_.failed = true;
+        i2c_diagnostic_.status = _wire->endTransmission(true);
         return false;
     }
 
     if (_wire->write(
             static_cast<uint8_t>(value & 0xFF)) != 1) {
-        _wire->endTransmission(true);
+        i2c_diagnostic_.phase = I2C_PHASE::BUFFER;
+        i2c_diagnostic_.failed = true;
+        i2c_diagnostic_.status = _wire->endTransmission(true);
         return false;
     }
 
-    return _wire->endTransmission(true) == 0;
+    i2c_diagnostic_.status = _wire->endTransmission(true);
+    i2c_diagnostic_.failed = i2c_diagnostic_.status != 0;
+    return !i2c_diagnostic_.failed;
 }
 
+// Privado: repeated START é concluído pelo requestFrom com STOP, mesmo em leitura curta.
 bool EPS_INA219::readRegister(
     uint8_t address,
     uint8_t reg,
     uint16_t& value
 ) {
+    i2c_diagnostic_ = {};
+    i2c_diagnostic_.phase = I2C_PHASE::SELECT_REGISTER;
+    i2c_diagnostic_.reg = reg;
     if (_wire == nullptr) {
+        i2c_diagnostic_.failed = true;
         return false;
     }
 
@@ -505,14 +548,20 @@ bool EPS_INA219::readRegister(
     _wire->beginTransmission(address);
 
     if (_wire->write(reg) != 1) {
+        i2c_diagnostic_.phase = I2C_PHASE::BUFFER;
+        i2c_diagnostic_.failed = true;
+        i2c_diagnostic_.status = _wire->endTransmission(true);
+        return false;
+    }
+
+    i2c_diagnostic_.status = _wire->endTransmission(false);
+    if (i2c_diagnostic_.status != 0) {
+        i2c_diagnostic_.failed = true;
         _wire->endTransmission(true);
         return false;
     }
 
-    if (_wire->endTransmission(false) != 0) {
-        return false;
-    }
-
+    i2c_diagnostic_.phase = I2C_PHASE::READ;
     const uint8_t received =
         _wire->requestFrom(
             static_cast<int>(address),
@@ -520,7 +569,9 @@ bool EPS_INA219::readRegister(
             static_cast<int>(true)
         );
 
+    i2c_diagnostic_.received = received;
     if (received != 2 || _wire->available() < 2) {
+        i2c_diagnostic_.failed = true;
         while (_wire->available()) {
             _wire->read();
         }
@@ -553,5 +604,5 @@ void EPS_INA219::markOffline(INAChannel channel) {
     sensor.powerDown = false;
 }
 
-} // namespace EPS
+} // namespace eps
 } // namespace CEFAST

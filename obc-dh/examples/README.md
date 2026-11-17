@@ -1,5 +1,28 @@
 # Bancada UART2 — beta preservado
 
+**INA219 — recorte de bancada concluído, 16/11/2026:** a
+[execução USB 03](obc-eps-2026-11-16-usb-03.json), com placa livre e mesmo
+firmware/roteiro da execução 02, passou em 30 s. O
+[obc restaurado 03](obc-eps-2026-11-16-restored-03.json) passou no roteiro
+original. O [manifesto final](obc-eps-2026-11-16-usb-03-manifest.json) reúne
+métricas, hashes e condições. As tentativas anteriores abaixo são histórico
+preservado; a INT-009 inteira e ensaios com sensores reais permanecem abertos.
+
+INA219, 16/11/2026: [evidência nativa e metadados dos builds](obc-eps-2026-11-16-native.json)
+com seis verificações aprovadas, ambientes normal/bancada compilados e
+hashes. Após conexão da placa, a [primeira bancada USB](obc-eps-2026-11-16-usb.json)
+reprovou a publicação inicial zerada. [obc restaurado](obc-eps-2026-11-16-restored.json)
+passou no roteiro original; [manifesto](obc-eps-2026-11-16-usb-manifest.json)
+conserva hashes e contexto. Naquela etapa, a correção aguardava discussão; procedimento no
+[guia](../tools/README.md#ina219-de-bancada--16112026). Não comprova sensores reais nem encerra a INT-009.
+
+Após ajuste autorizado da publicação inicial, a [bancada USB 02](obc-eps-2026-11-16-usb-02.json)
+superou esse caso e reprovou por timeout e recuperação esgotada com SCL
+baixo. [obc restaurado 02](obc-eps-2026-11-16-restored-02.json) passou no
+roteiro original; [manifesto 02](obc-eps-2026-11-16-usb-02-manifest.json)
+conserva hashes e resultados. A falha não se repetiu na execução 03 sem
+ligações externas, sem identificar a ligação responsável pela falha anterior.
+
 Limites adicionais de capacidade/memória, 11/11/2026, ESP32/USB e
 Espressif32 fixado em 6.6.0: aprovados os relatórios de
 [capacidade](obc-limits-2026-11-11-capacity.json),

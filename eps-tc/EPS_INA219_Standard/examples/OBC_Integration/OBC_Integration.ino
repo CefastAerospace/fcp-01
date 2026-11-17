@@ -11,9 +11,9 @@
 #include <Wire.h>
 #include <EPS_INA219.h>
 
-using CEFAST::EPS::EPS_INA219;
-using CEFAST::EPS::INAChannel;
-using CEFAST::EPS::INAReading;
+using CEFAST::eps::EPS_INA219;
+using CEFAST::eps::INAChannel;
+using CEFAST::eps::INAReading;
 
 EPS_INA219 epsIna;
 

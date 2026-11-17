@@ -1,5 +1,28 @@
 # Arquitetura vigente do OBC-DH
 
+### Aquisição INA219 isolada — 16/11/2026
+
+O ambiente `int009-ina219-check` habilita `ObcEps`/`ObcEpsEsp32` pelo boot
+existente, somente com `OBC_EPS_BENCH`. Tarefa Core 1/prioridade 1/pilha
+inicial de 4 KiB é proprietária do driver EPS; callbacks no executor I2C
+realizam configuração/leitura por canal. Conversão, diagnóstico e cópias
+publicadas ficam fora do callback. Recuperação invalida a configuração antes
+de nova leitura. Nenhuma aquisição EPS é iniciada pelo firmware normal.
+
+`CEFAST::eps` substitui o namespace que colidia com a macro Xtensa `EPS`.
+Validade, histórico, cadência e falhas são independentes por canal; dados
+permanecem em RAM/USB sem alterar TM/arquivos, proteções ou watchdog.
+Parâmetros provisórios, procedimentos e provas locais estão no
+[guia](../tools/README.md#ina219-de-bancada--16112026). Builds e seis verificações
+nativas passaram. Após reprovação inicial, Init publica metadados antes da
+criação da tarefa; o diagnóstico distingue `starting` da primeira rodada
+real publicada. Uma segunda reprovação por timeout/SCL baixo é preservada.
+Após remover ligações externas, o mesmo firmware/roteiro passou integralmente
+em 30 s, sem mudança de código ou critérios. Recorte de bancada concluído;
+`obc` foi restaurado e verificado por USB. A ligação externa responsável
+pela falha anterior não foi identificada. Não constitui aquisição com
+sensores reais aprovada ou conclusão da INT-009 inteira.
+
 ### Watchdog e reset comandado — 15/11/2026
 
 INT-012 concluída no mecanismo de bancada ESP32/USB. `ObcWatchdog` decide

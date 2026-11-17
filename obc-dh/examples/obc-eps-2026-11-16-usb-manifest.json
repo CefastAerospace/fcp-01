@@ -1,0 +1,34 @@
+{
+  "board": "ESP32-D0WD-V3 revision v3.1",
+  "port": "/dev/ttyUSB0",
+  "usb_bridge": "1A86:7523",
+  "bench": {
+    "upload_passed": true,
+    "flash_hash_verified": true,
+    "report": "obc-eps-2026-11-16-usb.json",
+    "passed": false,
+    "error": "AssertionError: {'channel': 'SOLAR', 'address': '0x00', 'available': '0', 'has_valid': '0', 'age_ms': '0', 'attempted_ms': '0', 'last_valid_ms': '0', 'driver': 'OK', 'result': '0', 'phase': '0', 'status': '0', 'received': '0', 'vin_minus_V': 'null', 'vin_plus_V': 'null', 'shunt_mV': 'null', 'current_A': 'null', 'power_minus_W': 'null', 'power_plus_W': 'null'}"
+  },
+  "restored": {
+    "upload_passed": true,
+    "flash_hash_verified": true,
+    "report": "obc-eps-2026-11-16-restored.json",
+    "passed": true,
+    "exchanges": 6,
+    "max_q_ms": 11,
+    "max_response_ms": 67.133
+  },
+  "code_changed_during_usb_verification": false,
+  "validation_changed": false,
+  "diagnosis": "Diagnostico le snapshot compartilhado zerado antes da primeira publicacao real do worker EPS; firmware normal restaurado.",
+  "firmware_sha256": {
+    "obc": "e1618fe92ffefe8c26bdf02bfd4c05684df5169ddb64f5f83f5136395487230a",
+    "int009-ina219-check": "1b524416c4a73c36e241926ac66cfc4e9ab9cc5dd78f93646e355378a033fa7c"
+  },
+  "source_sha256": {
+    "src/ObcEpsEsp32.cpp": "bd1a0d178f53d07259bcc02a9cf0125b4a8e790d6a28718bbef5e453986302a5",
+    "headers/ObcEpsEsp32.h": "86be894529a40a322b964a7e44b28e4032769120f7c5c0e3c145c86d1ed10da0",
+    "tests/ObcEpsBenchCheck.py": "43b363c20958fe82f180b8a4d59cebc9ec47a6f033cddb3ef3dda3b49ad11e64",
+    "tests/ObcDownlinkCheck.py": "6eba6d02d2adc229b54cb9fa979393d0bb657dad53f5bd98393cd89a9daabda2"
+  }
+}

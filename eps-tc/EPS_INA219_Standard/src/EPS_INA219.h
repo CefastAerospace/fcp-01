@@ -4,7 +4,19 @@
 #include <Wire.h>
 
 namespace CEFAST {
-namespace EPS {
+namespace eps {
+
+/** @brief Etapa da última operação I2C; não infere causa de leitura curta. */
+enum class I2C_PHASE : uint8_t { NONE, BUFFER, WRITE, SELECT_REGISTER, READ };
+
+/** @brief Diagnóstico adicional; status conserva o código original de Wire. */
+struct I2C_DIAGNOSTIC {
+    I2C_PHASE phase = I2C_PHASE::NONE;
+    uint8_t reg = 0;
+    uint8_t status = 0;
+    uint8_t received = 0;
+    bool failed = false;
+};
 
 /**
  * Canais de monitoramento de energia do EPS.
@@ -128,6 +140,16 @@ public:
      */
     bool begin(TwoWire& wire);
 
+    /** @brief Associa Wire já iniciado e configura somente o canal indicado. */
+    bool begin(
+        TwoWire& wire,
+        INAChannel channel
+    );
+
+    /** @brief Copia o diagnóstico da última operação; consultar no proprietário. */
+    I2C_DIAGNOSTIC GetI2cDiagnostic(
+    ) const;
+
     /**
      * Reconfigura apenas um sensor usando a calibração padrão.
      *
@@ -247,6 +269,7 @@ private:
 
     TwoWire* _wire;
     bool _initialized;
+    I2C_DIAGNOSTIC i2c_diagnostic_;
 
     SensorState _sensors[SENSOR_COUNT];
 
@@ -261,5 +284,5 @@ private:
     void markOffline(INAChannel channel);
 };
 
-} // namespace EPS
+} // namespace eps
 } // namespace CEFAST

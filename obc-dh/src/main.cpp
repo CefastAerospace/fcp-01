@@ -4,6 +4,9 @@
 #include "I2cBus.h" // Inicialização do controlador e executor existentes.
 #include "ObcStorageEsp32.h" // Montagem SD/HSPI, sem abrir arquivos.
 #include "ObcTtc.h" // Enlace TT&C e atendimento dos comandos de bancada.
+#ifdef OBC_EPS_BENCH
+#include "ObcEpsEsp32.h" // Aquisição isolada, sem publicar energia na TM operacional.
+#endif
 
 // ─── ATENÇÃO ──────────────────────────────────────────────────────
 /*
@@ -84,6 +87,11 @@ void setup(
     obc_watchdog::esp32::Checkpoint();
     obc_flow::esp32::Init(report);
     obc_watchdog::esp32::Checkpoint();
+#ifdef OBC_EPS_BENCH
+    Serial.printf("[EPS] init=%s; parametros provisorios de bancada\n",
+        obc_eps::esp32::Init() ? "iniciada" : "indisponivel");
+    obc_watchdog::esp32::Checkpoint();
+#endif
     obc_watchdog::esp32::StartRuntime();
 }
 
@@ -94,5 +102,8 @@ void loop(
 ) {
     obc_ttc::Service();
     obc_flow::esp32::ReportDiagnostics();
+#ifdef OBC_EPS_BENCH
+    obc_eps::esp32::ReportDiagnostics();
+#endif
     obc_watchdog::esp32::Service(obc_ttc::GetDiagnostics());
 }

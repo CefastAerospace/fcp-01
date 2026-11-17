@@ -1,0 +1,70 @@
+{
+  "board": "ESP32-D0WD-V3 revision v3.1",
+  "port": "/dev/ttyUSB0",
+  "condition": "Usuario removeu todas as ligacoes externas; ESP32 somente USB",
+  "firmware_identical_to_usb_02": true,
+  "source_identical_to_usb_02": true,
+  "validation_changed": false,
+  "bench": {
+    "report": "obc-eps-2026-11-16-usb-03.json",
+    "upload_passed": true,
+    "flash_hash_verified": true,
+    "passed": true,
+    "observed_s": 30.03882012699978,
+    "exchanges": 54,
+    "telemetry": 27,
+    "health_samples": 32,
+    "max_q_ms": 94,
+    "max_response_ms": 171.71754000082728,
+    "minimum_eps_stack_free_bytes": 2656,
+    "service_states": [
+      1
+    ],
+    "retry_gaps_ms": {
+      "SOLAR": [
+        5005,
+        5002,
+        5011,
+        5004,
+        5006,
+        5009
+      ],
+      "BATTERY": [
+        5006,
+        5002,
+        5011,
+        5004,
+        5006,
+        5010
+      ],
+      "GENERAL": [
+        5006,
+        5002,
+        5010,
+        5005,
+        5006,
+        5009
+      ]
+    }
+  },
+  "restored": {
+    "report": "obc-eps-2026-11-16-restored-03.json",
+    "upload_passed": true,
+    "flash_hash_verified": true,
+    "passed": true,
+    "exchanges": 6,
+    "max_q_ms": 10,
+    "max_response_ms": 97.34
+  },
+  "firmware_sha256": {
+    "obc": "e1618fe92ffefe8c26bdf02bfd4c05684df5169ddb64f5f83f5136395487230a",
+    "int009-ina219-check": "71e1d55b3b90528608eea9bb9b80a49ba0bdf925d3d02ec9136718670b21e201"
+  },
+  "source_sha256": {
+    "src/ObcEpsEsp32.cpp": "d449fc656aef887daf875df9d0fdc84af78bb8a0fc15a5d3a5c8e0c48903ffff",
+    "headers/ObcEpsEsp32.h": "5fcb3c693b03beca004a9c4e672361ac959d958b6873ba90cffe289e9f0a70d8",
+    "tests/ObcEpsBenchCheck.py": "43b363c20958fe82f180b8a4d59cebc9ec47a6f033cddb3ef3dda3b49ad11e64",
+    "tests/ObcDownlinkCheck.py": "6eba6d02d2adc229b54cb9fa979393d0bb657dad53f5bd98393cd89a9daabda2"
+  },
+  "limits": "Aprovacao do recorte ESP32/USB sem sensores; nao comprova sensores INA219 reais, montagem completa, RF ou voo. Ligacao externa responsavel pela falha anterior nao foi identificada."
+}

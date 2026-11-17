@@ -1,5 +1,20 @@
 # TODO — OBC-DH
 
+**INT-009 — 17/11/2026:** recorte LM75A de bancada concluído com referência
+NXP provisória, cinco canais 0x48–0x4C e dados somente em RAM/USB.
+Nativos LM75A/EPS com ASan/UBSan, três builds e bancadas USB aprovados;
+`obc` restaurado/verificado. Primeira reprovação por include Serial e
+correção autorizada preservadas. Testes anteriores intactos; contratos,
+TM operacional e persistência completa continuam pendentes na task.
+
+**INT-004 — 17/11/2026:** matriz do contrato consumido e registro para aceite
+conjunto consolidados; 25 casos nativos TT&C, regressão OBC com ASan/UBSan,
+dois builds e quatro roteiros USB aprovados. `obc` restaurado/verificado.
+Diagnóstico de boot explicado por imagem de core dump persistida inválida,
+preservada sem reparo; origem histórica não determinada. Evidências na task.
+Aceite TT&C informado pelo responsável OBC-DH nesta sessão em 17/11/2026;
+INT-004 concluída e movida para `done/`. Critérios e estados das TES preservados.
+
 **Conclusão INT-012 — 15/11/2026:** watchdog por progresso e reset em 1.500 ms
 implementados no escopo ESP32/USB; 14 casos novos, memória/esperas armados,
 regressões e 21 builds aprovados. `obc` restaurado/verificado, incluindo reset
@@ -44,12 +59,12 @@ Cada ID aparece uma vez nas seções 1–4. A coluna de capacidades identifica o
 | INT-001 | [Configuração base do ambiente OBC](../.tasks/03-integracao/done/INT-001-ambiente-obc.md) | — | — | Concluída |
 | INT-002 | [Conciliação de EN do motor no GPIO 12](../.tasks/03-integracao/done/INT-002-pinagem-en-motor.md) | — | Restrita às constantes; não aprova estado elétrico | Concluída |
 | INT-003 | [Inicialização central e organização da execução](../.tasks/03-integracao/INT-003-inicializacao-central.md) | INT-001 | Bancada disponível; faltam definições/implementação do boot de voo. Comprovação TES-008 | Em andamento |
-| INT-004 | [Integração de TT&C e umbilical](../.tasks/03-integracao/INT-004-ttc-e-umbilical.md) | Boot de bancada INT-003 | Adaptador disponível; aceite conjunto TT&C pendente. Comprovação RF/tempos TES-008 | Em andamento |
+| INT-004 | [Integração de TT&C e umbilical](../.tasks/03-integracao/done/INT-004-ttc-e-umbilical.md) | Boot de bancada INT-003 | Entrega técnica verificada; aceite TT&C informado pelo responsável OBC-DH em 17/11. Core dump inválido preservado como ressalva; comprovação RF/tempos TES-008 | Concluída |
 | INT-005 | [Integração ADCS, encoder e FOC](../.tasks/03-integracao/INT-005-sensores-e-adcs.md) | COM-001/002/003, INT-002 e boot INT-003 | Inventário, aquisição/FOC e política I2C ADCS. Comprovação TES-003/008/009 | Pendente |
 | INT-006 | [Fluxo Payload–tempo–SD–telemetria](../.tasks/03-integracao/INT-006-fluxo-de-dados.md) | COM-004/005, DAD-003 e adaptador INT-004 | Fluxo/extração USB disponíveis; contratos operacionais/semântica pendentes. Comprovação TES-005/006/008/009 | Em andamento |
 | INT-007 | [Comandos, modos e coordenação da missão](../.tasks/03-integracao/INT-007-comandos-modos-e-protecoes.md) | Consumidor INT-004 e estado/fluxo INT-006; ADCS INT-005 para suas ações | ConOps e comandos permitidos; proteções/atuações conectadas por INT-010/011. Comprovação TES-008/010 | Pendente |
 | INT-008 | [Supervisão de recursos e recuperação local](../.tasks/03-integracao/done/INT-008-supervisao-e-retomada.md) | COM-003, boot INT-003, métricas INT-004 e diário INT-006 | Escritor, tarefas, I2C, TT&C e memória/pilhas concluídos; regressões preservadas, obc restaurado e pacote de ensaio disponível. Comprovação física TES-009; watchdog INT-012 e retomada INT-013 | Concluída |
-| INT-009 | [Aquisição e integração EPS/Térmico](../.tasks/03-integracao/INT-009-aquisicao-eps-termico.md) | COM-001/002/003, DAD-001 e boot INT-003 | Recorte INA219 de bancada concluído: placa livre, mesmo firmware/roteiro aprovados em 30 s; obc restaurado/verificado. Reprovações preservadas. Contratos/TM operacional/LM75A e TES-003/008/009 pendentes | Em andamento |
+| INT-009 | [Aquisição e integração EPS/Térmico](../.tasks/03-integracao/INT-009-aquisicao-eps-termico.md) | COM-001/002/003, DAD-001 e boot INT-003 | Recortes INA219 e LM75A de bancada concluídos; nativos, builds e USB aprovados, obc restaurado/verificado. NXP/endereço/cadência térmicos provisórios. Contratos, TM operacional, persistência completa e TES-003/008/009 pendentes | Em andamento |
 | INT-010 | [Proteções energéticas e térmicas](../.tasks/03-integracao/INT-010-protecoes-energia-termico.md) | Dados INT-009, controle INT-005 e modos INT-007 | Cota EPS, limiares, prioridades e retorno aprovados. Comprovação TES-008/010 | Pendente |
 | INT-011 | [Atuação e persistência do Burn Wire](../.tasks/03-integracao/INT-011-burn-wire-persistencia.md) | Boot INT-003, interlock INT-004, modos INT-007 e proteção INT-010 | Autorização, montagem, duração, confirmação e estados duráveis. Comprovação TES-008/009/010 | Pendente |
 | INT-012 | [Watchdog e reinicialização do OBC](../.tasks/03-integracao/done/INT-012-watchdog-reset-obc.md) | Boot de bancada INT-003, consumidor INT-004 e diagnósticos INT-008 | Mecanismo/TC concluídos no ESP32/USB; prazos provisórios documentados, regressões aprovadas e obc restaurado. Comprovação TES-009; efeitos elétricos TES-008 e retorno operacional INT-013 | Concluída |
@@ -79,7 +94,7 @@ Cada ID aparece uma vez nas seções 1–4. A coluna de capacidades identifica o
 | 1 | TES-011: organizar execução das regressões nativas existentes | Sem placa; preservar vetores/expectativas, detectar falhas e dependências ausentes. É ferramenta de desenvolvimento OBC. |
 | 2 | TES-002: completar ferramenta do executor; TES-012: cobrir lacunas do consumidor atual | OBC implementa ferramentas e regressões; setor de testes mantém a comprovação formal TES-002/008/009. |
 | 3 | INT-012 concluída: entregar mecanismo de watchdog/reset à TES-009 | Versão, parâmetros provisórios, injeções e relatórios disponíveis. Não declara retomada operacional ou saída elétrica segura. |
-| 4 | INT-004/006: fechar contratos operacionais e implementar ajustes acordados | Aceites e semântica continuam engenharia; não transferir decisões ao setor de testes nem inventar contrato unilateralmente. |
+| 4 | INT-006: fechar contratos operacionais e implementar ajustes acordados; INT-004 concluída com aceite TT&C | Aceites operacionais e semântica da INT-006 continuam engenharia; não transferir decisões ao setor de testes nem inventar contrato unilateralmente. |
 | 5 | INT-003/005/007/009/010/011/013: implementar após suas entradas disponíveis | A indisponibilidade de hardware não bloqueia toda lógica; contratos elétricos/FOC/energia/atuação indispensáveis continuam condições reais. |
 
 A ordem orienta trabalho, não cria dependências novas. Os recortes anteriores de memória, cliente real, extração, estresse, escritor e diagnóstico não precisam ser recriados. Procedimentos atuais estão no [guia](../tools/README.md); mensagens já preparadas em [encaminhamentos de 11/11](../encaminhamentos-2026-11-11.md), sem envio externo.

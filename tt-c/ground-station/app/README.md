@@ -57,7 +57,7 @@ Pacote de aeronave com `"id":[boot,seq]` é uma entrega da INT-006. A estação 
 .venv/bin/python -m fcp_gs logs get --all --port ... --out pasta/    # todos os arquivos fechados
 ```
 
-A extração pede blocos de 90 bytes e só avança depois de validar a resposta do mesmo pedido. Em `busy` ou resposta perdida, repete o mesmo offset com um `seq` novo. O arquivo é gravado como `NOME.part` e renomeado no fim. Para conferir os CRCs dos registros, use `obc-dh/tools` sobre o arquivo extraído. Esse comando depende de o OBC implementar o `request_log`; hoje o OBC responde `invalid_cmd`.
+A extração pede blocos de 90 bytes e só avança depois de validar a resposta do mesmo pedido. Em `busy` ou resposta perdida, repete o mesmo offset com um `seq` novo. O arquivo é gravado como `NOME.part` e renomeado no fim. Para conferir os CRCs dos registros, use `obc-dh/tools` sobre o arquivo extraído. O firmware OBC atual implementa `request_log` desde a INT-006; sem serviço SD disponível, responde `lg` com `err:"no_sd"`. A bancada USB com SD simulado e as APIs reais deste cliente já foram verificadas, conforme o [guia OBC](../../../obc-dh/tools/README.md#cliente-real-da-estação-e-tmtempo--11112026). Cartão/RF físicos e durabilidade da estação sob falha permanecem pendentes. A rejeição `invalid_cmd` pertence à versão histórica anterior do OBC.
 
 A porta é aberta com DTR/RTS desligados, mas no Linux a placa ainda pode reiniciar na abertura. Por isso o app só envia o primeiro TC depois de a serial ficar 1 s sem bytes novos (no mínimo 1,5 s, no máximo 6 s); as mensagens do boot vão para o log da sessão.
 

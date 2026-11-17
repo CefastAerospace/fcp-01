@@ -24,7 +24,7 @@ A tabela conserva as obrigações e a situação registradas no encerramento. O 
 
 | Destinatária | Responsabilidade ainda aberta | Situação |
 |---|---|---|
-| [INT-004](../../03-integracao/INT-004-ttc-e-umbilical.md) | Consolidar com TT&C os mapeamentos e unidades do conteúdo, mantendo o contrato de TC/TM e registrando o aceite das interfaces usadas. | Pendente na destinatária |
+| [INT-004](../../03-integracao/done/INT-004-ttc-e-umbilical.md) | Consolidar com TT&C os mapeamentos e unidades do conteúdo, mantendo o contrato de TC/TM e registrando o aceite das interfaces usadas. | Atendida na destinatária em 17/11/2026: aceite TT&C informado pelo responsável OBC-DH; registro e evidências na INT-004 concluída |
 | [INT-005](../../03-integracao/INT-005-sensores-e-adcs.md) | Obter os aceites de ADCS/EPS/Térmico para mapeamento, unidades, disponibilidade, posições térmicas, origens/códigos e dados dos sensores. | Pendente na destinatária |
 | [INT-006](../../03-integracao/INT-006-fluxo-de-dados.md) | Consolidar o aceite de Payload/TT&C e das estatísticas: id opaco, idade/validade dos campos, unidades de velocidades, extras e migração explícita dos dados legados, sem inventar sessão/sequência ou validade. | Pendente na destinatária |
 

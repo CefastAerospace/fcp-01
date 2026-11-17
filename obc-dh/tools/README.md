@@ -1,5 +1,92 @@
 # Codec e leitura de registros OBC v1/v2/v3
 
+## LM75A de bancada — 17/11/2026
+
+`int009-lm75a-check` habilita somente a aquisição dos cinco canais térmicos
+por `OBC_THERMAL_BENCH`, reutilizando boot, executor I2C e TT&C existentes.
+Não habilita INA219, publicação térmica na TM, gravação SD ou proteção.
+`obc` continua padrão e não inicia aquisição EPS/Térmico.
+
+Referência provisória aprovada para desenvolvimento:
+[NXP LM75A, LM75A_4, revisão 04 de 10/07/2007](https://www.nxp.com/docs/en/data-sheet/LM75A.pdf).
+O fabricante dos módulos reais continua sujeito à confirmação de Térmico.
+O [driver local](../../eps-tc/LM75A_Standard/README.md) lê Conf como um byte,
+preserva seus bits OS, limpa SHUTDOWN e mantém os bits reservados zerados;
+não altera Tos/Thyst. Temp é lido em dois bytes e convertido fora do executor:
+11 bits com sinal, resolução de 0,125 °C, cinco LSB ignorados e faixa válida
+de −55 a +125 °C. Leitura de registrador pode reconhecer OS em modo interrupt;
+essa saída não é usada pela bancada.
+
+### Parâmetros e disponibilidade
+
+| Item | Valor provisório |
+|---|---|
+| Canais / endereços de sete bits | thermal_1 a thermal_5 / 0x48 a 0x4C |
+| Leitura / espera inicial após configuração | 1.000 ms / 1.000 ms |
+| Nova tentativa offline / amostra antiga | 5.000 ms / idade superior a 3.000 ms |
+| Pedido ao executor | Prioridade 0, espera de fila 100 ms |
+| Tarefa / rodada | Core 1, prioridade 1, pilha inicial 4.096 bytes / 10 ms |
+| Diagnóstico USB | Uma rodada por segundo |
+
+O datasheet informa conversão típica de 100 ms, sem máximo nessa
+especificação. A espera inicial não comprova tempo máximo físico.
+Endereços e nomes não definem A0–A2, posição térmica ou mapa de voo.
+EPS/Térmico e OBC definirão os parâmetros operacionais; TES-003/008/009
+mantêm a comprovação física correspondente.
+
+Cada canal preserva a última leitura válida, mas falha, idade excessiva,
+serviço indisponível ou geração I2C diferente tornam a amostra indisponível.
+`temperature_C` mostra somente leitura disponível; `last_valid_C` identifica
+histórico. Ambos são `null` antes da primeira leitura válida. Não interpretar
+zero de uma estrutura ainda sem validade como medição.
+
+`[THERMAL]` registra endereço, disponibilidade, instantes e diagnóstico do
+driver/Wire/executor. `[THERMAL-HEALTH]` registra primeira rodada publicada,
+progresso, pedidos concluídos, falhas, serviço e margem de pilha.
+Metadados precedem a criação da tarefa; `starting` não simula operação.
+O getter revalida a geração de recuperação, sem I/O ou logs sob lock.
+Não há nova inscrição no watchdog ou política de proteção térmica.
+
+### Verificação nativa e USB
+
+Dentro de `obc-dh/`, com compilador C++ e Python contendo pyserial:
+
+```bash
+g++ -std=c++11 -Wall -Wextra -Werror \
+    -fsanitize=address,undefined -fno-sanitize-recover=undefined \
+    -fno-omit-frame-pointer -Itests/thermal_native -Iheaders \
+    -I../eps-tc/LM75A_Standard/src src/ObcThermal.cpp src/ObcEps.cpp \
+    ../eps-tc/LM75A_Standard/src/Lm75a.cpp tests/ObcThermalCheck.cpp \
+    -o /tmp/fcp01-lm75a-check
+/tmp/fcp01-lm75a-check
+pio run -e obc -e int009-ina219-check -e int009-lm75a-check
+pio run -e int009-lm75a-check -t upload --upload-port /dev/ttyUSB0
+python3 tests/ObcThermalBenchCheck.py /dev/ttyUSB0 --report /tmp/lm75a-usb-novo.json
+pio run -e int009-ina219-check -t upload --upload-port /dev/ttyUSB0
+python3 tests/ObcEpsBenchCheck.py /dev/ttyUSB0 --report /tmp/ina219-regressao-novo.json
+pio run -e obc -t upload --upload-port /dev/ttyUSB0
+python3 tests/ObcStationCheck.py /dev/ttyUSB0 --report /tmp/lm75a-obc-novo.json
+```
+
+Usar a porta identificada e destinos novos. ASan/LeakSanitizer exigem execução
+fora de ptrace neste ambiente; não desativar sanitizadores. O teste nativo
+usa o driver real com registradores exclusivos em `tests/thermal_native/`;
+os stubs e vetores INA219 anteriores permanecem intactos.
+
+A bancada exige ESP32 livre de ligações externas, somente USB. Durante
+30 s, o roteiro verifica cinco canais indisponíveis, valores `null`, pelo
+menos cinco tentativas por canal, intervalo offline mínimo de 5.000 ms,
+progresso e atendimento `ping`/TM. Conserva os limites de 200 ms/2 s/255 bytes.
+As leituras positivas e os erros de registradores são exercitados no
+computador; não há sensor positivo simulado no firmware.
+
+Restaurar e verificar `obc` também após falha. O roteiro não grava firmware
+nem altera critérios anteriores. Relatórios exclusivos, inclusive falhas,
+e os resultados de 17/11 estão na
+[INT-009](../.tasks/03-integracao/INT-009-aquisicao-eps-termico.md).
+O core dump inválido já diagnosticado na INT-004 permanece preservado; não
+é reparado ou apagado por este procedimento.
+
 ## INA219 de bancada — 16/11/2026
 
 **Situação atual:** recorte INA219 de bancada concluído. Com o ESP32 livre

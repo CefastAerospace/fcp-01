@@ -1,5 +1,19 @@
 # OBC-DH — documentação e orientação
 
+**Conclusão INT-004 — 17/11/2026:** o responsável OBC-DH informou o aceite
+TT&C das definições do contrato e autorizou o encerramento. Task movida para
+`done/`, com matriz, evidências e limites preservados. RF/tempos integrados
+continuam na TES-008 e contratos operacionais próprios seguem na INT-006.
+
+**INT-009 — 17/11/2026:** bancada LM75A concluída, separada da INA219.
+Referência NXP provisória, cinco canais em RAM/USB; não publica temperatura
+na TM nem implementa proteção. Nativos LM75A/EPS com ASan/UBSan e três builds
+aprovados, após correção de include autorizada. Bancada térmica: 54 ACKs,
+27 TMs, sete tentativas por canal e margem mínima de pilha de 2.448 bytes.
+INA219 original passou; `obc` foi restaurado/verificado com o cliente real.
+Reprovação preservada e INT-009 ainda aberta pelos contratos e integração
+operacional. [Procedimento e limites](../tools/README.md#lm75a-de-bancada--17112026).
+
 **INT-009 — 16/11/2026:** aquisição INA219 disponível somente no ambiente
 `int009-ina219-check`. Namespace do driver corrigido para `CEFAST::eps`;
 seis verificações nativas e dois builds aprovados. Publicação inicial

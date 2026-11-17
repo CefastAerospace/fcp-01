@@ -7,6 +7,9 @@
 #ifdef OBC_EPS_BENCH
 #include "ObcEpsEsp32.h" // Aquisição isolada, sem publicar energia na TM operacional.
 #endif
+#ifdef OBC_THERMAL_BENCH
+#include "ObcThermalEsp32.h" // Bancada LM75A isolada, sem TM ou proteção térmica.
+#endif
 
 // ─── ATENÇÃO ──────────────────────────────────────────────────────
 /*
@@ -92,6 +95,11 @@ void setup(
         obc_eps::esp32::Init() ? "iniciada" : "indisponivel");
     obc_watchdog::esp32::Checkpoint();
 #endif
+#ifdef OBC_THERMAL_BENCH
+    Serial.printf("[THERMAL] init=%s; NXP LM75A e parametros provisorios de bancada\n",
+        obc_thermal::esp32::Init() ? "iniciada" : "indisponivel");
+    obc_watchdog::esp32::Checkpoint();
+#endif
     obc_watchdog::esp32::StartRuntime();
 }
 
@@ -104,6 +112,9 @@ void loop(
     obc_flow::esp32::ReportDiagnostics();
 #ifdef OBC_EPS_BENCH
     obc_eps::esp32::ReportDiagnostics();
+#endif
+#ifdef OBC_THERMAL_BENCH
+    obc_thermal::esp32::ReportDiagnostics();
 #endif
     obc_watchdog::esp32::Service(obc_ttc::GetDiagnostics());
 }

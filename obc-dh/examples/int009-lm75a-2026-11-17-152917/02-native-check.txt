@@ -1,0 +1,2 @@
+LM75A: driver real, conversao, falhas, cinco canais, cadencia e recuperacao aprovados
+

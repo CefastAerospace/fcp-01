@@ -1,0 +1,30 @@
+Verbosity level can be increased via `-v, -vv, or -vvv` option
+Collected 3 tests
+
+Processing test_protocol in native environment
+--------------------------------------------------------------------------------
+Building...
+[Errno 30] Read-only file system: '/home/o-grande-kayky/.local/share/platformio/platforms.lock'
+--------------- native:test_protocol [ERRORED] Took 0.01 seconds ---------------
+
+=================================== SUMMARY ===================================
+Environment    Test           Status    Duration
+-------------  -------------  --------  ------------
+native         test_protocol  ERRORED   00:00:00.012
+================== 1 test cases: 0 succeeded in 00:00:00.012 ==================
+Exception ignored in atexit callback <function _finalize at 0x7fa09ac5dee0>:
+Traceback (most recent call last):
+  File "/home/o-grande-kayky/.local/share/uv/tools/platformio/lib/python3.13/site-packages/platformio/telemetry.py", line 323, in _finalize
+    postpone_events(telemetry.get_unsent_events())
+  File "/home/o-grande-kayky/.local/share/uv/tools/platformio/lib/python3.13/site-packages/platformio/telemetry.py", line 361, in postpone_events
+    save_postponed_events(postponed_events[KEEP_MAX_REPORTS * -1 :])
+  File "/home/o-grande-kayky/.local/share/uv/tools/platformio/lib/python3.13/site-packages/platformio/telemetry.py", line 346, in save_postponed_events
+    with app.State(state_path, lock=True) as state:
+  File "/home/o-grande-kayky/.local/share/uv/tools/platformio/lib/python3.13/site-packages/platformio/app.py", line 102, in __enter__
+    self._lock_state_file()
+  File "/home/o-grande-kayky/.local/share/uv/tools/platformio/lib/python3.13/site-packages/platformio/app.py", line 133, in _lock_state_file
+    raise exception.HomeDirPermissionsError(os.path.dirname(self.path)) from exc
+platformio.exception.HomeDirPermissionsError: The directory `/home/o-grande-kayky/.cache/platformio` or its parent directory is not owned by the current user and PlatformIO can not store configuration data.
+Please check the permissions and owner of that directory.
+Otherwise, please remove manually `/home/o-grande-kayky/.cache/platformio` directory and PlatformIO will create new from the current user.
+

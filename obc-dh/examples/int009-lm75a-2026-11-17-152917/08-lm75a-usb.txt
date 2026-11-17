@@ -1,0 +1,2 @@
+LM75A USB: indisponibilidade, cadencia, progresso e TC/TM aprovados; examples/int009-lm75a-2026-11-17-152917/08-lm75a-usb.json
+

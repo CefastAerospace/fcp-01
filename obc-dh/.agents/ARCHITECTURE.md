@@ -1,5 +1,28 @@
 # Arquitetura vigente do OBC-DH
 
+### Aquisição LM75A isolada — 17/11/2026
+
+O ambiente `int009-lm75a-check` habilita `ObcThermal`/`ObcThermalEsp32`
+somente por `OBC_THERMAL_BENCH`. O driver local `CEFAST::thermal` usa a
+referência NXP LM75A provisória, sem inicializar Wire nem alterar Tos/Thyst.
+Somente o executor I2C realiza configuração/leitura; conversão, cadência,
+publicação e USB ficam fora do callback. Não há TM térmica, persistência,
+proteção ou aquisição térmica no firmware normal.
+
+Cinco estados independentes preservam histórico, mas invalidam a
+disponibilidade após falha, amostra antiga ou recuperação I2C. A guarda
+dentro do executor recusa leitura de configuração de outra geração; o
+getter também revalida recuperação posterior à publicação. A tarefa
+Core 1/prioridade 1/pilha inicial 4 KiB publica metadados antes de iniciar
+e só declara atividade após uma rodada real. Não há nova política ou
+inscrição no watchdog.
+
+Endereços 0x48–0x4C, leitura/espera inicial de 1 s, retentativa offline de
+5 s e validade de 3 s são parâmetros de bancada, sem localização física
+ou aprovação de voo. Referência, procedimento, resultados e limitações
+ficam no [guia](../tools/README.md#lm75a-de-bancada--17112026) e na INT-009.
+A bancada INA219 conserva seu próprio ambiente e critérios.
+
 ### Aquisição INA219 isolada — 16/11/2026
 
 O ambiente `int009-ina219-check` habilita `ObcEps`/`ObcEpsEsp32` pelo boot
@@ -100,7 +123,7 @@ As decisões de 06/10/2026 sobre IMU, luminosidade, EN e Burn Wire permanecem. A
 
 | Interface / recurso | Uso e decisão | Definições ainda necessárias |
 |---|---|---|
-| UART0 / USB | TC/TM JSON de bancada, um objeto por linha, pela biblioteca `UmbilicalLink`. | Integração USB local verificada; conferir circuito e aceite TT&C. |
+| UART0 / USB | TC/TM JSON de bancada, um objeto por linha, pela biblioteca `UmbilicalLink`. | Integração USB local verificada; aceite TT&C informado pelo responsável OBC-DH em 17/11/2026, encerrando INT-004. Conferência de circuito e ensaios continuam nos escopos próprios. |
 | UART do Payload | Snapshots JSON em FCPU local; TX 17 / RX 16, 115,2 kbps 8N1. | Aceite do enquadramento pelo Payload, produtor/porta Pi, montagem, tráfego e retenção em INT-006. |
 | I2C | Sensores de ADCS, EPS e Térmico, incluindo encoder conforme montagem. | Executor local a 400 kHz/20 ms por transferência; inventário, montagem e integração dos consumidores ainda pendentes. |
 | VSPI | Rádio LoRa SX1276, 921 MHz SF7, `SPI` global. | Conferência elétrica, montagem e validação de bancada. |

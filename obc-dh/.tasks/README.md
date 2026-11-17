@@ -2,6 +2,11 @@
 
 O [TODO](../.agents/TODO.md) é o painel unificado. Os arquivos nesta pasta são a fonte do escopo, dependências, condições externas e evidências. O painel e cada tarefa devem manter o mesmo estado.
 
+**Conclusão INT-004 — 17/11/2026:** após as verificações locais registradas,
+o responsável OBC-DH informou o aceite TT&C das definições e autorizou o
+encerramento. A task está em `03-integracao/done/`; referências e painel
+foram atualizados. Nenhum ensaio ou requisito foi aprovado por esse aceite.
+
 ## Revisão vigente — 14/11/2026
 
 A revisão separa entrega de software, contrato de integração e comprovação independente. OBC-DH mantém e executa regressões de desenvolvimento; o setor de testes executa os ensaios e registra o aceite. As tarefas novas são planejamento, não implementação ou evidência de execução. Nenhuma tarefa mudou de estado apenas por esta revisão.
@@ -129,7 +134,7 @@ As pendências antigas foram distribuídas sem alterar decisões ou critérios. 
 | P-TEMPO | [DAD-002](02-dados-e-tempo/done/DAD-002-tempo-e-boots.md) |
 | P-BURN-WIRE | [INT-007](03-integracao/INT-007-comandos-modos-e-protecoes.md) |
 | P-ADCS | [INT-005](03-integracao/INT-005-sensores-e-adcs.md), [INT-002](03-integracao/done/INT-002-pinagem-en-motor.md), [INT-007](03-integracao/INT-007-comandos-modos-e-protecoes.md) |
-| P-SPI | [COM-005](01-comunicacao/done/COM-005-armazenamento-sd.md), [INT-004](03-integracao/INT-004-ttc-e-umbilical.md) |
+| P-SPI | [COM-005](01-comunicacao/done/COM-005-armazenamento-sd.md), [INT-004](03-integracao/done/INT-004-ttc-e-umbilical.md) |
 | P-EPS-ELETRICA | [INT-003](03-integracao/INT-003-inicializacao-central.md), [INT-005](03-integracao/INT-005-sensores-e-adcs.md), [INT-007](03-integracao/INT-007-comandos-modos-e-protecoes.md) |
 | P-TERMICO | [INT-007](03-integracao/INT-007-comandos-modos-e-protecoes.md) |
 | P-MISSAO | [TES-010](04-testes/TES-010-missao-e-cobertura.md), [INT-007](03-integracao/INT-007-comandos-modos-e-protecoes.md), [INT-008](03-integracao/done/INT-008-supervisao-e-retomada.md) |
@@ -153,7 +158,7 @@ Esta tabela indica responsáveis pela implementação e pela comprovação. A re
 | Requisito | Implementação | Evidências previstas |
 |---|---|---|
 | REQ-OBC-001 | [INT-007](03-integracao/INT-007-comandos-modos-e-protecoes.md), [INT-008](03-integracao/done/INT-008-supervisao-e-retomada.md), [INT-012](03-integracao/done/INT-012-watchdog-reset-obc.md), [INT-013](03-integracao/INT-013-retomada-operacional.md) | [TES-008](04-testes/TES-008-integracao.md) (teste TC original), [TES-010](04-testes/TES-010-missao-e-cobertura.md) (autonomia). |
-| REQ-OBC-002 | [INT-004](03-integracao/INT-004-ttc-e-umbilical.md), [INT-007](03-integracao/INT-007-comandos-modos-e-protecoes.md), [INT-011](03-integracao/INT-011-burn-wire-persistencia.md), [INT-012](03-integracao/done/INT-012-watchdog-reset-obc.md) | [TES-008](04-testes/TES-008-integracao.md). |
+| REQ-OBC-002 | [INT-004](03-integracao/done/INT-004-ttc-e-umbilical.md), [INT-007](03-integracao/INT-007-comandos-modos-e-protecoes.md), [INT-011](03-integracao/INT-011-burn-wire-persistencia.md), [INT-012](03-integracao/done/INT-012-watchdog-reset-obc.md) | [TES-008](04-testes/TES-008-integracao.md). |
 | REQ-OBC-003 | [INT-005](03-integracao/INT-005-sensores-e-adcs.md), [INT-006](03-integracao/INT-006-fluxo-de-dados.md), [INT-009](03-integracao/INT-009-aquisicao-eps-termico.md) | [TES-008](04-testes/TES-008-integracao.md) (inspeção TM). |
 | REQ-OBC-004 | [INT-007](03-integracao/INT-007-comandos-modos-e-protecoes.md), [INT-010](03-integracao/INT-010-protecoes-energia-termico.md), [INT-013](03-integracao/INT-013-retomada-operacional.md) | [TES-008](04-testes/TES-008-integracao.md), [TES-009](04-testes/TES-009-falhas-e-recuperacao.md). |
 | REQ-OBC-005 | [COM-004](01-comunicacao/done/COM-004-uart-payload.md), [COM-005](01-comunicacao/done/COM-005-armazenamento-sd.md), [DAD-001](02-dados-e-tempo/done/DAD-001-modelos-e-formatos.md), [DAD-003](02-dados-e-tempo/done/DAD-003-registros-e-interpretacao.md), [INT-006](03-integracao/INT-006-fluxo-de-dados.md), [INT-013](03-integracao/INT-013-retomada-operacional.md) | [TES-004](04-testes/done/TES-004-uart-software.md) a [TES-008](04-testes/TES-008-integracao.md). |

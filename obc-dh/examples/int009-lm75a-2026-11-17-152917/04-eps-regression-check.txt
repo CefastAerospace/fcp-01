@@ -1,0 +1,2 @@
+INA219: driver real, disponibilidade parcial, erros, cadencia e retomada aprovados
+

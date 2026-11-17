@@ -132,8 +132,12 @@ catalogados recebem `invalid_cmd` nessa etapa. A deduplicação conserva o
 comportamento existente: uma retentativa recebe o ACK anterior, sem
 reexecutar o pedido de TM.
 
-O mapeamento local usa as unidades da tabela acima. O aceite conjunto
-dessas interfaces com o setor TT&C permanece registrado na INT-004.
+O mapeamento local usa as unidades da tabela acima. O responsável OBC-DH
+informou o aceite TT&C das definições em 17/11/2026 e autorizou o encerramento
+da [INT-004](../../obc-dh/.tasks/03-integracao/done/INT-004-ttc-e-umbilical.md).
+O registro identifica a matriz e as evidências da interface base; fontes
+físicas e contratos operacionais próprios da INT-006 permanecem nos seus
+escopos. Nenhum formato, unidade ou critério foi alterado por esse aceite.
 
 #### Evolução na primeira etapa INT-006
 

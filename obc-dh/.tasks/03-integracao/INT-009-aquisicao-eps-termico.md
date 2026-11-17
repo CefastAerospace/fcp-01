@@ -1,8 +1,119 @@
 # INT-009 — Aquisição e integração EPS/Térmico
 
-**Estado:** Em andamento — recorte INA219 de bancada concluído e verificado no ESP32/USB; contratos operacionais, publicação TM e LM75A pendentes
+**Estado:** Em andamento — recortes INA219 e LM75A de bancada concluídos e verificados no ESP32/USB; contratos operacionais, publicação TM e persistência completa pendentes
 **Responsável pela implementação:** OBC-DH
 **Responsáveis pelos contratos:** EPS e Térmico
+
+## Recorte LM75A de bancada — 17/11/2026
+
+O responsável aprovou bancada isolada e a referência **NXP LM75A provisória**,
+sem sensores reais, publicação operacional, persistência ou proteção térmica.
+O [datasheet LM75A_4, revisão 04 de 10/07/2007](https://www.nxp.com/docs/en/data-sheet/LM75A.pdf)
+foi conferido; SHA-256
+`fc76b747cd9e78c40d60dfe086aee4aafa8e92b2cf185789714eebae50c68de4`.
+Fabricante dos módulos reais, montagem e mapa térmico continuam pendentes.
+
+### Implementação e limites
+
+- Novo driver em [LM75A_Standard](../../../eps-tc/LM75A_Standard/README.md),
+  namespace `CEFAST::thermal`: Conf de um byte, Temp de dois bytes,
+  diagnóstico Wire e conversor separado do I/O. O driver não inicializa o
+  barramento, não espera conversão e não escreve Tos/Thyst.
+- Conf preserva bits OS 4–1, zera reservados 7–5 e limpa SHUTDOWN. O
+  conversor ignora cinco LSB, estende explicitamente o sinal dos onze bits e
+  aceita −55 a +125 °C, com resolução digital de 0,125 °C. Falha preserva
+  saída anterior; valores fora da faixa não são limitados artificialmente.
+- `ObcThermal` mantém cadência/validade por canal.
+  `ObcThermalEsp32` usa exclusivamente `ExecuteChecked`, reutiliza o
+  classificador Wire portátil existente e converte fora do callback.
+  Configuração de outra geração é recusada dentro do executor; o getter
+  também revalida recuperação posterior à publicação.
+- O histórico fica em RAM, separado de disponibilidade. O diagnóstico
+  `temperature_C` só expõe leitura disponível e `last_valid_C` identifica
+  histórico; ambos ficam `null` antes da primeira leitura válida.
+- Metadados precedem a criação da tarefa; `starting` não simula operação.
+  Cópias pequenas usam lock curto, sem I/O ou logs dentro dele. Progresso
+  independe da presença dos dispositivos e não alimenta watchdog próprio.
+- `main.cpp` recebeu chamadas somente sob `OBC_THERMAL_BENCH`; o novo
+  ambiente `int009-lm75a-check` herda `obc` e acrescenta somente a biblioteca
+  local térmica. Firmware normal e bancada INA219 não iniciam LM75A.
+  Não houve remoção, novo TC, mudança em TM/codec ou alteração dos testes
+  anteriores, calibração EPS ou contratos compartilhados.
+
+### Parâmetros provisórios
+
+| Item | Valor e finalidade |
+|---|---|
+| Canais / endereços | thermal_1 a thermal_5 / 0x48, 0x49, 0x4A, 0x4B, 0x4C; sem posição física atribuída |
+| Leitura / espera inicial | 1.000 ms / 1.000 ms após configurar |
+| Retentativa offline / validade | 5.000 ms / amostra antiga após idade superior a 3.000 ms |
+| Pedido I2C | Prioridade 0, espera na fila de 100 ms |
+| Execução / diagnóstico | Core 1, prioridade 1, pilha inicial 4.096 bytes, rodada de 10 ms / USB a cada 1.000 ms |
+
+O datasheet informa conversão típica de 100 ms, sem máximo nessa
+especificação. A espera inicial é provisória, não garantia física.
+EPS/Térmico e OBC definirão fabricante, mapa final, periodicidade e validade
+operacionais. TES-003/008/009 avaliarão os respectivos cenários físicos.
+Leituras podem reconhecer OS em modo interrupt; OS não é usado pela bancada.
+Esta entrega não estabelece limiares de proteção nem condições de atuação.
+
+### Verificação, reprovação e ajuste autorizado
+
+`ObcThermalCheck.cpp` executou o driver real com registradores Wire
+exclusivos em `tests/thermal_native/`. Cinco grupos cobrem conversão
+positiva/negativa/zero/fronteiras, protocolo e preservação dos limites,
+erros/saídas preservadas, cadência/validade/geração e cinco canais
+independentes. O teste não simula tempo físico, sensores ou executor
+FreeRTOS. A guarda portátil testada é a mesma usada pelo callback real.
+
+O novo teste e `ObcEpsCheck.cpp` original passaram com C++11,
+`-Wall -Wextra -Werror`, ASan/UBSan e LeakSanitizer ativo fora de ptrace.
+Comandos e saídas: [nativo LM75A](../../examples/int009-lm75a-2026-11-17-152917/02-native-check.txt)
+e [regressão EPS](../../examples/int009-lm75a-2026-11-17-152917/04-eps-regression-check.txt).
+
+O primeiro build conjunto aprovou `obc` e `int009-ina219-check`, mas
+reprovou LM75A: `'Serial' was not declared in this scope`.
+`Wire.h` inclui Stream, sem declarar Serial; o adaptador novo não incluía
+Arduino diretamente. A implementação foi interrompida conforme AGENTS.md.
+O responsável autorizou adicionar somente `Arduino.h` no header
+`ObcThermalEsp32.h` e retomar o plano. Nenhum teste ou critério foi alterado.
+O mesmo ambiente compilou após esse include. [Reprovação preservada](../../examples/int009-lm75a-2026-11-17-152917/05-firmware-builds.txt)
+e [recompilação](../../examples/int009-lm75a-2026-11-17-152917/06-lm75a-build-after-include.txt).
+Permanece apenas o aviso externo conhecido de `uartSetPins` no framework.
+
+### Bancadas e estado final
+
+ESP32-D0WD-V3 rev. 3.1/CH340 em `/dev/ttyUSB0`, somente USB.
+Uploads tiveram hash verificado pelo esptool; nenhum apagamento integral,
+reparo de core dump ou limpeza de NVS foi solicitado. A reserva normal de
+boot continua usando a NVS existente.
+
+| Recorte | Resultado observado |
+|---|---|
+| LM75A, 30,013 s | 54 ACKs, 27 TMs; cinco canais indisponíveis e sem medições fictícias. Sete tentativas por canal, intervalos de 5.002–5.012 ms; 31 amostras de saúde READY com progresso; menor margem de pilha térmica 2.448 bytes |
+| Tempos LM75A | Maior `q` 180 ms; resposta máxima 224,653 ms; limites originais de 200 ms/2 s/255 bytes preservados; `tp` permanece `null` |
+| INA219 original, 30 s | Roteiro inalterado aprovado: 54 ACKs, 27 TMs, maior `q` 146 ms, resposta máxima 184,645 ms e margem mínima EPS 2.656 bytes |
+| Firmware normal restaurado | `ObcStationCheck.py` original aprovado: 64 TCs diretos, 37 TMs, maior `q` 116 ms, RTT máximo 156,5 ms e `no_sd` esperado sem cartão |
+| Builds | `obc`: RAM estática 32.704 bytes/flash 432.925; INA219: 33.072/444.661; LM75A: 33.200/442.881. RAM estática não mede pico de execução |
+
+Evidências novas, sem sobrescrever históricos:
+[LM75A USB](../../examples/int009-lm75a-2026-11-17-152917/08-lm75a-usb.json),
+[INA219 original](../../examples/int009-lm75a-2026-11-17-152917/10-ina219-regression.json),
+[obc restaurado](../../examples/int009-lm75a-2026-11-17-152917/12-obc-restored.json)
+e [manifesto](../../examples/int009-lm75a-2026-11-17-152917/manifest.json).
+O manifesto conserva revisão, alterações anteriores desta sessão,
+comandos, versões e hashes, inclusive a comparação dos arquivos que deveriam
+permanecer intactos. Procedimento no [guia](../../tools/README.md#lm75a-de-bancada--17112026).
+
+O aviso de core dump inválido diagnosticado na INT-004 permanece nos logs,
+sem nova intervenção; a imagem não foi apagada ou reparada. Essa ressalva,
+reprovações anteriores e limites de evidência são preservados.
+
+**Recorte LM75A de desenvolvimento concluído.** A placa terminou em `obc`,
+sem aquisição térmica operacional. A INT-009 permanece **Em andamento**:
+contratos finais, integração/publicação operacional, persistência completa
+do canal Geral e comprovação com sensores reais continuam nos seus escopos.
+Nenhuma TES ou requisito foi aprovado; não mover esta task para `done/`.
 
 ## Objetivo
 

@@ -40,7 +40,7 @@ Oferecer armazenamento de arquivos com acesso coordenado e falhas observáveis.
 
 ## Entrega
 
-Reutilizar SD e uma instância HSPI própria. Implementar abertura, escrita, leitura, extração, sincronização/fechamento e tratamento de cartão cheio/indisponível. Definir recuperação de arquivos incompletos e do sistema de arquivos. O formato do conteúdo pertence a [DAD-001](../../02-dados-e-tempo/done/DAD-001-modelos-e-formatos.md)/[DAD-003](../../02-dados-e-tempo/done/DAD-003-registros-e-interpretacao.md); não duplicar esse contrato no driver. O rádio é integrado em [INT-004](../../03-integracao/INT-004-ttc-e-umbilical.md).
+Reutilizar SD e uma instância HSPI própria. Implementar abertura, escrita, leitura, extração, sincronização/fechamento e tratamento de cartão cheio/indisponível. Definir recuperação de arquivos incompletos e do sistema de arquivos. O formato do conteúdo pertence a [DAD-001](../../02-dados-e-tempo/done/DAD-001-modelos-e-formatos.md)/[DAD-003](../../02-dados-e-tempo/done/DAD-003-registros-e-interpretacao.md); não duplicar esse contrato no driver. O rádio é integrado em [INT-004](../../03-integracao/done/INT-004-ttc-e-umbilical.md).
 
 ## Pré-requisitos
 

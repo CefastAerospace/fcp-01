@@ -22,7 +22,7 @@ Inicializar automaticamente os recursos disponíveis, mantendo estados seguros e
 
 ## Entrega
 
-Construir a coordenação de setup()/loop(), ordem de inicialização e organização de tarefas. Manter processamento nos módulos; não criar implementações vazias para recursos futuros. Cada integração posterior acrescenta seus recursos e informa suas falhas. A observação por UART0 usa o contrato umbilical em [INT-004](INT-004-ttc-e-umbilical.md).
+Construir a coordenação de setup()/loop(), ordem de inicialização e organização de tarefas. Manter processamento nos módulos; não criar implementações vazias para recursos futuros. Cada integração posterior acrescenta seus recursos e informa suas falhas. A observação por UART0 usa o contrato umbilical em [INT-004](done/INT-004-ttc-e-umbilical.md).
 
 ## Pré-requisitos
 

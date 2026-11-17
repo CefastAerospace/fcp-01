@@ -468,7 +468,7 @@ Associar tempo aos dados/eventos, gravar missão/TM/estatísticas/falhas e persi
 
 ## Pré-requisitos
 
-- **Tarefas:** [COM-004](../01-comunicacao/done/COM-004-uart-payload.md), [COM-005](../01-comunicacao/done/COM-005-armazenamento-sd.md), [DAD-003](../02-dados-e-tempo/done/DAD-003-registros-e-interpretacao.md), [INT-004](INT-004-ttc-e-umbilical.md)
+- **Tarefas:** [COM-004](../01-comunicacao/done/COM-004-uart-payload.md), [COM-005](../01-comunicacao/done/COM-005-armazenamento-sd.md), [DAD-003](../02-dados-e-tempo/done/DAD-003-registros-e-interpretacao.md), [INT-004](done/INT-004-ttc-e-umbilical.md)
 - **Condições externas:** Acordar seleção/frequência de downlink e validade temporal com Payload e TT&C.
 
 ## Definições e condições

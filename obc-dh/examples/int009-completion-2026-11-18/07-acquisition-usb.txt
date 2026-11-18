@@ -1,0 +1,2 @@
+command: ["/home/o-grande-kayky/.local/share/uv/tools/platformio/bin/python", "tests/ObcHousekeepingBenchCheck.py", "/dev/ttyUSB0", "--source", "acquisition", "--reader", "/tmp/int009-read-records", "--report", "examples/int009-completion-2026-11-18/07-acquisition-usb.json"]
+Housekeeping USB (acquisition): TC/TM e registros simulados aprovados; examples/int009-completion-2026-11-18/07-acquisition-usb.json

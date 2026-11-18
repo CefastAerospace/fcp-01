@@ -1,0 +1,388 @@
+{
+  "revision": "55fbdc0b652571215470bfc0e0c19b39d0fe4d35",
+  "scope": "Diagnostic capture authorized after UART 13 ms; no scheduling changes",
+  "tests_before": {
+    "obc-dh/tests/.gitkeep": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "obc-dh/tests/DeliveryLogsCheck.py": "1c7cc8c1deea82900796ec450c20e1ce50cd62d9eb57c2571faee9df81093185",
+    "obc-dh/tests/I2cRecoveryBenchCheck.py": "6784d9ba9507e7a5f4677b1b11091b6ca60748a17dda7f3f977bc66b6f34c020",
+    "obc-dh/tests/I2cSchedulingCheck.cpp": "d1ad81f0cf8093221f4812e8f01977949d30b77e749d9bc1b2b5ea3c9f6fbb5d",
+    "obc-dh/tests/ObcDataCheck.cpp": "c7fef5a7aab0f3af20259f6d656e78514baad7363b71fed2308f6fadf6be8a98",
+    "obc-dh/tests/ObcDataFlowCheck.cpp": "04188888225fe870948ea73521bb3ec8f980358346a35e06a141c4817da3e6de",
+    "obc-dh/tests/ObcDataFlowCheck.py": "8d361975d8e459a2e4bcdca6283e452d1332f8906b75324fb933d1bc4084f924",
+    "obc-dh/tests/ObcDeliveryBenchCheck.py": "339e84f7c3553026bc89e7fbd5807b19e361d06aef8563f87b357c06bbc72d1e",
+    "obc-dh/tests/ObcDeliveryCheck.cpp": "44de8bed2c946e8296e40eb3bbc33eac44388de88989390833f4f212b9e29a2d",
+    "obc-dh/tests/ObcDeliveryRecoveryCheck.cpp": "343f5133b25d42bf8f58a23e4d65867e6dd28206cc2cfa967d9e7e8bf9f1ae99",
+    "obc-dh/tests/ObcDownlinkCheck.cpp": "b048431e310de7650d35f56c3b0835c0c48db3e3f3ea34cb7354e7819d4da08f",
+    "obc-dh/tests/ObcDownlinkCheck.py": "6eba6d02d2adc229b54cb9fa979393d0bb657dad53f5bd98393cd89a9daabda2",
+    "obc-dh/tests/ObcEpsBenchCheck.py": "43b363c20958fe82f180b8a4d59cebc9ec47a6f033cddb3ef3dda3b49ad11e64",
+    "obc-dh/tests/ObcEpsCheck.cpp": "18447a9f2444b572c66b2ad1ddd20a9b00b1423b2bc329b9e4fd67bfbbe21cea",
+    "obc-dh/tests/ObcHousekeepingBenchCheck.py": "520352164d63aab05b62305813bccc0be76f73e9ea5c4af6274df6bf65d4b3f8",
+    "obc-dh/tests/ObcHousekeepingCheck.cpp": "342e99bf49eb1f71da747676ef772fa23880b66aee8b1abe7127a0d3f5100eb3",
+    "obc-dh/tests/ObcI2cHealthBenchCheck.py": "aef5558b339d6263e53efb4d8ab8c0ce8f3c8cbe21b9c4ba236352e639223c77",
+    "obc-dh/tests/ObcI2cHealthCheck.cpp": "b877a45f82f99d0146edeae95a6889eb2b5b7f776a94408cbaf2dd0c49f9253e",
+    "obc-dh/tests/ObcLimitsCheck.py": "a01fb312d2eb905fc1ca37fc30706ffaee916df8a52fc04c79b50e4ede2c05d8",
+    "obc-dh/tests/ObcRecordCodecCheck.cpp": "124883bb44ea2ab60f6e9b72b177eeb892d22fef80257fac14de086f3273289f",
+    "obc-dh/tests/ObcResourceHealthCheck.cpp": "71b1e2f649b9d174b9389e40a8f7e198185906621d9e3af01a30c5ac5e359a13",
+    "obc-dh/tests/ObcResourcesBenchCheck.py": "808983d63b288604380a518cbc204bee5523daa7b7aef73bb235bcb199a25f45",
+    "obc-dh/tests/ObcStartupCheck.cpp": "cc8495804a5a1db7d0ea837bca041333198cdb58244d0dd3e8707dbe48f7d91d",
+    "obc-dh/tests/ObcStationCheck.py": "8cff56a988f3b767574938e44524ff6a4d964be184b5b32c72eea5c58b7e3368",
+    "obc-dh/tests/ObcStorageCheck.cpp": "d33cb9f66c6f857c5e14d826628ae0c72e6b9460785362c75076ac689ff7caeb",
+    "obc-dh/tests/ObcStorageRecoveryBenchCheck.py": "87c69ea1dd533d9225e4fe8951d48ba28c910974ec4ac60b2952b8d0edc760ff",
+    "obc-dh/tests/ObcStorageRecoveryCheck.cpp": "1239161fc14a216588c2dcd1a5830b6a442dc37b3e5fe78e312a144a8a6acf1e",
+    "obc-dh/tests/ObcStressCheck.py": "783a1ac080cc1a802bec69af6aac3522d82eef34ef303e137294bec811c555f2",
+    "obc-dh/tests/ObcTaskHealthBenchCheck.py": "3215eb7971385938c77423854ca4d1ce2fdefc9f502c5a9dfce81b7849009723",
+    "obc-dh/tests/ObcTaskHealthCheck.cpp": "539c08cb13f9373caa2ae2d9a2a7890ff01286eac4e65ea8b0912e09dee9130b",
+    "obc-dh/tests/ObcThermalBenchCheck.py": "d41e6d4f1a327801467939af3fdde261010036dce6ee7e3d68414f4a99c179f7",
+    "obc-dh/tests/ObcThermalCheck.cpp": "6d8856863fe3e457f5faed721c22c64d027bbe2e947fec4c52958c9d3c3a016c",
+    "obc-dh/tests/ObcTimeCheck.cpp": "077e430d91e3692ef976b274e7a300cdbca6cde7fd4fc1e384d07b5ddcb3e77f",
+    "obc-dh/tests/ObcTtcCheck.py": "bf5de0ac190518922afdcafa8ab8e82358ed5b5d1eb0868b867e3f516fdc9c49",
+    "obc-dh/tests/ObcWatchdogBenchCheck.py": "6bfaf09e7334c3e143cbb265875f5f7f54282a397f6158bace71ab1ed3abf5be",
+    "obc-dh/tests/ObcWatchdogCheck.cpp": "26fafbeb9c1f986e4ab2a52b02911bdd47eda754f41a2c2206e48f6a62df05bb",
+    "obc-dh/tests/PayloadReceiverCheck.cpp": "2a06f0eb788fcb38afd9e0e8a0f8719798e417b0919c73450edcf96aa585692c",
+    "obc-dh/tests/PayloadReceiverCheck.py": "cff76fea8872c2bdc37f265fadf2a2641587b9514af7a92f659aa44b2b646c92",
+    "obc-dh/tests/PayloadSnapshotCheck.cpp": "72fb69f251cf617873659f0f81b228bee160e5b6f8b76ffc6394cb45938feb42",
+    "obc-dh/tests/ReadRecordsCheck.py": "2f78b65f7840334c542a5105e8d8486b02ed2127541185412d2b0589117d16a6",
+    "obc-dh/tests/SnapshotBuffersCheck.cpp": "7f3faea65702bcd6243ab5cf5d99740809158241b82b0baf6d2dc51b1816a9c3",
+    "obc-dh/tests/SnapshotCodecCheck.cpp": "f7ad752ea9e11f1ee88f6027a528bc93eb3f28ad4343e793f09f26284e022344",
+    "obc-dh/tests/SnapshotPartsCheck.cpp": "68ec15b51264a710f5d0b6f3c3873dc154e27259e0cd849851f9c25ede2066fc",
+    "obc-dh/tests/SnapshotPartsCheck.py": "405acc084d9d3832fe50ee3742f9da4c25fc888cd8a34c259f3897fe3b631f5b",
+    "obc-dh/tests/SnapshotRecordsCheck.py": "53ee717e67a5d60f9a06b7892751b3512d3bb729f4292db4e7b6a95839e66c40",
+    "obc-dh/tests/TelemetryV3Check.cpp": "c40a3553fda71ed8f4d94be0bbc24998901d3b5fc1006078a8f8f80f920ea7fa",
+    "obc-dh/tests/TelemetryV3Check.py": "e2d42f3d71b427707b11f536832ee1b8e5106d96c97ade17d7aba55d5b1f9957",
+    "obc-dh/tests/__pycache__/SnapshotRecordsCheck.cpython-314.pyc": "0f2de115d06edab75cb98f176b7a0667615f4634b0e6947f775f420120d88b2d",
+    "obc-dh/tests/eps_native/Arduino.h": "6b19ba60273febd411dfd57879b98f4d64cfec767fd47dbf1a6bcbf46adae6e6",
+    "obc-dh/tests/eps_native/Wire.h": "5e5f90d5d6e4988c7740f54fadf76536799f0d3ed356a75ae10def42ed77a669",
+    "obc-dh/tests/native/NativeI2cRuntime.cpp": "a987bd18a41af3fa85279b11f78ea435347d356e42cbad6bc36fc2c460d4b08b",
+    "obc-dh/tests/native/NativeI2cRuntime.h": "5820d6d07cfabd8a16754835256590395269c2000b2579741d7817838b7bc093",
+    "obc-dh/tests/native/Wire.h": "4eba8a867419ea0ba6d7ab48898acbd67e63f3672cbb9773038d3ddc611775a5",
+    "obc-dh/tests/native/freertos/FreeRTOS.h": "da44a26b20f0d091ddf9741cb0ec1003b4563da0001d99ef1532b86eb4e2429e",
+    "obc-dh/tests/native/freertos/semphr.h": "2cf944ef14274074a27f9362ddd52b7ccb6eab60c2ea38d5a3e58580f94b0721",
+    "obc-dh/tests/native/freertos/task.h": "16d9f19264a28ee8a09ca432df0b0cc0a3e4db92cf9986d871684098fdbc26b9",
+    "obc-dh/tests/thermal_native/Wire.h": "ebca1fc1b38774a7bd27927d50907fe061f050fbfbcfeb7fd43e7c2c0dc08356"
+  },
+  "commands": [
+    {
+      "command": [
+        "pio",
+        "run",
+        "-e",
+        "obc",
+        "-e",
+        "int009-ina219-check",
+        "-e",
+        "int009-lm75a-check",
+        "-e",
+        "int009-housekeeping-check",
+        "-e",
+        "int009-housekeeping-fixtures-check"
+      ],
+      "cwd": "obc-dh",
+      "exit_code": 0,
+      "log": "01-diagnostic-builds.txt"
+    },
+    {
+      "command": [
+        "pio",
+        "run",
+        "-e",
+        "int009-housekeeping-check",
+        "-t",
+        "upload",
+        "--upload-port",
+        "/dev/ttyUSB0"
+      ],
+      "cwd": "obc-dh",
+      "exit_code": 0,
+      "log": "02-diagnostic-upload.txt"
+    },
+    {
+      "command": [
+        "pio",
+        "run",
+        "-e",
+        "obc",
+        "-e",
+        "int009-ina219-check",
+        "-e",
+        "int009-lm75a-check",
+        "-e",
+        "int009-housekeeping-check",
+        "-e",
+        "int009-housekeeping-fixtures-check"
+      ],
+      "cwd": "obc-dh",
+      "exit_code": 0,
+      "log": "07-priority-builds.txt"
+    },
+    {
+      "command": [
+        "pio",
+        "run",
+        "-e",
+        "int009-housekeeping-check",
+        "-t",
+        "upload",
+        "--upload-port",
+        "/dev/ttyUSB0"
+      ],
+      "cwd": "obc-dh",
+      "exit_code": 0,
+      "log": "08-priority-upload.txt"
+    },
+    {
+      "command": [
+        "pio",
+        "run",
+        "-e",
+        "int009-housekeeping-fixtures-check",
+        "-t",
+        "upload",
+        "--upload-port",
+        "/dev/ttyUSB0"
+      ],
+      "cwd": "obc-dh",
+      "exit_code": 0,
+      "log": "11-fixtures-upload.txt"
+    },
+    {
+      "command": [
+        "pio",
+        "run",
+        "-e",
+        "int009-ina219-check",
+        "-t",
+        "upload",
+        "--upload-port",
+        "/dev/ttyUSB0"
+      ],
+      "cwd": "obc-dh",
+      "exit_code": 0,
+      "log": "13-eps-upload.txt"
+    },
+    {
+      "command": [
+        "pio",
+        "run",
+        "-e",
+        "int009-lm75a-check",
+        "-t",
+        "upload",
+        "--upload-port",
+        "/dev/ttyUSB0"
+      ],
+      "cwd": "obc-dh",
+      "exit_code": 0,
+      "log": "15-thermal-upload.txt"
+    },
+    {
+      "command": [
+        "pio",
+        "run",
+        "-e",
+        "obc",
+        "-t",
+        "upload",
+        "--upload-port",
+        "/dev/ttyUSB0"
+      ],
+      "cwd": "obc-dh",
+      "exit_code": 0,
+      "log": "17-obc-restore-upload.txt"
+    },
+    {
+      "command": [
+        "/home/o-grande-kayky/.local/share/uv/tools/platformio/bin/python",
+        "tests/ObcHousekeepingBenchCheck.py",
+        "/dev/ttyUSB0",
+        "--source",
+        "acquisition",
+        "--reader",
+        "/tmp/int009-read-records",
+        "--report",
+        "examples/int009-uart-diagnosis-2026-11-18/03-acquisition-diagnostic.json"
+      ],
+      "cwd": "obc-dh",
+      "exit_code": 0,
+      "report": "03-acquisition-diagnostic.json"
+    },
+    {
+      "command": [
+        "/home/o-grande-kayky/.local/share/uv/tools/platformio/bin/python",
+        "tests/ObcHousekeepingBenchCheck.py",
+        "/dev/ttyUSB0",
+        "--source",
+        "acquisition",
+        "--reader",
+        "/tmp/int009-read-records",
+        "--report",
+        "examples/int009-uart-diagnosis-2026-11-18/04-acquisition-diagnostic-repeat.json"
+      ],
+      "cwd": "obc-dh",
+      "exit_code": 0,
+      "report": "04-acquisition-diagnostic-repeat.json"
+    },
+    {
+      "command": [
+        "/home/o-grande-kayky/.local/share/uv/tools/platformio/bin/python",
+        "tests/ObcHousekeepingBenchCheck.py",
+        "/dev/ttyUSB0",
+        "--source",
+        "acquisition",
+        "--reader",
+        "/tmp/int009-read-records",
+        "--report",
+        "examples/int009-uart-diagnosis-2026-11-18/09-acquisition-priority.json"
+      ],
+      "cwd": "obc-dh",
+      "exit_code": 0,
+      "report": "09-acquisition-priority.json"
+    },
+    {
+      "command": [
+        "/home/o-grande-kayky/.local/share/uv/tools/platformio/bin/python",
+        "tests/ObcHousekeepingBenchCheck.py",
+        "/dev/ttyUSB0",
+        "--source",
+        "fixtures",
+        "--reader",
+        "/tmp/int009-read-records",
+        "--report",
+        "examples/int009-uart-diagnosis-2026-11-18/12-fixtures-priority.json"
+      ],
+      "cwd": "obc-dh",
+      "exit_code": 0,
+      "report": "12-fixtures-priority.json"
+    },
+    {
+      "command": [
+        "/home/o-grande-kayky/.local/share/uv/tools/platformio/bin/python",
+        "tests/ObcEpsBenchCheck.py",
+        "/dev/ttyUSB0",
+        "--report",
+        "examples/int009-uart-diagnosis-2026-11-18/14-eps-regression.json"
+      ],
+      "cwd": "obc-dh",
+      "exit_code": 0,
+      "report": "14-eps-regression.json"
+    },
+    {
+      "command": [
+        "/home/o-grande-kayky/.local/share/uv/tools/platformio/bin/python",
+        "tests/ObcThermalBenchCheck.py",
+        "/dev/ttyUSB0",
+        "--report",
+        "examples/int009-uart-diagnosis-2026-11-18/16-thermal-regression.json"
+      ],
+      "cwd": "obc-dh",
+      "exit_code": 1,
+      "report": "16-thermal-regression.json"
+    },
+    {
+      "command": [
+        "/home/o-grande-kayky/.local/share/uv/tools/platformio/bin/python",
+        "tests/ObcStationCheck.py",
+        "/dev/ttyUSB0",
+        "--reader",
+        "/tmp/int009-read-records",
+        "--report",
+        "examples/int009-uart-diagnosis-2026-11-18/18-obc-restored.json"
+      ],
+      "cwd": "obc-dh",
+      "exit_code": 0,
+      "report": "18-obc-restored.json"
+    },
+    {
+      "command": [
+        "/home/o-grande-kayky/.local/share/uv/tools/platformio/bin/python",
+        "examples/int009-uart-diagnosis-2026-11-18/CaptureUartTiming.py",
+        "/dev/ttyUSB0",
+        "--seconds",
+        "90",
+        "--report",
+        "examples/int009-uart-diagnosis-2026-11-18/05-passive-timing.json"
+      ],
+      "cwd": "obc-dh",
+      "exit_code": 0,
+      "report": "05-passive-timing.json",
+      "diagnostic_only": true
+    },
+    {
+      "command": [
+        "/home/o-grande-kayky/.local/share/uv/tools/platformio/bin/python",
+        "examples/int009-uart-diagnosis-2026-11-18/CaptureUartTiming.py",
+        "/dev/ttyUSB0",
+        "--seconds",
+        "90",
+        "--report",
+        "examples/int009-uart-diagnosis-2026-11-18/10-passive-priority.json"
+      ],
+      "cwd": "obc-dh",
+      "exit_code": 0,
+      "report": "10-passive-priority.json",
+      "diagnostic_only": true
+    }
+  ],
+  "files_after": {
+    "obc-dh/headers/PayloadReceiverEsp32.h": "b1809bd2fe9f7879dde791624417d10f07cff4616d34a8b1abfb8211bbe3484f",
+    "obc-dh/src/PayloadReceiverEsp32.cpp": "2f229b5e0427cc319d7913d530dec436d8e2115d890327454e0a10b76f1d941b",
+    "obc-dh/headers/ObcHousekeepingBench.h": "703d13c6cc233cb0543ce4bb9c869b2475095229464cc0d8d2631fb637b2a186",
+    "obc-dh/src/bench/HousekeepingCheck.cpp": "68e97c59d267a8fbf6380a11adea9b2aac9cced5f57b29fc15a217cf5d52ceec",
+    "obc-dh/src/bench/ObcDataFlowCheck.cpp": "936c7d783e0eb09c90c81a65840134c62c9e194d9bb029bde57cffac62ce4aa0",
+    "obc-dh/.tasks/03-integracao/INT-009-aquisicao-eps-termico.md": "83a67e72ac9f3a729d041d2a49a68354f858699c58946fc809ba977daf7f991c",
+    "obc-dh/.agents/TODO.md": "40e253a4e9e80d0607cd5e6a89399d56cb0922b1c23c461a1807e8eec2532874",
+    "obc-dh/.agents/ARCHITECTURE.md": "0d1d614ea5879d841fd212c3556fe7e0e165280b2bbe2b2e16e8f4281ba5da1c",
+    "obc-dh/tools/README.md": "9814dfd29e04538fc0d8e1d52dc146f75b0e114f95621ccc42ac7f12eced42b8"
+  },
+  "historical_test_changes": [],
+  "firmware_sha256": {
+    "obc": "160578e3c23734a71c30f75311e5255ce12894c0f9205acb576008b9eb01475d",
+    "int009-ina219-check": "2dc1ec67fd3523274de18034542d7cc34e94e422fa4f51c4e8b4078f1706ad5e",
+    "int009-lm75a-check": "0fa53651077ae40d0776b158dcccc4fa9a8004adacdf5411a99b6381be52cc4b",
+    "int009-housekeeping-check": "86fef1e91bc61130b482f3f251789f0f121ff6c5ff888e090c42dcd609e82eaf",
+    "int009-housekeeping-fixtures-check": "0815be4a54b3ef57c8f3b35cfd7938e298664dc9fe8a3c5ccb5016cc00ae3bcf"
+  },
+  "evidence_sha256": {
+    "01-diagnostic-builds.txt": "737520020c7578800db90893ffea71e914f463b50cb802f3c08dd8a37568d73f",
+    "02-diagnostic-upload.txt": "2af32d1ccf0e6a92411cd9e07975d4fa74330d420bc611a28913a31210c671d9",
+    "03-acquisition-diagnostic.json": "70186a2495451df9294a2b32165477e049a19ff30c2bb9c92a504b16693596e2",
+    "03-acquisition-diagnostic.records.bin": "042d02c67aed752527a7fed8b8ca8ecd96376393760507a217a0f2d6f627137a",
+    "03-acquisition-diagnostic.records.jsonl": "c1c0b3ffea6c040a162470d84ef2dbfd30add08056aa22c4a03a3b31f08af67c",
+    "04-acquisition-diagnostic-repeat.json": "6114484b20f30a4de39e8090cec177dd3ccb58ee6a019c816bc870071c816862",
+    "04-acquisition-diagnostic-repeat.records.bin": "db62c6b736a9dca01539c8839f37af81f7b4e7953f19026b3877a3cf7899cc4a",
+    "04-acquisition-diagnostic-repeat.records.jsonl": "68d851e12a56da8882b72eac159d3fe0466045fe8e674e60cda24500a3e7f5a7",
+    "05-passive-timing.json": "261e721ef1befa531e783108adf4194cfb9f975766b4d3001ebfa536b6c2939c",
+    "06-framework-evidence.json": "e6bcd651d99f21adc9a45a10d8f0b1eb98371a915ee4d69c79fdd336c40a0150",
+    "07-priority-builds.txt": "043ccd1c3701cbf20abac417e2be000b0ace84779f889461626b4fa21f758c98",
+    "08-priority-upload.txt": "42bd08cb62eae4edf3bd5af3ebf676a5b33586e6861acfd45b76cce43fdd6599",
+    "09-acquisition-priority.json": "596053994e89c1eae4b7c010cacc6219772b0c4442880e6702300cbcabd14d6f",
+    "09-acquisition-priority.records.bin": "be8a3b7e492f30d22ec1c0d24ca9cc5cc1ffbdccea1a977ddbdd294685c7e9d5",
+    "09-acquisition-priority.records.jsonl": "fde430e29ba067cd1a73405f14e9735a4ee88a87e1533f09808d9f9c4b46054a",
+    "10-passive-priority.json": "89fac09e3e45e415961ff09d3480030e38e2068c150d7ed47e8af86204554704",
+    "11-fixtures-upload.txt": "bdb2604e736d5469576cf41f6eb220d44b944314b9de81400c0e66cfdaa4d1b4",
+    "12-fixtures-priority.json": "16c6d8a44d5e6b2f1f8a1ba33db1d19b43b9cea91e5b85da4faa2584032a661a",
+    "12-fixtures-priority.records.bin": "50ee78d92aa8b8efa0dd1628d54fe761180eecdab14ae336a09bd41c3f0bb966",
+    "12-fixtures-priority.records.jsonl": "5b585f6fc9a2969d958506a8fa6e4a9a4a90995ae27efbb6adb9bb72565385ed",
+    "13-eps-upload.txt": "2ba6b3b6c9baedb4144b1ea96b226f3c28ec4c54b96896d72c9548997acd814e",
+    "14-eps-regression.json": "dca2d84b9821779b9a96d9a005a4c5430d6c7d6284b3524fd02a44cb17010ad6",
+    "15-thermal-upload.txt": "bc305f6063ac0b5c457d6e501837ef4784665bd83377cf26625ffc7fe51126b8",
+    "16-thermal-regression.json": "269bab8ab76cbba51aeb6ea1e62a26d470e3bc227f2b1f37f22499579035e4ba",
+    "17-obc-restore-upload.txt": "634c63ae9aa99518e1f01429b9efca5699448db6e03810fb84eb5d64364c9835",
+    "18-obc-restored/logs/2026-11-18_135355.jsonl": "7f844240491d67b7a30cad6fe1547bd245d02dd95466267f7e39d0f038e5b943",
+    "18-obc-restored/state/deliveries.jsonl": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "18-obc-restored.json": "fceb95a27f550726439d76579318875c4e36af61c8f1eb6b39056fa988c914ee",
+    "19-acceptance-summary.json": "d0b6b2281bfcbe60037fadd2d97af43df1779c0fc103cfb9aa3c7c677a99dca9",
+    "CaptureUartTiming.py": "be242e611657e253cbf84603cfd4a6957209b1dc73eeffa999128b1b95d923e3"
+  },
+  "final_state": {
+    "firmware": "obc",
+    "restored_client_passed": true,
+    "INT-009": "Em andamento",
+    "TES_state_changes": false,
+    "implementation_stopped": "Isolated LM75A original regression failed q=210 ms against 200 ms; no additional corrective change",
+    "pending": [
+      "Diagnose/fix isolated LM75A command latency after discussion",
+      "FCP4 per-operation acquisition persistence",
+      "EPS/Thermal contracts and operational integration"
+    ]
+  }
+}

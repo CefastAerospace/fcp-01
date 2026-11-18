@@ -4,6 +4,8 @@
  */
 #pragma once
 
+#include "ObcAcquisitionEsp32.h" // Metadados e consumidor de operações FCP4.
+
 #include <Arduino.h> // Serial para diagnóstico USB.
 #include "ObcThermal.h" // Estado e parâmetros térmicos provisórios.
 #include "ObcEps.h" // Classificador portátil MapWireFailure já existente.
@@ -59,6 +61,7 @@ namespace esp32 {
 
     /** @brief Inicia uma vez após I2C; falha preserva os serviços independentes. */
     bool Init(
+        obc_record::ACQUISITION_SINK sink = nullptr
     );
     /** @brief Copia sob lock curto e revalida disponibilidade sem I/O. */
     SNAPSHOT GetSnapshot(

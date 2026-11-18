@@ -1,0 +1,20 @@
+{
+  "arduino_log": {
+    "path": "/home/o-grande-kayky/.local/share/platformio/packages/framework-arduinoespressif32/cores/esp32/esp32-hal-uart.c",
+    "sha256": "b4337b0cf3b5093aebae6b75187587e527de7c040fe3313ceeeef36b7af33045",
+    "lines": "555-597",
+    "source": "int log_printfv(const char *format, va_list arg)\n{\n    static char loc_buf[64];\n    char * temp = loc_buf;\n    uint32_t len;\n    va_list copy;\n    va_copy(copy, arg);\n    len = vsnprintf(NULL, 0, format, copy);\n    va_end(copy);\n    if(len >= sizeof(loc_buf)){\n        temp = (char*)malloc(len+1);\n        if(temp == NULL) {\n            return 0;\n        }\n    }\n#if !CONFIG_DISABLE_HAL_LOCKS\n    if(s_uart_debug_nr != -1 && _uart_bus_array[s_uart_debug_nr].lock){\n        xSemaphoreTake(_uart_bus_array[s_uart_debug_nr].lock, portMAX_DELAY);\n    }\n#endif\n    \n    vsnprintf(temp, len+1, format, arg);\n    ets_printf(\"%s\", temp);\n\n#if !CONFIG_DISABLE_HAL_LOCKS\n    if(s_uart_debug_nr != -1 && _uart_bus_array[s_uart_debug_nr].lock){\n        xSemaphoreGive(_uart_bus_array[s_uart_debug_nr].lock);\n    }\n#endif\n    if(len >= sizeof(loc_buf)){\n        free(temp);\n    }\n    return len;\n}\n\nint log_printf(const char *format, ...)\n{\n    int len;\n    va_list arg;\n    va_start(arg, format);\n    len = log_printfv(format, arg);\n    va_end(arg);\n    return len;"
+  },
+  "wire_error": {
+    "path": "/home/o-grande-kayky/.local/share/platformio/packages/framework-arduinoespressif32/libraries/Wire/src/Wire.cpp",
+    "sha256": "5c4e216cf43f954c9f3154bca7f50fadcec2fa196bb9ebcf0328682c658c5320",
+    "lines": "489-501",
+    "source": "    ){\n        if(address != txAddress){\n            log_e(\"Unfinished Repeated Start transaction! Expected address do not match! %u != %u\", address, txAddress);\n            return 0;\n        }\n        nonStop = false;\n        rxIndex = 0;\n        rxLength = 0;\n        err = i2cWriteReadNonStop(num, address, txBuffer, txLength, rxBuffer, size, _timeOutMillis, &rxLength);\n        if(err){\n            log_e(\"i2cWriteReadNonStop returned Error %d\", err);\n        }\n    } else {"
+  },
+  "vfs_uart": {
+    "path": "/home/o-grande-kayky/.local/share/platformio/packages/framework-arduinoespressif32/tools/sdk/esp32/include/vfs/include/esp_vfs_dev.h",
+    "sha256": "f2b9845b1e1d35e03fa039f87d31416f972224980e11b3a90c5d4727bf0ea2ff",
+    "lines": "90-108",
+    "source": " */\nint esp_vfs_dev_uart_port_set_tx_line_endings(int uart_num, esp_line_endings_t mode);\n\n/**\n * @brief set VFS to use simple functions for reading and writing UART\n * Read is non-blocking, write is busy waiting until TX FIFO has enough space.\n * These functions are used by default.\n * @param uart_num UART peripheral number\n */\nvoid esp_vfs_dev_uart_use_nonblocking(int uart_num);\n\n/**\n * @brief set VFS to use UART driver for reading and writing\n * @note application must configure UART driver before calling these functions\n * With these functions, read and write are blocking and interrupt-driven.\n * @param uart_num UART peripheral number\n */\nvoid esp_vfs_dev_uart_use_driver(int uart_num);\n"
+  }
+}

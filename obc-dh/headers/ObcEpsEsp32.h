@@ -4,6 +4,8 @@
  */
 #pragma once
 
+#include "ObcAcquisitionEsp32.h" // Metadados e consumidor de operações FCP4.
+
 #include "ObcEps.h" // Cadência, validade e classificação portáteis.
 #include "EPS_INA219.h" // Driver EPS e seus resultados, sem duplicação de cálculos.
 #include "I2cBus.h" // Executor exclusivo, estado e recuperação existentes.
@@ -56,6 +58,7 @@ namespace esp32 {
 
     /** @brief Publica metadados e inicia uma vez após I2cBus::Init; falha conserva os outros serviços. */
     bool Init(
+        obc_record::ACQUISITION_SINK sink = nullptr
     );
     /** @brief Copia sob proteção curta e calcula idade/disponibilidade fora do lock. */
     SNAPSHOT GetSnapshot(

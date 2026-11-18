@@ -1,0 +1,333 @@
+{"pc":"2026-11-18T18:08:46.054+00:00","pc_ms":1795025326054,"dir":"tx","kind":"tc","link":"wired","attempt":1,"pkt":{"t":"tc","seq":59822,"cmd":"request_tm"}}
+{"pc":"2026-11-18T18:08:46.054+00:00","pc_ms":1795025326054,"dir":"log","kind":"log","link":"wired","text":"x�x�x�&��ets Jul 29 2019 12:21:46"}
+{"pc":"2026-11-18T18:08:46.054+00:00","pc_ms":1795025326054,"dir":"log","kind":"log","link":"wired","text":"rst:0x1 (POWERON_RESET),boot:0x13 (SPI_FAST_FLASH_BOOT)"}
+{"pc":"2026-11-18T18:08:46.054+00:00","pc_ms":1795025326054,"dir":"log","kind":"log","link":"wired","text":"configsip: 0, SPIWP:0xee"}
+{"pc":"2026-11-18T18:08:46.055+00:00","pc_ms":1795025326055,"dir":"log","kind":"log","link":"wired","text":"clk_drv:0x00,q_drv:0x00,d_drv:0x00,cs0_drv:0x00,hd_drv:0x00,wp_drv:0x00"}
+{"pc":"2026-11-18T18:08:46.055+00:00","pc_ms":1795025326055,"dir":"log","kind":"log","link":"wired","text":"mode:DIO, clock div:2"}
+{"pc":"2026-11-18T18:08:46.055+00:00","pc_ms":1795025326055,"dir":"log","kind":"log","link":"wired","text":"load:0x3fff0030,len:1184"}
+{"pc":"2026-11-18T18:08:46.055+00:00","pc_ms":1795025326055,"dir":"log","kind":"log","link":"wired","text":"load:0x40078000,len:13232"}
+{"pc":"2026-11-18T18:08:46.055+00:00","pc_ms":1795025326055,"dir":"log","kind":"log","link":"wired","text":"load:0x40080400,len:3028"}
+{"pc":"2026-11-18T18:08:46.055+00:00","pc_ms":1795025326055,"dir":"log","kind":"log","link":"wired","text":"entry 0x400805e4"}
+{"pc":"2026-11-18T18:08:46.055+00:00","pc_ms":1795025326055,"dir":"log","kind":"log","link":"wired","text":"[WATCHDOG] armed=1 timeout_ms=5000 error=0 reset_reason=1"}
+{"pc":"2026-11-18T18:08:46.056+00:00","pc_ms":1795025326056,"dir":"log","kind":"log","link":"wired","text":"[WATCHDOG] reset_timer_ready=1 error=0"}
+{"pc":"2026-11-18T18:08:46.056+00:00","pc_ms":1795025326056,"dir":"log","kind":"log","link":"wired","text":"[OBC] Boot de bancada: tempo/NVS, I2C e SD"}
+{"pc":"2026-11-18T18:08:46.056+00:00","pc_ms":1795025326056,"dir":"log","kind":"log","link":"wired","text":"[   571][E][sd_diskio.cpp:805] sdcard_mount(): f_mount failed: (3) The physical drive cannot work"}
+{"pc":"2026-11-18T18:08:46.056+00:00","pc_ms":1795025326056,"dir":"log","kind":"log","link":"wired","text":"[  1072][E][sd_diskio.cpp:126] sdSelectCard(): Select Failed"}
+{"pc":"2026-11-18T18:08:46.056+00:00","pc_ms":1795025326056,"dir":"log","kind":"log","link":"wired","text":"[OBC] Tempo/NVS: OK; boot_id=220"}
+{"pc":"2026-11-18T18:08:46.057+00:00","pc_ms":1795025326057,"dir":"log","kind":"log","link":"wired","text":"[OBC] I2C: OK; estado do controlador/executor, sem verificar sensores"}
+{"pc":"2026-11-18T18:08:46.057+00:00","pc_ms":1795025326057,"dir":"log","kind":"log","link":"wired","text":"[OBC] SD: indisponivel; status=11; errno=0; bytes=0; tentativas=0"}
+{"pc":"2026-11-18T18:08:46.057+00:00","pc_ms":1795025326057,"dir":"log","kind":"log","link":"wired","text":"[OBC] Tempo monotonic_ms=1[TT&C] ERRO: SX1276 nao responde."}
+{"pc":"2026-11-18T18:08:46.058+00:00","pc_ms":1795025326058,"dir":"log","kind":"log","link":"wired","text":"[TT&C] ERRO: SX1276 sem resposta ou fora de RX, reinicializando.[OBC] TT&C: radio=indisponivel; umbilical=OK; tarefa=OK"}
+{"pc":"2026-11-18T18:08:46.058+00:00","pc_ms":1795025326058,"dir":"log","kind":"log","link":"wired","text":"[FLOW] RAM apos receptor: heap=171436 byte_heap=107300 byte_largest=47092"}
+{"pc":"2026-11-18T18:08:46.058+00:00","pc_ms":1795025326058,"dir":"log","kind":"log","link":"wired","text":"[FLOW] Recepcao=OK; SD=indisponivel; heap=159420; maior_bloco=63476"}
+{"pc":"2026-11-18T18:08:46.058+00:00","pc_ms":1795025326058,"dir":"log","kind":"log","link":"wired","text":"[TT&C] ERRO: SX1276 nao responde."}
+{"pc":"2026-11-18T18:08:46.059+00:00","pc_ms":1795025326059,"dir":"log","kind":"log","link":"wired","text":"[TTC-HEALTH] state=ok radio=unavailable updating=0 wired_ready=1 age_ms=12 limit_ms=2000 completions=1 rf_seen=0 rf_age_ms=0 wired_seen=0 wired_age_ms=0 resets=1 changed=1 monotonic_ms=1159"}
+{"pc":"2026-11-18T18:08:46.059+00:00","pc_ms":1795025326059,"dir":"log","kind":"log","link":"wired","text":"[MEMORY-HEALTH] byte_heap=95284 byte_largest=47092 heap_low=0 block_low=0 stack_low_mask=0 allocation_failures=0 allocation_delta=0 changed=0 monotonic_ms=1159"}
+{"pc":"2026-11-18T18:08:46.060+00:00","pc_ms":1795025326060,"dir":"log","kind":"log","link":"wired","text":"[MEMORY-HEALTH] task=uart active=1 stack_free=2172 low=0 monotonic_ms=1159"}
+{"pc":"2026-11-18T18:08:46.060+00:00","pc_ms":1795025326060,"dir":"log","kind":"log","link":"wired","text":"[MEMORY-HEALTH] task=process active=1 stack_free=7660 low=0 monotonic_ms=1159"}
+{"pc":"2026-11-18T18:08:46.060+00:00","pc_ms":1795025326060,"dir":"log","kind":"log","link":"wired","text":"[MEMORY-HEALTH] task=writer active=0 stack_free=0 low=0 monotonic_ms=1159"}
+{"pc":"2026-11-18T18:08:46.061+00:00","pc_ms":1795025326061,"dir":"log","kind":"log","link":"wired","text":"[MEMORY-HEALTH] task=i2c active=1 stack_free=3532 low=0 monotonic_ms=1159"}
+{"pc":"2026-11-18T18:08:46.061+00:00","pc_ms":1795025326061,"dir":"log","kind":"log","link":"wired","text":"[MEMORY-HEALTH] task=ttc active=1 stack_free=7368 low=0 monotonic_ms=1159"}
+{"pc":"2026-11-18T18:08:46.061+00:00","pc_ms":1795025326061,"dir":"log","kind":"log","link":"wired","text":"[MEMORY-HEALTH] task=loop active=1 stack_free=4960 low=0 monotonic_ms=1159"}
+{"pc":"2026-11-18T18:08:46.062+00:00","pc_ms":1795025326062,"dir":"log","kind":"log","link":"wired","text":"[I2C-HEALTH] state=ok service=ready activity=idle age_ms=0 limit_ms=0 sampled_ms=1224 monotonic_ms=1224 changed=0 queued=0 cause=0 failure=0 cycles=0 recovered=0 exhausted=0"}
+{"pc":"2026-11-18T18:08:46.062+00:00","pc_ms":1795025326062,"dir":"log","kind":"log","link":"wired","text":"[FLOW] received=0 invalid=0 gaps=0 duplicates=0 written=0 failures=1 dropped=2 SD=0 status=11 poll_gap_ms=1 process_gap_ms=1 stack_rx=7660 stack_sd=0 stack_uart=2172 uart_full=0"}
+{"pc":"2026-11-18T18:08:46.062+00:00","pc_ms":1795025326062,"dir":"log","kind":"log","link":"wired","text":"[FLOW-MEMORY] heap=159420 byte_heap=95284 byte_largest=47092 byte_min=89596 parser_peak_bytes=0 parser_limit_bytes=98304"}
+{"pc":"2026-11-18T18:08:46.063+00:00","pc_ms":1795025326063,"dir":"log","kind":"log","link":"wired","text":"[STORAGE] state=0 attempt=0 episodes=0 attempts=0 recovered=0 exhausted=0 lifecycle_failures=0 cause=0 end=0 status=0 monotonic_ms=1224"}
+{"pc":"2026-11-18T18:08:46.063+00:00","pc_ms":1795025326063,"dir":"log","kind":"log","link":"wired","text":"[HEALTH] task=uart state=ok activity=idle age_ms=1 limit_ms=100 completions=108 sampled_ms=1235 changed=0"}
+{"pc":"2026-11-18T18:08:46.063+00:00","pc_ms":1795025326063,"dir":"log","kind":"log","link":"wired","text":"[HEALTH] task=process state=ok activity=idle age_ms=1 limit_ms=2000 completions=108 sampled_ms=1235 changed=0"}
+{"pc":"2026-11-18T18:08:46.064+00:00","pc_ms":1795025326064,"dir":"log","kind":"log","link":"wired","text":"[HEALTH] task=writer state=inactive activity=inactive age_ms=0 limit_ms=5000 completions=0 sampled_ms=1235 changed=0"}
+{"pc":"2026-11-18T18:08:46.064+00:00","pc_ms":1795025326064,"dir":"log","kind":"log","link":"wired","text":"[DELIVERY] occupied=0 peak=0 accepted=0 repeated=0 lost=0 storage_failures=1 attempts=0 tx_failures=0 confirmed=0 unknown=0 evicted=0 recovery_slot=0"}
+{"pc":"2026-11-18T18:08:46.065+00:00","pc_ms":1795025326065,"dir":"log","kind":"log","link":"wired","text":"[TT&C] ERRO: SX1276 sem resposta ou fora de RX, reinicializando."}
+{"pc":"2026-11-18T18:08:46.065+00:00","pc_ms":1795025326065,"dir":"log","kind":"log","link":"wired","text":"[TT&C] ERRO: SX1276 nao responde."}
+{"pc":"2026-11-18T18:08:46.065+00:00","pc_ms":1795025326065,"dir":"log","kind":"log","link":"wired","text":"[TTC-HEALTH] state=ok radio=unavailable updating=0 wired_ready=1 age_ms=9 limit_ms=2000 completions=51 rf_seen=0 rf_age_ms=0 wired_seen=0 wired_age_ms=0 resets=2 changed=0 monotonic_ms=2189"}
+{"pc":"2026-11-18T18:08:46.066+00:00","pc_ms":1795025326066,"dir":"log","kind":"log","link":"wired","text":"[MEMORY-HEALTH] byte_heap=95284 byte_largest=47092 heap_low=0 block_low=0 stack_low_mask=0 allocation_failures=0 allocation_delta=0 changed=0 monotonic_ms=2189"}
+{"pc":"2026-11-18T18:08:46.066+00:00","pc_ms":1795025326066,"dir":"log","kind":"log","link":"wired","text":"[MEMORY-HEALTH] task=uart active=1 stack_free=2172 low=0 monotonic_ms=2189"}
+{"pc":"2026-11-18T18:08:46.066+00:00","pc_ms":1795025326066,"dir":"log","kind":"log","link":"wired","text":"[MEMORY-HEALTH] task=process active=1 stack_free=7660 low=0 monotonic_ms=2189"}
+{"pc":"2026-11-18T18:08:46.066+00:00","pc_ms":1795025326066,"dir":"log","kind":"log","link":"wired","text":"[MEMORY-HEALTH] task=writer active=0 stack_free=0 low=0 monotonic_ms=2189"}
+{"pc":"2026-11-18T18:08:46.067+00:00","pc_ms":1795025326067,"dir":"log","kind":"log","link":"wired","text":"[MEMORY-HEALTH] task=i2c active=1 stack_free=3532 low=0 monotonic_ms=2189"}
+{"pc":"2026-11-18T18:08:46.067+00:00","pc_ms":1795025326067,"dir":"log","kind":"log","link":"wired","text":"[MEMORY-HEALTH] task=ttc active=1 stack_free=7160 low=0 monotonic_ms=2189"}
+{"pc":"2026-11-18T18:08:46.067+00:00","pc_ms":1795025326067,"dir":"log","kind":"log","link":"wired","text":"[MEMORY-HEALTH] task=loop active=1 stack_free=4876 low=0 monotonic_ms=2189"}
+{"pc":"2026-11-18T18:08:46.068+00:00","pc_ms":1795025326068,"dir":"log","kind":"log","link":"wired","text":"[I2C-HEALTH] state=ok service=ready activity=idle age_ms=0 limit_ms=0 sampled_ms=2253 monotonic_ms=2253 changed=0 queued=0 cause=0 failure=0 cycles=0 recovered=0 exhausted=0"}
+{"pc":"2026-11-18T18:08:46.068+00:00","pc_ms":1795025326068,"dir":"log","kind":"log","link":"wired","text":"[FLOW] received=0 invalid=0 gaps=0 duplicates=0 written=0 failures=1 dropped=4 SD=0 status=11 poll_gap_ms=1 process_gap_ms=2 stack_rx=7660 stack_sd=0 stack_uart=2172 uart_full=0"}
+{"pc":"2026-11-18T18:08:46.068+00:00","pc_ms":1795025326068,"dir":"log","kind":"log","link":"wired","text":"[FLOW-MEMORY] heap=159420 byte_heap=95284 byte_largest=47092 byte_min=89596 parser_peak_bytes=0 parser_limit_bytes=98304"}
+{"pc":"2026-11-18T18:08:46.069+00:00","pc_ms":1795025326069,"dir":"log","kind":"log","link":"wired","text":"[STORAGE] state=0 attempt=0 episodes=0 attempts=0 recovered=0 exhausted=0 lifecycle_failures=0 cause=0 end=0 status=0 monotonic_ms=2253"}
+{"pc":"2026-11-18T18:08:46.069+00:00","pc_ms":1795025326069,"dir":"log","kind":"log","link":"wired","text":"[HEALTH] task=uart state=ok activity=idle age_ms=0 limit_ms=100 completions=1137 sampled_ms=2263 changed=0"}
+{"pc":"2026-11-18T18:08:46.069+00:00","pc_ms":1795025326069,"dir":"log","kind":"log","link":"wired","text":"[HEALTH] task=process state=ok activity=idle age_ms=0 limit_ms=2000 completions=1136 sampled_ms=2263 changed=0"}
+{"pc":"2026-11-18T18:08:46.070+00:00","pc_ms":1795025326070,"dir":"log","kind":"log","link":"wired","text":"[HEALTH] task=writer state=inactive activity=inactive age_ms=0 limit_ms=5000 completions=0 sampled_ms=2263 changed=0"}
+{"pc":"2026-11-18T18:08:46.070+00:00","pc_ms":1795025326070,"dir":"log","kind":"log","link":"wired","text":"[DELIVERY] occupied=0 peak=0 accepted=0 repeated=0 lost=0 storage_failures=1 attempts=0 tx_failures=0 confirmed=0 unknown=0 evicted=0 recovery_slot=0"}
+{"pc":"2026-11-18T18:08:46.070+00:00","pc_ms":1795025326070,"dir":"log","kind":"log","link":"wired","text":"[TT&C] ERRO: SX1276 sem resposta ou fora de RX, reinicializando."}
+{"pc":"2026-11-18T18:08:46.070+00:00","pc_ms":1795025326070,"dir":"log","kind":"log","link":"wired","text":"[TT&C] ERRO: SX1276 nao responde."}
+{"pc":"2026-11-18T18:08:46.071+00:00","pc_ms":1795025326071,"dir":"log","kind":"log","link":"wired","text":"[TTC-HEALTH] state=ok radio=unavailable updating=0 wired_ready=1 age_ms=9 limit_ms=2000 completions=101 rf_seen=0 rf_age_ms=0 wired_seen=0 wired_age_ms=0 resets=3 changed=0 monotonic_ms=3218"}
+{"pc":"2026-11-18T18:08:46.071+00:00","pc_ms":1795025326071,"dir":"log","kind":"log","link":"wired","text":"[MEMORY-HEALTH] byte_heap=95284 byte_largest=47092 heap_low=0 block_low=0 stack_low_mask=0 allocation_failures=0 allocation_delta=0 changed=0 monotonic_ms=3218"}
+{"pc":"2026-11-18T18:08:46.072+00:00","pc_ms":1795025326072,"dir":"log","kind":"log","link":"wired","text":"[MEMORY-HEALTH] task=uart active=1 stack_free=2172 low=0 monotonic_ms=3218"}
+{"pc":"2026-11-18T18:08:46.072+00:00","pc_ms":1795025326072,"dir":"log","kind":"log","link":"wired","text":"[MEMORY-HEALTH] task=process active=1 stack_free=7660 low=0 monotonic_ms=3218"}
+{"pc":"2026-11-18T18:08:46.072+00:00","pc_ms":1795025326072,"dir":"log","kind":"log","link":"wired","text":"[MEMORY-HEALTH] task=writer active=0 stack_free=0 low=0 monotonic_ms=3218"}
+{"pc":"2026-11-18T18:08:46.072+00:00","pc_ms":1795025326072,"dir":"log","kind":"log","link":"wired","text":"[MEMORY-HEALTH] task=i2c active=1 stack_free=3532 low=0 monotonic_ms=3218"}
+{"pc":"2026-11-18T18:08:46.072+00:00","pc_ms":1795025326072,"dir":"log","kind":"log","link":"wired","text":"[MEMORY-HEALTH] task=ttc active=1 stack_free=7160 low=0 monotonic_ms=3218"}
+{"pc":"2026-11-18T18:08:46.073+00:00","pc_ms":1795025326073,"dir":"log","kind":"log","link":"wired","text":"[MEMORY-HEALTH] task=loop active=1 stack_free=4876 low=0 monotonic_ms=3218"}
+{"pc":"2026-11-18T18:08:46.073+00:00","pc_ms":1795025326073,"dir":"log","kind":"log","link":"wired","text":"[I2C-HEALTH] state=ok service=ready activity=idle age_ms=0 limit_ms=0 sampled_ms=3282 monotonic_ms=3282 changed=0 queued=0 cause=0 failure=0 cycles=0 recovered=0 exhausted=0"}
+{"pc":"2026-11-18T18:08:46.074+00:00","pc_ms":1795025326074,"dir":"log","kind":"log","link":"wired","text":"[FLOW] received=0 invalid=0 gaps=0 duplicates=0 written=0 failures=1 dropped=6 SD=0 status=11 poll_gap_ms=1 process_gap_ms=2 stack_rx=7660 stack_sd=0 stack_uart=2172 uart_full=0"}
+{"pc":"2026-11-18T18:08:46.077+00:00","pc_ms":1795025326077,"dir":"log","kind":"log","link":"wired","text":"[FLOW-MEMORY] heap=159420 byte_heap=95284 byte_largest=47092 byte_min=89596 parser_peak_bytes=0 parser_limit_bytes=98304"}
+{"pc":"2026-11-18T18:08:46.091+00:00","pc_ms":1795025326091,"dir":"log","kind":"log","link":"wired","text":"[STORAGE] state=0 attempt=0 episodes=0 attempts=0 recovered=0 exhausted=0 lifecycle_failures=0 cause=0 end=0 status=0 monotonic_ms=3282"}
+{"pc":"2026-11-18T18:08:46.099+00:00","pc_ms":1795025326099,"dir":"log","kind":"log","link":"wired","text":"[HEALTH] task=uart state=ok activity=idle age_ms=1 limit_ms=100 completions=2166 sampled_ms=3293 changed=0"}
+{"pc":"2026-11-18T18:08:46.108+00:00","pc_ms":1795025326108,"dir":"log","kind":"log","link":"wired","text":"[HEALTH] task=process state=ok activity=idle age_ms=1 limit_ms=2000 completions=2165 sampled_ms=3293 changed=0"}
+{"pc":"2026-11-18T18:08:46.119+00:00","pc_ms":1795025326119,"dir":"log","kind":"log","link":"wired","text":"[HEALTH] task=writer state=inactive activity=inactive age_ms=0 limit_ms=5000 completions=0 sampled_ms=3293 changed=0"}
+{"pc":"2026-11-18T18:08:46.133+00:00","pc_ms":1795025326133,"dir":"log","kind":"log","link":"wired","text":"[DELIVERY] occupied=0 peak=0 accepted=0 repeated=0 lost=0 storage_failures=1 attempts=0 tx_failures=0 confirmed=0 unknown=0 evicted=0 recovery_slot=0"}
+{"pc":"2026-11-18T18:08:46.146+00:00","pc_ms":1795025326146,"dir":"rx","kind":"packet","link":"wired","pkt":{"n":0,"t":"tm","ts":null,"md":"bench","vb":null,"ib":null,"vs":null,"is":null,"tp":null,"w":null,"az":null,"ac":null,"msg":null,"rssi":null,"snr":null,"rx":1,"err":0,"rst":3}}
+{"pc":"2026-11-18T18:08:46.149+00:00","pc_ms":1795025326149,"dir":"log","kind":"log","link":"wired","text":"[TT&C] Falha no TX de 175 bytes."}
+{"pc":"2026-11-18T18:08:46.156+00:00","pc_ms":1795025326156,"dir":"rx","kind":"packet","link":"wired","pkt":{"n":1,"t":"ack","seq":59822,"cmd":"request_tm","st":"ok","q":62}}
+{"pc":"2026-11-18T18:08:46.156+00:00","pc_ms":1795025326156,"dir":"tx","kind":"tc","link":"wired","attempt":1,"pkt":{"t":"tc","seq":59823,"cmd":"set_time","args":{"unix":null}}}
+{"pc":"2026-11-18T18:08:46.180+00:00","pc_ms":1795025326180,"dir":"rx","kind":"packet","link":"wired","pkt":{"n":2,"t":"ack","seq":59823,"cmd":"set_time","st":"invalid_param","q":0}}
+{"pc":"2026-11-18T18:08:46.180+00:00","pc_ms":1795025326180,"dir":"tx","kind":"tc","link":"wired","attempt":1,"pkt":{"t":"tc","seq":59824,"cmd":"set_time","args":{"unix":true}}}
+{"pc":"2026-11-18T18:08:46.203+00:00","pc_ms":1795025326203,"dir":"rx","kind":"packet","link":"wired","pkt":{"n":3,"t":"ack","seq":59824,"cmd":"set_time","st":"invalid_param","q":0}}
+{"pc":"2026-11-18T18:08:46.203+00:00","pc_ms":1795025326203,"dir":"tx","kind":"tc","link":"wired","attempt":1,"pkt":{"t":"tc","seq":59825,"cmd":"set_time","args":{"unix":-1}}}
+{"pc":"2026-11-18T18:08:46.225+00:00","pc_ms":1795025326225,"dir":"rx","kind":"packet","link":"wired","pkt":{"n":4,"t":"ack","seq":59825,"cmd":"set_time","st":"invalid_param","q":0}}
+{"pc":"2026-11-18T18:08:46.225+00:00","pc_ms":1795025326225,"dir":"tx","kind":"tc","link":"wired","attempt":1,"pkt":{"t":"tc","seq":59826,"cmd":"set_time","args":{"unix":1.5}}}
+{"pc":"2026-11-18T18:08:46.247+00:00","pc_ms":1795025326247,"dir":"rx","kind":"packet","link":"wired","pkt":{"n":5,"t":"ack","seq":59826,"cmd":"set_time","st":"invalid_param","q":0}}
+{"pc":"2026-11-18T18:08:46.250+00:00","pc_ms":1795025326250,"dir":"tx","kind":"tc","link":"wired","attempt":1,"pkt":{"t":"tc","seq":59827,"cmd":"set_time","args":{"unix":4294967296}}}
+{"pc":"2026-11-18T18:08:46.270+00:00","pc_ms":1795025326270,"dir":"rx","kind":"packet","link":"wired","pkt":{"n":6,"t":"ack","seq":59827,"cmd":"set_time","st":"invalid_param","q":0}}
+{"pc":"2026-11-18T18:08:46.273+00:00","pc_ms":1795025326273,"dir":"tx","kind":"tc","link":"wired","attempt":1,"pkt":{"t":"tc","seq":59828,"cmd":"set_time","args":{"unix":"1760000000"}}}
+{"pc":"2026-11-18T18:08:46.292+00:00","pc_ms":1795025326292,"dir":"rx","kind":"packet","link":"wired","pkt":{"n":7,"t":"ack","seq":59828,"cmd":"set_time","st":"invalid_param","q":0}}
+{"pc":"2026-11-18T18:08:46.292+00:00","pc_ms":1795025326292,"dir":"tx","kind":"tc","link":"wired","attempt":1,"pkt":{"t":"tc","seq":59829,"cmd":"set_time"}}
+{"pc":"2026-11-18T18:08:46.313+00:00","pc_ms":1795025326313,"dir":"rx","kind":"packet","link":"wired","pkt":{"n":8,"t":"ack","seq":59829,"cmd":"set_time","st":"invalid_param","q":0}}
+{"pc":"2026-11-18T18:08:46.316+00:00","pc_ms":1795025326316,"dir":"tx","kind":"tc","link":"wired","attempt":1,"pkt":{"t":"tc","seq":59830,"cmd":"set_time","args":{"unix":1760000000,"extra":1}}}
+{"pc":"2026-11-18T18:08:46.336+00:00","pc_ms":1795025326336,"dir":"rx","kind":"packet","link":"wired","pkt":{"n":9,"t":"ack","seq":59830,"cmd":"set_time","st":"invalid_param","q":0}}
+{"pc":"2026-11-18T18:08:46.336+00:00","pc_ms":1795025326336,"dir":"tx","kind":"tc","link":"wired","attempt":1,"pkt":{"t":"tc","seq":59831,"cmd":"get_status"}}
+{"pc":"2026-11-18T18:08:46.367+00:00","pc_ms":1795025326367,"dir":"rx","kind":"packet","link":"wired","pkt":{"n":10,"t":"tm","ts":null,"md":"bench","vb":null,"ib":null,"vs":null,"is":null,"tp":null,"w":null,"az":null,"ac":null,"msg":null,"rssi":null,"snr":null,"rx":10,"err":0,"rst":3}}
+{"pc":"2026-11-18T18:08:46.370+00:00","pc_ms":1795025326370,"dir":"log","kind":"log","link":"wired","text":"[TT&C] Falha no TX de 176 bytes."}
+{"pc":"2026-11-18T18:08:46.377+00:00","pc_ms":1795025326377,"dir":"rx","kind":"packet","link":"wired","pkt":{"n":11,"t":"ack","seq":59831,"cmd":"get_status","st":"ok","q":1}}
+{"pc":"2026-11-18T18:08:46.377+00:00","pc_ms":1795025326377,"dir":"tx","kind":"tc","link":"wired","attempt":1,"pkt":{"t":"tc","seq":59832,"cmd":"set_time","args":{"unix":0}}}
+{"pc":"2026-11-18T18:08:46.399+00:00","pc_ms":1795025326399,"dir":"rx","kind":"packet","link":"wired","pkt":{"n":12,"t":"ack","seq":59832,"cmd":"set_time","st":"ok","q":0}}
+{"pc":"2026-11-18T18:08:46.399+00:00","pc_ms":1795025326399,"dir":"tx","kind":"tc","link":"wired","attempt":1,"pkt":{"t":"tc","seq":59833,"cmd":"request_tm"}}
+{"pc":"2026-11-18T18:08:46.432+00:00","pc_ms":1795025326432,"dir":"rx","kind":"packet","link":"wired","pkt":{"n":13,"t":"tm","ts":0,"md":"bench","vb":null,"ib":null,"vs":null,"is":null,"tp":null,"w":null,"az":null,"ac":null,"msg":null,"rssi":null,"snr":null,"rx":12,"err":0,"rst":3}}
+{"pc":"2026-11-18T18:08:46.434+00:00","pc_ms":1795025326434,"dir":"log","kind":"log","link":"wired","text":"[TT&C] Falha no TX de 173 bytes."}
+{"pc":"2026-11-18T18:08:46.441+00:00","pc_ms":1795025326441,"dir":"rx","kind":"packet","link":"wired","pkt":{"n":14,"t":"ack","seq":59833,"cmd":"request_tm","st":"ok","q":0}}
+{"pc":"2026-11-18T18:08:46.444+00:00","pc_ms":1795025326444,"dir":"tx","kind":"tc","link":"wired","attempt":1,"pkt":{"t":"tc","seq":59834,"cmd":"set_time","args":{"unix":1795025326}}}
+{"pc":"2026-11-18T18:08:46.464+00:00","pc_ms":1795025326464,"dir":"rx","kind":"packet","link":"wired","pkt":{"n":15,"t":"ack","seq":59834,"cmd":"set_time","st":"ok","q":1}}
+{"pc":"2026-11-18T18:08:46.464+00:00","pc_ms":1795025326464,"dir":"tx","kind":"tc","link":"wired","attempt":1,"pkt":{"t":"tc","seq":59835,"cmd":"request_tm"}}
+{"pc":"2026-11-18T18:08:46.496+00:00","pc_ms":1795025326496,"dir":"rx","kind":"packet","link":"wired","pkt":{"n":16,"t":"tm","ts":1795025326,"md":"bench","vb":null,"ib":null,"vs":null,"is":null,"tp":null,"w":null,"az":null,"ac":null,"msg":null,"rssi":null,"snr":null,"rx":14,"err":0,"rst":3}}
+{"pc":"2026-11-18T18:08:46.499+00:00","pc_ms":1795025326499,"dir":"log","kind":"log","link":"wired","text":"[TT&C] Falha no TX de 182 bytes."}
+{"pc":"2026-11-18T18:08:46.506+00:00","pc_ms":1795025326506,"dir":"rx","kind":"packet","link":"wired","pkt":{"n":17,"t":"ack","seq":59835,"cmd":"request_tm","st":"ok","q":0}}
+{"pc":"2026-11-18T18:08:46.506+00:00","pc_ms":1795025326506,"dir":"tx","kind":"tc","link":"wired","attempt":1,"pkt":{"t":"tc","seq":59836,"cmd":"ping"}}
+{"pc":"2026-11-18T18:08:46.528+00:00","pc_ms":1795025326528,"dir":"rx","kind":"packet","link":"wired","pkt":{"n":18,"t":"ack","seq":59836,"cmd":"ping","st":"ok","q":0}}
+{"pc":"2026-11-18T18:08:46.549+00:00","pc_ms":1795025326549,"dir":"tx","kind":"tc","link":"wired","attempt":1,"pkt":{"t":"tc","seq":59837,"cmd":"get_status"}}
+{"pc":"2026-11-18T18:08:46.579+00:00","pc_ms":1795025326579,"dir":"rx","kind":"packet","link":"wired","pkt":{"n":19,"t":"tm","ts":1795025326,"md":"bench","vb":null,"ib":null,"vs":null,"is":null,"tp":null,"w":null,"az":null,"ac":null,"msg":null,"rssi":null,"snr":null,"rx":16,"err":0,"rst":3}}
+{"pc":"2026-11-18T18:08:46.582+00:00","pc_ms":1795025326582,"dir":"log","kind":"log","link":"wired","text":"[TT&C] Falha no TX de 182 bytes."}
+{"pc":"2026-11-18T18:08:46.589+00:00","pc_ms":1795025326589,"dir":"rx","kind":"packet","link":"wired","pkt":{"n":20,"t":"ack","seq":59837,"cmd":"get_status","st":"ok","q":0}}
+{"pc":"2026-11-18T18:08:46.610+00:00","pc_ms":1795025326610,"dir":"tx","kind":"tc","link":"wired","attempt":1,"pkt":{"t":"tc","seq":59838,"cmd":"request_tm"}}
+{"pc":"2026-11-18T18:08:46.642+00:00","pc_ms":1795025326642,"dir":"rx","kind":"packet","link":"wired","pkt":{"n":21,"t":"tm","ts":1795025326,"md":"bench","vb":null,"ib":null,"vs":null,"is":null,"tp":null,"w":null,"az":null,"ac":null,"msg":null,"rssi":null,"snr":null,"rx":17,"err":0,"rst":3}}
+{"pc":"2026-11-18T18:08:46.644+00:00","pc_ms":1795025326644,"dir":"log","kind":"log","link":"wired","text":"[TT&C] Falha no TX de 182 bytes."}
+{"pc":"2026-11-18T18:08:46.652+00:00","pc_ms":1795025326652,"dir":"rx","kind":"packet","link":"wired","pkt":{"n":22,"t":"ack","seq":59838,"cmd":"request_tm","st":"ok","q":0}}
+{"pc":"2026-11-18T18:08:46.672+00:00","pc_ms":1795025326672,"dir":"tx","kind":"tc","link":"wired","attempt":1,"pkt":{"t":"tc","seq":59839,"cmd":"ping"}}
+{"pc":"2026-11-18T18:08:46.694+00:00","pc_ms":1795025326694,"dir":"rx","kind":"packet","link":"wired","pkt":{"n":23,"t":"ack","seq":59839,"cmd":"ping","st":"ok","q":0}}
+{"pc":"2026-11-18T18:08:46.715+00:00","pc_ms":1795025326715,"dir":"tx","kind":"tc","link":"wired","attempt":1,"pkt":{"t":"tc","seq":59840,"cmd":"get_status"}}
+{"pc":"2026-11-18T18:08:46.745+00:00","pc_ms":1795025326745,"dir":"rx","kind":"packet","link":"wired","pkt":{"n":24,"t":"tm","ts":1795025326,"md":"bench","vb":null,"ib":null,"vs":null,"is":null,"tp":null,"w":null,"az":null,"ac":null,"msg":null,"rssi":null,"snr":null,"rx":19,"err":0,"rst":3}}
+{"pc":"2026-11-18T18:08:46.748+00:00","pc_ms":1795025326748,"dir":"log","kind":"log","link":"wired","text":"[TT&C] Falha no TX de 182 bytes."}
+{"pc":"2026-11-18T18:08:46.755+00:00","pc_ms":1795025326755,"dir":"rx","kind":"packet","link":"wired","pkt":{"n":25,"t":"ack","seq":59840,"cmd":"get_status","st":"ok","q":0}}
+{"pc":"2026-11-18T18:08:46.776+00:00","pc_ms":1795025326776,"dir":"tx","kind":"tc","link":"wired","attempt":1,"pkt":{"t":"tc","seq":59841,"cmd":"request_tm"}}
+{"pc":"2026-11-18T18:08:46.808+00:00","pc_ms":1795025326808,"dir":"rx","kind":"packet","link":"wired","pkt":{"n":26,"t":"tm","ts":1795025326,"md":"bench","vb":null,"ib":null,"vs":null,"is":null,"tp":null,"w":null,"az":null,"ac":null,"msg":null,"rssi":null,"snr":null,"rx":20,"err":0,"rst":3}}
+{"pc":"2026-11-18T18:08:46.810+00:00","pc_ms":1795025326810,"dir":"log","kind":"log","link":"wired","text":"[TT&C] Falha no TX de 182 bytes."}
+{"pc":"2026-11-18T18:08:46.817+00:00","pc_ms":1795025326817,"dir":"rx","kind":"packet","link":"wired","pkt":{"n":27,"t":"ack","seq":59841,"cmd":"request_tm","st":"ok","q":0}}
+{"pc":"2026-11-18T18:08:46.838+00:00","pc_ms":1795025326838,"dir":"tx","kind":"tc","link":"wired","attempt":1,"pkt":{"t":"tc","seq":59842,"cmd":"ping"}}
+{"pc":"2026-11-18T18:08:46.861+00:00","pc_ms":1795025326861,"dir":"rx","kind":"packet","link":"wired","pkt":{"n":28,"t":"ack","seq":59842,"cmd":"ping","st":"ok","q":0}}
+{"pc":"2026-11-18T18:08:46.881+00:00","pc_ms":1795025326881,"dir":"tx","kind":"tc","link":"wired","attempt":1,"pkt":{"t":"tc","seq":59843,"cmd":"get_status"}}
+{"pc":"2026-11-18T18:08:46.900+00:00","pc_ms":1795025326900,"dir":"log","kind":"log","link":"wired","text":"[TT&C] ERRO: SX1276 sem resposta ou fora de RX, reinicializando."}
+{"pc":"2026-11-18T18:08:46.918+00:00","pc_ms":1795025326918,"dir":"log","kind":"log","link":"wired","text":"[TT&C] ERRO: SX1276 nao responde."}
+{"pc":"2026-11-18T18:08:46.932+00:00","pc_ms":1795025326932,"dir":"rx","kind":"packet","link":"wired","pkt":{"n":29,"t":"tm","ts":1795025326,"md":"bench","vb":null,"ib":null,"vs":null,"is":null,"tp":null,"w":null,"az":null,"ac":null,"msg":null,"rssi":null,"snr":null,"rx":22,"err":0,"rst":4}}
+{"pc":"2026-11-18T18:08:46.935+00:00","pc_ms":1795025326935,"dir":"log","kind":"log","link":"wired","text":"[TT&C] Falha no TX de 182 bytes."}
+{"pc":"2026-11-18T18:08:46.942+00:00","pc_ms":1795025326942,"dir":"rx","kind":"packet","link":"wired","pkt":{"n":30,"t":"ack","seq":59843,"cmd":"get_status","st":"ok","q":0}}
+{"pc":"2026-11-18T18:08:46.962+00:00","pc_ms":1795025326962,"dir":"tx","kind":"tc","link":"wired","attempt":1,"pkt":{"t":"tc","seq":59844,"cmd":"request_tm"}}
+{"pc":"2026-11-18T18:08:46.994+00:00","pc_ms":1795025326994,"dir":"rx","kind":"packet","link":"wired","pkt":{"n":31,"t":"tm","ts":1795025326,"md":"bench","vb":null,"ib":null,"vs":null,"is":null,"tp":null,"w":null,"az":null,"ac":null,"msg":null,"rssi":null,"snr":null,"rx":23,"err":0,"rst":4}}
+{"pc":"2026-11-18T18:08:46.997+00:00","pc_ms":1795025326997,"dir":"log","kind":"log","link":"wired","text":"[TT&C] Falha no TX de 182 bytes."}
+{"pc":"2026-11-18T18:08:47.004+00:00","pc_ms":1795025327004,"dir":"rx","kind":"packet","link":"wired","pkt":{"n":32,"t":"ack","seq":59844,"cmd":"request_tm","st":"ok","q":0}}
+{"pc":"2026-11-18T18:08:47.025+00:00","pc_ms":1795025327025,"dir":"tx","kind":"tc","link":"wired","attempt":1,"pkt":{"t":"tc","seq":59845,"cmd":"ping"}}
+{"pc":"2026-11-18T18:08:47.036+00:00","pc_ms":1795025327036,"dir":"log","kind":"log","link":"wired","text":"[TTC-HEALTH] state=ok radio=unavailable updating=0 wired_ready=1 age_ms=0 limit_ms=2000 completions=183 rf_seen=0 rf_age_ms=0 wired_seen=1 wired_age_ms=41 resets=4 changed=0 monotonic_ms=4271"}
+{"pc":"2026-11-18T18:08:47.050+00:00","pc_ms":1795025327050,"dir":"log","kind":"log","link":"wired","text":"[MEMORY-HEALTH] byte_heap=95284 byte_largest=47092 heap_low=0 block_low=0 stack_low_mask=0 allocation_failures=0 allocation_delta=0 changed=0 monotonic_ms=4271"}
+{"pc":"2026-11-18T18:08:47.058+00:00","pc_ms":1795025327058,"dir":"log","kind":"log","link":"wired","text":"[MEMORY-HEALTH] task=uart active=1 stack_free=2060 low=0 monotonic_ms=4271"}
+{"pc":"2026-11-18T18:08:47.064+00:00","pc_ms":1795025327064,"dir":"log","kind":"log","link":"wired","text":"[MEMORY-HEALTH] task=process active=1 stack_free=7628 low=0 monotonic_ms=4271"}
+{"pc":"2026-11-18T18:08:47.072+00:00","pc_ms":1795025327072,"dir":"log","kind":"log","link":"wired","text":"[MEMORY-HEALTH] task=writer active=0 stack_free=0 low=0 monotonic_ms=4271"}
+{"pc":"2026-11-18T18:08:47.077+00:00","pc_ms":1795025327077,"dir":"log","kind":"log","link":"wired","text":"[MEMORY-HEALTH] task=i2c active=1 stack_free=3532 low=0 monotonic_ms=4271"}
+{"pc":"2026-11-18T18:08:47.083+00:00","pc_ms":1795025327083,"dir":"log","kind":"log","link":"wired","text":"[MEMORY-HEALTH] task=ttc active=1 stack_free=6188 low=0 monotonic_ms=4271"}
+{"pc":"2026-11-18T18:08:47.091+00:00","pc_ms":1795025327091,"dir":"log","kind":"log","link":"wired","text":"[MEMORY-HEALTH] task=loop active=1 stack_free=4876 low=0 monotonic_ms=4271"}
+{"pc":"2026-11-18T18:08:47.105+00:00","pc_ms":1795025327105,"dir":"log","kind":"log","link":"wired","text":"[I2C-HEALTH] state=ok service=ready activity=idle age_ms=0 limit_ms=0 sampled_ms=4335 monotonic_ms=4335 changed=0 queued=0 cause=0 failure=0 cycles=0 recovered=0 exhausted=0"}
+{"pc":"2026-11-18T18:08:47.122+00:00","pc_ms":1795025327122,"dir":"log","kind":"log","link":"wired","text":"[FLOW] received=0 invalid=0 gaps=0 duplicates=0 written=0 failures=1 dropped=20 SD=0 status=11 poll_gap_ms=2 process_gap_ms=2 stack_rx=7628 stack_sd=0 stack_uart=2060 uart_full=0"}
+{"pc":"2026-11-18T18:08:47.130+00:00","pc_ms":1795025327130,"dir":"log","kind":"log","link":"wired","text":"[FLOW-MEMORY] heap=159420 byte_heap=95284 byte_largest=47092 byte_min=88564 parser_peak_bytes=0 parser_limit_bytes=98304"}
+{"pc":"2026-11-18T18:08:47.144+00:00","pc_ms":1795025327144,"dir":"log","kind":"log","link":"wired","text":"[STORAGE] state=0 attempt=0 episodes=0 attempts=0 recovered=0 exhausted=0 lifecycle_failures=0 cause=0 end=0 status=0 monotonic_ms=4335"}
+{"pc":"2026-11-18T18:08:47.152+00:00","pc_ms":1795025327152,"dir":"log","kind":"log","link":"wired","text":"[HEALTH] task=uart state=ok activity=idle age_ms=1 limit_ms=100 completions=3217 sampled_ms=4346 changed=0"}
+{"pc":"2026-11-18T18:08:47.161+00:00","pc_ms":1795025327161,"dir":"log","kind":"log","link":"wired","text":"[HEALTH] task=process state=ok activity=idle age_ms=1 limit_ms=2000 completions=3216 sampled_ms=4346 changed=0"}
+{"pc":"2026-11-18T18:08:47.172+00:00","pc_ms":1795025327172,"dir":"log","kind":"log","link":"wired","text":"[HEALTH] task=writer state=inactive activity=inactive age_ms=0 limit_ms=5000 completions=0 sampled_ms=4346 changed=0"}
+{"pc":"2026-11-18T18:08:47.186+00:00","pc_ms":1795025327186,"dir":"log","kind":"log","link":"wired","text":"[DELIVERY] occupied=0 peak=0 accepted=0 repeated=0 lost=0 storage_failures=1 attempts=0 tx_failures=0 confirmed=0 unknown=0 evicted=0 recovery_slot=0"}
+{"pc":"2026-11-18T18:08:47.191+00:00","pc_ms":1795025327191,"dir":"rx","kind":"packet","link":"wired","pkt":{"n":33,"t":"ack","seq":59845,"cmd":"ping","st":"ok","q":106}}
+{"pc":"2026-11-18T18:08:47.212+00:00","pc_ms":1795025327212,"dir":"tx","kind":"tc","link":"wired","attempt":1,"pkt":{"t":"tc","seq":59846,"cmd":"get_status"}}
+{"pc":"2026-11-18T18:08:47.238+00:00","pc_ms":1795025327238,"dir":"rx","kind":"packet","link":"wired","pkt":{"n":34,"t":"tm","ts":1795025326,"md":"bench","vb":null,"ib":null,"vs":null,"is":null,"tp":null,"w":null,"az":null,"ac":null,"msg":null,"rssi":null,"snr":null,"rx":25,"err":0,"rst":4}}
+{"pc":"2026-11-18T18:08:47.241+00:00","pc_ms":1795025327241,"dir":"log","kind":"log","link":"wired","text":"[TT&C] Falha no TX de 183 bytes."}
+{"pc":"2026-11-18T18:08:47.248+00:00","pc_ms":1795025327248,"dir":"rx","kind":"packet","link":"wired","pkt":{"n":35,"t":"ack","seq":59846,"cmd":"get_status","st":"ok","q":0}}
+{"pc":"2026-11-18T18:08:47.269+00:00","pc_ms":1795025327269,"dir":"tx","kind":"tc","link":"wired","attempt":1,"pkt":{"t":"tc","seq":59847,"cmd":"request_tm"}}
+{"pc":"2026-11-18T18:08:47.301+00:00","pc_ms":1795025327301,"dir":"rx","kind":"packet","link":"wired","pkt":{"n":36,"t":"tm","ts":1795025326,"md":"bench","vb":null,"ib":null,"vs":null,"is":null,"tp":null,"w":null,"az":null,"ac":null,"msg":null,"rssi":null,"snr":null,"rx":26,"err":0,"rst":4}}
+{"pc":"2026-11-18T18:08:47.304+00:00","pc_ms":1795025327304,"dir":"log","kind":"log","link":"wired","text":"[TT&C] Falha no TX de 183 bytes."}
+{"pc":"2026-11-18T18:08:47.311+00:00","pc_ms":1795025327311,"dir":"rx","kind":"packet","link":"wired","pkt":{"n":37,"t":"ack","seq":59847,"cmd":"request_tm","st":"ok","q":0}}
+{"pc":"2026-11-18T18:08:47.331+00:00","pc_ms":1795025327331,"dir":"tx","kind":"tc","link":"wired","attempt":1,"pkt":{"t":"tc","seq":59848,"cmd":"ping"}}
+{"pc":"2026-11-18T18:08:47.353+00:00","pc_ms":1795025327353,"dir":"rx","kind":"packet","link":"wired","pkt":{"n":38,"t":"ack","seq":59848,"cmd":"ping","st":"ok","q":0}}
+{"pc":"2026-11-18T18:08:47.374+00:00","pc_ms":1795025327374,"dir":"tx","kind":"tc","link":"wired","attempt":1,"pkt":{"t":"tc","seq":59849,"cmd":"get_status"}}
+{"pc":"2026-11-18T18:08:47.404+00:00","pc_ms":1795025327404,"dir":"rx","kind":"packet","link":"wired","pkt":{"n":39,"t":"tm","ts":1795025326,"md":"bench","vb":null,"ib":null,"vs":null,"is":null,"tp":null,"w":null,"az":null,"ac":null,"msg":null,"rssi":null,"snr":null,"rx":28,"err":0,"rst":4}}
+{"pc":"2026-11-18T18:08:47.407+00:00","pc_ms":1795025327407,"dir":"log","kind":"log","link":"wired","text":"[TT&C] Falha no TX de 183 bytes."}
+{"pc":"2026-11-18T18:08:47.414+00:00","pc_ms":1795025327414,"dir":"rx","kind":"packet","link":"wired","pkt":{"n":40,"t":"ack","seq":59849,"cmd":"get_status","st":"ok","q":0}}
+{"pc":"2026-11-18T18:08:47.435+00:00","pc_ms":1795025327435,"dir":"tx","kind":"tc","link":"wired","attempt":1,"pkt":{"t":"tc","seq":59850,"cmd":"request_tm"}}
+{"pc":"2026-11-18T18:08:47.467+00:00","pc_ms":1795025327467,"dir":"rx","kind":"packet","link":"wired","pkt":{"n":41,"t":"tm","ts":1795025326,"md":"bench","vb":null,"ib":null,"vs":null,"is":null,"tp":null,"w":null,"az":null,"ac":null,"msg":null,"rssi":null,"snr":null,"rx":29,"err":0,"rst":4}}
+{"pc":"2026-11-18T18:08:47.469+00:00","pc_ms":1795025327469,"dir":"log","kind":"log","link":"wired","text":"[TT&C] Falha no TX de 183 bytes."}
+{"pc":"2026-11-18T18:08:47.477+00:00","pc_ms":1795025327477,"dir":"rx","kind":"packet","link":"wired","pkt":{"n":42,"t":"ack","seq":59850,"cmd":"request_tm","st":"ok","q":0}}
+{"pc":"2026-11-18T18:08:47.497+00:00","pc_ms":1795025327497,"dir":"tx","kind":"tc","link":"wired","attempt":1,"pkt":{"t":"tc","seq":59851,"cmd":"ping"}}
+{"pc":"2026-11-18T18:08:47.519+00:00","pc_ms":1795025327519,"dir":"rx","kind":"packet","link":"wired","pkt":{"n":43,"t":"ack","seq":59851,"cmd":"ping","st":"ok","q":0}}
+{"pc":"2026-11-18T18:08:47.540+00:00","pc_ms":1795025327540,"dir":"tx","kind":"tc","link":"wired","attempt":1,"pkt":{"t":"tc","seq":59852,"cmd":"get_status"}}
+{"pc":"2026-11-18T18:08:47.570+00:00","pc_ms":1795025327570,"dir":"rx","kind":"packet","link":"wired","pkt":{"n":44,"t":"tm","ts":1795025327,"md":"bench","vb":null,"ib":null,"vs":null,"is":null,"tp":null,"w":null,"az":null,"ac":null,"msg":null,"rssi":null,"snr":null,"rx":31,"err":0,"rst":4}}
+{"pc":"2026-11-18T18:08:47.573+00:00","pc_ms":1795025327573,"dir":"log","kind":"log","link":"wired","text":"[TT&C] Falha no TX de 183 bytes."}
+{"pc":"2026-11-18T18:08:47.580+00:00","pc_ms":1795025327580,"dir":"rx","kind":"packet","link":"wired","pkt":{"n":45,"t":"ack","seq":59852,"cmd":"get_status","st":"ok","q":0}}
+{"pc":"2026-11-18T18:08:47.601+00:00","pc_ms":1795025327601,"dir":"tx","kind":"tc","link":"wired","attempt":1,"pkt":{"t":"tc","seq":59853,"cmd":"request_tm"}}
+{"pc":"2026-11-18T18:08:47.633+00:00","pc_ms":1795025327633,"dir":"rx","kind":"packet","link":"wired","pkt":{"n":46,"t":"tm","ts":1795025327,"md":"bench","vb":null,"ib":null,"vs":null,"is":null,"tp":null,"w":null,"az":null,"ac":null,"msg":null,"rssi":null,"snr":null,"rx":32,"err":0,"rst":4}}
+{"pc":"2026-11-18T18:08:47.636+00:00","pc_ms":1795025327636,"dir":"log","kind":"log","link":"wired","text":"[TT&C] Falha no TX de 183 bytes."}
+{"pc":"2026-11-18T18:08:47.643+00:00","pc_ms":1795025327643,"dir":"rx","kind":"packet","link":"wired","pkt":{"n":47,"t":"ack","seq":59853,"cmd":"request_tm","st":"ok","q":0}}
+{"pc":"2026-11-18T18:08:47.663+00:00","pc_ms":1795025327663,"dir":"tx","kind":"tc","link":"wired","attempt":1,"pkt":{"t":"tc","seq":59854,"cmd":"ping"}}
+{"pc":"2026-11-18T18:08:47.685+00:00","pc_ms":1795025327685,"dir":"rx","kind":"packet","link":"wired","pkt":{"n":48,"t":"ack","seq":59854,"cmd":"ping","st":"ok","q":0}}
+{"pc":"2026-11-18T18:08:47.706+00:00","pc_ms":1795025327706,"dir":"tx","kind":"tc","link":"wired","attempt":1,"pkt":{"t":"tc","seq":59855,"cmd":"get_status"}}
+{"pc":"2026-11-18T18:08:47.736+00:00","pc_ms":1795025327736,"dir":"rx","kind":"packet","link":"wired","pkt":{"n":49,"t":"tm","ts":1795025327,"md":"bench","vb":null,"ib":null,"vs":null,"is":null,"tp":null,"w":null,"az":null,"ac":null,"msg":null,"rssi":null,"snr":null,"rx":34,"err":0,"rst":4}}
+{"pc":"2026-11-18T18:08:47.739+00:00","pc_ms":1795025327739,"dir":"log","kind":"log","link":"wired","text":"[TT&C] Falha no TX de 183 bytes."}
+{"pc":"2026-11-18T18:08:47.746+00:00","pc_ms":1795025327746,"dir":"rx","kind":"packet","link":"wired","pkt":{"n":50,"t":"ack","seq":59855,"cmd":"get_status","st":"ok","q":0}}
+{"pc":"2026-11-18T18:08:47.767+00:00","pc_ms":1795025327767,"dir":"tx","kind":"tc","link":"wired","attempt":1,"pkt":{"t":"tc","seq":59856,"cmd":"request_tm"}}
+{"pc":"2026-11-18T18:08:47.799+00:00","pc_ms":1795025327799,"dir":"rx","kind":"packet","link":"wired","pkt":{"n":51,"t":"tm","ts":1795025327,"md":"bench","vb":null,"ib":null,"vs":null,"is":null,"tp":null,"w":null,"az":null,"ac":null,"msg":null,"rssi":null,"snr":null,"rx":35,"err":0,"rst":4}}
+{"pc":"2026-11-18T18:08:47.801+00:00","pc_ms":1795025327801,"dir":"log","kind":"log","link":"wired","text":"[TT&C] Falha no TX de 183 bytes."}
+{"pc":"2026-11-18T18:08:47.809+00:00","pc_ms":1795025327809,"dir":"rx","kind":"packet","link":"wired","pkt":{"n":52,"t":"ack","seq":59856,"cmd":"request_tm","st":"ok","q":0}}
+{"pc":"2026-11-18T18:08:47.829+00:00","pc_ms":1795025327829,"dir":"tx","kind":"tc","link":"wired","attempt":1,"pkt":{"t":"tc","seq":59857,"cmd":"ping"}}
+{"pc":"2026-11-18T18:08:47.852+00:00","pc_ms":1795025327852,"dir":"rx","kind":"packet","link":"wired","pkt":{"n":53,"t":"ack","seq":59857,"cmd":"ping","st":"ok","q":0}}
+{"pc":"2026-11-18T18:08:47.873+00:00","pc_ms":1795025327873,"dir":"tx","kind":"tc","link":"wired","attempt":1,"pkt":{"t":"tc","seq":59858,"cmd":"get_status"}}
+{"pc":"2026-11-18T18:08:47.902+00:00","pc_ms":1795025327902,"dir":"rx","kind":"packet","link":"wired","pkt":{"n":54,"t":"tm","ts":1795025327,"md":"bench","vb":null,"ib":null,"vs":null,"is":null,"tp":null,"w":null,"az":null,"ac":null,"msg":null,"rssi":null,"snr":null,"rx":37,"err":0,"rst":4}}
+{"pc":"2026-11-18T18:08:47.905+00:00","pc_ms":1795025327905,"dir":"log","kind":"log","link":"wired","text":"[TT&C] Falha no TX de 183 bytes."}
+{"pc":"2026-11-18T18:08:47.912+00:00","pc_ms":1795025327912,"dir":"log","kind":"log","link":"wired","text":"[TT&C] ERRO: SX1276 sem resposta ou fora de RX, reinicializando."}
+{"pc":"2026-11-18T18:08:47.931+00:00","pc_ms":1795025327931,"dir":"log","kind":"log","link":"wired","text":"[TT&C] ERRO: SX1276 nao responde."}
+{"pc":"2026-11-18T18:08:47.936+00:00","pc_ms":1795025327936,"dir":"rx","kind":"packet","link":"wired","pkt":{"n":55,"t":"ack","seq":59858,"cmd":"get_status","st":"ok","q":0}}
+{"pc":"2026-11-18T18:08:47.956+00:00","pc_ms":1795025327956,"dir":"tx","kind":"tc","link":"wired","attempt":1,"pkt":{"t":"tc","seq":59859,"cmd":"request_tm"}}
+{"pc":"2026-11-18T18:08:47.984+00:00","pc_ms":1795025327984,"dir":"rx","kind":"packet","link":"wired","pkt":{"n":56,"t":"tm","ts":1795025327,"md":"bench","vb":null,"ib":null,"vs":null,"is":null,"tp":null,"w":null,"az":null,"ac":null,"msg":null,"rssi":null,"snr":null,"rx":38,"err":0,"rst":5}}
+{"pc":"2026-11-18T18:08:47.987+00:00","pc_ms":1795025327987,"dir":"log","kind":"log","link":"wired","text":"[TT&C] Falha no TX de 183 bytes."}
+{"pc":"2026-11-18T18:08:47.994+00:00","pc_ms":1795025327994,"dir":"rx","kind":"packet","link":"wired","pkt":{"n":57,"t":"ack","seq":59859,"cmd":"request_tm","st":"ok","q":0}}
+{"pc":"2026-11-18T18:08:48.015+00:00","pc_ms":1795025328015,"dir":"tx","kind":"tc","link":"wired","attempt":1,"pkt":{"t":"tc","seq":59860,"cmd":"ping"}}
+{"pc":"2026-11-18T18:08:48.037+00:00","pc_ms":1795025328037,"dir":"rx","kind":"packet","link":"wired","pkt":{"n":58,"t":"ack","seq":59860,"cmd":"ping","st":"ok","q":0}}
+{"pc":"2026-11-18T18:08:48.058+00:00","pc_ms":1795025328058,"dir":"tx","kind":"tc","link":"wired","attempt":1,"pkt":{"t":"tc","seq":59861,"cmd":"get_status"}}
+{"pc":"2026-11-18T18:08:48.069+00:00","pc_ms":1795025328069,"dir":"log","kind":"log","link":"wired","text":"[TTC-HEALTH] state=ok radio=unavailable updating=0 wired_ready=1 age_ms=1 limit_ms=2000 completions=256 rf_seen=0 rf_age_ms=0 wired_seen=1 wired_age_ms=21 resets=5 changed=0 monotonic_ms=5304"}
+{"pc":"2026-11-18T18:08:48.083+00:00","pc_ms":1795025328083,"dir":"log","kind":"log","link":"wired","text":"[MEMORY-HEALTH] byte_heap=95284 byte_largest=47092 heap_low=0 block_low=0 stack_low_mask=0 allocation_failures=0 allocation_delta=0 changed=0 monotonic_ms=5304"}
+{"pc":"2026-11-18T18:08:48.091+00:00","pc_ms":1795025328091,"dir":"log","kind":"log","link":"wired","text":"[MEMORY-HEALTH] task=uart active=1 stack_free=2000 low=0 monotonic_ms=5304"}
+{"pc":"2026-11-18T18:08:48.096+00:00","pc_ms":1795025328096,"dir":"log","kind":"log","link":"wired","text":"[MEMORY-HEALTH] task=process active=1 stack_free=7596 low=0 monotonic_ms=5304"}
+{"pc":"2026-11-18T18:08:48.105+00:00","pc_ms":1795025328105,"dir":"log","kind":"log","link":"wired","text":"[MEMORY-HEALTH] task=writer active=0 stack_free=0 low=0 monotonic_ms=5304"}
+{"pc":"2026-11-18T18:08:48.110+00:00","pc_ms":1795025328110,"dir":"log","kind":"log","link":"wired","text":"[MEMORY-HEALTH] task=i2c active=1 stack_free=3532 low=0 monotonic_ms=5304"}
+{"pc":"2026-11-18T18:08:48.116+00:00","pc_ms":1795025328116,"dir":"log","kind":"log","link":"wired","text":"[MEMORY-HEALTH] task=ttc active=1 stack_free=6188 low=0 monotonic_ms=5304"}
+{"pc":"2026-11-18T18:08:48.124+00:00","pc_ms":1795025328124,"dir":"log","kind":"log","link":"wired","text":"[MEMORY-HEALTH] task=loop active=1 stack_free=4876 low=0 monotonic_ms=5304"}
+{"pc":"2026-11-18T18:08:48.138+00:00","pc_ms":1795025328138,"dir":"log","kind":"log","link":"wired","text":"[I2C-HEALTH] state=ok service=ready activity=idle age_ms=0 limit_ms=0 sampled_ms=5369 monotonic_ms=5369 changed=0 queued=0 cause=0 failure=0 cycles=0 recovered=0 exhausted=0"}
+{"pc":"2026-11-18T18:08:48.155+00:00","pc_ms":1795025328155,"dir":"log","kind":"log","link":"wired","text":"[FLOW] received=0 invalid=0 gaps=0 duplicates=0 written=0 failures=1 dropped=32 SD=0 status=11 poll_gap_ms=2 process_gap_ms=2 stack_rx=7596 stack_sd=0 stack_uart=2000 uart_full=0"}
+{"pc":"2026-11-18T18:08:48.163+00:00","pc_ms":1795025328163,"dir":"log","kind":"log","link":"wired","text":"[FLOW-MEMORY] heap=159420 byte_heap=95284 byte_largest=47092 byte_min=88564 parser_peak_bytes=0 parser_limit_bytes=98304"}
+{"pc":"2026-11-18T18:08:48.177+00:00","pc_ms":1795025328177,"dir":"log","kind":"log","link":"wired","text":"[STORAGE] state=0 attempt=0 episodes=0 attempts=0 recovered=0 exhausted=0 lifecycle_failures=0 cause=0 end=0 status=0 monotonic_ms=5369"}
+{"pc":"2026-11-18T18:08:48.186+00:00","pc_ms":1795025328186,"dir":"log","kind":"log","link":"wired","text":"[HEALTH] task=uart state=ok activity=idle age_ms=1 limit_ms=100 completions=4251 sampled_ms=5380 changed=0"}
+{"pc":"2026-11-18T18:08:48.194+00:00","pc_ms":1795025328194,"dir":"log","kind":"log","link":"wired","text":"[HEALTH] task=process state=ok activity=idle age_ms=1 limit_ms=2000 completions=4250 sampled_ms=5380 changed=0"}
+{"pc":"2026-11-18T18:08:48.205+00:00","pc_ms":1795025328205,"dir":"log","kind":"log","link":"wired","text":"[HEALTH] task=writer state=inactive activity=inactive age_ms=0 limit_ms=5000 completions=0 sampled_ms=5380 changed=0"}
+{"pc":"2026-11-18T18:08:48.218+00:00","pc_ms":1795025328218,"dir":"log","kind":"log","link":"wired","text":"[DELIVERY] occupied=0 peak=0 accepted=0 repeated=0 lost=0 storage_failures=1 attempts=0 tx_failures=0 confirmed=0 unknown=0 evicted=0 recovery_slot=0"}
+{"pc":"2026-11-18T18:08:48.235+00:00","pc_ms":1795025328235,"dir":"rx","kind":"packet","link":"wired","pkt":{"n":59,"t":"tm","ts":1795025327,"md":"bench","vb":null,"ib":null,"vs":null,"is":null,"tp":null,"w":null,"az":null,"ac":null,"msg":null,"rssi":null,"snr":null,"rx":40,"err":0,"rst":5}}
+{"pc":"2026-11-18T18:08:48.238+00:00","pc_ms":1795025328238,"dir":"log","kind":"log","link":"wired","text":"[TT&C] Falha no TX de 183 bytes."}
+{"pc":"2026-11-18T18:08:48.243+00:00","pc_ms":1795025328243,"dir":"rx","kind":"packet","link":"wired","pkt":{"n":60,"t":"ack","seq":59861,"cmd":"get_status","st":"ok","q":117}}
+{"pc":"2026-11-18T18:08:48.264+00:00","pc_ms":1795025328264,"dir":"tx","kind":"tc","link":"wired","attempt":1,"pkt":{"t":"tc","seq":59862,"cmd":"request_tm"}}
+{"pc":"2026-11-18T18:08:48.293+00:00","pc_ms":1795025328293,"dir":"rx","kind":"packet","link":"wired","pkt":{"n":61,"t":"tm","ts":1795025327,"md":"bench","vb":null,"ib":null,"vs":null,"is":null,"tp":null,"w":null,"az":null,"ac":null,"msg":null,"rssi":null,"snr":null,"rx":41,"err":0,"rst":5}}
+{"pc":"2026-11-18T18:08:48.296+00:00","pc_ms":1795025328296,"dir":"log","kind":"log","link":"wired","text":"[TT&C] Falha no TX de 183 bytes."}
+{"pc":"2026-11-18T18:08:48.303+00:00","pc_ms":1795025328303,"dir":"rx","kind":"packet","link":"wired","pkt":{"n":62,"t":"ack","seq":59862,"cmd":"request_tm","st":"ok","q":0}}
+{"pc":"2026-11-18T18:08:48.324+00:00","pc_ms":1795025328324,"dir":"tx","kind":"tc","link":"wired","attempt":1,"pkt":{"t":"tc","seq":59863,"cmd":"ping"}}
+{"pc":"2026-11-18T18:08:48.346+00:00","pc_ms":1795025328346,"dir":"rx","kind":"packet","link":"wired","pkt":{"n":63,"t":"ack","seq":59863,"cmd":"ping","st":"ok","q":0}}
+{"pc":"2026-11-18T18:08:48.366+00:00","pc_ms":1795025328366,"dir":"tx","kind":"tc","link":"wired","attempt":1,"pkt":{"t":"tc","seq":59864,"cmd":"get_status"}}
+{"pc":"2026-11-18T18:08:48.398+00:00","pc_ms":1795025328398,"dir":"rx","kind":"packet","link":"wired","pkt":{"n":64,"t":"tm","ts":1795025327,"md":"bench","vb":null,"ib":null,"vs":null,"is":null,"tp":null,"w":null,"az":null,"ac":null,"msg":null,"rssi":null,"snr":null,"rx":43,"err":0,"rst":5}}
+{"pc":"2026-11-18T18:08:48.400+00:00","pc_ms":1795025328400,"dir":"log","kind":"log","link":"wired","text":"[TT&C] Falha no TX de 183 bytes."}
+{"pc":"2026-11-18T18:08:48.407+00:00","pc_ms":1795025328407,"dir":"rx","kind":"packet","link":"wired","pkt":{"n":65,"t":"ack","seq":59864,"cmd":"get_status","st":"ok","q":0}}
+{"pc":"2026-11-18T18:08:48.428+00:00","pc_ms":1795025328428,"dir":"tx","kind":"tc","link":"wired","attempt":1,"pkt":{"t":"tc","seq":59865,"cmd":"request_tm"}}
+{"pc":"2026-11-18T18:08:48.460+00:00","pc_ms":1795025328460,"dir":"rx","kind":"packet","link":"wired","pkt":{"n":66,"t":"tm","ts":1795025327,"md":"bench","vb":null,"ib":null,"vs":null,"is":null,"tp":null,"w":null,"az":null,"ac":null,"msg":null,"rssi":null,"snr":null,"rx":44,"err":0,"rst":5}}
+{"pc":"2026-11-18T18:08:48.463+00:00","pc_ms":1795025328463,"dir":"log","kind":"log","link":"wired","text":"[TT&C] Falha no TX de 183 bytes."}
+{"pc":"2026-11-18T18:08:48.470+00:00","pc_ms":1795025328470,"dir":"rx","kind":"packet","link":"wired","pkt":{"n":67,"t":"ack","seq":59865,"cmd":"request_tm","st":"ok","q":0}}
+{"pc":"2026-11-18T18:08:48.491+00:00","pc_ms":1795025328491,"dir":"tx","kind":"tc","link":"wired","attempt":1,"pkt":{"t":"tc","seq":59866,"cmd":"ping"}}
+{"pc":"2026-11-18T18:08:48.513+00:00","pc_ms":1795025328513,"dir":"rx","kind":"packet","link":"wired","pkt":{"n":68,"t":"ack","seq":59866,"cmd":"ping","st":"ok","q":0}}
+{"pc":"2026-11-18T18:08:48.533+00:00","pc_ms":1795025328533,"dir":"tx","kind":"tc","link":"wired","attempt":1,"pkt":{"t":"tc","seq":59867,"cmd":"get_status"}}
+{"pc":"2026-11-18T18:08:48.565+00:00","pc_ms":1795025328565,"dir":"rx","kind":"packet","link":"wired","pkt":{"n":69,"t":"tm","ts":1795025328,"md":"bench","vb":null,"ib":null,"vs":null,"is":null,"tp":null,"w":null,"az":null,"ac":null,"msg":null,"rssi":null,"snr":null,"rx":46,"err":0,"rst":5}}
+{"pc":"2026-11-18T18:08:48.568+00:00","pc_ms":1795025328568,"dir":"log","kind":"log","link":"wired","text":"[TT&C] Falha no TX de 183 bytes."}
+{"pc":"2026-11-18T18:08:48.575+00:00","pc_ms":1795025328575,"dir":"rx","kind":"packet","link":"wired","pkt":{"n":70,"t":"ack","seq":59867,"cmd":"get_status","st":"ok","q":0}}
+{"pc":"2026-11-18T18:08:48.595+00:00","pc_ms":1795025328595,"dir":"tx","kind":"tc","link":"wired","attempt":1,"pkt":{"t":"tc","seq":59868,"cmd":"request_tm"}}
+{"pc":"2026-11-18T18:08:48.627+00:00","pc_ms":1795025328627,"dir":"rx","kind":"packet","link":"wired","pkt":{"n":71,"t":"tm","ts":1795025328,"md":"bench","vb":null,"ib":null,"vs":null,"is":null,"tp":null,"w":null,"az":null,"ac":null,"msg":null,"rssi":null,"snr":null,"rx":47,"err":0,"rst":5}}
+{"pc":"2026-11-18T18:08:48.630+00:00","pc_ms":1795025328630,"dir":"log","kind":"log","link":"wired","text":"[TT&C] Falha no TX de 183 bytes."}
+{"pc":"2026-11-18T18:08:48.637+00:00","pc_ms":1795025328637,"dir":"rx","kind":"packet","link":"wired","pkt":{"n":72,"t":"ack","seq":59868,"cmd":"request_tm","st":"ok","q":0}}
+{"pc":"2026-11-18T18:08:48.658+00:00","pc_ms":1795025328658,"dir":"tx","kind":"tc","link":"wired","attempt":1,"pkt":{"t":"tc","seq":59869,"cmd":"ping"}}
+{"pc":"2026-11-18T18:08:48.680+00:00","pc_ms":1795025328680,"dir":"rx","kind":"packet","link":"wired","pkt":{"n":73,"t":"ack","seq":59869,"cmd":"ping","st":"ok","q":0}}
+{"pc":"2026-11-18T18:08:48.700+00:00","pc_ms":1795025328700,"dir":"tx","kind":"tc","link":"wired","attempt":1,"pkt":{"t":"tc","seq":59870,"cmd":"get_status"}}
+{"pc":"2026-11-18T18:08:48.732+00:00","pc_ms":1795025328732,"dir":"rx","kind":"packet","link":"wired","pkt":{"n":74,"t":"tm","ts":1795025328,"md":"bench","vb":null,"ib":null,"vs":null,"is":null,"tp":null,"w":null,"az":null,"ac":null,"msg":null,"rssi":null,"snr":null,"rx":49,"err":0,"rst":5}}
+{"pc":"2026-11-18T18:08:48.734+00:00","pc_ms":1795025328734,"dir":"log","kind":"log","link":"wired","text":"[TT&C] Falha no TX de 183 bytes."}
+{"pc":"2026-11-18T18:08:48.741+00:00","pc_ms":1795025328741,"dir":"rx","kind":"packet","link":"wired","pkt":{"n":75,"t":"ack","seq":59870,"cmd":"get_status","st":"ok","q":0}}
+{"pc":"2026-11-18T18:08:48.762+00:00","pc_ms":1795025328762,"dir":"tx","kind":"tc","link":"wired","attempt":1,"pkt":{"t":"tc","seq":59871,"cmd":"request_tm"}}
+{"pc":"2026-11-18T18:08:48.794+00:00","pc_ms":1795025328794,"dir":"rx","kind":"packet","link":"wired","pkt":{"n":76,"t":"tm","ts":1795025328,"md":"bench","vb":null,"ib":null,"vs":null,"is":null,"tp":null,"w":null,"az":null,"ac":null,"msg":null,"rssi":null,"snr":null,"rx":50,"err":0,"rst":5}}
+{"pc":"2026-11-18T18:08:48.797+00:00","pc_ms":1795025328797,"dir":"log","kind":"log","link":"wired","text":"[TT&C] Falha no TX de 183 bytes."}
+{"pc":"2026-11-18T18:08:48.805+00:00","pc_ms":1795025328805,"dir":"rx","kind":"packet","link":"wired","pkt":{"n":77,"t":"ack","seq":59871,"cmd":"request_tm","st":"ok","q":0}}
+{"pc":"2026-11-18T18:08:48.826+00:00","pc_ms":1795025328826,"dir":"tx","kind":"tc","link":"wired","attempt":1,"pkt":{"t":"tc","seq":59872,"cmd":"ping"}}
+{"pc":"2026-11-18T18:08:48.847+00:00","pc_ms":1795025328847,"dir":"rx","kind":"packet","link":"wired","pkt":{"n":78,"t":"ack","seq":59872,"cmd":"ping","st":"ok","q":0}}
+{"pc":"2026-11-18T18:08:48.867+00:00","pc_ms":1795025328867,"dir":"tx","kind":"tc","link":"wired","attempt":1,"pkt":{"t":"tc","seq":59873,"cmd":"get_status"}}
+{"pc":"2026-11-18T18:08:48.899+00:00","pc_ms":1795025328899,"dir":"rx","kind":"packet","link":"wired","pkt":{"n":79,"t":"tm","ts":1795025328,"md":"bench","vb":null,"ib":null,"vs":null,"is":null,"tp":null,"w":null,"az":null,"ac":null,"msg":null,"rssi":null,"snr":null,"rx":52,"err":0,"rst":5}}
+{"pc":"2026-11-18T18:08:48.902+00:00","pc_ms":1795025328902,"dir":"log","kind":"log","link":"wired","text":"[TT&C] Falha no TX de 183 bytes."}
+{"pc":"2026-11-18T18:08:48.907+00:00","pc_ms":1795025328907,"dir":"rx","kind":"packet","link":"wired","pkt":{"n":80,"t":"ack","seq":59873,"cmd":"get_status","st":"ok","q":0}}
+{"pc":"2026-11-18T18:08:48.914+00:00","pc_ms":1795025328914,"dir":"log","kind":"log","link":"wired","text":"[TT&C] ERRO: SX1276 sem resposta ou fora de RX, reinicializando."}
+{"pc":"2026-11-18T18:08:48.928+00:00","pc_ms":1795025328928,"dir":"log","kind":"log","link":"wired","text":"[TT&C] ERRO: SX1276 nao responde."}
+{"pc":"2026-11-18T18:08:48.928+00:00","pc_ms":1795025328928,"dir":"tx","kind":"tc","link":"wired","attempt":1,"pkt":{"t":"tc","seq":59874,"cmd":"request_tm"}}
+{"pc":"2026-11-18T18:08:48.961+00:00","pc_ms":1795025328961,"dir":"rx","kind":"packet","link":"wired","pkt":{"n":81,"t":"tm","ts":1795025328,"md":"bench","vb":null,"ib":null,"vs":null,"is":null,"tp":null,"w":null,"az":null,"ac":null,"msg":null,"rssi":null,"snr":null,"rx":53,"err":0,"rst":6}}
+{"pc":"2026-11-18T18:08:48.964+00:00","pc_ms":1795025328964,"dir":"log","kind":"log","link":"wired","text":"[TT&C] Falha no TX de 183 bytes."}
+{"pc":"2026-11-18T18:08:48.972+00:00","pc_ms":1795025328972,"dir":"rx","kind":"packet","link":"wired","pkt":{"n":82,"t":"ack","seq":59874,"cmd":"request_tm","st":"ok","q":0}}
+{"pc":"2026-11-18T18:08:48.992+00:00","pc_ms":1795025328992,"dir":"tx","kind":"tc","link":"wired","attempt":1,"pkt":{"t":"tc","seq":59875,"cmd":"ping"}}
+{"pc":"2026-11-18T18:08:49.014+00:00","pc_ms":1795025329014,"dir":"rx","kind":"packet","link":"wired","pkt":{"n":83,"t":"ack","seq":59875,"cmd":"ping","st":"ok","q":0}}
+{"pc":"2026-11-18T18:08:49.035+00:00","pc_ms":1795025329035,"dir":"tx","kind":"tc","link":"wired","attempt":1,"pkt":{"t":"tc","seq":59876,"cmd":"get_status"}}
+{"pc":"2026-11-18T18:08:49.065+00:00","pc_ms":1795025329065,"dir":"rx","kind":"packet","link":"wired","pkt":{"n":84,"t":"tm","ts":1795025328,"md":"bench","vb":null,"ib":null,"vs":null,"is":null,"tp":null,"w":null,"az":null,"ac":null,"msg":null,"rssi":null,"snr":null,"rx":55,"err":0,"rst":6}}
+{"pc":"2026-11-18T18:08:49.068+00:00","pc_ms":1795025329068,"dir":"log","kind":"log","link":"wired","text":"[TT&C] Falha no TX de 183 bytes."}
+{"pc":"2026-11-18T18:08:49.075+00:00","pc_ms":1795025329075,"dir":"rx","kind":"packet","link":"wired","pkt":{"n":85,"t":"ack","seq":59876,"cmd":"get_status","st":"ok","q":0}}
+{"pc":"2026-11-18T18:08:49.096+00:00","pc_ms":1795025329096,"dir":"tx","kind":"tc","link":"wired","attempt":1,"pkt":{"t":"tc","seq":59877,"cmd":"request_tm"}}
+{"pc":"2026-11-18T18:08:49.128+00:00","pc_ms":1795025329128,"dir":"rx","kind":"packet","link":"wired","pkt":{"n":86,"t":"tm","ts":1795025328,"md":"bench","vb":null,"ib":null,"vs":null,"is":null,"tp":null,"w":null,"az":null,"ac":null,"msg":null,"rssi":null,"snr":null,"rx":56,"err":0,"rst":6}}
+{"pc":"2026-11-18T18:08:49.144+00:00","pc_ms":1795025329144,"dir":"log","kind":"log","link":"wired","text":"[TTC-HEALTH] state=ok radio=unavailable updating=1 wired_ready=1 age_ms=1 limit_ms=2000 completions=331 rf_seen=0 rf_age_ms=0 wired_seen=1 wired_age_ms=2 resets=6 changed=0 monotonic_ms=6364"}
+{"pc":"2026-11-18T18:08:49.147+00:00","pc_ms":1795025329147,"dir":"log","kind":"log","link":"wired","text":"[TT&C] Falha no TX de 183 bytes."}
+{"pc":"2026-11-18T18:08:49.153+00:00","pc_ms":1795025329153,"dir":"rx","kind":"packet","link":"wired","pkt":{"n":87,"t":"ack","seq":59877,"cmd":"request_tm","st":"ok","q":0}}
+{"pc":"2026-11-18T18:08:49.166+00:00","pc_ms":1795025329166,"dir":"log","kind":"log","link":"wired","text":"[MEMORY-HEALTH] byte_heap=95284 byte_largest=47092 heap_low=0 block_low=0 stack_low_mask=0 allocation_failures=0 allocation_delta=0 changed=0 monotonic_ms=6364"}
+{"pc":"2026-11-18T18:08:49.173+00:00","pc_ms":1795025329173,"dir":"tx","kind":"tc","link":"wired","attempt":1,"pkt":{"t":"tc","seq":59878,"cmd":"ping"}}
+{"pc":"2026-11-18T18:08:49.175+00:00","pc_ms":1795025329175,"dir":"log","kind":"log","link":"wired","text":"[MEMORY-HEALTH] task=uart active=1 stack_free=2000 low=0 monotonic_ms=6364"}
+{"pc":"2026-11-18T18:08:49.180+00:00","pc_ms":1795025329180,"dir":"log","kind":"log","link":"wired","text":"[MEMORY-HEALTH] task=process active=1 stack_free=7596 low=0 monotonic_ms=6364"}
+{"pc":"2026-11-18T18:08:49.186+00:00","pc_ms":1795025329186,"dir":"log","kind":"log","link":"wired","text":"[MEMORY-HEALTH] task=writer active=0 stack_free=0 low=0 monotonic_ms=6364"}
+{"pc":"2026-11-18T18:08:49.194+00:00","pc_ms":1795025329194,"dir":"log","kind":"log","link":"wired","text":"[MEMORY-HEALTH] task=i2c active=1 stack_free=3532 low=0 monotonic_ms=6364"}
+{"pc":"2026-11-18T18:08:49.200+00:00","pc_ms":1795025329200,"dir":"log","kind":"log","link":"wired","text":"[MEMORY-HEALTH] task=ttc active=1 stack_free=6188 low=0 monotonic_ms=6364"}
+{"pc":"2026-11-18T18:08:49.205+00:00","pc_ms":1795025329205,"dir":"log","kind":"log","link":"wired","text":"[MEMORY-HEALTH] task=loop active=1 stack_free=4876 low=0 monotonic_ms=6364"}
+{"pc":"2026-11-18T18:08:49.222+00:00","pc_ms":1795025329222,"dir":"log","kind":"log","link":"wired","text":"[I2C-HEALTH] state=ok service=ready activity=idle age_ms=0 limit_ms=0 sampled_ms=6448 monotonic_ms=6448 changed=0 queued=0 cause=0 failure=0 cycles=0 recovered=0 exhausted=0"}
+{"pc":"2026-11-18T18:08:49.236+00:00","pc_ms":1795025329236,"dir":"log","kind":"log","link":"wired","text":"[FLOW] received=0 invalid=0 gaps=0 duplicates=0 written=0 failures=1 dropped=46 SD=0 status=11 poll_gap_ms=2 process_gap_ms=2 stack_rx=7596 stack_sd=0 stack_uart=2000 uart_full=0"}
+{"pc":"2026-11-18T18:08:49.247+00:00","pc_ms":1795025329247,"dir":"log","kind":"log","link":"wired","text":"[FLOW-MEMORY] heap=159420 byte_heap=95284 byte_largest=47092 byte_min=88556 parser_peak_bytes=0 parser_limit_bytes=98304"}
+{"pc":"2026-11-18T18:08:49.258+00:00","pc_ms":1795025329258,"dir":"log","kind":"log","link":"wired","text":"[STORAGE] state=0 attempt=0 episodes=0 attempts=0 recovered=0 exhausted=0 lifecycle_failures=0 cause=0 end=0 status=0 monotonic_ms=6448"}
+{"pc":"2026-11-18T18:08:49.269+00:00","pc_ms":1795025329269,"dir":"log","kind":"log","link":"wired","text":"[HEALTH] task=uart state=ok activity=idle age_ms=1 limit_ms=100 completions=5340 sampled_ms=6469 changed=0"}
+{"pc":"2026-11-18T18:08:49.278+00:00","pc_ms":1795025329278,"dir":"log","kind":"log","link":"wired","text":"[HEALTH] task=process state=ok activity=idle age_ms=1 limit_ms=2000 completions=5339 sampled_ms=6469 changed=0"}
+{"pc":"2026-11-18T18:08:49.289+00:00","pc_ms":1795025329289,"dir":"log","kind":"log","link":"wired","text":"[HEALTH] task=writer state=inactive activity=inactive age_ms=0 limit_ms=5000 completions=0 sampled_ms=6469 changed=0"}
+{"pc":"2026-11-18T18:08:49.303+00:00","pc_ms":1795025329303,"dir":"log","kind":"log","link":"wired","text":"[DELIVERY] occupied=0 peak=0 accepted=0 repeated=0 lost=0 storage_failures=1 attempts=0 tx_failures=0 confirmed=0 unknown=0 evicted=0 recovery_slot=0"}
+{"pc":"2026-11-18T18:08:49.306+00:00","pc_ms":1795025329306,"dir":"rx","kind":"packet","link":"wired","pkt":{"n":88,"t":"ack","seq":59878,"cmd":"ping","st":"ok","q":95}}
+{"pc":"2026-11-18T18:08:49.326+00:00","pc_ms":1795025329326,"dir":"tx","kind":"tc","link":"wired","attempt":1,"pkt":{"t":"tc","seq":59879,"cmd":"get_status"}}
+{"pc":"2026-11-18T18:08:49.362+00:00","pc_ms":1795025329362,"dir":"rx","kind":"packet","link":"wired","pkt":{"n":89,"t":"tm","ts":1795025328,"md":"bench","vb":null,"ib":null,"vs":null,"is":null,"tp":null,"w":null,"az":null,"ac":null,"msg":null,"rssi":null,"snr":null,"rx":58,"err":0,"rst":6}}
+{"pc":"2026-11-18T18:08:49.364+00:00","pc_ms":1795025329364,"dir":"log","kind":"log","link":"wired","text":"[TT&C] Falha no TX de 183 bytes."}
+{"pc":"2026-11-18T18:08:49.371+00:00","pc_ms":1795025329371,"dir":"rx","kind":"packet","link":"wired","pkt":{"n":90,"t":"ack","seq":59879,"cmd":"get_status","st":"ok","q":0}}
+{"pc":"2026-11-18T18:08:49.392+00:00","pc_ms":1795025329392,"dir":"tx","kind":"tc","link":"wired","attempt":1,"pkt":{"t":"tc","seq":59880,"cmd":"request_tm"}}
+{"pc":"2026-11-18T18:08:49.424+00:00","pc_ms":1795025329424,"dir":"rx","kind":"packet","link":"wired","pkt":{"n":91,"t":"tm","ts":1795025328,"md":"bench","vb":null,"ib":null,"vs":null,"is":null,"tp":null,"w":null,"az":null,"ac":null,"msg":null,"rssi":null,"snr":null,"rx":59,"err":0,"rst":6}}
+{"pc":"2026-11-18T18:08:49.427+00:00","pc_ms":1795025329427,"dir":"log","kind":"log","link":"wired","text":"[TT&C] Falha no TX de 183 bytes."}
+{"pc":"2026-11-18T18:08:49.434+00:00","pc_ms":1795025329434,"dir":"rx","kind":"packet","link":"wired","pkt":{"n":92,"t":"ack","seq":59880,"cmd":"request_tm","st":"ok","q":0}}
+{"pc":"2026-11-18T18:08:49.455+00:00","pc_ms":1795025329455,"dir":"tx","kind":"tc","link":"wired","attempt":1,"pkt":{"t":"tc","seq":59881,"cmd":"ping"}}
+{"pc":"2026-11-18T18:08:49.477+00:00","pc_ms":1795025329477,"dir":"rx","kind":"packet","link":"wired","pkt":{"n":93,"t":"ack","seq":59881,"cmd":"ping","st":"ok","q":0}}
+{"pc":"2026-11-18T18:08:49.497+00:00","pc_ms":1795025329497,"dir":"tx","kind":"tc","link":"wired","attempt":1,"pkt":{"t":"tc","seq":59882,"cmd":"get_status"}}
+{"pc":"2026-11-18T18:08:49.529+00:00","pc_ms":1795025329529,"dir":"rx","kind":"packet","link":"wired","pkt":{"n":94,"t":"tm","ts":1795025329,"md":"bench","vb":null,"ib":null,"vs":null,"is":null,"tp":null,"w":null,"az":null,"ac":null,"msg":null,"rssi":null,"snr":null,"rx":61,"err":0,"rst":6}}
+{"pc":"2026-11-18T18:08:49.531+00:00","pc_ms":1795025329531,"dir":"log","kind":"log","link":"wired","text":"[TT&C] Falha no TX de 183 bytes."}
+{"pc":"2026-11-18T18:08:49.539+00:00","pc_ms":1795025329539,"dir":"rx","kind":"packet","link":"wired","pkt":{"n":95,"t":"ack","seq":59882,"cmd":"get_status","st":"ok","q":0}}
+{"pc":"2026-11-18T18:08:49.559+00:00","pc_ms":1795025329559,"dir":"tx","kind":"tc","link":"wired","attempt":1,"pkt":{"t":"tc","seq":59883,"cmd":"request_tm"}}
+{"pc":"2026-11-18T18:08:49.591+00:00","pc_ms":1795025329591,"dir":"rx","kind":"packet","link":"wired","pkt":{"n":96,"t":"tm","ts":1795025329,"md":"bench","vb":null,"ib":null,"vs":null,"is":null,"tp":null,"w":null,"az":null,"ac":null,"msg":null,"rssi":null,"snr":null,"rx":62,"err":0,"rst":6}}
+{"pc":"2026-11-18T18:08:49.594+00:00","pc_ms":1795025329594,"dir":"log","kind":"log","link":"wired","text":"[TT&C] Falha no TX de 183 bytes."}
+{"pc":"2026-11-18T18:08:49.601+00:00","pc_ms":1795025329601,"dir":"rx","kind":"packet","link":"wired","pkt":{"n":97,"t":"ack","seq":59883,"cmd":"request_tm","st":"ok","q":0}}
+{"pc":"2026-11-18T18:08:49.622+00:00","pc_ms":1795025329622,"dir":"tx","kind":"tc","link":"wired","attempt":1,"pkt":{"t":"tc","seq":59884,"cmd":"ping"}}
+{"pc":"2026-11-18T18:08:49.644+00:00","pc_ms":1795025329644,"dir":"rx","kind":"packet","link":"wired","pkt":{"n":98,"t":"ack","seq":59884,"cmd":"ping","st":"ok","q":0}}
+{"pc":"2026-11-18T18:08:49.664+00:00","pc_ms":1795025329664,"dir":"tx","kind":"tc","link":"wired","attempt":1,"pkt":{"t":"tc","seq":59885,"cmd":"get_status"}}
+{"pc":"2026-11-18T18:08:49.696+00:00","pc_ms":1795025329696,"dir":"rx","kind":"packet","link":"wired","pkt":{"n":99,"t":"tm","ts":1795025329,"md":"bench","vb":null,"ib":null,"vs":null,"is":null,"tp":null,"w":null,"az":null,"ac":null,"msg":null,"rssi":null,"snr":null,"rx":64,"err":0,"rst":6}}
+{"pc":"2026-11-18T18:08:49.698+00:00","pc_ms":1795025329698,"dir":"log","kind":"log","link":"wired","text":"[TT&C] Falha no TX de 183 bytes."}
+{"pc":"2026-11-18T18:08:49.706+00:00","pc_ms":1795025329706,"dir":"rx","kind":"packet","link":"wired","pkt":{"n":100,"t":"ack","seq":59885,"cmd":"get_status","st":"ok","q":0}}
+{"pc":"2026-11-18T18:08:49.729+00:00","pc_ms":1795025329729,"dir":"tx","kind":"tc","link":"wired","attempt":1,"pkt":{"t":"tc","seq":59886,"cmd":"request_log","args":{"op":"list","to":"wired"}}}
+{"pc":"2026-11-18T18:08:49.748+00:00","pc_ms":1795025329748,"dir":"rx","kind":"packet","link":"wired","pkt":{"n":101,"t":"lg","rq":59886,"op":"list","err":"no_sd"}}
+{"pc":"2026-11-18T18:08:49.755+00:00","pc_ms":1795025329755,"dir":"rx","kind":"packet","link":"wired","pkt":{"n":102,"t":"ack","seq":59886,"cmd":"request_log","st":"ok","q":0}}

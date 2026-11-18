@@ -22,7 +22,11 @@ namespace {
     };
     Sx1276Radio radio(radio_pins);
 #endif
+#ifdef OBC_BUFFERED_FRAMEWORK_LOG
+    UmbilicalLink umbilical(Serial, 115200, UmbilicalLink::PORT_MODE::REUSE);
+#else
     UmbilicalLink umbilical(Serial, 115200);
+#endif
     Ttc link(radio, &umbilical);
     bool init_attempted = false;
     bool active = false;

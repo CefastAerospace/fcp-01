@@ -1,0 +1,7 @@
+400d2dfc <__wrap_log_printfv>:
+400d2e21:	129ce5        	call8	400e57f0 <log_printfv>
+400e57f0 <log_printfv>:
+400e58b9:	fff365        	call8	400e57f0 <log_printfv>
+400f86fc <__wrap_log_printf>:
+400f878c:	da66e5        	call8	400d2dfc <__wrap_log_printfv>
+8967a427d9d13835d999da4d90da9135d94f9820c9594ac28d836e2c53006488  obc-dh/.pio/build/int009-lm75a-check/firmware.bin

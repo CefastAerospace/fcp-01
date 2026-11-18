@@ -205,3 +205,10 @@ A preservação de toda atualização ADS-B intermediária permanece como pendê
 explícita acordada com o responsável: snapshots acumulados não a demonstram.
 Não alterar requisitos ou resultados esperados para declarar esse atendimento.
 Em 10/11/2026, o responsável reafirmou snapshots JSON e descartou o payload binário compacto. A TES-005 registra a substituição documental e preserva seus cenários de perdas/repetição/falhas. Isso não presume aceite do enquadramento FCPU pelo Payload nem modifica os testes existentes.
+
+Em 18/11/2026, o OBC-DH adotou para a INT-006 uma fila de snapshots completos
+no Pi: cada mudança tem seu próprio snapshot e o ACK FCPU do quadro pendente
+libera o próximo envio em ordem. A confirmação em RAM segue a semântica
+definida neste contrato. O aceite do produtor, a retenção para eventual
+reenvio e a cobertura por mensagem ADS-B serão registrados na
+[INT-006](../../obc-dh/.tasks/03-integracao/INT-006-fluxo-de-dados.md#integração-operacional--18112026).

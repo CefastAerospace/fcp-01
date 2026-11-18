@@ -1,5 +1,8 @@
 #ifdef OBC_HOUSEKEEPING_BENCH
 #include "ObcHousekeepingBench.h"
+#ifdef OBC_ACQUISITION_RECORDS_BENCH
+#include "ObcDataFlowEsp32.h" // Consumidor de operações com a fila existente.
+#endif
 
 // ─── ATENÇÃO ──────────────────────────────────────────────────────
 /*
@@ -111,8 +114,13 @@ void Init(
     bool eps_started = false;
     bool thermal_started = false;
 #ifndef OBC_HOUSEKEEPING_FIXTURES
+#ifdef OBC_ACQUISITION_RECORDS_BENCH
+    eps_started = obc_eps::esp32::Init(obc_flow::esp32::RecordAcquisition);
+    thermal_started = obc_thermal::esp32::Init(obc_flow::esp32::RecordAcquisition);
+#else
     eps_started = obc_eps::esp32::Init();
     thermal_started = obc_thermal::esp32::Init();
+#endif
 #endif
     char line[200];
     const int length = std::snprintf(line, sizeof(line),
@@ -162,6 +170,29 @@ void ReportDiagnostics(
     const uint64_t now_ms = obc_time::esp32::GetMonotonicMs();
     if (now_ms - last_ms < 1000) return;
     last_ms = now_ms;
+    // O transporte só copia tempos; formatação e diagnóstico I2C ficam no loop.
+    static uint64_t reported_gaps = 0;
+    const auto transport = obc_payload::esp32::GetTransportStatistics();
+    if (transport.gap_observations != reported_gaps) {
+        reported_gaps = transport.gap_observations;
+        const auto bus = i2c::GetDiagnostics();
+        char trace[360];
+        const int trace_length = std::snprintf(trace, sizeof(trace),
+            "[HK-UART] sampled_ms=%llu gap_started_ms=%llu count=%llu gap_us=%llu previous_pump_us=%llu idle_us=%llu pump_us=%llu i2c_started_ms=%lu i2c_last_us=%lu i2c_max_us=%lu\n",
+            static_cast<unsigned long long>(now_ms),
+            static_cast<unsigned long long>(transport.gap_started_ms),
+            static_cast<unsigned long long>(transport.gap_observations),
+            static_cast<unsigned long long>(transport.gap_us),
+            static_cast<unsigned long long>(transport.previous_pump_us),
+            static_cast<unsigned long long>(transport.idle_us),
+            static_cast<unsigned long long>(transport.pump_us),
+            static_cast<unsigned long>(bus.callback_started_ms),
+            static_cast<unsigned long>(bus.last_callback_us),
+            static_cast<unsigned long>(bus.maximum_callback_us));
+        if (trace_length > 0 && static_cast<size_t>(trace_length) < sizeof(trace)) {
+            Serial.write(reinterpret_cast<const uint8_t*>(trace), static_cast<size_t>(trace_length));
+        }
+    }
     char line[200];
     const int length = std::snprintf(line, sizeof(line),
         "[HK-HEALTH] source=%s heap_bytes=%u block_bytes=%u loop_stack_bytes=%u\n", source,
@@ -208,9 +239,13 @@ void CaptureRecord(
         && !std::memcmp(bytes, obc_data::record_magic, 4)
         && (bytes[5] == static_cast<uint8_t>(obc_data::RECORD_TYPE::BOOT)
             || bytes[5] == static_cast<uint8_t>(obc_data::RECORD_TYPE::TIME_REFERENCE));
-    if ((!telemetry && !metadata) || size > obc_record::telemetry_record_bytes) return;
+    const bool acquisition = (size == obc_record::eps_record_bytes
+            || size == obc_record::thermal_record_bytes)
+        && !std::memcmp(bytes, obc_record::acquisition_magic, 4);
+    if ((!telemetry && !metadata && !acquisition) || size > obc_record::telemetry_record_bytes) return;
     char line[2 * obc_record::telemetry_record_bytes + 32];
-    size_t length = static_cast<size_t>(std::snprintf(line, sizeof(line), "[HK-RECORD] hex="));
+    const char* prefix = acquisition ? "[HK-ACQUISITION] hex=" : "[HK-RECORD] hex=";
+    size_t length = static_cast<size_t>(std::snprintf(line, sizeof(line), "%s", prefix));
     const char digits[] = "0123456789abcdef";
     for (size_t index = 0; index < size; ++index) {
         line[length++] = digits[bytes[index] >> 4];

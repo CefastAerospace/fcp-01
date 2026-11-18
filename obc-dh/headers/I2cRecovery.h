@@ -76,6 +76,25 @@ namespace i2c {
 
     // ─── HELPERS ──────────────────────────────────────────────────────
 
+    /** @brief Traduz o retorno Wire para o executor; leitura curta tem causa indeterminada. */
+    inline OPERATION_RESULT MapWireFailure(
+        bool failed,
+        bool buffer_failure,
+        bool short_read,
+        uint8_t status
+    ) {
+        if (!failed) return OPERATION_RESULT::OK;
+        if (buffer_failure) return OPERATION_RESULT::OPERATION_FAILED;
+        if (short_read) return OPERATION_RESULT::READ_INCOMPLETE;
+        switch (status) {
+            case 2:
+            case 3: return OPERATION_RESULT::DEVICE_NACK;
+            case 5: return OPERATION_RESULT::TRANSFER_TIMEOUT;
+            case 4: return OPERATION_RESULT::BUS_ERROR;
+            default: return OPERATION_RESULT::OPERATION_FAILED;
+        }
+    }
+
     /** @brief Escolhe recuperação por linha presa ou falha explicitamente classificada. */
     RECOVERY_CAUSE GetRecoveryCause(
         OPERATION_RESULT result,

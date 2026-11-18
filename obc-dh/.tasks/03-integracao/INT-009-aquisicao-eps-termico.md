@@ -1,8 +1,247 @@
 # INT-009 — Aquisição e integração EPS/Térmico
 
-**Estado:** Em andamento — recortes INA219 e LM75A de bancada concluídos e verificados no ESP32/USB; contratos operacionais, publicação TM e persistência completa pendentes
+**Estado:** Em andamento — regressão LM75A e diário FCP4 aprovados em bancada. Habilitação em `obc` aguarda os contratos EPS/Térmico.
 **Responsável pela implementação:** OBC-DH
 **Responsáveis pelos contratos:** EPS e Térmico
+
+## UART0 preservada e diário FCP4 em bancada
+
+O perfil LM75A abre a UART0 uma vez, com TX de 8 KiB. O umbilical
+usa `PORT_MODE::REUSE` para validar o driver e a velocidade sem reabrir
+a porta. A seleção explícita preserva os consumidores que configuram
+uma porta própria. A tolerância de 1% permite a quantização do divisor
+UART do ESP32. Depois da inicialização, o wrapper do SDK encaminha
+logs Arduino para o mesmo driver via `log_printfv`.
+
+O [roteiro LM75A original](../../examples/int009-uart-reuse-2026-11-18/02-lm75a-usb.json)
+capturou o ID de boot e passou. Foram 27 TMs, q máximo de 1 ms,
+resposta máxima de 199,132 ms e pilha mínima de 2.452 bytes.
+
+O [FCP4](../../../common/protocol/obc-data.md#aquisição-epstérmico--fcp4)
+registra operações de leitura ou configuração dos três INA219,
+incluindo Geral, e dos cinco LM75A. A tarefa produtora publica o
+resultado depois do callback I2C e sem esperar pelo SD. Fila e
+escritor são os mesmos da TM v3. Boot, início e conclusão monotônicos,
+geração I2C, resultado e disponibilidade seguem com cada operação.
+O leitor exporta arquivos mistos e a recuperação FCD1 atravessa FCP4
+sem marcar o segmento como corrompido.
+
+| Verificação | Resultado |
+|---|---|
+| Builds de `obc`, LM75A, bancada conjunta e FCP4 | Aprovados |
+| Codec nativo, vetores independentes, leitor, fila e diário | Aprovados, incluindo corrupção, truncamento, fila cheia, SD indisponível, falha de escrita e recuperação FCD1 |
+| Roteiros nativos anteriores de INA219, LM75A, v1/v2/v3 e FCD1 | Aprovados |
+| [FCP4 sem comandos](../../examples/int009-uart-reuse-2026-11-18/05-fcp4-usb.json) | 32 operações dos oito canais sem sensores. Poll máximo de 1 ms |
+| [Roteiro conjunto original com FCP4](../../examples/int009-uart-reuse-2026-11-18/06-fcp4-with-telemetry.json) | 32 TMs, 62 registros de boot/referência/TM, 45 operações FCP4 capturadas, q e poll máximos de 1 ms |
+| [obc restaurado](../../examples/int009-uart-reuse-2026-11-18/08-obc-restored.json) | Firmware normal gravado e cliente original aprovado |
+
+A bancada usou SD simulado e não tinha sensores. As grandezas válidas
+foram verificadas no codec com vetores nativos. Cada produtor conserva
+seus testes de driver. Pendem o aceite do mapa físico e dos endereços,
+modelo térmico, sinais e unidades, cadência e validade, medição solar
+e eventual interface BMS. O firmware `obc` segue com a aquisição
+desabilitada até esses aceites. INT-009 e TES mantêm seus estados.
+
+## Segunda inicialização da UART0 pela bancada LM75A
+
+O perfil experimental usou `--wrap=log_printfv`. O binário confirmou a
+chamada de `__wrap_log_printf` do SDK para `__wrap_log_printfv` da
+bancada e o retorno à implementação original antes da prontidão do
+driver. Compilação e gravação passaram. O
+[roteiro original](../../examples/int009-lm75a-log-v-2026-11-18/04-lm75a-usb.json)
+registrou o boot físico e os cinco canais térmicos. Parou antes de
+enviar comandos, com `AssertionError: []` no requisito de ID de boot.
+A [ligação](../../examples/int009-lm75a-log-v-2026-11-18/02-linkage.txt)
+e o [diff experimental](../../examples/int009-lm75a-log-v-2026-11-18/05-log-printfv-experiment.diff.txt)
+foram preservados. O código experimental foi retirado e
+[`obc` restaurado e verificado](../../examples/int009-lm75a-log-v-2026-11-18/07-obc-restored.json).
+
+O boot abre a UART0 em `setup()` e chama `LogStartup` antes de
+`obc_ttc::Init`. O `UmbilicalLink::Init` reassume a mesma porta com
+`port.begin(baud)`. O Arduino ESP32 2.0.14 fecha a instância existente
+com `end(false)` e remove seu driver com `uart_driver_delete`. Isso
+descarta a fila TX pendente. O relatório cortado termina a saída de SD
+logo antes de começar a de TT&C, na mesma transição. A segunda
+inicialização explica por que redirecionar os logs para o mesmo driver
+não recuperou a linha com o ID de boot.
+
+Proposta para a próxima comparação: o OBC abre e configura sua UART0.
+O umbilical deve receber a porta já configurada e validar prontidão e
+velocidade antes de usar o enquadramento existente. O construtor atual
+continua permitindo que outros consumidores configurem uma porta.
+A bancada LM75A deve então repetir a captura com TX de 8 KiB e o
+redirecionamento já verificado, usando o roteiro original. Conforme
+AGENTS.md, o ajuste de propriedade depende de discussão após a
+reprovação. Ainda não há medição nova de latência nem persistência FCP4.
+
+## Escrita comum na UART0 da bancada LM75A
+
+O caminho Arduino de `log_printfv` chama `ets_printf` e alimenta a
+FIFO diretamente. No mesmo periférico, `Serial.write` e o umbilical
+usam o driver UART. Para que as mensagens de SD e Wire passassem pela
+fila do driver, foi testado `--wrap=log_printf` junto ao buffer TX de
+8 KiB no perfil individual.
+
+A compilação dos objetos passou, mas o linker rejeitou
+`multiple definition of __wrap_log_printf`. O SDK Arduino ESP32
+2.0.14 já fornece esse símbolo em `libesp_diagnostics.a`. O experimento
+foi retirado e a placa não foi gravada. O
+[log da falha](../../examples/int009-thermal-serial-2026-11-18/01-build-failure.txt)
+e o [diff experimental](../../examples/int009-thermal-serial-2026-11-18/02-common-uart-experiment.diff.txt)
+permanecem disponíveis.
+
+A inspeção dos símbolos confirmou que o wrapper do SDK chama
+`log_printfv` por referência externa. A próxima proposta é preservar o
+wrapper do SDK e interceptar essa referência no perfil LM75A. Antes da
+prontidão da UART, a chamada deve cair na função original. Depois da
+prontidão, a mensagem completa deve seguir pelo buffer de `Serial.write`.
+O mapa do executável deve comprovar os dois caminhos antes da gravação.
+Conforme AGENTS.md, a implementação foi interrompida na falha de
+ligação. O roteiro original e a persistência FCP4 permanecem pendentes.
+
+## Experimento TX da bancada LM75A — continuação de 18/11/2026
+
+O responsável autorizou a avaliação de `Serial.setTxBufferSize(8192)`
+antes de `Serial.begin(115200)` no perfil LM75A individual. A compilação
+e a gravação passaram. O roteiro original capturou o boot do ESP32 e
+os cinco canais térmicos, mas terminou em `AssertionError: []` ao exigir
+um ID de boot. Nesse ponto, o roteiro ainda não havia enviado comandos.
+O resultado não permite comparar `q` com os 210 ms anteriores.
+
+O relatório anterior capturou a linha íntegra `[OBC] Tempo/NVS: OK; boot_id=210`.
+No experimento, o erro de `sd_diskio.cpp` começou antes do relatório de
+boot e dividiu uma linha com TT&C. Uma mensagem `Wire.cpp` também
+interrompeu a linha de prontidão TT&C. Esses registros evidenciam a
+concorrência de saídas na UART0. O framework pode escrever por
+`ets_printf` fora do buffer de `Serial`. A captura não identifica em
+qual ponto a linha de NVS se perdeu.
+
+A alteração experimental foi retirada de `main.cpp` e preservada em
+[diff](../../examples/int009-persistence-2026-11-18/02-thermal-buffer-experiment.diff.txt).
+O firmware experimental tem SHA-256
+`870b5c4342c1c79416906d9a217a510f62d907c64345bfcb9426159093050b4c`.
+A [reprovação](../../examples/int009-persistence-2026-11-18/01-thermal-tx-buffer.json)
+e a [restauração verificada de obc](../../examples/int009-persistence-2026-11-18/04-obc-restored.json)
+foram preservadas. As entradas e expectativas do roteiro continuam
+intactas. Conforme AGENTS.md, o próximo ajuste precisa ser discutido.
+A proposta é confirmar os caminhos de escrita da UART0 e serializar
+as mensagens no mesmo transmissor antes de tentar o buffer novamente.
+A persistência FCP4 ainda não foi iniciada.
+
+## Diagnóstico UART, prioridade e regressão LM75A — continuação de 18/11/2026
+
+O responsável autorizou continuar após a interrupção pelo poll de 13 ms.
+A instrumentação exclusiva de `OBC_HOUSEKEEPING_BENCH` passou a copiar os
+tempos de trabalho e espera do transporte. Não imprime nem consulta I2C
+na tarefa UART; o loop emite `[HK-UART]` quando observa novos excessos.
+As métricas e os critérios anteriores permanecem inalterados.
+
+As duas primeiras execuções instrumentadas do roteiro original passaram,
+com poll máximo de 7/8 ms. A
+[captura passiva de 90 s](../../examples/int009-uart-diagnosis-2026-11-18/05-passive-timing.json)
+reproduziu poll de 13 ms, sem enviar comandos. A amostra de micros registrou
+20 µs de trabalho anterior, 6.966 µs de espera e 21 µs de trabalho atual,
+próxima a erros Wire em 10.109/10.112/10.119/10.126/10.133 ms.
+As leituras de micros e ms são separadas e podem sofrer preempção entre
+elas; os 6.986 µs não são conversão exata da métrica de 13 ms. O limite
+e a métrica original em ms não foram substituídos.
+
+O [framework instalado](../../examples/int009-uart-diagnosis-2026-11-18/06-framework-evidence.json)
+mostra que `Wire::requestFrom` imprime erros por `log_printfv`/`ets_printf`,
+sem usar o buffer TX de `Serial`. Esses callbacks executam no proprietário
+I2C Core 1/prioridade 5, acima do transporte UART de prioridade 3. As
+observações são compatíveis com atraso por execução de maior prioridade;
+não constituem prova de cada instrução responsável pelo pico.
+
+Foi ajustada somente a prioridade UART nas duas bancadas conjuntas para
+6, permitindo preemptar o executor I2C. `transport_priority` substitui o
+literal na criação; demais ambientes conservam prioridade 3. Pilha de
+3.072 bytes, ring, baudrate, I2C, cadências, logs e limites permanecem.
+Não há alteração do framework nem redirecionamento de logs. O firmware
+operacional continua fora da aquisição EPS/Térmico.
+
+| Verificação | Resultado |
+|---|---|
+| [Cinco builds após instrumentação](../../examples/int009-uart-diagnosis-2026-11-18/01-diagnostic-builds.txt) e [após prioridade](../../examples/int009-uart-diagnosis-2026-11-18/07-priority-builds.txt) | Aprovados |
+| [Aquisição conjunta, roteiro original](../../examples/int009-uart-diagnosis-2026-11-18/09-acquisition-priority.json) | Aprovada: 32 TMs/62 registros, q máximo 3 ms e poll máximo 5 ms; ambos os produtores progrediram |
+| [Captura passiva após prioridade, 90 s](../../examples/int009-uart-diagnosis-2026-11-18/10-passive-priority.json) | Poll máximo 5 ms, nenhum excesso >10 ms; sem comandos, não é aceite funcional por si só |
+| [Fixtures, roteiro original](../../examples/int009-uart-diagnosis-2026-11-18/12-fixtures-priority.json) | Aprovadas: 35 TMs/65 registros, q máximo 3 ms e poll máximo 2 ms |
+| [Regressão INA219 original](../../examples/int009-uart-diagnosis-2026-11-18/14-eps-regression.json) | Aprovada em 30 s, q máximo 84 ms |
+| [Regressão LM75A original](../../examples/int009-uart-diagnosis-2026-11-18/16-thermal-regression.json) | **Reprovada:** `ping`, `st:ok`, **q=210 ms**, acima de 200 ms |
+| [obc restaurado/verificado](../../examples/int009-uart-diagnosis-2026-11-18/18-obc-restored.json) | Upload com hash verificado e cliente original aprovado |
+
+A regressão LM75A usa `int009-lm75a-check`: conserva prioridade UART 3 e
+não recebe o buffer TX exclusivo da bancada conjunta. Antes do ACK
+reprovado, após o ACK anterior, os logs contêm 51 linhas/6.589 bytes,
+equivalentes a aproximadamente 571,962 ms de transmissão a 115.200 baud
+8N1. `main::loop` atende comandos e imprime diagnósticos térmicos em
+sequência; a ausência de buffer TX é compatível com retenção do consumidor.
+Essa hipótese ainda não foi isolada por comparação na bancada individual.
+O perfil anterior não foi corrigido e seu `passed:false` foi preservado.
+
+Conforme AGENTS.md, implementação interrompida após essa nova reprovação.
+Próxima proposta, ainda não aplicada: avaliar buffer TX nativo no perfil
+LM75A individual e repetir o mesmo roteiro, sem omitir logs ou elevar
+limites. Codec v4, persistência por operação e ativação operacional não
+foram iniciados. A INT-009 permanece aberta; nenhuma TES foi encerrada.
+Os [comandos, hashes e limites](../../examples/int009-uart-diagnosis-2026-11-18/manifest.json)
+e a [avaliação consolidada](../../examples/int009-uart-diagnosis-2026-11-18/19-acceptance-summary.json)
+preservam as aprovações e a reprovação separadamente. Testes anteriores,
+entradas e expectativas permanecem intactos.
+
+## Buffer TX nativo e interrupção pelo intervalo UART — 18/11/2026
+
+O responsável autorizou executar o plano completo em etapas, mantendo os
+parâmetros provisórios somente nas bancadas enquanto EPS/Térmico não aprovam
+os contratos finais. A persistência planejada inclui cada leitura dos três
+INA219 e cinco LM75A, independentemente de pedidos de TM, com fila limitada
+e perdas explícitas. Essa ampliação ainda não foi implementada.
+
+A primeira etapa acrescentou `Serial.setTxBufferSize(8192)` antes de
+`Serial.begin(115200)` em `src/bench/ObcDataFlowCheck.cpp`, somente sob
+`OBC_HOUSEKEEPING_BENCH`. Confere retorno da configuração e prontidão da
+UART antes de anunciar a bancada. A configuração não comprova alocação:
+o driver nativo realiza a instalação em `begin`. Não há fila de logs,
+mudança de baudrate ou descarte deliberado de linhas. O custo é de 8 KiB
+para dados TX, além das estruturas internas do driver.
+
+O ESP32-D0WD-V3 rev. 3.1/CH340 foi identificado em `/dev/ttyUSB0` fora do
+sandbox, somente por USB e sem sensores, cartão, Pi ou rádio. A primeira
+compilação no sandbox foi impedida por `platforms.lock` em filesystem
+somente leitura, antes de compilar; a repetição autorizada fora dele
+aprovou os cinco ambientes. A restrição e a repetição estão preservadas.
+
+| Verificação | Resultado |
+|---|---|
+| [Cinco builds](../../examples/int009-completion-2026-11-18/02-tx-buffer-builds.txt) | `obc`, INA219, LM75A e duas bancadas conjuntas aprovados |
+| [Fixtures, roteiro original](../../examples/int009-completion-2026-11-18/05-fixtures-usb.json) | `passed:true`; 34 TMs, 64 registros; q máximo 17 ms, resposta máxima 136,575 ms e poll máximo 2 ms |
+| [Aquisição, roteiro original](../../examples/int009-completion-2026-11-18/07-acquisition-usb.json) | `passed:true`; 32 TMs, 62 registros; q máximo 1 ms e resposta máxima 174,983 ms; **poll máximo 13 ms** |
+| [Aceitação adicional do plano](../../examples/int009-completion-2026-11-18/10-acceptance-summary.json) | **Não atendida:** 13 ms excedem o critério UART preservado de 10 ms |
+| [Firmware normal restaurado](../../examples/int009-completion-2026-11-18/09-obc-restored.json) | Upload com hash verificado; cliente original `ObcStationCheck.py` aprovado |
+
+Na aquisição, EPS/Térmico iniciaram e progrediram, com margens observadas
+de 2.652/2.444 bytes. Todas as operações retornaram falha esperada pela
+ausência de sensores: 21 EPS e 35 térmicas. Heap interno amostrado mínimo
+de 60.868 bytes e maior bloco mínimo de 47.092 bytes. Esses dados não
+comprovam sensores físicos nem todos os máximos simultâneos.
+
+O buffer TX eliminou a violação de q na amostra comparada com os 217 ms
+anteriores; não eliminou o intervalo de atendimento UART de 13 ms. A
+origem desse intervalo ainda não foi isolada. Não atribuir a causa a
+prioridade, callback I2C ou driver sem medição adicional. O roteiro
+original não verifica esse campo; seu `passed:true` foi preservado, e a
+divergência foi registrada separadamente, sem trocar expectativas.
+
+Conforme AGENTS.md, a implementação foi interrompida antes de acrescentar
+o codec v4, callbacks de aquisição, persistência por operação ou ativação
+operacional. Nenhum ajuste adicional de prioridade, cadência, buffer ou
+limite foi aplicado. As regressões USB individuais previstas não foram
+executadas após esta divergência; os builds individuais passaram.
+
+Os [artefatos e comandos](../../examples/int009-completion-2026-11-18/manifest.json)
+preservam revisão e hashes anteriores dos testes. Não houve alteração de
+testes, entradas, asserts ou expectativas. `obc` permaneceu como firmware
+final na placa. INT-009 continua aberta; nenhuma TES mudou de estado.
 
 ## Recorte conjunto interrompido — 17/11/2026
 

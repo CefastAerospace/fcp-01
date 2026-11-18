@@ -1,0 +1,22 @@
+diff --git i/obc-dh/src/main.cpp w/obc-dh/src/main.cpp
+index 3fa24c8..19789f9 100644
+--- i/obc-dh/src/main.cpp
++++ w/obc-dh/src/main.cpp
+@@ -76,7 +76,17 @@ namespace {
+ void setup(
+ ) {
+     // Não aguarda conexão do computador nem inicia missão ou atuadores.
++#ifdef OBC_THERMAL_BENCH
++    // Absorve rajadas de diagnóstico que dividem o loop com o consumidor TC.
++    const bool tx_configured = Serial.setTxBufferSize(8192) == 8192;
++#endif
+     Serial.begin(115200);
++#ifdef OBC_THERMAL_BENCH
++    if (!tx_configured || !Serial) {
++        if (Serial) Serial.println("[THERMAL] FAIL: UART0 TX buffer unavailable");
++        for (;;) vTaskDelay(pdMS_TO_TICKS(1000));
++    }
++#endif
+     obc_watchdog::esp32::Init();
+     Serial.println("[OBC] Boot de bancada: tempo/NVS, I2C e SD");
+     const obc_startup::INITIALIZERS initializers = {

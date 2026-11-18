@@ -16,17 +16,7 @@ i2c::OPERATION_RESULT MapWireFailure(
     bool short_read,
     uint8_t status
 ) {
-    using RESULT = i2c::OPERATION_RESULT;
-    if (!failed) return RESULT::OK;
-    if (buffer_failure) return RESULT::OPERATION_FAILED;
-    if (short_read) return RESULT::READ_INCOMPLETE;
-    switch (status) {
-        case 2:
-        case 3: return RESULT::DEVICE_NACK;
-        case 5: return RESULT::TRANSFER_TIMEOUT;
-        case 4: return RESULT::BUS_ERROR;
-        default: return RESULT::OPERATION_FAILED;
-    }
+    return i2c::MapWireFailure(failed, buffer_failure, short_read, status);
 }
 
 bool IsAvailable(

@@ -1,0 +1,111 @@
+command: ["pio", "run", "-e", "obc", "-e", "int009-ina219-check", "-e", "int009-lm75a-check", "-e", "int009-housekeeping-check", "-e", "int009-housekeeping-fixtures-check"]
+Processing obc (platform: espressif32@6.6.0; board: esp32doit-devkit-v1; framework: arduino)
+--------------------------------------------------------------------------------
+OSError: Traceback (most recent call last):
+  File "/home/o-grande-kayky/.local/share/uv/tools/platformio/lib/python3.13/site-packages/platformio/__main__.py", line 103, in main
+    cli()  # pylint: disable=no-value-for-parameter
+    ~~~^^
+  File "/home/o-grande-kayky/.local/share/uv/tools/platformio/lib/python3.13/site-packages/click/core.py", line 1631, in __call__
+    return self.main(*args, **kwargs)
+           ~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/home/o-grande-kayky/.local/share/uv/tools/platformio/lib/python3.13/site-packages/click/core.py", line 1552, in main
+    rv = self.invoke(ctx)
+  File "/home/o-grande-kayky/.local/share/uv/tools/platformio/lib/python3.13/site-packages/platformio/cli.py", line 85, in invoke
+    return super().invoke(ctx)
+           ~~~~~~~~~~~~~~^^^^^
+  File "/home/o-grande-kayky/.local/share/uv/tools/platformio/lib/python3.13/site-packages/click/core.py", line 2032, in invoke
+    return _process_result(sub_ctx.command.invoke(sub_ctx))
+                           ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "/home/o-grande-kayky/.local/share/uv/tools/platformio/lib/python3.13/site-packages/click/core.py", line 1415, in invoke
+    return ctx.invoke(self.callback, **ctx.params)
+           ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/o-grande-kayky/.local/share/uv/tools/platformio/lib/python3.13/site-packages/click/core.py", line 910, in invoke
+    return callback(*args, **kwargs)
+  File "/home/o-grande-kayky/.local/share/uv/tools/platformio/lib/python3.13/site-packages/click/decorators.py", line 34, in new_func
+    return f(get_current_context(), *args, **kwargs)
+  File "/home/o-grande-kayky/.local/share/uv/tools/platformio/lib/python3.13/site-packages/platformio/run/cli.py", line 155, in cli
+    process_env(
+    ~~~~~~~~~~~^
+        ctx,
+        ^^^^
+    ...<9 lines>...
+        verbose,
+        ^^^^^^^^
+    )
+    ^
+  File "/home/o-grande-kayky/.local/share/uv/tools/platformio/lib/python3.13/site-packages/platformio/run/cli.py", line 218, in process_env
+    ).process()
+      ~~~~~~~^^
+  File "/home/o-grande-kayky/.local/share/uv/tools/platformio/lib/python3.13/site-packages/platformio/run/processor.py", line 81, in process
+    install_project_env_dependencies(
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        self.name,
+        ^^^^^^^^^^
+    ...<3 lines>...
+        },
+        ^^
+    )
+    ^
+  File "/home/o-grande-kayky/.local/share/uv/tools/platformio/lib/python3.13/site-packages/platformio/package/commands/install.py", line 134, in install_project_env_dependencies
+    _install_project_env_platform(project_env, options),
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/o-grande-kayky/.local/share/uv/tools/platformio/lib/python3.13/site-packages/platformio/package/commands/install.py", line 151, in _install_project_env_platform
+    PlatformPackageManager().install(
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        spec,
+        ^^^^^
+    ...<3 lines>...
+        force=options.get("force"),
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/home/o-grande-kayky/.local/share/uv/tools/platformio/lib/python3.13/site-packages/platformio/package/manager/platform.py", line 50, in install
+    pkg = super().install(spec, force=force, skip_dependencies=True)
+  File "/home/o-grande-kayky/.local/share/uv/tools/platformio/lib/python3.13/site-packages/platformio/package/manager/_install.py", line 46, in install
+    self.lock()
+    ~~~~~~~~~^^
+  File "/home/o-grande-kayky/.local/share/uv/tools/platformio/lib/python3.13/site-packages/platformio/package/manager/base.py", line 99, in lock
+    self._lockfile.acquire()
+    ~~~~~~~~~~~~~~~~~~~~~~^^
+  File "/home/o-grande-kayky/.local/share/uv/tools/platformio/lib/python3.13/site-packages/platformio/package/lockfile.py", line 95, in acquire
+    return self._lock()
+           ~~~~~~~~~~^^
+  File "/home/o-grande-kayky/.local/share/uv/tools/platformio/lib/python3.13/site-packages/platformio/package/lockfile.py", line 65, in _lock
+    self._fp = open(  # pylint: disable=consider-using-with
+               ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        self._lock_path, mode="w", encoding="utf8"
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+OSError: [Errno 30] Read-only file system: '/home/o-grande-kayky/.local/share/platformio/platforms.lock'
+
+============================================================
+
+An unexpected error occurred. Further steps:
+
+* Verify that you have the latest version of PlatformIO using
+  `python -m pip install -U platformio` command
+
+* Try to find answer in FAQ Troubleshooting section
+  https://docs.platformio.org/page/faq/index.html
+
+* Report this problem to the developers
+  https://github.com/platformio/platformio-core/issues
+
+============================================================
+
+Exception ignored in atexit callback <function _finalize at 0x7f902d3c9ee0>:
+Traceback (most recent call last):
+  File "/home/o-grande-kayky/.local/share/uv/tools/platformio/lib/python3.13/site-packages/platformio/telemetry.py", line 323, in _finalize
+    postpone_events(telemetry.get_unsent_events())
+  File "/home/o-grande-kayky/.local/share/uv/tools/platformio/lib/python3.13/site-packages/platformio/telemetry.py", line 361, in postpone_events
+    save_postponed_events(postponed_events[KEEP_MAX_REPORTS * -1 :])
+  File "/home/o-grande-kayky/.local/share/uv/tools/platformio/lib/python3.13/site-packages/platformio/telemetry.py", line 346, in save_postponed_events
+    with app.State(state_path, lock=True) as state:
+  File "/home/o-grande-kayky/.local/share/uv/tools/platformio/lib/python3.13/site-packages/platformio/app.py", line 102, in __enter__
+    self._lock_state_file()
+  File "/home/o-grande-kayky/.local/share/uv/tools/platformio/lib/python3.13/site-packages/platformio/app.py", line 133, in _lock_state_file
+    raise exception.HomeDirPermissionsError(os.path.dirname(self.path)) from exc
+platformio.exception.HomeDirPermissionsError: The directory `/home/o-grande-kayky/.cache/platformio` or its parent directory is not owned by the current user and PlatformIO can not store configuration data.
+Please check the permissions and owner of that directory.
+Otherwise, please remove manually `/home/o-grande-kayky/.cache/platformio` directory and PlatformIO will create new from the current user.

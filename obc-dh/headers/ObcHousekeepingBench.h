@@ -8,6 +8,7 @@
 #include "ObcHousekeeping.h" // Mesmo mapeador portátil exercitado no computador.
 #include "ObcEpsEsp32.h" // Cópias dos três INA219, sem transações no consumidor.
 #include "ObcThermalEsp32.h" // Cópias dos cinco LM75A e disponibilidade por canal.
+#include "PayloadReceiverEsp32.h" // Captura temporal exclusiva da bancada UART.
 #include "ObcRecordCodec.h" // Assinaturas/tamanhos de BOOT, referência e TM v3.
 #include <Arduino.h> // Serial em uma escrita por linha.
 #include <esp_heap_caps.h> // Heap interno, maior bloco e callback de alocação recusada.

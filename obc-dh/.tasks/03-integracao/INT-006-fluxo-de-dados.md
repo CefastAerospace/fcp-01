@@ -3,6 +3,106 @@
 **Estado:** Em andamento — bancada USB, cliente real da estação e TM/tempo aprovados nos recortes locais; aceites, operação e ensaios físicos restantes pendentes
 **Responsáveis:** OBC-DH, Payload e TT&C
 
+## Integração operacional — 18/11/2026
+
+O OBC-DH adotou para a integração uma fila de snapshots JSON completos no
+Pi, com um quadro FCPU v1 pendente por vez. Se a mesma aeronave passa por
+A, B e C enquanto A aguarda ACK, o Pi deve conservar B e C e enviá-los
+nessa ordem. Cada novo quadro avança a sequência FCPU. Uma retransmissão
+conserva sessão, sequência, JSON e CRC. O ACK correspondente libera o
+próximo envio e confirma aceitação em RAM. A gravação no SD ocorre no
+escritor e pode falhar após o ACK.
+
+| Responsável | Evidência ou decisão necessária para concluir |
+|---|---|
+| Payload | Confirmar FCPU v1 e entregar o produtor Pi, com responsável, porta e captura da sequência `DATA A`, `ACK A`, `DATA B`, `ACK B`, `DATA C`, `ACK C`. Mostrar perda de ACK e repetição do quadro pendente. Registrar taxa, tamanho dos quadros, rajadas, limite da fila e política de retenção e reenvio, inclusive após falha ou reinício. |
+| Payload e coordenação | Definir quais mensagens integram o REQ-OBC-006 e como cada uma conserva seu timestamp, inclusive quando os valores se repetem. Preservar as mudanças de estado no Pi resolve a sobrescrita entre envios. A cobertura por mensagem depende dessa definição. |
+| Payload, OBC-DH e TT&C | Confirmar fonte, unidade e validade para `ts` individual, `vel`, `hdg`, `cnt` e `msg`. O fluxo atual mantém esses campos indisponíveis. |
+| TT&C e OBC-DH | Acordar seleção, frequência e política de saturação do downlink para o perfil do Payload. Identificar a revisão da estação e verificar a durabilidade do pacote e do ID antes de `cf`. O timeout de confirmação fica em 10 s provisórios até a medição RF. |
+
+O caminho de referência reutiliza `PayloadReceiver`, o diário, o leitor,
+as entregas identificadas e `request_log`. Usar a captura do produtor para
+verificar a compatibilidade. Se o perfil aprovado exceder a capacidade ou
+exigir persistência diferente, registrar a etapa e o motivo antes de propor
+ajuste de firmware. O FCPU v1 e o temporizador de confirmação do solo estão
+descritos nos contratos de [UART](../../../common/protocol/payload-uart.md)
+e [TT&C](../../../common/protocol/ttc-json.md#parâmetros-de-operação-proposta-para-acordo).
+
+### Regressões locais — 18/11/2026
+
+Execução sobre `55fbdc0` com as alterações locais da INT-009 presentes.
+Os builds `obc` e `int006-ttc-check` passaram com Espressif32 6.6.0.
+As regressões nativas de receptor, entregas, downlink, extração, leitor e
+TM v3 passaram com os roteiros originais. O receptor verificou quadro
+repetido com novo ACK, timestamp preservado, aceitação das sequências
+seguintes e rejeição de CRC inválido.
+
+| Recorte no ESP32 via USB | Resultado |
+|---|---|
+| [Downlink de bancada](../../examples/int006-operacao-2026-11-18/01-downlink-usb.json) | 46 ACKs, `q` máximo 41 ms, resposta máxima 507,283 ms, sete entregas com retentativa após perda simulada de `cf`, três arquivos extraídos. |
+| [Cliente da estação em bancada](../../examples/int006-operacao-2026-11-18/02-estacao-usb.json) | 75 TCs diretos, 48 TMs, `q` máximo 84 ms, RTT máximo 153,4 ms, sete `cf` e três arquivos baixados e interpretados. O contador do diário registrou 51 descartes no cenário simulado. |
+| [`obc` restaurado e verificado](../../examples/int006-operacao-2026-11-18/03-obc-restaurado.json) | 64 TCs diretos, 37 TMs, `q` máximo 148 ms, RTT máximo 184,9 ms e `no_sd` esperado. |
+
+SHA-256 dos binários gravados:
+
+- `int006-ttc-check`: `447ce54af66491ab9b59ab2dbf0a3f9ee90428aca44d86109368c099103b5751`
+- `obc`: `a14b63f3905055b8a60f01e07817e841591c6551cb98fa8c905c0a5b463d05fd`
+
+A bancada usa Payload e SD simulados e a revisão local da estação.
+A captura A/B/C do produtor real, a política de retenção e o acordo de
+downlink continuam pendentes. A comprovação com Pi, cartão, RF e
+interrupção física segue nas TES-005/006/008/009.
+
+### Diagnóstico de descartes do diário — 18/11/2026
+
+O perfil `int006-drops-check` herda os quadros FCPU e o backend de SD
+simulado de `int006-ttc-check`. Em cada ponto de descarte, o OBC preserva o
+incremento original de `records_dropped` e conta a classe e a causa nesse
+perfil. Cada amostra USB traz três linhas `[FLOW-DROPS]` com o mesmo `ms` e
+`total`. A soma das três classes corresponde ao `dropped` da linha `[FLOW]`
+da mesma amostra. Os registros em SD e o ACK FCPU mantêm seus contratos.
+
+Compilar `obc`, `int006-ttc-check` e `int006-drops-check` no PlatformIO.
+Gravar `int006-drops-check` e rodar `ObcStationCheck.py --bench`, conforme o
+[guia do cliente da estação](../../tools/README.md#cliente-real-da-estação-e-tmtempo--11112026),
+com um caminho novo para `--report`. Conferir as linhas no `session_log`
+indicado pelo relatório e restaurar `obc` para rodar o mesmo roteiro no
+modo normal.
+
+| Causa observada | Snapshots | TM | Outros |
+|---|---:|---:|---:|
+| Fila de registros curtos cheia | 0 | 23 | 8 |
+| Slot de snapshot ocupado | 18 | 0 | 0 |
+| Escritor indisponível | 0 | 0 | 1 |
+| Total | 18 | 23 | 9 |
+
+As dez amostras reconciliaram o contador, com total final de 50 descartes.
+Os descartes de snapshot apareceram durante a rajada FCPU e todos foram
+atribuídos ao único slot ocupado. O escritor simulado aguardava 100 ms por
+chamada de escrita. O relatório registrou zero falhas de escrita e zero
+lacunas FCPU. Esse diagnóstico demonstra pressão de capacidade no cenário
+simulado. A taxa operacional e o SD físico determinam se será necessário
+mudar filas ou retenção.
+
+| Evidência | Resultado |
+|---|---|
+| [Cliente da estação no perfil instrumentado](../../examples/int006-descarte-2026-11-18/01-bancada.json) | Roteiro original aprovado. 74 TCs, 47 TMs, sete `cf`, `q` máximo 114 ms, RTT 181,3 ms e poll UART 2 ms. |
+| [Conferência dos contadores](../../examples/int006-descarte-2026-11-18/02-contagem.json) | Tipos e causas somam o contador agregado em dez amostras. |
+| [`obc` restaurado](../../examples/int006-descarte-2026-11-18/03-obc-restaurado.json) | Roteiro original aprovado. 64 TCs, 37 TMs, `q` máximo 117 ms, RTT 156,8 ms, poll UART 2 ms e `no_sd` esperado. |
+
+Os três builds passaram em Espressif32 6.6.0 sobre `55fbdc0` com as demais
+alterações locais presentes. SHA-256 do perfil de diagnóstico
+`4b3c0ed03feaaeaf1d38827c9ff01fec8325385028ba3ac33e697f3d223f9f84` e do
+`obc` restaurado `af2f4bac7eac44b88c24747188c8944ae174299d3df2ac9672c32fb6bba2bb62`.
+
+**Pedido ao Payload.** Fornecer uma captura UART do Pi em que B e C ficam
+na fila enquanto A aguarda ACK. Incluir a perda de um ACK e repetir o DATA
+pendente com a mesma sessão, sequência e CRC. Informar taxa nominal,
+tamanho dos quadros, rajadas, retenção e condição de reenvio após falha ou
+reinício. Com Payload e coordenação, registrar como cada mensagem incluída
+no REQ-OBC-006 recebe timestamp. Usar o perfil recebido para dimensionar
+o diário e acordar seleção, frequência e saturação do downlink com TT&C.
+
 
 ## Separação vigente — 14/11/2026
 

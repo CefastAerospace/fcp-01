@@ -19,9 +19,13 @@
 
 class UmbilicalLink : public LinkTransport {
 public:
+    /** @brief Define quem configura a porta. REUSE exige driver e baud já configurados. */
+    enum class PORT_MODE { CONFIGURE, REUSE };
+
     UmbilicalLink(
         HardwareSerial& port,
-        uint32_t baud
+        uint32_t baud,
+        PORT_MODE mode = PORT_MODE::CONFIGURE
     );
 
     bool Init() override;
@@ -51,6 +55,7 @@ public:
 private:
     HardwareSerial& port;
     uint32_t baud;
+    PORT_MODE mode;
     bool ready = false;
     char line[ttc::max_frame_len + 1];
     size_t line_len = 0;

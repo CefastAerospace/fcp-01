@@ -1,0 +1,56 @@
+{
+  "implementation": "Native UART0 TX buffer of 8192 bytes only in OBC_HOUSEKEEPING_BENCH; checked before readiness",
+  "uart_poll_limit_ms": 10,
+  "runs": {
+    "05-fixtures-usb": {
+      "original_passed": true,
+      "telemetry": 34,
+      "captured_records": 64,
+      "maximum_q_ms": 17,
+      "maximum_ack_ms": 136.57497900021554,
+      "maximum_poll_gap_ms": 2,
+      "minimum_heap_bytes": 70604,
+      "minimum_largest_block_bytes": 47092,
+      "producer_health": {}
+    },
+    "07-acquisition-usb": {
+      "original_passed": true,
+      "telemetry": 32,
+      "captured_records": 62,
+      "maximum_q_ms": 1,
+      "maximum_ack_ms": 174.98281300004237,
+      "maximum_poll_gap_ms": 13,
+      "minimum_heap_bytes": 60868,
+      "minimum_largest_block_bytes": 47092,
+      "producer_health": {
+        "eps": {
+          "active": "1",
+          "service": "1",
+          "progress_ms": "30205",
+          "age_ms": "11",
+          "operations": "21",
+          "failures": "21",
+          "stack_free_bytes": "2652"
+        },
+        "thermal": {
+          "active": "1",
+          "service": "1",
+          "progress_ms": "30215",
+          "age_ms": "2",
+          "operations": "35",
+          "failures": "35",
+          "stack_free_bytes": "2444"
+        }
+      }
+    }
+  },
+  "development_acceptance": false,
+  "reason": "Acquisition reports poll_gap_ms=13, above the preserved 10 ms criterion; implementation stopped without further changes",
+  "not_implemented": [
+    "FCP4 acquisition codec and reader",
+    "per-operation acquisition persistence",
+    "operational activation pending EPS/Thermal contracts"
+  ],
+  "historical_tests_modified": [],
+  "test_inputs_and_expectations_preserved": true
+}

@@ -284,7 +284,7 @@ bool Scan(
             if (!ReadExact(io, file, offset, bytes, count)) return false;
             const bool delivery = count >= 4 && std::memcmp(bytes, "FCD1", 4) == 0;
             const bool history = count >= 4 && std::memcmp(bytes, "FCP", 3) == 0
-                && bytes[3] >= '1' && bytes[3] <= '3';
+                && bytes[3] >= '1' && bytes[3] <= '4';
             if ((delivery || history) && count < 8) Add(diagnostic.incomplete_tails);
             if ((delivery || history) && count >= 8) {
                 const uint32_t size = static_cast<uint32_t>(Get(bytes + 6, 2));

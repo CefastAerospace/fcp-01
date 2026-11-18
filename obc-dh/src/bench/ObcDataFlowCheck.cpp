@@ -1,4 +1,5 @@
 #include "ObcTtc.h"
+#include "ObcBenchSerial.h" // UART0 compartilhada no perfil de aquisição FCP4.
 #ifdef OBC_STORAGE_RECOVERY_BENCH
 #include "DeliveryRecoveryCheck.h" // Mesmo cenário de cache cheio executado no PC/ESP32.
 #endif
@@ -497,7 +498,25 @@ size_t ReadBenchInput(
 /** @brief Reserva boot real; substitui somente o backend de SD e a entrada UART. */
 void setup(
 ) {
+#ifdef OBC_BUFFERED_FRAMEWORK_LOG
+    if (!obc_bench_serial::Init()) {
+        for (;;) vTaskDelay(pdMS_TO_TICKS(1000));
+    }
+#else
+#ifdef OBC_HOUSEKEEPING_BENCH
+    // O buffer nativo absorve rajadas sem mudar baudrate ou descartar linhas.
+    // setTxBufferSize configura o tamanho; begin realiza a alocação no driver.
+    const bool tx_configured = Serial.setTxBufferSize(8192) == 8192;
+#endif
     Serial.begin(115200);
+#ifdef OBC_HOUSEKEEPING_BENCH
+    if (!tx_configured || !Serial) {
+        // Uma bancada sem transporte não pode anunciar prontidão funcional.
+        if (Serial) Serial.println("[HK-CHECK] FAIL: UART0 TX buffer unavailable");
+        for (;;) vTaskDelay(pdMS_TO_TICKS(1000));
+    }
+#endif
+#endif
 #ifdef OBC_WATCHDOG_ENABLED
     obc_watchdog::esp32::Init();
 #endif

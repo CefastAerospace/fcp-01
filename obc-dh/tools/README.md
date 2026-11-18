@@ -1,8 +1,72 @@
-# Codec e leitura de registros OBC v1/v2/v3
+# Codec e leitura de registros OBC v1/v2/v3/v4
+
+## Diário de aquisição FCP4
+
+`int009-acquisition-records-check` liga os dois produtores ao diário simulado.
+O escritor emite `[HK-ACQUISITION]` com os bytes aceitos. O roteiro captura
+esses bytes sem enviar comandos e pede ao leitor C++ que valide e exporte
+os registros. Use um ESP32 ligado só por USB, sem sensores ou cartão.
+O ambiente usa endereços provisórios e compartilha a UART0 sem reabri-la.
+
+Dentro de `obc-dh/`, com Python contendo pyserial para a etapa USB:
+
+```bash
+g++ -std=c++11 -Wall -Wextra -Werror -fsanitize=undefined -Iheaders \
+    src/ObcData.cpp src/ObcTime.cpp src/ObcRecordCodec.cpp src/ObcDelivery.cpp \
+    tools/ReadRecords.cpp -o /tmp/fcp01-read-records
+g++ -std=c++11 -Wall -Wextra -Werror -fsanitize=undefined -Iheaders \
+    src/ObcData.cpp src/ObcTime.cpp src/ObcRecordCodec.cpp src/ObcStorage.cpp \
+    src/ObcDataFlow.cpp tests/AcquisitionRecordsCheck.cpp -o /tmp/fcp01-acquisition-check
+g++ -std=c++11 -Wall -Wextra -Werror -fsanitize=undefined -Iheaders \
+    src/ObcData.cpp src/ObcTime.cpp src/ObcRecordCodec.cpp src/ObcStorage.cpp \
+    src/ObcDataFlow.cpp src/ObcDelivery.cpp tools/DeliveryLogs.cpp -o /tmp/fcp01-delivery-logs
+python3 tests/AcquisitionRecordsCheck.py /tmp/fcp01-acquisition-check \
+    /tmp/fcp01-read-records /tmp/fcp01-delivery-logs
+pio run -e int009-acquisition-records-check -t upload --upload-port PORTA
+python3 tests/AcquisitionRecordsBenchCheck.py PORTA \
+    --reader /tmp/fcp01-read-records --report NOVO-RELATORIO.json
+pio run -e obc -t upload --upload-port PORTA
+```
+
+O [contrato FCP4](../../common/protocol/obc-data.md#aquisição-epstérmico--fcp4)
+define tamanhos, unidades e disponibilidade. A bancada USB verifica
+configurações sem sensores e escrita no backend simulado. Medições
+válidas são exercitadas no codec nativo com vetores independentes.
 
 ## Bancada conjunta EPS/Térmico — 17/11/2026, em desenvolvimento
 
-**Estado atual: fixtures aprovadas na etapa 40; aquisição conjunta com
+**Continuação de 18/11/2026:** transporte UART em prioridade 6 somente nas
+bancadas conjuntas, acima do executor I2C de prioridade 5. O diagnóstico
+`[HK-UART]` copia tempos no transporte e imprime no loop, sem mudar a
+métrica ou o limite anterior. Após reproduzir poll de 13 ms em captura
+passiva, o ajuste passou nos roteiros originais de
+[aquisição](../examples/int009-uart-diagnosis-2026-11-18/09-acquisition-priority.json)
+e [fixtures](../examples/int009-uart-diagnosis-2026-11-18/12-fixtures-priority.json):
+poll máximo de 5/2 ms; q máximo de 3 ms em ambos. Nova captura passiva de
+90 s também atingiu no máximo 5 ms. Esses resultados não aprovam voo ou
+todos os perfis. A regressão INA219 passou, porém a
+[LM75A individual reprovou](../examples/int009-uart-diagnosis-2026-11-18/16-thermal-regression.json)
+em ping q=210 ms contra 200 ms. Esse ambiente mantém TX/prioridade originais.
+Nenhuma outra correção aplicada; persistência por leitura ainda não iniciada.
+[obc restaurado/verificado](../examples/int009-uart-diagnosis-2026-11-18/18-obc-restored.json).
+Diagnóstico, limitações e proposta seguinte estão na INT-009; comandos e
+hashes no [manifesto](../examples/int009-uart-diagnosis-2026-11-18/manifest.json).
+
+**Etapa anterior de 18/11/2026:** as duas bancadas conjuntas configuram o buffer
+TX nativo de 8 KiB antes de `Serial.begin(115200)`, verificando configuração
+e prontidão da UART. Cinco builds e os roteiros originais passaram:
+[fixtures](../examples/int009-completion-2026-11-18/05-fixtures-usb.json)
+com 34 TMs/64 registros e q máximo 17 ms;
+[aquisição](../examples/int009-completion-2026-11-18/07-acquisition-usb.json)
+com 32 TMs/62 registros e q máximo 1 ms. Porém, poll UART de 13 ms excede
+o critério de 10 ms do plano. A
+[aceitação adicional](../examples/int009-completion-2026-11-18/10-acceptance-summary.json)
+permanece não atendida, sem alterar `passed:true` dos roteiros originais.
+Implementação interrompida conforme AGENTS.md; nenhum outro ajuste aplicado.
+Persistência por operação ainda não iniciada; contratos finais pendentes.
+[obc restaurado e cliente original aprovado](../examples/int009-completion-2026-11-18/09-obc-restored.json).
+
+**Histórico anterior: fixtures aprovadas na etapa 40; aquisição conjunta com
 estágio SD sob demanda reprovada por q=217 ms contra limite 200 ms.
 Implementação interrompida conforme AGENTS.md.** Os comandos
 abaixo reproduzem os perfis; a aprovação de fixtures não aprova aquisição
@@ -24,7 +88,7 @@ após iniciar todos os produtores e o escritor: `ping q=217 ms`; limite
 em arquivos novos somente para diagnóstico, com CRC válido e sem bytes
 descartados. Isso não aprova o roteiro original, cujo `passed:false`
 permanece. [obc restaurado/verificado](../examples/int009-housekeeping-2026-11-17-183036/64-on-demand-obc-restored.json).
-Buffer TX UART0 de 8 KiB é proposta ainda não aplicada. Históricos abaixo
+Na etapa anterior, buffer TX UART0 de 8 KiB era proposta ainda não aplicada. Históricos abaixo
 conservam as causas anteriores e suas evidências.
 
 Verificação do proprietário dos buffers, dentro de `obc-dh/`, com

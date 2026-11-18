@@ -4,6 +4,16 @@
 #include "I2cBus.h" // Inicialização do controlador e executor existentes.
 #include "ObcStorageEsp32.h" // Montagem SD/HSPI, sem abrir arquivos.
 #include "ObcTtc.h" // Enlace TT&C e atendimento dos comandos de bancada.
+#include "ObcBenchSerial.h" // UART comum ao umbilical e aos logs das bancadas.
+#ifdef OBC_AS5600_BENCH
+#include "ObcAs5600.h" // Leitura bruta do encoder pelo executor I2C.
+#endif
+#ifdef OBC_BH1750_BENCH
+#include "ObcBh1750.h" // Leitura independente dos dois canais em lux.
+#endif
+#ifdef OBC_MPU9250_BENCH
+#include "ObcMpu9250.h" // Aquisição dos eixos do acelerômetro e do giroscópio.
+#endif
 #ifdef OBC_EPS_BENCH
 #include "ObcEpsEsp32.h" // Aquisição isolada, sem publicar energia na TM operacional.
 #endif
@@ -76,7 +86,13 @@ namespace {
 void setup(
 ) {
     // Não aguarda conexão do computador nem inicia missão ou atuadores.
+#ifdef OBC_BUFFERED_FRAMEWORK_LOG
+    if (!obc_bench_serial::Init()) {
+        for (;;) vTaskDelay(pdMS_TO_TICKS(1000));
+    }
+#else
     Serial.begin(115200);
+#endif
     obc_watchdog::esp32::Init();
     Serial.println("[OBC] Boot de bancada: tempo/NVS, I2C e SD");
     const obc_startup::INITIALIZERS initializers = {
@@ -90,6 +106,21 @@ void setup(
     obc_watchdog::esp32::Checkpoint();
     obc_flow::esp32::Init(report);
     obc_watchdog::esp32::Checkpoint();
+#ifdef OBC_AS5600_BENCH
+    const bool encoder_started = report.i2c_ready && obc_as5600::esp32::Init();
+    Serial.printf("[AS5600-INIT] started=%u\n", encoder_started ? 1U : 0U);
+    obc_watchdog::esp32::Checkpoint();
+#endif
+#ifdef OBC_BH1750_BENCH
+    const bool light_started = report.i2c_ready && obc_bh1750::esp32::Init();
+    Serial.printf("[BH1750-INIT] started=%u\n", light_started ? 1U : 0U);
+    obc_watchdog::esp32::Checkpoint();
+#endif
+#ifdef OBC_MPU9250_BENCH
+    const bool imu_started = report.i2c_ready && obc_mpu9250::esp32::Init();
+    Serial.printf("[MPU9250-INIT] started=%u\n", imu_started ? 1U : 0U);
+    obc_watchdog::esp32::Checkpoint();
+#endif
 #ifdef OBC_EPS_BENCH
     Serial.printf("[EPS] init=%s; parametros provisorios de bancada\n",
         obc_eps::esp32::Init() ? "iniciada" : "indisponivel");
@@ -110,6 +141,15 @@ void loop(
 ) {
     obc_ttc::Service();
     obc_flow::esp32::ReportDiagnostics();
+#ifdef OBC_AS5600_BENCH
+    obc_as5600::esp32::ReportDiagnostics();
+#endif
+#ifdef OBC_BH1750_BENCH
+    obc_bh1750::esp32::ReportDiagnostics();
+#endif
+#ifdef OBC_MPU9250_BENCH
+    obc_mpu9250::esp32::ReportDiagnostics();
+#endif
 #ifdef OBC_EPS_BENCH
     obc_eps::esp32::ReportDiagnostics();
 #endif

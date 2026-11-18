@@ -1,4 +1,4 @@
-# Dados OBC — registros v1, snapshots v2 e TM v3
+# Dados OBC — registros v1, snapshots v2, TM v3 e aquisição v4
 
 **Estado atual — revisão documental de 10/11/2026:** modelos, validadores, codecs e leitor têm implementação local, com evidências nas tarefas DAD-001/DAD-003/TES-007. A primeira etapa INT-006 já liga recepção de snapshots, referência temporal, gravação e TM. Os aceites de Payload, TT&C, ADCS, EPS e Térmico continuam nas integrações correspondentes; ensaios físicos não são presumidos por este contrato.
 
@@ -360,6 +360,42 @@ Reutilizar `obc_time::TIME_REFERENCE`. Sua recepção deve coincidir exatamente 
 ```json
 {"version":1,"type":"time_reference","boot_id":1,"monotonic_ms":5000,"data":{"unix_s":1760000000,"delay_ms":162}}
 ```
+
+## Aquisição EPS/Térmico — FCP4
+
+Cada tentativa concluída de leitura ou configuração recebe um registro, inclusive
+quando o executor rejeita o pedido. O cabeçalho de 24 bytes mantém a estrutura
+existente, com assinatura `FCP4`, versão 4, tipo 10 (EPS) ou 11 (Térmico)
+e instante monotônico de conclusão. O CRC cobre os mesmos campos das versões
+anteriores. Tamanhos canônicos de 78 bytes para EPS e 58 para Térmico.
+
+| Offset | Campo | Representação |
+|---:|---|---|
+| 24 | início da tentativa | u64, ms no mesmo boot |
+| 32 | geração de recuperação observada | u64 |
+| 40 | canal | u8, EPS 0 Solar / 1 Bateria / 2 Geral, Térmico 0 a 4 na ordem dos canais |
+| 41 | endereço I2C | u8, sete bits |
+| 42 | operação | u8, 1 configuração, 2 leitura |
+| 43 | resultado do executor | u8, tabela abaixo |
+| 44 | resultado do driver | u8, tabela abaixo |
+| 45 | etapa Wire | u8, 0 nenhuma, 1 seleção, 2 leitura, 3 escrita, 4 buffer |
+| 46 | registrador, status Wire, bytes recebidos | três u8 em ordem |
+| 49 | máscara de medições | u8, um bit por valor a partir de zero |
+| 50 | medições | EPS: VIN− V, VIN+ V, shunt mV, corrente A, potência VIN− W e potência VIN+ W; Térmico: °C. Cada valor usa binary32. |
+
+Resultados do executor de 0 a 12: sucesso, não inicializado, argumento inválido,
+contexto inválido, fila cheia, espera de fila vencida, operação falhou, NACK,
+timeout de transferência, erro de barramento, leitura incompleta, em recuperação,
+indisponível. Resultados do driver de 0 a 11: não executado, sucesso, não
+inicializado, canal/endereço inválido, dispositivo offline, em baixo consumo,
+erro I2C, overflow, erro de buffer, leitura incompleta, temperatura fora da faixa,
+conversão pendente. Os códigos são atribuídos explicitamente pelos adaptadores.
+
+Somente leituras concluídas com sucesso do executor e do driver podem marcar
+medições. Configuração e leitura inválida têm máscara zero. Os campos ausentes
+são gravados como zero e exportados como `null`. A fila e o escritor existentes
+contabilizam recusas. Não há repetição de amostra histórica. O registro local é
+independente da TM v3 e usa os endereços provisórios somente em bancada.
 
 ## 6. Validação local e pendências de aceite
 

@@ -1,0 +1,357 @@
+{
+  "passed": true,
+  "samples_checked": 10,
+  "last_total": 50,
+  "last_counts_by_kind": {
+    "snapshot": 18,
+    "tm": 23,
+    "other": 9
+  },
+  "last_counts_by_cause": {
+    "writer_unavailable": 1,
+    "admission_rejected": 0,
+    "queue_full": 31,
+    "snapshot_busy": 18,
+    "encode_failed": 0,
+    "time_sync": 0,
+    "write_failed": 0
+  },
+  "direct_commands": 74,
+  "telemetry": 47,
+  "maximum_q_ms": 114,
+  "maximum_rtt_ms": 181.3,
+  "maximum_uart_poll_ms": 2,
+  "confirmations": 7,
+  "samples": [
+    {
+      "total": 1,
+      "counts": {
+        "snapshot": {
+          "writer_unavailable": 0,
+          "admission_rejected": 0,
+          "queue_full": 0,
+          "snapshot_busy": 0,
+          "encode_failed": 0,
+          "time_sync": 0,
+          "write_failed": 0
+        },
+        "tm": {
+          "writer_unavailable": 0,
+          "admission_rejected": 0,
+          "queue_full": 0,
+          "snapshot_busy": 0,
+          "encode_failed": 0,
+          "time_sync": 0,
+          "write_failed": 0
+        },
+        "other": {
+          "writer_unavailable": 1,
+          "admission_rejected": 0,
+          "queue_full": 0,
+          "snapshot_busy": 0,
+          "encode_failed": 0,
+          "time_sync": 0,
+          "write_failed": 0
+        }
+      },
+      "ms": 1016
+    },
+    {
+      "total": 1,
+      "counts": {
+        "snapshot": {
+          "writer_unavailable": 0,
+          "admission_rejected": 0,
+          "queue_full": 0,
+          "snapshot_busy": 0,
+          "encode_failed": 0,
+          "time_sync": 0,
+          "write_failed": 0
+        },
+        "tm": {
+          "writer_unavailable": 0,
+          "admission_rejected": 0,
+          "queue_full": 0,
+          "snapshot_busy": 0,
+          "encode_failed": 0,
+          "time_sync": 0,
+          "write_failed": 0
+        },
+        "other": {
+          "writer_unavailable": 1,
+          "admission_rejected": 0,
+          "queue_full": 0,
+          "snapshot_busy": 0,
+          "encode_failed": 0,
+          "time_sync": 0,
+          "write_failed": 0
+        }
+      },
+      "ms": 2025
+    },
+    {
+      "total": 1,
+      "counts": {
+        "snapshot": {
+          "writer_unavailable": 0,
+          "admission_rejected": 0,
+          "queue_full": 0,
+          "snapshot_busy": 0,
+          "encode_failed": 0,
+          "time_sync": 0,
+          "write_failed": 0
+        },
+        "tm": {
+          "writer_unavailable": 0,
+          "admission_rejected": 0,
+          "queue_full": 0,
+          "snapshot_busy": 0,
+          "encode_failed": 0,
+          "time_sync": 0,
+          "write_failed": 0
+        },
+        "other": {
+          "writer_unavailable": 1,
+          "admission_rejected": 0,
+          "queue_full": 0,
+          "snapshot_busy": 0,
+          "encode_failed": 0,
+          "time_sync": 0,
+          "write_failed": 0
+        }
+      },
+      "ms": 3037
+    },
+    {
+      "total": 5,
+      "counts": {
+        "snapshot": {
+          "writer_unavailable": 0,
+          "admission_rejected": 0,
+          "queue_full": 0,
+          "snapshot_busy": 4,
+          "encode_failed": 0,
+          "time_sync": 0,
+          "write_failed": 0
+        },
+        "tm": {
+          "writer_unavailable": 0,
+          "admission_rejected": 0,
+          "queue_full": 0,
+          "snapshot_busy": 0,
+          "encode_failed": 0,
+          "time_sync": 0,
+          "write_failed": 0
+        },
+        "other": {
+          "writer_unavailable": 1,
+          "admission_rejected": 0,
+          "queue_full": 0,
+          "snapshot_busy": 0,
+          "encode_failed": 0,
+          "time_sync": 0,
+          "write_failed": 0
+        }
+      },
+      "ms": 4059
+    },
+    {
+      "total": 25,
+      "counts": {
+        "snapshot": {
+          "writer_unavailable": 0,
+          "admission_rejected": 0,
+          "queue_full": 0,
+          "snapshot_busy": 15,
+          "encode_failed": 0,
+          "time_sync": 0,
+          "write_failed": 0
+        },
+        "tm": {
+          "writer_unavailable": 0,
+          "admission_rejected": 0,
+          "queue_full": 7,
+          "snapshot_busy": 0,
+          "encode_failed": 0,
+          "time_sync": 0,
+          "write_failed": 0
+        },
+        "other": {
+          "writer_unavailable": 1,
+          "admission_rejected": 0,
+          "queue_full": 2,
+          "snapshot_busy": 0,
+          "encode_failed": 0,
+          "time_sync": 0,
+          "write_failed": 0
+        }
+      },
+      "ms": 5062
+    },
+    {
+      "total": 38,
+      "counts": {
+        "snapshot": {
+          "writer_unavailable": 0,
+          "admission_rejected": 0,
+          "queue_full": 0,
+          "snapshot_busy": 18,
+          "encode_failed": 0,
+          "time_sync": 0,
+          "write_failed": 0
+        },
+        "tm": {
+          "writer_unavailable": 0,
+          "admission_rejected": 0,
+          "queue_full": 15,
+          "snapshot_busy": 0,
+          "encode_failed": 0,
+          "time_sync": 0,
+          "write_failed": 0
+        },
+        "other": {
+          "writer_unavailable": 1,
+          "admission_rejected": 0,
+          "queue_full": 4,
+          "snapshot_busy": 0,
+          "encode_failed": 0,
+          "time_sync": 0,
+          "write_failed": 0
+        }
+      },
+      "ms": 6071
+    },
+    {
+      "total": 47,
+      "counts": {
+        "snapshot": {
+          "writer_unavailable": 0,
+          "admission_rejected": 0,
+          "queue_full": 0,
+          "snapshot_busy": 18,
+          "encode_failed": 0,
+          "time_sync": 0,
+          "write_failed": 0
+        },
+        "tm": {
+          "writer_unavailable": 0,
+          "admission_rejected": 0,
+          "queue_full": 22,
+          "snapshot_busy": 0,
+          "encode_failed": 0,
+          "time_sync": 0,
+          "write_failed": 0
+        },
+        "other": {
+          "writer_unavailable": 1,
+          "admission_rejected": 0,
+          "queue_full": 6,
+          "snapshot_busy": 0,
+          "encode_failed": 0,
+          "time_sync": 0,
+          "write_failed": 0
+        }
+      },
+      "ms": 7086
+    },
+    {
+      "total": 50,
+      "counts": {
+        "snapshot": {
+          "writer_unavailable": 0,
+          "admission_rejected": 0,
+          "queue_full": 0,
+          "snapshot_busy": 18,
+          "encode_failed": 0,
+          "time_sync": 0,
+          "write_failed": 0
+        },
+        "tm": {
+          "writer_unavailable": 0,
+          "admission_rejected": 0,
+          "queue_full": 23,
+          "snapshot_busy": 0,
+          "encode_failed": 0,
+          "time_sync": 0,
+          "write_failed": 0
+        },
+        "other": {
+          "writer_unavailable": 1,
+          "admission_rejected": 0,
+          "queue_full": 8,
+          "snapshot_busy": 0,
+          "encode_failed": 0,
+          "time_sync": 0,
+          "write_failed": 0
+        }
+      },
+      "ms": 8089
+    },
+    {
+      "total": 50,
+      "counts": {
+        "snapshot": {
+          "writer_unavailable": 0,
+          "admission_rejected": 0,
+          "queue_full": 0,
+          "snapshot_busy": 18,
+          "encode_failed": 0,
+          "time_sync": 0,
+          "write_failed": 0
+        },
+        "tm": {
+          "writer_unavailable": 0,
+          "admission_rejected": 0,
+          "queue_full": 23,
+          "snapshot_busy": 0,
+          "encode_failed": 0,
+          "time_sync": 0,
+          "write_failed": 0
+        },
+        "other": {
+          "writer_unavailable": 1,
+          "admission_rejected": 0,
+          "queue_full": 8,
+          "snapshot_busy": 0,
+          "encode_failed": 0,
+          "time_sync": 0,
+          "write_failed": 0
+        }
+      },
+      "ms": 9097
+    },
+    {
+      "total": 50,
+      "counts": {
+        "snapshot": {
+          "writer_unavailable": 0,
+          "admission_rejected": 0,
+          "queue_full": 0,
+          "snapshot_busy": 18,
+          "encode_failed": 0,
+          "time_sync": 0,
+          "write_failed": 0
+        },
+        "tm": {
+          "writer_unavailable": 0,
+          "admission_rejected": 0,
+          "queue_full": 23,
+          "snapshot_busy": 0,
+          "encode_failed": 0,
+          "time_sync": 0,
+          "write_failed": 0
+        },
+        "other": {
+          "writer_unavailable": 1,
+          "admission_rejected": 0,
+          "queue_full": 8,
+          "snapshot_busy": 0,
+          "encode_failed": 0,
+          "time_sync": 0,
+          "write_failed": 0
+        }
+      },
+      "ms": 10112
+    }
+  ]
+}

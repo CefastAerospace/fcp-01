@@ -71,8 +71,16 @@ namespace {
         void*
     ) {
         uint64_t previous_ms = obc_time::esp32::GetMonotonicMs();
+#ifdef OBC_HOUSEKEEPING_BENCH
+        uint64_t previous_started_us = micros();
+        uint64_t previous_finished_us = previous_started_us;
+#endif
         for (;;) {
             const uint64_t now_ms = obc_time::esp32::GetMonotonicMs();
+#ifdef OBC_HOUSEKEEPING_BENCH
+            // Diferenças u32 de micros toleram wrap; nenhum log ocorre no transporte.
+            const uint32_t started_us = micros();
+#endif
             portENTER_CRITICAL(&transport_lock);
             obc_health::Mark(transport_statistics.progress, obc_health::ACTIVITY::TRANSPORT, now_ms);
             portEXIT_CRITICAL(&transport_lock);
@@ -83,13 +91,34 @@ namespace {
             obc_watchdog_bench::Before(obc_watchdog::RESOURCE::UART);
 #endif
             PumpTransport();
+#ifdef OBC_HOUSEKEEPING_BENCH
+            const uint32_t finished_us = micros();
+#endif
             portENTER_CRITICAL(&transport_lock);
             const uint64_t gap = now_ms - previous_ms;
             if (gap > transport_statistics.maximum_gap_ms) transport_statistics.maximum_gap_ms = gap;
+#ifdef OBC_HOUSEKEEPING_BENCH
+            if (gap > 10) {
+                if (transport_statistics.gap_observations != UINT64_MAX) ++transport_statistics.gap_observations;
+                const uint32_t elapsed_us = started_us - static_cast<uint32_t>(previous_started_us);
+                if (elapsed_us > transport_statistics.gap_us) {
+                    transport_statistics.gap_us = elapsed_us;
+                    transport_statistics.previous_pump_us = static_cast<uint32_t>(previous_finished_us)
+                        - static_cast<uint32_t>(previous_started_us);
+                    transport_statistics.idle_us = started_us - static_cast<uint32_t>(previous_finished_us);
+                    transport_statistics.pump_us = finished_us - started_us;
+                    transport_statistics.gap_started_ms = now_ms;
+                }
+            }
+#endif
             obc_health::Mark(transport_statistics.progress, obc_health::ACTIVITY::IDLE,
                 obc_time::esp32::GetMonotonicMs(), true);
             portEXIT_CRITICAL(&transport_lock);
             previous_ms = now_ms;
+#ifdef OBC_HOUSEKEEPING_BENCH
+            previous_started_us = started_us;
+            previous_finished_us = finished_us;
+#endif
             vTaskDelay(pdMS_TO_TICKS(1));
         }
     }
@@ -118,7 +147,7 @@ bool StartTransportTask(
     obc_health::Start(transport_statistics.progress, obc_time::esp32::GetMonotonicMs());
     portEXIT_CRITICAL(&transport_lock);
     if (xTaskCreatePinnedToCore(TransportEntry, "payload_uart", transport_stack_bytes,
-            nullptr, 3, &transport_task, 1) != pdPASS) {
+            nullptr, transport_priority, &transport_task, 1) != pdPASS) {
         transport_started = false;
         transport_task = nullptr;
         portENTER_CRITICAL(&transport_lock);

@@ -23,6 +23,12 @@ namespace esp32 {
     // ─── HELPERS ──────────────────────────────────────────────────────
 
     constexpr uint32_t transport_stack_bytes = 3072;
+#ifdef OBC_HOUSEKEEPING_BENCH
+    /** @brief Atendimento UART de 10 ms preempta executor I2C de prioridade 5. */
+    constexpr UBaseType_t transport_priority = 6;
+#else
+    constexpr UBaseType_t transport_priority = 3;
+#endif
 
     /** @brief Observações do atendimento físico, separadas do processamento FCPU. */
     struct TRANSPORT_STATISTICS {
@@ -30,6 +36,15 @@ namespace esp32 {
         uint64_t full_observations;
         size_t stack_free_bytes;
         obc_health::PROGRESS progress;
+#ifdef OBC_HOUSEKEEPING_BENCH
+        /** @brief Maior intervalo >10 ms: separa trabalho anterior, espera e trabalho atual. */
+        uint64_t gap_us;
+        uint64_t previous_pump_us;
+        uint64_t idle_us;
+        uint64_t pump_us;
+        uint64_t gap_started_ms;
+        uint64_t gap_observations;
+#endif
     };
 
     /**
@@ -48,7 +63,7 @@ namespace esp32 {
     );
 
     /**
-     * @brief Transfere a propriedade de Serial2 para tarefa Core 1/prioridade 3.
+     * @brief Transfere Serial2 à tarefa Core 1; prioridade 3, ou 6 na bancada conjunta.
      * @details Chamar após Init e antes do consumidor. Usa ring fixo de 1 KiB;
      * Poll continua pertencendo somente à tarefa de processamento. Sem esta
      * chamada, Init/Poll preservam o atendimento sequencial das bancadas antigas.

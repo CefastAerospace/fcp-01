@@ -28,6 +28,7 @@ namespace {
 #endif
     bool init_attempted = false;
     bool init_active = false;
+    obc_record::ACQUISITION_SINK acquisition_sink = nullptr;
 
     // ─── STRUCTS ──────────────────────────────────────────────────────
 
@@ -37,6 +38,7 @@ namespace {
         ACTION action;
         uint64_t recovery_cycles;
         bool epoch_changed;
+        bool driver_ran;
         bool online;
         bool valid;
         INAReading reading;
@@ -55,6 +57,7 @@ namespace {
         request.epoch_changed = request.action == ACTION::READ && cycles != request.recovery_cycles;
         request.recovery_cycles = cycles;
         if (request.epoch_changed) return i2c::OPERATION_RESULT::OPERATION_FAILED;
+        request.driver_ran = true;
         bool success = false;
         if (request.action == ACTION::CONFIGURE) {
             success = driver.begin(wire, request.channel);
@@ -73,6 +76,81 @@ namespace {
             request.bus.status);
         return result != i2c::OPERATION_RESULT::OK ? result : success
             ? i2c::OPERATION_RESULT::OK : i2c::OPERATION_RESULT::OPERATION_FAILED;
+    }
+
+    // O código do arquivo não herda a numeração da biblioteca do sensor.
+    obc_record::ACQUISITION_DRIVER MapDriver(
+        const REQUEST& request
+    ) {
+        using TO = obc_record::ACQUISITION_DRIVER;
+        if (!request.driver_ran) return TO::NOT_RUN;
+        switch (request.reading.status) {
+            case INAStatus::Ok:
+                return request.action == ACTION::READ && !request.reading.conversionReady
+                    ? TO::CONVERSION_PENDING : TO::OK;
+            case INAStatus::NotInitialized: return TO::NOT_INITIALIZED;
+            case INAStatus::InvalidChannel: return TO::INVALID_CHANNEL;
+            case INAStatus::DeviceOffline: return TO::DEVICE_OFFLINE;
+            case INAStatus::PowerDown: return TO::POWER_DOWN;
+            case INAStatus::I2CError: return TO::I2C_ERROR;
+            case INAStatus::MathOverflow: return TO::OVERFLOW;
+        }
+        return TO::I2C_ERROR;
+    }
+
+    // Converte a etapa de diagnóstico sem confundir o ordinal EPS com o do registro.
+    obc_record::ACQUISITION_PHASE MapPhase(
+        I2C_PHASE phase
+    ) {
+        using TO = obc_record::ACQUISITION_PHASE;
+        switch (phase) {
+            case I2C_PHASE::NONE: return TO::NONE;
+            case I2C_PHASE::SELECT_REGISTER: return TO::SELECT_REGISTER;
+            case I2C_PHASE::READ: return TO::READ;
+            case I2C_PHASE::WRITE: return TO::WRITE;
+            case I2C_PHASE::BUFFER: return TO::BUFFER;
+        }
+        return TO::NONE;
+    }
+
+    // Emite apenas grandezas da tentativa atual, inclusive no canal Geral.
+    void PublishOperation(
+        const REQUEST& request,
+        uint8_t address,
+        i2c::STATUS result,
+        uint64_t started_ms,
+        uint64_t completed_ms
+    ) {
+        using namespace obc_record;
+        ACQUISITION_DATA data = {};
+        data.started_ms = started_ms;
+        data.recovery_cycles = request.recovery_cycles;
+        switch (request.channel) {
+            case INAChannel::Solar: data.channel = 0; break;
+            case INAChannel::Battery: data.channel = 1; break;
+            case INAChannel::General: data.channel = 2; break;
+        }
+        data.address = address;
+        data.operation = request.action == ACTION::READ ? ACQUISITION_OPERATION::READ
+            : ACQUISITION_OPERATION::CONFIGURE;
+        data.result = obc_acquisition::MapResult(result);
+        data.driver = MapDriver(request);
+        data.phase = MapPhase(request.bus.phase);
+        data.reg = request.bus.reg;
+        data.wire_status = request.bus.status;
+        data.received = request.bus.received;
+        if (result == i2c::STATUS::OK && request.valid) {
+            const auto& reading = request.reading;
+            const float values[] = {reading.busVoltage_V, reading.sourceVoltage_V, reading.shuntVoltage_mV,
+                reading.current_A, reading.power_W, reading.sourcePower_W};
+            for (size_t index = 0; index < sizeof(values) / sizeof(values[0]); ++index) {
+                if (std::isfinite(values[index])) {
+                    data.values[index] = values[index];
+                    data.available_fields |= 1U << index;
+                }
+            }
+        }
+        acquisition_sink(ACQUISITION_KIND::ELECTRICAL, completed_ms, data);
     }
 
     // Contadores diagnósticos não podem voltar a zero por overflow.
@@ -110,7 +188,8 @@ namespace {
                 const auto bus = i2c::GetDiagnostics();
                 progress.service = bus.state;
                 auto& sample = snapshot.channels[index];
-                const ACTION action = channels[index].Next(obc_time::esp32::GetMonotonicMs(),
+                const uint64_t started_ms = obc_time::esp32::GetMonotonicMs();
+                const ACTION action = channels[index].Next(started_ms,
                     bus.state == i2c::SERVICE_STATE::READY, bus.recovery_cycles);
                 if (action != ACTION::WAIT) {
                     REQUEST request = {};
@@ -131,6 +210,9 @@ namespace {
                     sample.bus = request.bus;
                     sample.last_status = request.reading.status;
                     if (sample.result == i2c::STATUS::OK && request.valid) sample.reading = request.reading;
+                    if (acquisition_sink) {
+                        PublishOperation(request, sample.reading.address, sample.result, started_ms, now_ms);
+                    }
                 }
                 sample.state = channels[index].GetState();
             }
@@ -150,9 +232,11 @@ namespace {
 // ─── HELPERS ──────────────────────────────────────────────────────
 
 bool Init(
+    obc_record::ACQUISITION_SINK sink
 ) {
     if (init_attempted) return init_active;
     init_attempted = true;
+    acquisition_sink = sink;
     const auto initial_snapshot = MakeInitialSnapshot();
     DIAGNOSTICS initial_diagnostics = {};
     initial_diagnostics.attempted = true;

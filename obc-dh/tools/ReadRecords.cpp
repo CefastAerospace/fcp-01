@@ -87,14 +87,17 @@ namespace {
                 obc_record::snapshot_magic, obc_record::snapshot_magic + 4);
             const uint8_t* telemetry = std::search(buffer, buffer + count,
                 obc_record::telemetry_magic, obc_record::telemetry_magic + 4);
+            const uint8_t* acquisition = std::search(buffer, buffer + count,
+                obc_record::acquisition_magic, obc_record::acquisition_magic + 4);
             const char delivery_magic[] = "FCD1";
             const uint8_t* delivery_begin = std::search(buffer, buffer + count, delivery_magic, delivery_magic + 4);
-            const uint8_t* found = std::min(std::min(legacy, current), std::min(telemetry, delivery_begin));
+            const uint8_t* found = std::min({legacy, current, telemetry, acquisition, delivery_begin});
             if (found == buffer + count) {
                 discarded = true;
                 if (count < 4 && (std::memcmp(buffer, obc_data::record_magic, count) == 0
                         || std::memcmp(buffer, obc_record::snapshot_magic, count) == 0
                         || std::memcmp(buffer, obc_record::telemetry_magic, count) == 0
+                        || std::memcmp(buffer, obc_record::acquisition_magic, count) == 0
                         || std::memcmp(buffer, delivery_magic, count) == 0)) {
                     incomplete = true;
                     reason = obc_record::STATUS::INCOMPLETE;
@@ -120,11 +123,15 @@ namespace {
                     consumed = wanted;
                     status = obc_record::STATUS::OK;
                 }
-            } else status = candidate_snapshot
-                ? obc_record::DecodeSnapshot(buffer, count, snapshot, consumed)
-                : buffer[3] == '3'
-                    ? obc_record::DecodeTelemetryV3(buffer, count, record, consumed)
-                    : obc_record::Decode(buffer, count, record, consumed);
+            } else if (candidate_snapshot) {
+                status = obc_record::DecodeSnapshot(buffer, count, snapshot, consumed);
+            } else if (buffer[3] == '3') {
+                status = obc_record::DecodeTelemetryV3(buffer, count, record, consumed);
+            } else if (buffer[3] == '4') {
+                status = obc_record::DecodeAcquisition(buffer, count, record, consumed);
+            } else {
+                status = obc_record::Decode(buffer, count, record, consumed);
+            }
             if (status == obc_record::STATUS::OK) {
                 if (discarded) DiscardRange(begin, offset, reason, incomplete, summary, report);
                 record_offset = offset;
@@ -433,7 +440,32 @@ namespace {
         std::cout << ",\"data\":";
     }
 
-    // Conserva o envelope e o corpo v1, sem ampliar sua união na RAM.
+    // Exporta a operação e suas medições sem substituir valores ausentes por zero.
+    void WriteAcquisition(
+        const obc_record::ACQUISITION_DATA& data,
+        bool thermal
+    ) {
+        std::cout << "{\"started_ms\":" << data.started_ms << ",\"recovery_cycles\":" << data.recovery_cycles
+            << ",\"channel\":" << static_cast<unsigned>(data.channel)
+            << ",\"address\":" << static_cast<unsigned>(data.address)
+            << ",\"operation\":" << static_cast<unsigned>(data.operation)
+            << ",\"result\":" << static_cast<unsigned>(data.result)
+            << ",\"driver\":" << static_cast<unsigned>(data.driver)
+            << ",\"phase\":" << static_cast<unsigned>(data.phase)
+            << ",\"register\":" << static_cast<unsigned>(data.reg)
+            << ",\"wire_status\":" << static_cast<unsigned>(data.wire_status)
+            << ",\"received\":" << static_cast<unsigned>(data.received);
+        const char* const eps_fields[] = {"vin_minus_V", "vin_plus_V", "shunt_mV",
+            "current_A", "power_minus_W", "power_plus_W"};
+        const size_t fields = thermal ? 1 : sizeof(eps_fields) / sizeof(eps_fields[0]);
+        for (size_t index = 0; index < fields; ++index) {
+            std::cout << ",\"" << (thermal ? "temperature_C" : eps_fields[index]) << "\":";
+            WriteReal(data.values[index], (data.available_fields & (1U << index)) != 0);
+        }
+        std::cout << '}';
+    }
+
+    // Despacha extensões antes de indexar os tipos v1.
     void WriteRecord(
         const RECORD& record,
         uint64_t offset,
@@ -443,6 +475,15 @@ namespace {
         if (record.header.version == obc_record::telemetry_version) {
             WriteEnvelope(record.header.version, "telemetry", record.header.stamp, offset, references);
             WriteTelemetry(record.body.telemetry, true);
+            std::cout << "}\n";
+            return;
+        }
+        if (record.header.version == obc_record::acquisition_version) {
+            const bool thermal = static_cast<obc_record::ACQUISITION_KIND>(record.header.type)
+                == obc_record::ACQUISITION_KIND::THERMAL;
+            WriteEnvelope(record.header.version, thermal ? "thermal_acquisition" : "eps_acquisition",
+                record.header.stamp, offset, references);
+            WriteAcquisition(record.body.acquisition, thermal);
             std::cout << "}\n";
             return;
         }

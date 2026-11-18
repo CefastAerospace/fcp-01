@@ -1,0 +1,217 @@
+Comando: pio run -d obc-dh -e obc -t upload --upload-port /dev/ttyUSB0
+Código de saída: 0
+Processing obc (platform: espressif32@6.6.0; board: esp32doit-devkit-v1; framework: arduino)
+--------------------------------------------------------------------------------
+Verbose mode can be enabled via `-v, --verbose` option
+CONFIGURATION: https://docs.platformio.org/page/boards/espressif32/esp32doit-devkit-v1.html
+PLATFORM: Espressif 32 (6.6.0) > DOIT ESP32 DEVKIT V1
+HARDWARE: ESP32 240MHz, 320KB RAM, 4MB Flash
+DEBUG: Current (cmsis-dap) External (cmsis-dap, esp-bridge, esp-prog, iot-bus-jtag, jlink, minimodule, olimex-arm-usb-ocd, olimex-arm-usb-ocd-h, olimex-arm-usb-tiny-h, olimex-jtag-tiny, tumpa)
+PACKAGES: 
+ - framework-arduinoespressif32 @ 3.20014.231204 (2.0.14) 
+ - tool-esptoolpy @ 1.40501.0 (4.5.1) 
+ - tool-mkfatfs @ 2.0.1 
+ - tool-mklittlefs @ 1.203.210628 (2.3) 
+ - tool-mkspiffs @ 2.230.0 (2.30) 
+ - toolchain-xtensa-esp32 @ 8.4.0+2021r2-patch5
+LDF: Library Dependency Finder -> https://bit.ly/configure-pio-ldf
+LDF Modes: Finder ~ chain, Compatibility ~ soft
+Found 36 compatible libraries
+Scanning dependencies...
+Dependency Graph
+|-- ArduinoJson @ 7.0.4
+|-- LoRa @ 0.8.0
+|-- tt-c @ 0.1.0
+|-- Wire @ 2.0.0
+|-- SD @ 2.0.0
+|-- SPI @ 2.0.0
+Building in release mode
+Compiling .pio/build/obc/src/I2cBus.cpp.o
+Compiling .pio/build/obc/src/I2cRecovery.cpp.o
+Compiling .pio/build/obc/src/ObcData.cpp.o
+Compiling .pio/build/obc/src/ObcDataFlow.cpp.o
+Compiling .pio/build/obc/src/ObcDataFlowEsp32.cpp.o
+Compiling .pio/build/obc/src/ObcDelivery.cpp.o
+Compiling .pio/build/obc/src/ObcDownlink.cpp.o
+Compiling .pio/build/obc/src/ObcEps.cpp.o
+Compiling .pio/build/obc/src/ObcEpsEsp32.cpp.o
+Compiling .pio/build/obc/src/ObcHousekeeping.cpp.o
+Compiling .pio/build/obc/src/ObcI2cHealth.cpp.o
+Compiling .pio/build/obc/src/ObcRecordCodec.cpp.o
+Compiling .pio/build/obc/src/ObcResourceHealth.cpp.o
+Compiling .pio/build/obc/src/ObcStartup.cpp.o
+Compiling .pio/build/obc/src/ObcStorage.cpp.o
+Compiling .pio/build/obc/src/ObcStorageEsp32.cpp.o
+Compiling .pio/build/obc/src/ObcTaskHealth.cpp.o
+Compiling .pio/build/obc/src/ObcThermal.cpp.o
+Compiling .pio/build/obc/src/ObcThermalEsp32.cpp.o
+Compiling .pio/build/obc/src/ObcTime.cpp.o
+Compiling .pio/build/obc/src/ObcTimeEsp32.cpp.o
+Compiling .pio/build/obc/src/ObcTtc.cpp.o
+Compiling .pio/build/obc/src/ObcWatchdog.cpp.o
+Compiling .pio/build/obc/src/ObcWatchdogEsp32.cpp.o
+Compiling .pio/build/obc/src/PayloadReceiver.cpp.o
+Compiling .pio/build/obc/src/PayloadReceiverEsp32.cpp.o
+Compiling .pio/build/obc/src/main.cpp.o
+Building .pio/build/obc/bootloader.bin
+Generating partitions .pio/build/obc/partitions.bin
+esptool.py v4.5.1
+Creating esp32 image...
+Merged 1 ELF section
+Successfully created esp32 image.
+Compiling .pio/build/obc/lib416/SPI/SPI.cpp.o
+Compiling .pio/build/obc/libbb8/LoRa/LoRa.cpp.o
+Compiling .pio/build/obc/lib1da/tt-c/Sx1276Radio.cpp.o
+Compiling .pio/build/obc/lib1da/tt-c/Ttc.cpp.o
+Compiling .pio/build/obc/lib1da/tt-c/TtcProtocol.cpp.o
+Compiling .pio/build/obc/lib1da/tt-c/UmbilicalLink.cpp.o
+Archiving .pio/build/obc/lib416/libSPI.a
+Indexing .pio/build/obc/lib416/libSPI.a
+Compiling .pio/build/obc/lib120/Wire/Wire.cpp.o
+Archiving .pio/build/obc/libbb8/libLoRa.a
+Indexing .pio/build/obc/libbb8/libLoRa.a
+Compiling .pio/build/obc/lib9d0/FS/FS.cpp.o
+Compiling .pio/build/obc/lib9d0/FS/vfs_api.cpp.o
+Compiling .pio/build/obc/libcdd/SD/SD.cpp.o
+Compiling .pio/build/obc/libcdd/SD/sd_diskio.cpp.o
+Compiling .pio/build/obc/libcdd/SD/sd_diskio_crc.c.o
+Compiling .pio/build/obc/FrameworkArduino/Esp.cpp.o
+Archiving .pio/build/obc/lib120/libWire.a
+Indexing .pio/build/obc/lib120/libWire.a
+Compiling .pio/build/obc/FrameworkArduino/FirmwareMSC.cpp.o
+Compiling .pio/build/obc/FrameworkArduino/FunctionalInterrupt.cpp.o
+Compiling .pio/build/obc/FrameworkArduino/HWCDC.cpp.o
+Compiling .pio/build/obc/FrameworkArduino/HardwareSerial.cpp.o
+Compiling .pio/build/obc/FrameworkArduino/IPAddress.cpp.o
+Archiving .pio/build/obc/lib9d0/libFS.a
+Compiling .pio/build/obc/FrameworkArduino/IPv6Address.cpp.o
+Indexing .pio/build/obc/lib9d0/libFS.a
+Compiling .pio/build/obc/FrameworkArduino/MD5Builder.cpp.o
+Archiving .pio/build/obc/libcdd/libSD.a
+Indexing .pio/build/obc/libcdd/libSD.a
+Compiling .pio/build/obc/FrameworkArduino/Print.cpp.o
+Compiling .pio/build/obc/FrameworkArduino/Stream.cpp.o
+Compiling .pio/build/obc/FrameworkArduino/StreamString.cpp.o
+Compiling .pio/build/obc/FrameworkArduino/Tone.cpp.o
+Compiling .pio/build/obc/FrameworkArduino/USB.cpp.o
+Compiling .pio/build/obc/FrameworkArduino/USBCDC.cpp.o
+Compiling .pio/build/obc/FrameworkArduino/USBMSC.cpp.o
+Compiling .pio/build/obc/FrameworkArduino/WMath.cpp.o
+Compiling .pio/build/obc/FrameworkArduino/WString.cpp.o
+Compiling .pio/build/obc/FrameworkArduino/base64.cpp.o
+Compiling .pio/build/obc/FrameworkArduino/cbuf.cpp.o
+Archiving .pio/build/obc/lib1da/libtt-c.a
+Indexing .pio/build/obc/lib1da/libtt-c.a
+Compiling .pio/build/obc/FrameworkArduino/esp32-hal-adc.c.o
+Compiling .pio/build/obc/FrameworkArduino/esp32-hal-bt.c.o
+Compiling .pio/build/obc/FrameworkArduino/esp32-hal-cpu.c.o
+Compiling .pio/build/obc/FrameworkArduino/esp32-hal-dac.c.o
+Compiling .pio/build/obc/FrameworkArduino/esp32-hal-gpio.c.o
+Compiling .pio/build/obc/FrameworkArduino/esp32-hal-i2c-slave.c.o
+Compiling .pio/build/obc/FrameworkArduino/esp32-hal-i2c.c.o
+Compiling .pio/build/obc/FrameworkArduino/esp32-hal-ledc.c.o
+Compiling .pio/build/obc/FrameworkArduino/esp32-hal-matrix.c.o
+Compiling .pio/build/obc/FrameworkArduino/esp32-hal-misc.c.o
+Compiling .pio/build/obc/FrameworkArduino/esp32-hal-psram.c.o
+Compiling .pio/build/obc/FrameworkArduino/esp32-hal-rgb-led.c.o
+Compiling .pio/build/obc/FrameworkArduino/esp32-hal-rmt.c.o
+Compiling .pio/build/obc/FrameworkArduino/esp32-hal-sigmadelta.c.o
+Compiling .pio/build/obc/FrameworkArduino/esp32-hal-spi.c.o
+Compiling .pio/build/obc/FrameworkArduino/esp32-hal-time.c.o
+Compiling .pio/build/obc/FrameworkArduino/esp32-hal-timer.c.o
+Compiling .pio/build/obc/FrameworkArduino/esp32-hal-tinyusb.c.o
+Compiling .pio/build/obc/FrameworkArduino/esp32-hal-touch.c.o
+Compiling .pio/build/obc/FrameworkArduino/esp32-hal-uart.c.o
+Compiling .pio/build/obc/FrameworkArduino/firmware_msc_fat.c.o
+Compiling .pio/build/obc/FrameworkArduino/libb64/cdecode.c.o
+Compiling .pio/build/obc/FrameworkArduino/libb64/cencode.c.o
+Compiling .pio/build/obc/FrameworkArduino/main.cpp.o
+/home/o-grande-kayky/.local/share/platformio/packages/framework-arduinoespressif32/cores/esp32/esp32-hal-uart.c: In function 'uartSetPins':
+/home/o-grande-kayky/.local/share/platformio/packages/framework-arduinoespressif32/cores/esp32/esp32-hal-uart.c:153:9: warning: 'return' with no value, in function returning non-void
+         return;
+         ^~~~~~
+Compiling .pio/build/obc/FrameworkArduino/stdlib_noniso.c.o
+/home/o-grande-kayky/.local/share/platformio/packages/framework-arduinoespressif32/cores/esp32/esp32-hal-uart.c:149:6: note: declared here
+ bool uartSetPins(uint8_t uart_num, int8_t rxPin, int8_t txPin, int8_t ctsPin, int8_t rtsPin)
+      ^~~~~~~~~~~
+Compiling .pio/build/obc/FrameworkArduino/wiring_pulse.c.o
+Compiling .pio/build/obc/FrameworkArduino/wiring_shift.c.o
+Archiving .pio/build/obc/libFrameworkArduino.a
+Indexing .pio/build/obc/libFrameworkArduino.a
+Linking .pio/build/obc/firmware.elf
+Retrieving maximum program size .pio/build/obc/firmware.elf
+Checking size .pio/build/obc/firmware.elf
+Advanced Memory Usage is available via "PlatformIO Home > Project Inspect"
+RAM:   [=         ]  10.0% (used 32704 bytes from 327680 bytes)
+Flash: [===       ]  33.0% (used 433021 bytes from 1310720 bytes)
+Building .pio/build/obc/firmware.bin with action:
+  "$PYTHONEXE" "$OBJCOPY" --chip esp32 elf2image --flash_mode ${__get_board_flash_mode(__env__)} --flash_freq ${__get_board_f_image(__env__)} --flash_size 4MB --elf-sha256-offset 0xb0 -o $TARGET $SOURCES
+Building .pio/build/obc/firmware.bin
+esptool.py v4.5.1
+Creating esp32 image...
+Merged 2 ELF sections
+Successfully created esp32 image.
+Configuring upload protocol...
+AVAILABLE: cmsis-dap, esp-bridge, esp-prog, espota, esptool, iot-bus-jtag, jlink, minimodule, olimex-arm-usb-ocd, olimex-arm-usb-ocd-h, olimex-arm-usb-tiny-h, olimex-jtag-tiny, tumpa
+CURRENT: upload_protocol = esptool
+Looking for upload port...
+Using manually specified: /dev/ttyUSB0
+Uploading .pio/build/obc/firmware.bin
+esptool.py v4.5.1
+Serial port /dev/ttyUSB0
+Connecting.....
+Chip is ESP32-D0WD-V3 (revision v3.1)
+Features: WiFi, BT, Dual Core, 240MHz, VRef calibration in efuse, Coding Scheme None
+Crystal is 40MHz
+MAC: 10:06:1c:81:ca:68
+Uploading stub...
+Running stub...
+Stub running...
+Changing baud rate to 460800
+Changed.
+Configuring flash size...
+Flash will be erased from 0x00001000 to 0x00005fff...
+Flash will be erased from 0x00008000 to 0x00008fff...
+Flash will be erased from 0x0000e000 to 0x0000ffff...
+Flash will be erased from 0x00010000 to 0x00079fff...
+Compressed 17536 bytes to 12202...
+Writing at 0x00001000... (100 %)
+Wrote 17536 bytes (12202 compressed) at 0x00001000 in 0.6 seconds (effective 254.4 kbit/s)...
+Hash of data verified.
+Compressed 3072 bytes to 146...
+Writing at 0x00008000... (100 %)
+Wrote 3072 bytes (146 compressed) at 0x00008000 in 0.1 seconds (effective 471.6 kbit/s)...
+Hash of data verified.
+Compressed 8192 bytes to 47...
+Writing at 0x0000e000... (100 %)
+Wrote 8192 bytes (47 compressed) at 0x0000e000 in 0.1 seconds (effective 689.1 kbit/s)...
+Hash of data verified.
+Compressed 433392 bytes to 262259...
+Writing at 0x00010000... (5 %)
+Writing at 0x0001aebd... (11 %)
+Writing at 0x00029323... (17 %)
+Writing at 0x0002e721... (23 %)
+Writing at 0x00033bd5... (29 %)
+Writing at 0x000387c2... (35 %)
+Writing at 0x0003d8e1... (41 %)
+Writing at 0x00043033... (47 %)
+Writing at 0x00048a3c... (52 %)
+Writing at 0x0004dc36... (58 %)
+Writing at 0x000530bf... (64 %)
+Writing at 0x00058562... (70 %)
+Writing at 0x0005de37... (76 %)
+Writing at 0x0006651e... (82 %)
+Writing at 0x0006e17b... (88 %)
+Writing at 0x00074133... (94 %)
+Writing at 0x00079c58... (100 %)
+Wrote 433392 bytes (262259 compressed) at 0x00010000 in 6.5 seconds (effective 536.2 kbit/s)...
+Hash of data verified.
+
+Leaving...
+Hard resetting via RTS pin...
+========================= [SUCCESS] Took 18.05 seconds =========================
+
+Environment    Status    Duration
+-------------  --------  ------------
+obc            SUCCESS   00:00:18.052
+========================= 1 succeeded in 00:00:18.052 =========================

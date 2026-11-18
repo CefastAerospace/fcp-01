@@ -70,6 +70,13 @@ namespace esp32 {
         uint64_t sampled_ms
     );
 
+    /** @brief Enfileira resultado FCP4 no diário atual, sem esperar pelo SD. */
+    void RecordAcquisition(
+        obc_record::ACQUISITION_KIND kind,
+        uint64_t completed_ms,
+        const obc_record::ACQUISITION_DATA& data
+    );
+
     /** @brief Avalia saúde a cada 100 ms; conserva diagnósticos periódicos de 1 s. */
     void ReportDiagnostics(
     );

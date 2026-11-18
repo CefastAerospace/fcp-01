@@ -1,5 +1,51 @@
 # TODO — OBC-DH
 
+**INT-009 — UART0 e FCP4 aprovados em bancada:** LM75A reaproveita a
+UART0 aberta pelo OBC. O roteiro original passou com q máximo de
+1 ms. Codec, fila, leitor e escritores de bancada FCP4 verificados.
+O SD simulado recebeu 32 registros dos oito canais sem comandos.
+O roteiro conjunto também passou com FCP4 habilitado. `obc` foi
+restaurado e verificado. A habilitação em `obc` aguarda os contratos
+finais EPS/Térmico.
+
+**INT-009 — segunda inicialização da UART0:** a ligação e gravação com
+`--wrap=log_printfv` passaram. O roteiro LM75A parou antes dos comandos
+por falta do ID de boot. O umbilical reinicializa a UART0 após o
+relatório de boot e o framework descarta o TX pendente. Experimento
+retirado. Próxima proposta é o umbilical adotar a porta aberta pelo OBC.
+
+**INT-009 — escrita comum na UART0:** o experimento LM75A parou na ligação.
+O SDK já define `__wrap_log_printf` e a segunda definição foi rejeitada.
+Experimento retirado antes de gravar a placa. Próxima proposta registrada:
+preservar o wrapper do SDK e interceptar a chamada a `log_printfv` no
+perfil individual. Regressão LM75A e persistência seguem pendentes.
+
+**INT-009 — experimento LM75A de 18/11/2026:** buffer TX de 8 KiB compilou
+e iniciou os cinco canais. Roteiro original reprovou antes dos comandos:
+capturou o boot físico, mas não encontrou a linha com ID de NVS. Logs de
+SD, TT&C e Wire aparecem misturados na UART0. Ajuste experimental retirado
+e evidência preservada. `obc` restaurado e cliente original aprovado.
+Regressão LM75A e persistência por leitura seguem pendentes.
+
+**INT-009 — continuação de 18/11/2026:** captura de diagnóstico reproduziu
+poll UART de 13 ms; tarefa I2C de prioridade 5 pode reter UART de prioridade
+3 durante logs síncronos do framework. UART passou a prioridade 6 somente
+nas bancadas conjuntas. Cinco builds, aquisição/fixtures originais e
+regressão INA219 passaram; poll conjunto máximo 5 ms, também em 90 s
+passivos. Regressão LM75A individual reprovou em ping q=210 ms contra
+200 ms; esse perfil conserva TX/prioridade anteriores. Sem outro ajuste,
+implementação interrompida e obc restaurado/verificado. Codec v4 e
+persistência por leitura ainda não iniciados; testes anteriores intactos.
+
+**INT-009 — 18/11/2026, buffer TX nativo aplicado às bancadas conjuntas:**
+8 KiB antes de Serial.begin, mantendo 115.200 baud e critérios originais.
+Cinco builds e os dois roteiros originais passaram: fixtures com 34 TMs/64
+registros/q máximo 17 ms; aquisição com 32 TMs/62 registros/q máximo 1 ms.
+Porém, poll UART ainda atingiu 13 ms contra o critério de 10 ms do plano.
+Aceitação adicional não atendida; implementação interrompida sem novo
+ajuste. Codec v4/persistência por operação não iniciados; testes intactos.
+`obc` restaurado e cliente original aprovado. Contratos EPS/Térmico pendentes.
+
 **INT-009 — estágio SD sob demanda aprovado aplicado:** reserva pelo
 tamanho real somente na bancada conjunta, com slot exclusivo e limite
 64.497 preservados. Novo nativo com falhas de alocação, regressões
@@ -107,11 +153,11 @@ Cada ID aparece uma vez nas seções 1–4. A coluna de capacidades identifica o
 | INT-002 | [Conciliação de EN do motor no GPIO 12](../.tasks/03-integracao/done/INT-002-pinagem-en-motor.md) | — | Restrita às constantes; não aprova estado elétrico | Concluída |
 | INT-003 | [Inicialização central e organização da execução](../.tasks/03-integracao/INT-003-inicializacao-central.md) | INT-001 | Bancada disponível; faltam definições/implementação do boot de voo. Comprovação TES-008 | Em andamento |
 | INT-004 | [Integração de TT&C e umbilical](../.tasks/03-integracao/done/INT-004-ttc-e-umbilical.md) | Boot de bancada INT-003 | Entrega técnica verificada; aceite TT&C informado pelo responsável OBC-DH em 17/11. Core dump inválido preservado como ressalva; comprovação RF/tempos TES-008 | Concluída |
-| INT-005 | [Integração ADCS, encoder e FOC](../.tasks/03-integracao/INT-005-sensores-e-adcs.md) | COM-001/002/003, INT-002 e boot INT-003 | Inventário, aquisição/FOC e política I2C ADCS. Comprovação TES-003/008/009 | Pendente |
+| INT-005 | [Integração ADCS, encoder e FOC](../.tasks/03-integracao/INT-005-sensores-e-adcs.md) | COM-001/002/003, INT-002 e boot INT-003 | AS5600, BH1750 e MPU9250 com regressões nativas e USB aprovadas em bancada. Pendem contratos operacionais, consumo pelo ADCS e FOC. Comprovação TES-003/008/009 | Em andamento |
 | INT-006 | [Fluxo Payload–tempo–SD–telemetria](../.tasks/03-integracao/INT-006-fluxo-de-dados.md) | COM-004/005, DAD-003 e adaptador INT-004 | Fluxo/extração USB disponíveis; contratos operacionais/semântica pendentes. Comprovação TES-005/006/008/009 | Em andamento |
 | INT-007 | [Comandos, modos e coordenação da missão](../.tasks/03-integracao/INT-007-comandos-modos-e-protecoes.md) | Consumidor INT-004 e estado/fluxo INT-006; ADCS INT-005 para suas ações | ConOps e comandos permitidos; proteções/atuações conectadas por INT-010/011. Comprovação TES-008/010 | Pendente |
 | INT-008 | [Supervisão de recursos e recuperação local](../.tasks/03-integracao/done/INT-008-supervisao-e-retomada.md) | COM-003, boot INT-003, métricas INT-004 e diário INT-006 | Escritor, tarefas, I2C, TT&C e memória/pilhas concluídos; regressões preservadas, obc restaurado e pacote de ensaio disponível. Comprovação física TES-009; watchdog INT-012 e retomada INT-013 | Concluída |
-| INT-009 | [Aquisição e integração EPS/Térmico](../.tasks/03-integracao/INT-009-aquisicao-eps-termico.md) | COM-001/002/003, DAD-001 e boot INT-003 | Recortes individuais e fixtures anteriores concluídos. Estágio SD sob demanda permite iniciar produtores/escritor; aquisição conjunta reprovada por q=217 ms (limite 200), poll UART 13 ms registrado. 49 registros parciais íntegros, sem aprovar roteiro. obc restaurado/verificado; integração, contratos, TM operacional, Geral e TES pendentes | Em andamento |
+| INT-009 | [Aquisição e integração EPS/Térmico](../.tasks/03-integracao/INT-009-aquisicao-eps-termico.md) | COM-001/002/003, DAD-001 e boot INT-003 | Regressões e persistência FCP4 por operação aprovadas em bancada. A habilitação em `obc` aguarda contratos finais EPS/Térmico | Em andamento |
 | INT-010 | [Proteções energéticas e térmicas](../.tasks/03-integracao/INT-010-protecoes-energia-termico.md) | Dados INT-009, controle INT-005 e modos INT-007 | Cota EPS, limiares, prioridades e retorno aprovados. Comprovação TES-008/010 | Pendente |
 | INT-011 | [Atuação e persistência do Burn Wire](../.tasks/03-integracao/INT-011-burn-wire-persistencia.md) | Boot INT-003, interlock INT-004, modos INT-007 e proteção INT-010 | Autorização, montagem, duração, confirmação e estados duráveis. Comprovação TES-008/009/010 | Pendente |
 | INT-012 | [Watchdog e reinicialização do OBC](../.tasks/03-integracao/done/INT-012-watchdog-reset-obc.md) | Boot de bancada INT-003, consumidor INT-004 e diagnósticos INT-008 | Mecanismo/TC concluídos no ESP32/USB; prazos provisórios documentados, regressões aprovadas e obc restaurado. Comprovação TES-009; efeitos elétricos TES-008 e retorno operacional INT-013 | Concluída |

@@ -22,6 +22,8 @@ namespace obc_flow {
     // Maior registro canônico v1: MISSION, 105 bytes. Snapshots usam bloco próprio.
     constexpr size_t small_record_bytes = 105;
     static_assert(obc_record::telemetry_record_bytes <= small_record_bytes, "TM v3 deve caber na fila");
+    static_assert(obc_record::eps_record_bytes <= small_record_bytes
+        && obc_record::thermal_record_bytes <= small_record_bytes, "FCP4 deve caber na fila");
 
     // ─── STRUCTS ──────────────────────────────────────────────────────
 

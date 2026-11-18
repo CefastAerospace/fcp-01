@@ -1,0 +1,130 @@
+{
+  "uart_limit_ms": 10,
+  "command_queue_limit_ms": 200,
+  "runs": {
+    "03-acquisition-diagnostic": {
+      "passed": true,
+      "diagnostic_only": false,
+      "functional_acceptance": null,
+      "telemetry_count": 32,
+      "captured_records": 62,
+      "maximum_poll_gap_ms": 7,
+      "maximum_q_ms": 3,
+      "trace": [],
+      "error": null
+    },
+    "04-acquisition-diagnostic-repeat": {
+      "passed": true,
+      "diagnostic_only": false,
+      "functional_acceptance": null,
+      "telemetry_count": 32,
+      "captured_records": 62,
+      "maximum_poll_gap_ms": 8,
+      "maximum_q_ms": 1,
+      "trace": [],
+      "error": null
+    },
+    "05-passive-timing": {
+      "passed": null,
+      "diagnostic_only": true,
+      "functional_acceptance": "not_run",
+      "telemetry_count": 0,
+      "captured_records": null,
+      "maximum_poll_gap_ms": 13,
+      "maximum_q_ms": null,
+      "trace": [
+        {
+          "sampled_ms": "10143",
+          "gap_started_ms": "10125",
+          "count": "1",
+          "gap_us": "6986",
+          "previous_pump_us": "20",
+          "idle_us": "6966",
+          "pump_us": "21",
+          "i2c_started_ms": "10139",
+          "i2c_last_us": "236",
+          "i2c_max_us": "6654"
+        }
+      ],
+      "error": null
+    },
+    "09-acquisition-priority": {
+      "passed": true,
+      "diagnostic_only": false,
+      "functional_acceptance": null,
+      "telemetry_count": 32,
+      "captured_records": 62,
+      "maximum_poll_gap_ms": 5,
+      "maximum_q_ms": 3,
+      "trace": [],
+      "error": null
+    },
+    "10-passive-priority": {
+      "passed": null,
+      "diagnostic_only": true,
+      "functional_acceptance": "not_run",
+      "telemetry_count": 0,
+      "captured_records": null,
+      "maximum_poll_gap_ms": 5,
+      "maximum_q_ms": null,
+      "trace": [],
+      "error": null
+    },
+    "12-fixtures-priority": {
+      "passed": true,
+      "diagnostic_only": false,
+      "functional_acceptance": null,
+      "telemetry_count": 35,
+      "captured_records": 65,
+      "maximum_poll_gap_ms": 2,
+      "maximum_q_ms": 3,
+      "trace": [],
+      "error": null
+    },
+    "14-eps-regression": {
+      "passed": true,
+      "diagnostic_only": false,
+      "functional_acceptance": null,
+      "telemetry_count": 26,
+      "captured_records": null,
+      "maximum_poll_gap_ms": null,
+      "maximum_q_ms": null,
+      "trace": [],
+      "error": null
+    },
+    "16-thermal-regression": {
+      "passed": false,
+      "diagnostic_only": false,
+      "functional_acceptance": null,
+      "telemetry_count": 8,
+      "captured_records": null,
+      "maximum_poll_gap_ms": 7,
+      "maximum_q_ms": 210,
+      "trace": [],
+      "error": "AssertionError: {'n': 24, 't': 'ack', 'seq': 38711, 'cmd': 'ping', 'st': 'ok', 'q': 210}"
+    },
+    "18-obc-restored": {
+      "passed": true,
+      "diagnostic_only": false,
+      "functional_acceptance": null,
+      "telemetry_count": 37,
+      "captured_records": null,
+      "maximum_poll_gap_ms": null,
+      "maximum_q_ms": null,
+      "trace": [],
+      "error": null
+    }
+  },
+  "joint_uart_acceptance_observed": true,
+  "full_stage_acceptance": false,
+  "stop_reason": "Original isolated LM75A regression failed: ping q=210 ms against 200 ms. No additional corrective change; FCP4 work not started.",
+  "trace_note": "micros and monotonic-ms are separate reads and can be preempted between them; gap_us must not be interpreted as an exact conversion of poll_gap_ms. The existing millisecond metric and its limit are unchanged.",
+  "thermal_diagnosis": {
+    "preceding_lines_since_previous_ack": 51,
+    "preceding_serial_bytes_including_newlines": 6589,
+    "wire_time_ms_at_115200_8N1": 571.9618055555555,
+    "mechanism": "Isolated thermal profile retains synchronous Serial output without the joint TX buffer; diagnostics share the loop with command consumption. Logs support blocking-output hypothesis, without a controlled correction comparison.",
+    "proposed_next_step_not_applied": "Evaluate native TX buffering in the isolated LM75A profile and rerun its unchanged regression; do not change limits or omit logs."
+  },
+  "obc_restored_and_verified": true
+}

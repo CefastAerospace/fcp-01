@@ -1,0 +1,137 @@
+diff --git i/obc-dh/platformio.ini w/obc-dh/platformio.ini
+index 2e0ade0..a86959c 100644
+--- i/obc-dh/platformio.ini
++++ w/obc-dh/platformio.ini
+@@ -30,7 +30,7 @@ extends = env:obc
+ lib_deps =
+     ${env:obc.lib_deps}
+     symlink://../eps-tc/LM75A_Standard
+-build_flags = -DOBC_THERMAL_BENCH -fstack-usage
++build_flags = -DOBC_THERMAL_BENCH -DOBC_BUFFERED_FRAMEWORK_LOG -Wl,--wrap=log_printfv -fstack-usage
+ 
+ [env:uart-loopback]
+ extends = env:obc
+diff --git i/obc-dh/src/main.cpp w/obc-dh/src/main.cpp
+index 3fa24c8..7669ef1 100644
+--- i/obc-dh/src/main.cpp
++++ w/obc-dh/src/main.cpp
+@@ -4,6 +4,7 @@
+ #include "I2cBus.h" // Inicialização do controlador e executor existentes.
+ #include "ObcStorageEsp32.h" // Montagem SD/HSPI, sem abrir arquivos.
+ #include "ObcTtc.h" // Enlace TT&C e atendimento dos comandos de bancada.
++#include "ObcBenchSerial.h" // UART comum aos logs Arduino na bancada LM75A.
+ #ifdef OBC_EPS_BENCH
+ #include "ObcEpsEsp32.h" // Aquisição isolada, sem publicar energia na TM operacional.
+ #endif
+@@ -76,7 +77,13 @@ namespace {
+ void setup(
+ ) {
+     // Não aguarda conexão do computador nem inicia missão ou atuadores.
++#ifdef OBC_BUFFERED_FRAMEWORK_LOG
++    if (!obc_bench_serial::Init()) {
++        for (;;) vTaskDelay(pdMS_TO_TICKS(1000));
++    }
++#else
+     Serial.begin(115200);
++#endif
+     obc_watchdog::esp32::Init();
+     Serial.println("[OBC] Boot de bancada: tempo/NVS, I2C e SD");
+     const obc_startup::INITIALIZERS initializers = {
+diff --git 1/obc-dh/headers/ObcBenchSerial.h 2/obc-dh/headers/ObcBenchSerial.h
+new file mode 100644
+index 0000000..064fce9
+--- /dev/null
++++ 2/obc-dh/headers/ObcBenchSerial.h
+@@ -0,0 +1,21 @@
++/**
++ * @file ObcBenchSerial.h
++ * @brief UART0 compartilhada pela aplicação e pelos logs Arduino da bancada.
++ */
++#pragma once
++
++#ifdef OBC_BUFFERED_FRAMEWORK_LOG
++#include <Arduino.h> // Serial e HardwareSerial.
++#include <atomic> // Publicação da prontidão ao outro núcleo.
++#include <cstdarg> // Encaminhamento de argumentos do log Arduino.
++#include <cstdio> // Formatação completa antes de escrever no driver.
++#include <cstdlib> // Buffer de mensagens maiores.
++
++namespace obc_bench_serial {
++
++    /** @brief Abre a UART0 com TX de 8 KiB e habilita a saída comum após sucesso. */
++    bool Init(
++    );
++
++} // namespace obc_bench_serial
++#endif
+diff --git 1/obc-dh/src/ObcBenchSerial.cpp 2/obc-dh/src/ObcBenchSerial.cpp
+new file mode 100644
+index 0000000..177b142
+--- /dev/null
++++ 2/obc-dh/src/ObcBenchSerial.cpp
+@@ -0,0 +1,65 @@
++#include "ObcBenchSerial.h"
++
++#ifdef OBC_BUFFERED_FRAMEWORK_LOG
++// ─── ATENÇÃO ──────────────────────────────────────────────────────
++/*
++ * O funcionamento detalhado das funções e as características dos
++ * elementos desse módulo são abordados em "ObcBenchSerial.h".
++ */
++
++extern "C" int __real_log_printfv(
++    const char* format,
++    va_list arguments
++);
++
++namespace {
++    constexpr size_t tx_buffer_bytes = 8192;
++    std::atomic<bool> uart_ready{false};
++
++    // Uma escrita por mensagem usa o mesmo mutex e a mesma fila de Serial.
++    int WriteLog(
++        const char* format,
++        va_list arguments
++    ) {
++        char local[192];
++        va_list copy;
++        va_copy(copy, arguments);
++        const int length = std::vsnprintf(local, sizeof(local), format, copy);
++        va_end(copy);
++        if (length <= 0) return length;
++        const auto size = static_cast<size_t>(length);
++        if (size < sizeof(local)) {
++            return static_cast<int>(Serial.write(reinterpret_cast<const uint8_t*>(local), size));
++        }
++        auto* buffer = static_cast<char*>(std::malloc(size + 1));
++        if (!buffer) return 0;
++        const int formatted = std::vsnprintf(buffer, size + 1, format, arguments);
++        const int written = formatted == length
++            ? static_cast<int>(Serial.write(reinterpret_cast<const uint8_t*>(buffer), size)) : 0;
++        std::free(buffer);
++        return written;
++    }
++}
++
++namespace obc_bench_serial {
++
++bool Init(
++) {
++    if (Serial.setTxBufferSize(tx_buffer_bytes) != tx_buffer_bytes) return false;
++    Serial.begin(115200);
++    const bool ready = static_cast<bool>(Serial);
++    uart_ready.store(ready, std::memory_order_release);
++    return ready;
++}
++
++} // namespace obc_bench_serial
++
++// Preserva o wrapper de diagnóstico do SDK e redireciona sua chamada a log_printfv.
++extern "C" int __wrap_log_printfv(
++    const char* format,
++    va_list arguments
++) {
++    if (!uart_ready.load(std::memory_order_acquire)) return __real_log_printfv(format, arguments);
++    return WriteLog(format, arguments);
++}
++#endif

@@ -1,0 +1,183 @@
+command: ["pio", "run", "-e", "obc", "-e", "int009-ina219-check", "-e", "int009-lm75a-check", "-e", "int009-housekeeping-check", "-e", "int009-housekeeping-fixtures-check"]
+Processing obc (platform: espressif32@6.6.0; board: esp32doit-devkit-v1; framework: arduino)
+--------------------------------------------------------------------------------
+Verbose mode can be enabled via `-v, --verbose` option
+CONFIGURATION: https://docs.platformio.org/page/boards/espressif32/esp32doit-devkit-v1.html
+PLATFORM: Espressif 32 (6.6.0) > DOIT ESP32 DEVKIT V1
+HARDWARE: ESP32 240MHz, 320KB RAM, 4MB Flash
+DEBUG: Current (cmsis-dap) External (cmsis-dap, esp-bridge, esp-prog, iot-bus-jtag, jlink, minimodule, olimex-arm-usb-ocd, olimex-arm-usb-ocd-h, olimex-arm-usb-tiny-h, olimex-jtag-tiny, tumpa)
+PACKAGES: 
+ - framework-arduinoespressif32 @ 3.20014.231204 (2.0.14) 
+ - tool-esptoolpy @ 1.40501.0 (4.5.1) 
+ - toolchain-xtensa-esp32 @ 8.4.0+2021r2-patch5
+LDF: Library Dependency Finder -> https://bit.ly/configure-pio-ldf
+LDF Modes: Finder ~ chain, Compatibility ~ soft
+Found 36 compatible libraries
+Scanning dependencies...
+Dependency Graph
+|-- ArduinoJson @ 7.0.4
+|-- LoRa @ 0.8.0
+|-- tt-c @ 0.1.0
+|-- Wire @ 2.0.0
+|-- SD @ 2.0.0
+|-- SPI @ 2.0.0
+Building in release mode
+Retrieving maximum program size .pio/build/obc/firmware.elf
+Checking size .pio/build/obc/firmware.elf
+Advanced Memory Usage is available via "PlatformIO Home > Project Inspect"
+RAM:   [=         ]  10.0% (used 32704 bytes from 327680 bytes)
+Flash: [===       ]  33.0% (used 433021 bytes from 1310720 bytes)
+========================= [SUCCESS] Took 2.14 seconds =========================
+
+Processing int009-ina219-check (platform: espressif32@6.6.0; board: esp32doit-devkit-v1; framework: arduino)
+--------------------------------------------------------------------------------
+Verbose mode can be enabled via `-v, --verbose` option
+CONFIGURATION: https://docs.platformio.org/page/boards/espressif32/esp32doit-devkit-v1.html
+PLATFORM: Espressif 32 (6.6.0) > DOIT ESP32 DEVKIT V1
+HARDWARE: ESP32 240MHz, 320KB RAM, 4MB Flash
+DEBUG: Current (cmsis-dap) External (cmsis-dap, esp-bridge, esp-prog, iot-bus-jtag, jlink, minimodule, olimex-arm-usb-ocd, olimex-arm-usb-ocd-h, olimex-arm-usb-tiny-h, olimex-jtag-tiny, tumpa)
+PACKAGES: 
+ - framework-arduinoespressif32 @ 3.20014.231204 (2.0.14) 
+ - tool-esptoolpy @ 1.40501.0 (4.5.1) 
+ - toolchain-xtensa-esp32 @ 8.4.0+2021r2-patch5
+LDF: Library Dependency Finder -> https://bit.ly/configure-pio-ldf
+LDF Modes: Finder ~ chain, Compatibility ~ soft
+Found 37 compatible libraries
+Scanning dependencies...
+Dependency Graph
+|-- ArduinoJson @ 7.0.4
+|-- LoRa @ 0.8.0
+|-- tt-c @ 0.1.0
+|-- EPS_INA219 @ 1.0.0
+|-- Wire @ 2.0.0
+|-- SD @ 2.0.0
+|-- SPI @ 2.0.0
+Building in release mode
+Retrieving maximum program size .pio/build/int009-ina219-check/firmware.elf
+Checking size .pio/build/int009-ina219-check/firmware.elf
+Advanced Memory Usage is available via "PlatformIO Home > Project Inspect"
+RAM:   [=         ]  10.1% (used 33072 bytes from 327680 bytes)
+Flash: [===       ]  33.9% (used 444757 bytes from 1310720 bytes)
+========================= [SUCCESS] Took 1.98 seconds =========================
+
+Processing int009-lm75a-check (platform: espressif32@6.6.0; board: esp32doit-devkit-v1; framework: arduino)
+--------------------------------------------------------------------------------
+Verbose mode can be enabled via `-v, --verbose` option
+CONFIGURATION: https://docs.platformio.org/page/boards/espressif32/esp32doit-devkit-v1.html
+PLATFORM: Espressif 32 (6.6.0) > DOIT ESP32 DEVKIT V1
+HARDWARE: ESP32 240MHz, 320KB RAM, 4MB Flash
+DEBUG: Current (cmsis-dap) External (cmsis-dap, esp-bridge, esp-prog, iot-bus-jtag, jlink, minimodule, olimex-arm-usb-ocd, olimex-arm-usb-ocd-h, olimex-arm-usb-tiny-h, olimex-jtag-tiny, tumpa)
+PACKAGES: 
+ - framework-arduinoespressif32 @ 3.20014.231204 (2.0.14) 
+ - tool-esptoolpy @ 1.40501.0 (4.5.1) 
+ - toolchain-xtensa-esp32 @ 8.4.0+2021r2-patch5
+LDF: Library Dependency Finder -> https://bit.ly/configure-pio-ldf
+LDF Modes: Finder ~ chain, Compatibility ~ soft
+Found 37 compatible libraries
+Scanning dependencies...
+Dependency Graph
+|-- ArduinoJson @ 7.0.4
+|-- LoRa @ 0.8.0
+|-- tt-c @ 0.1.0
+|-- CEFAST_LM75A @ 0.1.0
+|-- Wire @ 2.0.0
+|-- SD @ 2.0.0
+|-- SPI @ 2.0.0
+Building in release mode
+Retrieving maximum program size .pio/build/int009-lm75a-check/firmware.elf
+Checking size .pio/build/int009-lm75a-check/firmware.elf
+Advanced Memory Usage is available via "PlatformIO Home > Project Inspect"
+RAM:   [=         ]  10.1% (used 33200 bytes from 327680 bytes)
+Flash: [===       ]  33.8% (used 442981 bytes from 1310720 bytes)
+========================= [SUCCESS] Took 1.96 seconds =========================
+
+Processing int009-housekeeping-check (platform: espressif32@6.6.0; board: esp32doit-devkit-v1; framework: arduino)
+--------------------------------------------------------------------------------
+Verbose mode can be enabled via `-v, --verbose` option
+CONFIGURATION: https://docs.platformio.org/page/boards/espressif32/esp32doit-devkit-v1.html
+PLATFORM: Espressif 32 (6.6.0) > DOIT ESP32 DEVKIT V1
+HARDWARE: ESP32 240MHz, 320KB RAM, 4MB Flash
+DEBUG: Current (cmsis-dap) External (cmsis-dap, esp-bridge, esp-prog, iot-bus-jtag, jlink, minimodule, olimex-arm-usb-ocd, olimex-arm-usb-ocd-h, olimex-arm-usb-tiny-h, olimex-jtag-tiny, tumpa)
+PACKAGES: 
+ - framework-arduinoespressif32 @ 3.20014.231204 (2.0.14) 
+ - tool-esptoolpy @ 1.40501.0 (4.5.1) 
+ - toolchain-xtensa-esp32 @ 8.4.0+2021r2-patch5
+LDF: Library Dependency Finder -> https://bit.ly/configure-pio-ldf
+LDF Modes: Finder ~ chain, Compatibility ~ soft
+Found 38 compatible libraries
+Scanning dependencies...
+Dependency Graph
+|-- ArduinoJson @ 7.0.4
+|-- LoRa @ 0.8.0
+|-- tt-c @ 0.1.0
+|-- EPS_INA219 @ 1.0.0
+|-- CEFAST_LM75A @ 0.1.0
+|-- Wire @ 2.0.0
+|-- SD @ 2.0.0
+|-- SPI @ 2.0.0
+Building in release mode
+Compiling .pio/build/int009-housekeeping-check/src/bench/ObcDataFlowCheck.cpp.o
+Linking .pio/build/int009-housekeeping-check/firmware.elf
+Retrieving maximum program size .pio/build/int009-housekeeping-check/firmware.elf
+Checking size .pio/build/int009-housekeeping-check/firmware.elf
+Advanced Memory Usage is available via "PlatformIO Home > Project Inspect"
+RAM:   [=         ]  14.2% (used 46680 bytes from 327680 bytes)
+Flash: [====      ]  44.0% (used 576693 bytes from 1310720 bytes)
+Building .pio/build/int009-housekeeping-check/firmware.bin with action:
+  "$PYTHONEXE" "$OBJCOPY" --chip esp32 elf2image --flash_mode ${__get_board_flash_mode(__env__)} --flash_freq ${__get_board_f_image(__env__)} --flash_size 4MB --elf-sha256-offset 0xb0 -o $TARGET $SOURCES
+Building .pio/build/int009-housekeeping-check/firmware.bin
+esptool.py v4.5.1
+Creating esp32 image...
+Merged 2 ELF sections
+Successfully created esp32 image.
+========================= [SUCCESS] Took 5.21 seconds =========================
+
+Processing int009-housekeeping-fixtures-check (platform: espressif32@6.6.0; board: esp32doit-devkit-v1; framework: arduino)
+--------------------------------------------------------------------------------
+Verbose mode can be enabled via `-v, --verbose` option
+CONFIGURATION: https://docs.platformio.org/page/boards/espressif32/esp32doit-devkit-v1.html
+PLATFORM: Espressif 32 (6.6.0) > DOIT ESP32 DEVKIT V1
+HARDWARE: ESP32 240MHz, 320KB RAM, 4MB Flash
+DEBUG: Current (cmsis-dap) External (cmsis-dap, esp-bridge, esp-prog, iot-bus-jtag, jlink, minimodule, olimex-arm-usb-ocd, olimex-arm-usb-ocd-h, olimex-arm-usb-tiny-h, olimex-jtag-tiny, tumpa)
+PACKAGES: 
+ - framework-arduinoespressif32 @ 3.20014.231204 (2.0.14) 
+ - tool-esptoolpy @ 1.40501.0 (4.5.1) 
+ - toolchain-xtensa-esp32 @ 8.4.0+2021r2-patch5
+LDF: Library Dependency Finder -> https://bit.ly/configure-pio-ldf
+LDF Modes: Finder ~ chain, Compatibility ~ soft
+Found 38 compatible libraries
+Scanning dependencies...
+Dependency Graph
+|-- ArduinoJson @ 7.0.4
+|-- LoRa @ 0.8.0
+|-- tt-c @ 0.1.0
+|-- EPS_INA219 @ 1.0.0
+|-- CEFAST_LM75A @ 0.1.0
+|-- Wire @ 2.0.0
+|-- SD @ 2.0.0
+|-- SPI @ 2.0.0
+Building in release mode
+Compiling .pio/build/int009-housekeeping-fixtures-check/src/bench/ObcDataFlowCheck.cpp.o
+Linking .pio/build/int009-housekeeping-fixtures-check/firmware.elf
+Retrieving maximum program size .pio/build/int009-housekeeping-fixtures-check/firmware.elf
+Checking size .pio/build/int009-housekeeping-fixtures-check/firmware.elf
+Advanced Memory Usage is available via "PlatformIO Home > Project Inspect"
+RAM:   [=         ]  11.3% (used 36944 bytes from 327680 bytes)
+Flash: [====      ]  42.9% (used 562789 bytes from 1310720 bytes)
+Building .pio/build/int009-housekeeping-fixtures-check/firmware.bin with action:
+  "$PYTHONEXE" "$OBJCOPY" --chip esp32 elf2image --flash_mode ${__get_board_flash_mode(__env__)} --flash_freq ${__get_board_f_image(__env__)} --flash_size 4MB --elf-sha256-offset 0xb0 -o $TARGET $SOURCES
+Building .pio/build/int009-housekeeping-fixtures-check/firmware.bin
+esptool.py v4.5.1
+Creating esp32 image...
+Merged 2 ELF sections
+Successfully created esp32 image.
+========================= [SUCCESS] Took 4.58 seconds =========================
+
+Environment                         Status    Duration
+----------------------------------  --------  ------------
+obc                                 SUCCESS   00:00:02.141
+int009-ina219-check                 SUCCESS   00:00:01.982
+int009-lm75a-check                  SUCCESS   00:00:01.960
+int009-housekeeping-check           SUCCESS   00:00:05.206
+int009-housekeeping-fixtures-check  SUCCESS   00:00:04.577
+========================= 5 succeeded in 00:00:15.866 =========================

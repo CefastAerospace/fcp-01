@@ -1,6 +1,6 @@
 /**
  * @file ObcRecordCodec.h
- * @brief Codec portátil de registros v1, snapshots v2 e TM v3, sem I/O ou alocação.
+ * @brief Codec portátil de registros v1, snapshots v2, TM v3 e aquisição v4.
  */
 
 #pragma once
@@ -18,6 +18,10 @@ namespace obc_record {
     constexpr uint8_t telemetry_version = 3;
     constexpr uint8_t telemetry_type = 9;
     constexpr size_t telemetry_record_bytes = 99;
+    constexpr char acquisition_magic[4] = {'F', 'C', 'P', '4'};
+    constexpr uint8_t acquisition_version = 4;
+    constexpr uint16_t eps_record_bytes = 78;
+    constexpr uint16_t thermal_record_bytes = 58;
     constexpr size_t min_snapshot_record_bytes = obc_data::header_bytes + 8 + 1 + obc_data::crc_bytes;
     constexpr size_t max_snapshot_record_bytes = min_snapshot_record_bytes
         + obc_data::max_snapshot_aircraft * (3 + 1 + 3 * 8
@@ -28,7 +32,44 @@ namespace obc_record {
 
     // ─── STRUCTS ──────────────────────────────────────────────────────
 
-    /** @brief Corpos v1; a API dedicada v3 também usa o membro telemetry. */
+    enum class ACQUISITION_KIND : uint8_t { ELECTRICAL = 10, THERMAL = 11 };
+    enum class ACQUISITION_OPERATION : uint8_t { CONFIGURE = 1, READ = 2 };
+    enum class ACQUISITION_RESULT : uint8_t {
+        OK, NOT_INITIALIZED, INVALID_ARGUMENT, INVALID_CONTEXT, QUEUE_FULL,
+        QUEUE_TIMEOUT, OPERATION_FAILED, DEVICE_NACK, TRANSFER_TIMEOUT,
+        BUS_ERROR, READ_INCOMPLETE, SERVICE_RECOVERING, SERVICE_UNAVAILABLE
+    };
+    enum class ACQUISITION_DRIVER : uint8_t {
+        NOT_RUN, OK, NOT_INITIALIZED, INVALID_CHANNEL, DEVICE_OFFLINE, POWER_DOWN,
+        I2C_ERROR, OVERFLOW, BUFFER_ERROR, READ_INCOMPLETE, OUT_OF_RANGE, CONVERSION_PENDING
+    };
+    enum class ACQUISITION_PHASE : uint8_t { NONE, SELECT_REGISTER, READ, WRITE, BUFFER };
+
+    /** @brief Resultado de uma tentativa, sem histórico ou ponteiros para o dispositivo. */
+    struct ACQUISITION_DATA {
+        uint64_t started_ms;
+        uint64_t recovery_cycles;
+        uint8_t channel;
+        uint8_t address;
+        ACQUISITION_OPERATION operation;
+        ACQUISITION_RESULT result;
+        ACQUISITION_DRIVER driver;
+        ACQUISITION_PHASE phase;
+        uint8_t reg;
+        uint8_t wire_status;
+        uint8_t received;
+        uint8_t available_fields;
+        float values[6];
+    };
+
+    /** @brief Entrega síncrona após a aquisição, fora do callback I2C. */
+    using ACQUISITION_SINK = void (*)(
+        ACQUISITION_KIND kind,
+        uint64_t completed_ms,
+        const ACQUISITION_DATA& data
+    );
+
+    /** @brief Corpos v1 e extensões com codecs próprios v3/v4. */
     union RECORD_BODY {
         obc_data::PAYLOAD_DATA mission;
         obc_data::TELEMETRY_DATA telemetry;
@@ -36,6 +77,7 @@ namespace obc_record {
         obc_data::STATISTICS_DATA statistics;
         obc_data::BOOT_DATA boot;
         obc_time::TIME_REFERENCE time_reference;
+        ACQUISITION_DATA acquisition;
     };
 
     /**
@@ -115,6 +157,24 @@ namespace obc_record {
      * @return Estado final; INCOMPLETE indica necessidade de mais bytes.
      */
     STATUS Decode(
+        const uint8_t* buffer,
+        size_t available,
+        RECORD& record,
+        size_t& consumed
+    );
+
+    /** @brief Codifica uma operação FCP4. Em erro, preserva buffer e zera written. */
+    STATUS EncodeAcquisition(
+        ACQUISITION_KIND kind,
+        const obc_time::EVENT_STAMP& completed,
+        const ACQUISITION_DATA& data,
+        uint8_t* buffer,
+        size_t capacity,
+        size_t& written
+    );
+
+    /** @brief Decodifica uma operação FCP4. Em erro, preserva record e zera consumed. */
+    STATUS DecodeAcquisition(
         const uint8_t* buffer,
         size_t available,
         RECORD& record,

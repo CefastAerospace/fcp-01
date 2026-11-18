@@ -1,5 +1,37 @@
 # Arquitetura vigente do OBC-DH
 
+### UART0 e registros de aquisição FCP4
+
+A bancada LM75A individual e a bancada FCP4 definem o OBC como
+responsável por abrir a UART0. O umbilical verifica a porta pronta
+no modo `REUSE`. A aplicação e os logs Arduino compartilham a fila
+TX de 8 KiB. O modo padrão do umbilical continua configurando
+a própria porta.
+
+Na bancada FCP4, as tarefas EPS/Térmico encaminham cada resultado
+concluído à fila do diário. Reutilizam o executor I2C, o escritor e
+os contadores de perdas. O leitor exporta FCP4 e os formatos
+existentes, e a recuperação de entregas atravessa registros FCP4.
+A habilitação dos produtores no firmware `obc` aguarda os contratos
+operacionais EPS/Térmico.
+
+### Bancadas conjuntas e prioridade UART — 18/11/2026
+
+Somente os dois ambientes `OBC_HOUSEKEEPING_BENCH` usam buffer TX nativo
+UART0 de 8 KiB e transporte Payload Core 1/prioridade 6, acima do executor
+I2C de prioridade 5. Demais ambientes conservam prioridade UART 3. Pilhas,
+ring, baudrate, filas e limites permanecem. Diagnóstico temporal exclusivo
+copia dados no transporte e imprime no loop; não redefine a métrica em ms.
+
+A captura anterior reproduziu poll de 13 ms. Após o ajuste, aquisição e
+fixtures passaram com máximos de 5/2 ms; uma captura passiva de 90 s também
+atingiu no máximo 5 ms. São observações de bancada, sem aprovação de voo.
+A regressão INA219 passou; LM75A individual reprovou em q=210 ms contra
+200 ms. Nenhum ajuste foi aplicado nesse perfil. Implementação interrompida,
+`obc` restaurado/verificado; persistência por operação ainda não iniciada.
+[Evidências e limites](../.tasks/03-integracao/INT-009-aquisicao-eps-termico.md#diagnóstico-uart-prioridade-e-regressão-lm75a--continuação-de-18112026).
+
+
 ### Aquisição LM75A isolada — 17/11/2026
 
 O ambiente `int009-lm75a-check` habilita `ObcThermal`/`ObcThermalEsp32`

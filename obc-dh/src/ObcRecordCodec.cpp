@@ -602,6 +602,134 @@ namespace obc_record {
         return STATUS::OK;
     }
 
+    namespace {
+        // Cada tipo tem tamanho canônico e uma quantidade fixa de medições.
+        uint16_t AcquisitionSize(
+            ACQUISITION_KIND kind
+        ) {
+            if (kind == ACQUISITION_KIND::ELECTRICAL) return eps_record_bytes;
+            if (kind == ACQUISITION_KIND::THERMAL) return thermal_record_bytes;
+            return 0;
+        }
+
+        // A máscara só representa valores da própria tentativa de leitura.
+        STATUS ValidateAcquisition(
+            ACQUISITION_KIND kind,
+            const obc_time::EVENT_STAMP& completed,
+            const ACQUISITION_DATA& data
+        ) {
+            const bool thermal = kind == ACQUISITION_KIND::THERMAL;
+            const auto legal_fields = thermal ? 0x01U : 0x3fU;
+            const auto channel_count = thermal ? 5U : 3U;
+            if (completed.boot_id == 0 || data.started_ms > completed.monotonic_ms
+                    || data.channel >= channel_count || data.address < 0x08 || data.address > 0x77
+                    || (data.operation != ACQUISITION_OPERATION::CONFIGURE
+                        && data.operation != ACQUISITION_OPERATION::READ)
+                    || data.result > ACQUISITION_RESULT::SERVICE_UNAVAILABLE
+                    || data.driver > ACQUISITION_DRIVER::CONVERSION_PENDING
+                    || data.phase > ACQUISITION_PHASE::BUFFER
+                    || (data.available_fields & ~legal_fields)) return STATUS::INVALID_DATA;
+            if (data.available_fields && (data.operation != ACQUISITION_OPERATION::READ
+                    || data.result != ACQUISITION_RESULT::OK
+                    || data.driver != ACQUISITION_DRIVER::OK)) return STATUS::INVALID_DATA;
+            for (size_t index = 0; index < 6; ++index) {
+                if ((data.available_fields & (1U << index))
+                        && !std::isfinite(data.values[index])) return STATUS::INVALID_DATA;
+            }
+            return STATUS::OK;
+        }
+
+        // O mesmo layout explícito atende à leitura e à escrita.
+        void TransferAcquisition(
+            CURSOR& cursor,
+            ACQUISITION_KIND kind,
+            ACQUISITION_DATA& data
+        ) {
+            TransferUnsigned(cursor, data.started_ms);
+            TransferUnsigned(cursor, data.recovery_cycles);
+            TransferUnsigned(cursor, data.channel);
+            TransferUnsigned(cursor, data.address);
+            TransferEnum(cursor, data.operation);
+            TransferEnum(cursor, data.result);
+            TransferEnum(cursor, data.driver);
+            TransferEnum(cursor, data.phase);
+            TransferUnsigned(cursor, data.reg);
+            TransferUnsigned(cursor, data.wire_status);
+            TransferUnsigned(cursor, data.received);
+            TransferUnsigned(cursor, data.available_fields);
+            const size_t value_count = kind == ACQUISITION_KIND::THERMAL ? 1 : 6;
+            for (size_t index = 0; index < value_count; ++index) {
+                const bool present = data.available_fields & (1U << index);
+                float value = cursor.output && present ? data.values[index] : 0;
+                TransferReal<float, uint32_t>(cursor, value);
+                if (cursor.input) data.values[index] = present ? value : 0;
+            }
+        }
+    } // namespace
+
+    STATUS EncodeAcquisition(
+        ACQUISITION_KIND kind,
+        const obc_time::EVENT_STAMP& completed,
+        const ACQUISITION_DATA& data,
+        uint8_t* buffer,
+        size_t capacity,
+        size_t& written
+    ) {
+        written = 0;
+        if (!buffer) return STATUS::INVALID_ARGUMENT;
+        const uint16_t size = AcquisitionSize(kind);
+        if (!size) return STATUS::UNSUPPORTED_TYPE;
+        const STATUS status = ValidateAcquisition(kind, completed, data);
+        if (status != STATUS::OK) return status;
+        if (capacity < size) return STATUS::BUFFER_TOO_SMALL;
+
+        obc_data::RECORD_HEADER header = {
+            acquisition_version, static_cast<obc_data::RECORD_TYPE>(kind), size, completed
+        };
+        ACQUISITION_DATA copy = data;
+        std::memcpy(buffer, acquisition_magic, sizeof(acquisition_magic));
+        CURSOR cursor = {buffer + 4, nullptr};
+        TransferHeader(cursor, header);
+        TransferAcquisition(cursor, kind, copy);
+        uint32_t crc = ComputeCrc32(buffer, size - obc_data::crc_bytes);
+        TransferUnsigned(cursor, crc);
+        written = size;
+        return STATUS::OK;
+    }
+
+    STATUS DecodeAcquisition(
+        const uint8_t* buffer,
+        size_t available,
+        RECORD& record,
+        size_t& consumed
+    ) {
+        consumed = 0;
+        if (!buffer) return STATUS::INVALID_ARGUMENT;
+        if (available < obc_data::header_bytes) return STATUS::INCOMPLETE;
+        if (std::memcmp(buffer, acquisition_magic, sizeof(acquisition_magic))) return STATUS::BAD_MAGIC;
+        RECORD decoded = {};
+        CURSOR cursor = {nullptr, buffer + 4};
+        TransferHeader(cursor, decoded.header);
+        if (decoded.header.version != acquisition_version) return STATUS::UNSUPPORTED_VERSION;
+        const auto kind = static_cast<ACQUISITION_KIND>(decoded.header.type);
+        const uint16_t size = AcquisitionSize(kind);
+        if (!size) return STATUS::UNSUPPORTED_TYPE;
+        if (decoded.header.total_bytes != size) return STATUS::INVALID_LENGTH;
+        if (available < size) return STATUS::INCOMPLETE;
+
+        CURSOR trailer = {nullptr, buffer + size - obc_data::crc_bytes};
+        uint32_t crc = 0;
+        TransferUnsigned(trailer, crc);
+        if (crc != ComputeCrc32(buffer, size - obc_data::crc_bytes)) return STATUS::CRC_MISMATCH;
+        decoded.body.acquisition = {};
+        TransferAcquisition(cursor, kind, decoded.body.acquisition);
+        const STATUS status = ValidateAcquisition(kind, decoded.header.stamp, decoded.body.acquisition);
+        if (status != STATUS::OK) return status;
+        record = decoded;
+        consumed = size;
+        return STATUS::OK;
+    }
+
     STATUS GetSnapshotSize(
         const obc_data::PAYLOAD_SNAPSHOT& snapshot,
         size_t& total_bytes

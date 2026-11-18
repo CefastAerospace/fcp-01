@@ -27,6 +27,17 @@ namespace {
     SLOT_STATE snapshot_state = SLOT_STATE::FREE;
     size_t snapshot_size = 0;
     portMUX_TYPE state_lock = portMUX_INITIALIZER_UNLOCKED;
+    enum RECORD_DROP_KIND : uint8_t { SNAPSHOT, TELEMETRY, OTHER, DROP_KIND_COUNT };
+    enum RECORD_DROP_CAUSE : uint8_t {
+        WRITER_UNAVAILABLE, ADMISSION_REJECTED, QUEUE_FULL, SNAPSHOT_BUSY,
+        ENCODE_FAILED, TIME_SYNC, WRITE_FAILED, DROP_CAUSE_COUNT
+    };
+#ifdef OBC_RECORD_DROPS_BENCH
+    struct RECORD_DROP_DIAGNOSTICS {
+        uint64_t counts[RECORD_DROP_KIND::DROP_KIND_COUNT][RECORD_DROP_CAUSE::DROP_CAUSE_COUNT];
+    };
+    RECORD_DROP_DIAGNOSTICS record_drops = {};
+#endif
     TaskHandle_t payload_task = nullptr;
     TaskHandle_t writer_task = nullptr;
     bool attempted = false;
@@ -58,6 +69,65 @@ namespace {
     };
 
     // ─── HELPERS ──────────────────────────────────────────────────────
+
+    // Conta uma perda sob state_lock ou durante o boot, antes de iniciar tarefas.
+    void DropRecord(
+        RECORD_DROP_KIND kind,
+        RECORD_DROP_CAUSE cause
+    ) {
+        state.DropRecords();
+#ifdef OBC_RECORD_DROPS_BENCH
+        auto& count = record_drops.counts[kind][cause];
+        if (count != UINT64_MAX) ++count;
+#else
+        (void)kind;
+        (void)cause;
+#endif
+    }
+
+    // Identifica TM entre os registros curtos do produtor e do escritor.
+    RECORD_DROP_KIND EncodedRecordDropKind(
+        const uint8_t* bytes,
+        size_t size
+    ) {
+#ifdef OBC_RECORD_DROPS_BENCH
+        if (bytes != nullptr && size >= 6
+                && (std::memcmp(bytes, obc_record::telemetry_magic, sizeof(obc_record::telemetry_magic)) == 0
+                    || (std::memcmp(bytes, obc_data::record_magic, sizeof(obc_data::record_magic)) == 0
+                        && bytes[5] == static_cast<uint8_t>(obc_data::RECORD_TYPE::TELEMETRY)))) {
+            return RECORD_DROP_KIND::TELEMETRY;
+        }
+#else
+        (void)bytes;
+        (void)size;
+#endif
+        return RECORD_DROP_KIND::OTHER;
+    }
+
+#ifdef OBC_RECORD_DROPS_BENCH
+    // Publica a cópia do mesmo instante em linhas completas, fora do lock.
+    void PrintRecordDrops(
+        const RECORD_DROP_DIAGNOSTICS& drops,
+        uint64_t sampled_ms,
+        uint64_t total
+    ) {
+        constexpr const char* kinds[] = {"snapshot", "tm", "other"};
+        static_assert(sizeof(kinds) / sizeof(kinds[0]) == RECORD_DROP_KIND::DROP_KIND_COUNT,
+            "Cada classe de registro precisa de um nome no diagnóstico");
+        for (size_t kind = 0; kind < RECORD_DROP_KIND::DROP_KIND_COUNT; ++kind) {
+            const auto& counts = drops.counts[kind];
+            Serial.printf("[FLOW-DROPS] ms=%llu total=%llu kind=%s writer_unavailable=%llu admission_rejected=%llu queue_full=%llu snapshot_busy=%llu encode_failed=%llu time_sync=%llu write_failed=%llu\n",
+                static_cast<unsigned long long>(sampled_ms), static_cast<unsigned long long>(total), kinds[kind],
+                static_cast<unsigned long long>(counts[RECORD_DROP_CAUSE::WRITER_UNAVAILABLE]),
+                static_cast<unsigned long long>(counts[RECORD_DROP_CAUSE::ADMISSION_REJECTED]),
+                static_cast<unsigned long long>(counts[RECORD_DROP_CAUSE::QUEUE_FULL]),
+                static_cast<unsigned long long>(counts[RECORD_DROP_CAUSE::SNAPSHOT_BUSY]),
+                static_cast<unsigned long long>(counts[RECORD_DROP_CAUSE::ENCODE_FAILED]),
+                static_cast<unsigned long long>(counts[RECORD_DROP_CAUSE::TIME_SYNC]),
+                static_cast<unsigned long long>(counts[RECORD_DROP_CAUSE::WRITE_FAILED]));
+        }
+    }
+#endif
 
     // Publicação curta; nunca mantém o lock durante parser ou codificação.
     void MarkProcess(
@@ -230,7 +300,13 @@ namespace {
     ) {
         portENTER_CRITICAL(&state_lock);
         const bool queued = writer_ready && records.Push(bytes, size);
-        if (!queued) state.DropRecords();
+        if (!queued) {
+            const auto kind = EncodedRecordDropKind(bytes, size);
+            if (!writer_ready) DropRecord(kind, RECORD_DROP_CAUSE::WRITER_UNAVAILABLE);
+            else if (bytes == nullptr || size == 0 || size > small_record_bytes) {
+                DropRecord(kind, RECORD_DROP_CAUSE::ADMISSION_REJECTED);
+            } else DropRecord(kind, RECORD_DROP_CAUSE::QUEUE_FULL);
+        }
         portEXIT_CRITICAL(&state_lock);
         if (queued) xTaskNotifyGive(writer_task);
     }
@@ -245,7 +321,8 @@ namespace {
             Submit(bytes, size);
         } else {
             portENTER_CRITICAL(&state_lock);
-            state.DropRecords();
+            DropRecord(record.header.type == obc_data::RECORD_TYPE::TELEMETRY
+                ? RECORD_DROP_KIND::TELEMETRY : RECORD_DROP_KIND::OTHER, RECORD_DROP_CAUSE::ENCODE_FAILED);
             portEXIT_CRITICAL(&state_lock);
         }
     }
@@ -366,7 +443,9 @@ namespace {
 #endif
         const bool reserved = observed && writer_ready && snapshot_state == SLOT_STATE::FREE;
         if (reserved) snapshot_state = SLOT_STATE::ENCODING;
-        else state.DropRecords();
+        else if (!observed) DropRecord(RECORD_DROP_KIND::SNAPSHOT, RECORD_DROP_CAUSE::ADMISSION_REJECTED);
+        else if (!writer_ready) DropRecord(RECORD_DROP_KIND::SNAPSHOT, RECORD_DROP_CAUSE::WRITER_UNAVAILABLE);
+        else DropRecord(RECORD_DROP_KIND::SNAPSHOT, RECORD_DROP_CAUSE::SNAPSHOT_BUSY);
         portEXIT_CRITICAL(&state_lock);
         if (!reserved) return;
 
@@ -396,7 +475,7 @@ namespace {
             snapshot_state = SLOT_STATE::READY;
         } else {
             snapshot_state = SLOT_STATE::FREE;
-            state.DropRecords();
+            DropRecord(RECORD_DROP_KIND::SNAPSHOT, RECORD_DROP_CAUSE::ENCODE_FAILED);
         }
         portEXIT_CRITICAL(&state_lock);
         if (encoded) xTaskNotifyGive(writer_task);
@@ -505,7 +584,7 @@ namespace {
         if (obc_record::Encode(record, bytes, sizeof(bytes), size) == obc_record::STATUS::OK) {
             if (!journal.Write(bytes, size)) {
                 portENTER_CRITICAL(&state_lock);
-                state.DropRecords();
+                DropRecord(RECORD_DROP_KIND::OTHER, RECORD_DROP_CAUSE::WRITE_FAILED);
                 portEXIT_CRITICAL(&state_lock);
             }
         }
@@ -655,7 +734,8 @@ namespace {
                 const bool written = !synchronizing_reference && journal.Write(block.bytes, block.size);
                 if (!written) {
                     portENTER_CRITICAL(&state_lock);
-                    state.DropRecords();
+                    DropRecord(EncodedRecordDropKind(block.bytes, block.size), synchronizing_reference
+                        ? RECORD_DROP_CAUSE::TIME_SYNC : RECORD_DROP_CAUSE::WRITE_FAILED);
                     portEXIT_CRITICAL(&state_lock);
                 }
                 const bool reference = block.bytes[5] == static_cast<uint8_t>(obc_data::RECORD_TYPE::TIME_REFERENCE)
@@ -677,7 +757,8 @@ namespace {
 #endif
                 portENTER_CRITICAL(&state_lock);
                 snapshot_state = SLOT_STATE::FREE;
-                if (!written) state.DropRecords();
+                if (!written) DropRecord(RECORD_DROP_KIND::SNAPSHOT, synchronizing_reference
+                    ? RECORD_DROP_CAUSE::TIME_SYNC : RECORD_DROP_CAUSE::WRITE_FAILED);
                 portEXIT_CRITICAL(&state_lock);
                 storage_recovery.ObserveWrite(written);
             }
@@ -773,7 +854,7 @@ bool Init(
     }
     startup_storage_failures = storage ? 0 : 1;
     writer_result = report.storage_result;
-    if (!storage) state.DropRecords(); // BOOT pretendido, sem escritor disponível.
+    if (!storage) DropRecord(RECORD_DROP_KIND::OTHER, RECORD_DROP_CAUSE::WRITER_UNAVAILABLE);
     state.SetStorageStatistics(0, startup_storage_failures);
 #ifdef OBC_HOUSEKEEPING_BENCH
     obc_housekeeping::bench::TraceTaskCreation("uart", false,
@@ -909,7 +990,24 @@ void RecordTelemetry(
         Submit(bytes, size);
     } else {
         portENTER_CRITICAL(&state_lock);
-        state.DropRecords();
+        DropRecord(RECORD_DROP_KIND::TELEMETRY, RECORD_DROP_CAUSE::ENCODE_FAILED);
+        portEXIT_CRITICAL(&state_lock);
+    }
+}
+
+void RecordAcquisition(
+    obc_record::ACQUISITION_KIND kind,
+    uint64_t completed_ms,
+    const obc_record::ACQUISITION_DATA& data
+) {
+    uint8_t bytes[obc_flow::small_record_bytes];
+    size_t size = 0;
+    if (obc_record::EncodeAcquisition(kind, {boot_id, completed_ms}, data,
+            bytes, sizeof(bytes), size) == obc_record::STATUS::OK) {
+        Submit(bytes, size);
+    } else {
+        portENTER_CRITICAL(&state_lock);
+        DropRecord(RECORD_DROP_KIND::OTHER, RECORD_DROP_CAUSE::ENCODE_FAILED);
         portEXIT_CRITICAL(&state_lock);
     }
 }
@@ -994,6 +1092,9 @@ void ReportDiagnostics(
     last_diagnostic_ms = now_ms;
     portENTER_CRITICAL(&state_lock);
     const obc_data::STATISTICS_DATA statistics = state.GetStatistics();
+#ifdef OBC_RECORD_DROPS_BENCH
+    const auto drops = record_drops;
+#endif
     const bool storage = writer_ready;
     const obc_storage::RESULT result = writer_result;
     const uint64_t poll_gap = maximum_poll_gap_ms;
@@ -1029,6 +1130,9 @@ void ReportDiagnostics(
         payload_task ? static_cast<unsigned>(uxTaskGetStackHighWaterMark(payload_task)) : 0U,
         writer_task ? static_cast<unsigned>(uxTaskGetStackHighWaterMark(writer_task)) : 0U,
         static_cast<unsigned>(transport.stack_free_bytes), static_cast<unsigned long long>(transport.full_observations));
+#ifdef OBC_RECORD_DROPS_BENCH
+    PrintRecordDrops(drops, now_ms, statistics.records_dropped);
+#endif
     Serial.printf("[FLOW-MEMORY] heap=%u byte_heap=%u byte_largest=%u byte_min=%u parser_peak_bytes=%u parser_limit_bytes=%u\n",
         ESP.getFreeHeap(),
         static_cast<unsigned>(heap_caps_get_free_size(MALLOC_CAP_INTERNAL | MALLOC_CAP_8BIT)),

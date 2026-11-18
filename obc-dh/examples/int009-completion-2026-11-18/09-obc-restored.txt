@@ -1,0 +1,2 @@
+command: ["/home/o-grande-kayky/.local/share/uv/tools/platformio/bin/python", "tests/ObcStationCheck.py", "/dev/ttyUSB0", "--reader", "/tmp/int009-read-records", "--report", "examples/int009-completion-2026-11-18/09-obc-restored.json"]
+ObcStationCheck passed; examples/int009-completion-2026-11-18/09-obc-restored.json

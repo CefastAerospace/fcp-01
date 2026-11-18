@@ -26,6 +26,7 @@ namespace {
 #endif
     bool init_attempted = false;
     bool init_active = false;
+    obc_record::ACQUISITION_SINK acquisition_sink = nullptr;
 
     // ─── STRUCTS ──────────────────────────────────────────────────────
 
@@ -64,6 +65,71 @@ namespace {
             request.status == CEFAST::thermal::STATUS::READ_INCOMPLETE, request.bus.wire_status);
     }
 
+    // Traduz o resultado do LM75A para códigos estáveis de arquivo.
+    obc_record::ACQUISITION_DRIVER MapDriver(
+        CEFAST::thermal::STATUS status
+    ) {
+        using FROM = CEFAST::thermal::STATUS;
+        using TO = obc_record::ACQUISITION_DRIVER;
+        switch (status) {
+            case FROM::NOT_ATTEMPTED: return TO::NOT_RUN;
+            case FROM::OK: return TO::OK;
+            case FROM::INVALID_ADDRESS: return TO::INVALID_CHANNEL;
+            case FROM::BUFFER_ERROR: return TO::BUFFER_ERROR;
+            case FROM::I2C_ERROR: return TO::I2C_ERROR;
+            case FROM::READ_INCOMPLETE: return TO::READ_INCOMPLETE;
+            case FROM::OUT_OF_RANGE: return TO::OUT_OF_RANGE;
+        }
+        return TO::I2C_ERROR;
+    }
+
+    // A etapa Wire no arquivo não depende da ordem definida no driver.
+    obc_record::ACQUISITION_PHASE MapPhase(
+        CEFAST::thermal::PHASE phase
+    ) {
+        using FROM = CEFAST::thermal::PHASE;
+        using TO = obc_record::ACQUISITION_PHASE;
+        switch (phase) {
+            case FROM::NONE: return TO::NONE;
+            case FROM::SELECT_REGISTER: return TO::SELECT_REGISTER;
+            case FROM::READ: return TO::READ;
+            case FROM::WRITE: return TO::WRITE;
+            case FROM::BUFFER: return TO::BUFFER;
+        }
+        return TO::NONE;
+    }
+
+    // Registra o resultado atual, sem usar a última temperatura disponível em RAM.
+    void PublishOperation(
+        const REQUEST& request,
+        uint8_t channel,
+        i2c::STATUS result,
+        uint64_t started_ms,
+        uint64_t completed_ms,
+        bool valid,
+        float temperature_c
+    ) {
+        using namespace obc_record;
+        ACQUISITION_DATA data = {};
+        data.started_ms = started_ms;
+        data.recovery_cycles = request.recovery_cycles;
+        data.channel = channel;
+        data.address = request.address;
+        data.operation = request.action == ACTION::READ ? ACQUISITION_OPERATION::READ
+            : ACQUISITION_OPERATION::CONFIGURE;
+        data.result = obc_acquisition::MapResult(result);
+        data.driver = MapDriver(request.status);
+        data.phase = MapPhase(request.bus.phase);
+        data.reg = request.bus.reg;
+        data.wire_status = request.bus.wire_status;
+        data.received = request.bus.received;
+        if (valid) {
+            data.values[0] = temperature_c;
+            data.available_fields = 1;
+        }
+        acquisition_sink(ACQUISITION_KIND::THERMAL, completed_ms, data);
+    }
+
     // Contadores não voltam a zero por overflow.
     void Count(
         uint64_t& value
@@ -93,7 +159,8 @@ namespace {
             for (size_t index = 0; index < channel_count; ++index) {
                 const auto bus = i2c::GetDiagnostics();
                 auto& sample = snapshot.channels[index];
-                const ACTION action = channels[index].Next(obc_time::esp32::GetMonotonicMs(),
+                const uint64_t started_ms = obc_time::esp32::GetMonotonicMs();
+                const ACTION action = channels[index].Next(started_ms,
                     bus.state == i2c::SERVICE_STATE::READY, bus.recovery_cycles);
                 if (action != ACTION::WAIT) {
                     REQUEST request = {};
@@ -121,6 +188,10 @@ namespace {
                     if (valid) sample.temperature_c = temperature_c;
                     sample.last_status = request.status;
                     sample.bus = request.bus;
+                    if (acquisition_sink) {
+                        PublishOperation(request, static_cast<uint8_t>(index), sample.result,
+                            started_ms, now_ms, valid, temperature_c);
+                    }
                 }
                 sample.state = channels[index].GetState();
             }
@@ -142,9 +213,11 @@ namespace {
 // ─── HELPERS ──────────────────────────────────────────────────────
 
 bool Init(
+    obc_record::ACQUISITION_SINK sink
 ) {
     if (init_attempted) return init_active;
     init_attempted = true;
+    acquisition_sink = sink;
     DIAGNOSTICS initial_diagnostics = {};
     initial_diagnostics.attempted = true;
     initial_diagnostics.service = i2c::GetDiagnostics().state;

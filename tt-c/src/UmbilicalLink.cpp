@@ -15,8 +15,9 @@
 // Público:
 UmbilicalLink::UmbilicalLink(
     HardwareSerial& port,
-    uint32_t baud
-) : port(port), baud(baud) {
+    uint32_t baud,
+    PORT_MODE mode
+) : port(port), baud(baud), mode(mode) {
 }
 
 // ─── GETTERS ──────────────────────────────────────────────────────
@@ -32,10 +33,17 @@ bool UmbilicalLink::IsReady(
 // Público:
 bool UmbilicalLink::Init(
 ) {
-    port.begin(baud);
     ResetLine();
-    ready = true;
-    return true;
+    if (mode == PORT_MODE::CONFIGURE) {
+        port.begin(baud);
+        ready = true;
+    } else {
+        // O divisor do ESP32 pode arredondar a velocidade medida.
+        const uint32_t actual = port ? port.baudRate() : 0;
+        const uint32_t difference = actual > baud ? actual - baud : baud - actual;
+        ready = actual != 0 && difference <= baud / 100;
+    }
+    return ready;
 }
 
 // Privado:

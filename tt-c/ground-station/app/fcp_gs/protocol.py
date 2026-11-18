@@ -77,8 +77,9 @@ def parse_line(line: str) -> Received:
         return Received("log", text=line)
 
     try:
-        obj = json.loads(line)
-    except json.JSONDecodeError:
+        # NaN/Infinity não são JSON: aceitos, travariam /api/state no navegador.
+        obj = json.loads(line, parse_constant=_reject_constant)
+    except (json.JSONDecodeError, ValueError):
         return Received("log", text=line)
     if not isinstance(obj, dict):
         return Received("log", text=line)
@@ -94,12 +95,21 @@ def parse_line(line: str) -> Received:
     return Received("raw", meta=meta, text=str(obj.get("raw", "")))
 
 
+def _reject_constant(name: str):
+    raise ValueError(f"constante não permitida em JSON: {name}")
+
+
 class LossTracker:
     """Conta perdas pelos saltos do contador "n" (16 bits, com volta).
 
-    Salto para trás grande (mais de meia volta) é tratado como reinício do
-    satélite, sem perdas.
+    É tratado como reinício do satélite, sem perdas:
+    - salto para trás (mais de meia volta);
+    - "n" recomeçando perto de zero (< RESTART_WINDOW) sem ser a volta normal
+      do contador. Sem isso, um reinício com o "n" anterior acima de 32768
+      contaria dezenas de milhares de pacotes perdidos.
     """
+
+    RESTART_WINDOW = 64
 
     def __init__(self) -> None:
         self.last: int | None = None
@@ -119,8 +129,10 @@ class LossTracker:
         if delta == 0:
             self.duplicates += 1
             return 0
+        previous = self.last
         self.last = n
-        if delta >= COUNTER_MODULO // 2:
+        restarted_near_zero = n < self.RESTART_WINDOW and n < previous and delta > self.RESTART_WINDOW
+        if delta >= COUNTER_MODULO // 2 or restarted_near_zero:
             self.restarts += 1
             return 0
         self.lost += delta - 1

@@ -173,6 +173,38 @@ static void TestDuplicateTelecommand(
     TEST_ASSERT_EQUAL(2, link.GetLinkStats().duplicates_count);
 }
 
+static void TestSlowTelecommandKeepsDedupSlot(
+) {
+    FakeTransport radio;
+    FakeTransport wired;
+    Ttc link(radio, &wired);
+    link.Init();
+    link.SetUmbilicalEnabled(false);
+
+    // TC lento pelo cabo, ainda sem ACK.
+    wired.inbox.push_back(Tc(1, "ping"));
+    link.Update();
+    TC_FRAME slow;
+    TEST_ASSERT_TRUE(link.ReceiveTelecommand(slow, 0));
+
+    // Oito TCs novos, respondidos, não podem ocupar o slot do TC em execução.
+    for (uint16_t seq = 2; seq <= 9; seq++) {
+        radio.inbox.push_back(Tc(seq, "ping"));
+        link.Update();
+        TC_FRAME tc;
+        TEST_ASSERT_TRUE(link.ReceiveTelecommand(tc, 0));
+        link.SendAck(tc.seq, tc.cmd, ttc::ACK_OK);
+        Drain(link);
+    }
+
+    // O ACK do TC lento volta pelo cabo, com "q".
+    size_t wired_before = wired.sent.size();
+    link.SendAck(slow.seq, slow.cmd, ttc::ACK_OK);
+    Drain(link);
+    TEST_ASSERT_EQUAL(wired_before + 1, wired.sent.size());
+    TEST_ASSERT_TRUE(Contains(wired.sent.back(), "\"seq\":1,\"cmd\":\"ping\",\"st\":\"ok\",\"q\":"));
+}
+
 static void TestNackForBadEnvelope(
 ) {
     FakeTransport radio;
@@ -206,6 +238,33 @@ static void TestHoldTransmit(
     link.HoldTransmit(false, 0);
     Drain(link);
     TEST_ASSERT_EQUAL(1, radio.sent.size());
+}
+
+static void TestHoldTransmitCountsRequests(
+) {
+    FakeTransport radio;
+    Ttc link(radio);
+    link.Init();
+
+    // Duas tasks suspendem; a primeira a liberar não reabre o TX da outra.
+    TEST_ASSERT_TRUE(link.HoldTransmit(true, 0));
+    TEST_ASSERT_TRUE(link.HoldTransmit(true, 0));
+    link.Send("{\"t\":\"ev\",\"ev\":\"x\"}", 19);
+    link.HoldTransmit(false, 0);
+    Drain(link);
+    TEST_ASSERT_EQUAL(0, radio.sent.size());
+
+    link.HoldTransmit(false, 0);
+    Drain(link);
+    TEST_ASSERT_EQUAL(1, radio.sent.size());
+
+    // Liberação extra não deixa saldo negativo.
+    link.HoldTransmit(false, 0);
+    TEST_ASSERT_TRUE(link.HoldTransmit(true, 0));
+    link.Send("{\"t\":\"ev\",\"ev\":\"y\"}", 19);
+    Drain(link);
+    TEST_ASSERT_EQUAL(1, radio.sent.size());
+    link.HoldTransmit(false, 0);
 }
 
 static void TestWiredOriginAndCounters(
@@ -428,6 +487,26 @@ static void TestDeliveryLocalFailure(
     TEST_ASSERT_EQUAL(1, link.GetLinkStats().tx_errors_count);
 }
 
+static void TestDeliveryRfFailureWithWiredCopy(
+) {
+    FakeTransport radio;
+    FakeTransport wired;
+    Ttc link(radio, &wired);
+    link.Init();
+
+    // O cabo "envia" mesmo sem nada ligado: não pode mascarar a falha de RF.
+    radio.fail_send = true;
+    ttc::DELIVERY_ID id = {1, 3};
+    TEST_ASSERT_TRUE(link.SendAircraft(Aircraft(), ttc::AIRCRAFT_ALL, id));
+    Drain(link);
+
+    TX_EVENT event;
+    TEST_ASSERT_TRUE(link.ReceiveTransmitEvent(event, 0));
+    TEST_ASSERT_FALSE(event.success);
+    TEST_ASSERT_EQUAL_UINT8(LINK_RF | LINK_WIRED, event.dest);
+    TEST_ASSERT_EQUAL_UINT8(LINK_WIRED, event.sent);
+}
+
 static void TestDeliveryReservesEvents(
 ) {
     FakeTransport radio;
@@ -454,6 +533,21 @@ static void TestDeliveryReservesEvents(
     // ID inválido e JSON comum sem espaço não reservam vaga.
     ttc::DELIVERY_ID zero = {0, 1};
     TEST_ASSERT_FALSE(link.SendDelivery("{\"t\":\"ac\"}", 10, zero));
+}
+
+static void TestDeliveryIdMustMatchJson(
+) {
+    FakeTransport radio;
+    Ttc link(radio);
+    link.Init();
+
+    ttc::DELIVERY_ID id = {2, 5};
+    const char* other = "{\"t\":\"ac\",\"id\":[2,6],\"icao\":\"E4953A\"}";
+    const char* none = "{\"t\":\"ac\",\"icao\":\"E4953A\"}";
+    const char* same = "{\"t\":\"ac\",\"id\":[2,5],\"icao\":\"E4953A\"}";
+    TEST_ASSERT_FALSE(link.SendDelivery(other, strlen(other), id));
+    TEST_ASSERT_FALSE(link.SendDelivery(none, strlen(none), id));
+    TEST_ASSERT_TRUE(link.SendDelivery(same, strlen(same), id));
 }
 
 static void TestGroundConfirmation(
@@ -521,7 +615,9 @@ void setup(
     RUN_TEST(TestOneFramePerUpdate);
     RUN_TEST(TestDuplicateTelecommand);
     RUN_TEST(TestNackForBadEnvelope);
+    RUN_TEST(TestSlowTelecommandKeepsDedupSlot);
     RUN_TEST(TestHoldTransmit);
+    RUN_TEST(TestHoldTransmitCountsRequests);
     RUN_TEST(TestWiredOriginAndCounters);
     RUN_TEST(TestRadioHealthReset);
     RUN_TEST(TestTelemetryFillsLinkFields);
@@ -530,7 +626,9 @@ void setup(
     RUN_TEST(TestTelemetryQueuedOutput);
     RUN_TEST(TestDeliveryEventCarriesId);
     RUN_TEST(TestDeliveryLocalFailure);
+    RUN_TEST(TestDeliveryRfFailureWithWiredCopy);
     RUN_TEST(TestDeliveryReservesEvents);
+    RUN_TEST(TestDeliveryIdMustMatchJson);
     RUN_TEST(TestGroundConfirmation);
     RUN_TEST(TestExplicitDestination);
     UNITY_END();

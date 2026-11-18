@@ -55,3 +55,30 @@ def test_inject_rejects_invalid_body(make_link, tmp_path):
     assert client.post("/api/inject", json={"line": 123}).status_code == 400
     assert client.post("/api/inject", json={"packet": [1, 2]}).status_code == 400
     assert client.post("/api/inject", data="não é json", content_type="application/json").status_code == 400
+
+
+def test_inject_does_not_confirm_or_record_delivery(make_link, tmp_path):
+    link = make_link()
+    client = create_app(link, tmp_path).test_client()
+    aircraft = {"n": 7, "t": "ac", "id": [3, 9], "icao": "E4890D", "lat": -15.9, "lon": -47.8}
+
+    assert client.post("/api/inject", json={"packet": aircraft}).status_code == 200
+
+    assert link.stream.confirmations == []
+    assert (3, 9) not in link.deliveries
+    state = client.get("/api/state").get_json()
+    assert state["loss"]["received"] == 0
+    assert state["aircraft"][0]["icao"] == "E4890D"
+
+
+def test_rejects_foreign_host_header(make_link, tmp_path):
+    client = create_app(make_link(), tmp_path).test_client()
+    assert client.get("/api/state", headers={"Host": "attacker.example:8000"}).status_code == 403
+    assert client.post("/api/tc", json={"cmd": "ping"}, headers={"Host": "evil.test"}).status_code == 403
+    assert client.get("/api/state", headers={"Host": "127.0.0.1:8000"}).status_code == 200
+    assert client.get("/api/state", headers={"Host": "[::1]:8000"}).status_code == 200
+
+
+def test_any_host_when_exposed_explicitly(make_link, tmp_path):
+    client = create_app(make_link(), tmp_path, allowed_hosts=None).test_client()
+    assert client.get("/api/state", headers={"Host": "192.168.0.10:8000"}).status_code == 200

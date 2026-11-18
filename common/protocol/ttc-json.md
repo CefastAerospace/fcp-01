@@ -26,7 +26,7 @@ Implementação de referência: `tt-c/include/TtcProtocol.h` (satélite, estaç�
 | `cmd` | string | Nome do comando (catálogo abaixo). |
 | `args` | objeto, opcional | Argumentos, interpretados pelo OBC. |
 
-**Validação no TT&C (envelope):** JSON válido, `t` = `"tc"`, `seq` em 16 bits, `cmd` no catálogo e `args` objeto. Se o envelope falhar e o `seq` for legível, o TT&C responde com NACK; sem `seq` legível, o quadro é descartado. O conteúdo de `args` é validado pelo OBC.
+**Validação no TT&C (envelope):** um único objeto JSON ocupando o quadro inteiro (só espaço em branco depois do `}`), `t` = `"tc"`, `seq` em 16 bits, `cmd` no catálogo e `args` objeto. Se o envelope falhar e o `seq` for legível, o TT&C responde com NACK; sem `seq` legível, o quadro é descartado. O conteúdo de `args` é validado pelo OBC.
 
 **Deduplicação:** o TT&C lembra os 8 TCs mais recentes por 30 s. Um TC com `seq` repetido não é reentregue ao OBC: se já foi respondido, o mesmo ACK é reenviado; se ainda está em execução, é ignorado. A estação terrena deve iniciar `seq` em valor não repetido a cada sessão (ex.: derivado do relógio).
 
@@ -76,7 +76,7 @@ Todo pacote de descida recebe do TT&C o campo `n` (primeiro campo, inteiro 0–6
 
 | Campo | Descrição |
 |---|---|
-| `seq`, `cmd` | Do TC respondido. |
+| `seq`, `cmd` | Do TC respondido. Num NACK, `cmd` vem como `unknown` quando o nome recebido não pode ser ecoado: ausente, com mais de 23 caracteres ou fora de `[A-Za-z0-9_]`. |
 | `st` | `ok`, `bad_json`, `invalid_cmd` (comando não suportado no estado/firmware), `invalid_param`, `state_rejected` ou `unknown_cmd`. |
 | `q` | ms entre a recepção do TC pelo TT&C e a entrega ao OBC (evidência do REQ-TTC-004, ≤ 200 ms). Ausente em NACKs emitidos pelo próprio TT&C. |
 
@@ -211,16 +211,19 @@ A estação responde a cada recepção com uma confirmação na subida:
 {"t":"cf","id":[3,41]}
 ```
 
-- **Aceite:** a estação só confirma depois de gravar o pacote no log da
-  sessão e o ID, com `fsync`, no registro de entregas
+- **Aceite:** a estação só confirma depois de gravar e sincronizar com
+  `fsync` o pacote no log da sessão e o ID no registro de entregas
   (`ground-station/app/state/deliveries.jsonl`). Se a gravação falhar, não
   confirma, e o OBC retransmite.
 - **Repetida:** se o ID já está no registro, inclusive de uma sessão anterior,
   a estação reenvia a confirmação e não reaplica o conteúdo (aeronaves,
   rastro e mapa).
 - **Persistência da deduplicação:** o registro é append-only e é carregado
-  ao iniciar a estação. Uma linha cortada no fim do arquivo é ignorada. O
-  modo demo usa um registro só em memória.
+  ao iniciar a estação. Uma linha cortada no fim do arquivo (gravação
+  interrompida) é descartada: o arquivo é truncado no fim da última linha
+  completa, com `fsync`, antes da próxima gravação. Vários processos da
+  estação podem usar o mesmo registro (acesso sob `flock`). O modo demo usa
+  um registro só em memória.
 - **No satélite:** `cf` não é TC. Não tem `seq`, não recebe ACK nem NACK e
   não passa pela deduplicação de TCs. Com ID válido, vai para
   `Ttc::ReceiveConfirmation()`. Repetições também são repassadas, porque a
@@ -231,20 +234,20 @@ A estação responde a cada recepção com uma confirmação na subida:
 - A estação não retransmite `cf` por conta própria. Se a confirmação se
   perder, o OBC retransmite a entrega e recebe outra.
 
-**Garantia exigida e pendências da implementação:** conteúdo e ID precisam
-estar duráveis antes de `cf`. A revisão sobre `f7af605` constatou que o log
-da sessão usa `flush`, sem `fsync`, enquanto o registro de IDs é sincronizado.
-Também reproduziu perda do primeiro ID acrescentado após cauda truncada no
-segundo reinício e interrupção da recepção quando a escrita do log falha.
-Essas correções são do TT&C e não foram executadas pela integração OBC.
-O aceite do formato não declara essas garantias verificadas.
+**Verificação da persistência na estação.** Os commits `063c300` e `0b476f2`
+corrigiram os problemas encontrados na revisão de `f7af605`. As regressões
+cobrem a gravação durável do pacote antes de `cf`, o bloqueio da confirmação
+em caso de erro de escrita, a preservação do novo ID após um segundo
+reinício e o compartilhamento do registro entre instâncias. A verificação
+conjunta pelo enlace RF segue na TES-008.
+[Testes de entregas](../../tt-c/ground-station/app/tests/test_deliveries.py).
 
 #### Eventos de envio na biblioteca
 
 | Chamada | Uso pelo OBC |
 |---|---|
-| `Ttc::SendAircraft(aircraft, available, id)` / `Ttc::SendDelivery(json, len, id)` | `true` indica que a entrega foi enfileirada. `false` é falha local imediata: ID inválido, pacote acima de 245 bytes, reservas esgotadas ou fila cheia. |
-| `Ttc::ReceiveTransmitEvent(event, wait)` | Uma conclusão por entrega aceita, com o mesmo `id`. `success` indica que ao menos um meio terminou o TX; `dest`/`sent` dizem quais. Corresponde a `FinishDeliveryTransmit(id, success)`. |
+| `Ttc::SendAircraft(aircraft, available, id)` / `Ttc::SendDelivery(json, len, id)` | `true` indica que a entrega foi enfileirada. `false` é falha local imediata: ID inválido, `id` do JSON ausente ou diferente do `id` informado (em `SendDelivery`), pacote acima de 245 bytes, reservas esgotadas ou fila cheia. Nesse caso não haverá evento, e o OBC chama `FinishDeliveryTransmit(id, false)` logo após `BeginDeliveryTransmit`; sem isso a fila de entregas fica presa na tentativa. |
+| `Ttc::ReceiveTransmitEvent(event, wait)` | Uma conclusão por entrega aceita, com o mesmo `id`. Com `rf` no destino, `success` indica que o TX de RF terminou; a cópia no umbilical não conta, porque a UART conclui a escrita mesmo sem nada ligado. Sem `rf` no destino, `success` indica que ao menos um meio terminou o TX. `dest`/`sent` dizem quais meios foram pedidos e concluídos. Corresponde a `FinishDeliveryTransmit(id, success)`. |
 | `Ttc::ReceiveConfirmation(id, wait)` | Confirmação do solo. Corresponde a `ConfirmDelivery(id)`. |
 
 O evento de conclusão nunca se perde: `SendDelivery` reserva uma vaga na fila
@@ -261,7 +264,7 @@ tentativa antes de `FinishTransmit`. Com as reservas esgotadas,
 | Fila de ACK de TC | 4, prioritária | ACK de TC sai antes de qualquer pacote da fila comum. |
 | Entregas pendentes de evento | 4 | O OBC usa 1 por vez. |
 | Confirmações aguardando o OBC | 8 | Excesso é descartado e contado em `confirmations_dropped`. |
-| Timeout de confirmação (OBC) | 10 s provisórios, aceitos para desenvolvimento | Conta desde a reserva da tentativa, incluindo fila TT&C. Precisa cobrir a fila comum cheia e a ida e volta. O valor operacional deve sair da medição na bancada. |
+| Timeout de confirmação (OBC) | 10 s provisórios, aceitos para desenvolvimento | Conta desde a reserva da tentativa, incluindo a fila TT&C. Precisa cobrir a fila comum cheia (16 × ~0,50 s em SF7: 0,499968 s por quadro de 255 bytes, DP) e a ida e volta (~0,4 s de aeronave + ~0,16 s de `cf` + estação). O valor operacional deve sair da medição na bancada. |
 | Retentativas | OBC, sem limite | A mesma entrega continua até ser confirmada. A estação só reconfirma. |
 
 Piores casos verificados nos testes nativos (`test/test_protocol`):
@@ -306,7 +309,8 @@ Lista e lê arquivos fechados do SD do OBC. O TT&C valida os argumentos
 | `to` | ambas | Opcional. Destino das respostas: `rf` ou `wired` (USB/umbilical). Sem `to`, as respostas usam o meio do TC. |
 
 Nomes usam apenas `[A-Za-z0-9_.-]`, com até 39 caracteres, sem começar com `.`
-e sem `..`. Argumento ausente, de tipo errado, fora da faixa ou chave
+e sem `..`. Arquivos no SD com nome fora desse padrão não aparecem na listagem,
+pois não podem ser pedidos em `read`. Argumento ausente, de tipo errado, fora da faixa ou chave
 desconhecida recebe NACK `invalid_param`, sem resposta `lg`. Com `ok`, o OBC
 enfileira uma resposta `lg` com `rq` igual ao `seq` do TC. Falha ao
 enfileirar recebe `state_rejected`. Para responder pelo destino pedido, o OBC

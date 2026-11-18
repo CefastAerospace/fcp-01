@@ -112,16 +112,17 @@ void BuildLogResponse(
             return;
         }
         if (!file.name[0]) break;
+        if (std::strcmp(file.name, after) <= 0) return;
+        std::strcpy(after, file.name);
+        // A página e a indicação de continuação só contam nomes que o solo pode pedir.
+        if (!ttc::ValidLogName(file.name)) continue;
         if (count == 4) {
             more = true;
             break;
         }
-        // Arquivos incompatíveis não são truncados nem omitidos silenciosamente.
-        if (std::strlen(file.name) >= ttc::log_name_len || std::strcmp(file.name, after) <= 0) return;
         std::strcpy(entries[count].name, file.name);
         entries[count].size = file.size;
         entries[count].open = file.active;
-        std::strcpy(after, file.name);
         ++count;
     }
     size_t used = 0;

@@ -256,7 +256,9 @@ perda, o escritor para e o leitor relata o trecho sem publicar o snapshot.
 SD indisponível, fila cheia ou bloco ocupado não bloqueiam recepção/TM:
 os registros não gravados são contabilizados. ACK UART continua confirmando
 RAM. `set_time` confirma aplicação em RAM; a falta de persistência é
-diagnosticada separadamente. Não há retenção ilimitada nem confirmação de solo.
+diagnosticada separadamente. Não há retenção ilimitada. A confirmação de solo
+(`cf`) existe só para as entregas identificadas de aeronave, conforme o
+[contrato de entregas](obc-delivery.md) e a [ttc-json.md](ttc-json.md).
 
 ## 5. Operação, falhas, estatísticas e tempo
 

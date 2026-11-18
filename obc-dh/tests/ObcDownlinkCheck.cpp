@@ -210,6 +210,38 @@ namespace {
         assert(::rmdir(directory) == 0);
     }
 
+    // Nomes fora do contrato não ocupam a página nem impedem o avanço do solo.
+    void CheckListWithInvalidNames(
+    ) {
+        char directory[] = "/tmp/fcp01-downlink-names-XXXXXX";
+        assert(::mkdtemp(directory));
+        obc_storage::Storage storage;
+        assert(storage.Init(directory).status == obc_storage::STATUS::OK);
+        const char* const names[] = {
+            ".a", ".b", ".c", ".d", "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.bin", "valid.bin"
+        };
+        for (const char* name : names) {
+            assert(storage.OpenNew(name).status == obc_storage::STATUS::OK);
+            assert(storage.Close().status == obc_storage::STATUS::OK);
+        }
+
+        const obc_delivery::READER_IO io = {List, Read, &storage};
+        const auto request = Request("{\"op\":\"list\"}");
+        obc_downlink::LOG_RESPONSE response = {};
+        obc_downlink::BuildLogResponse(7, request, io, response);
+        JsonDocument doc;
+        ParseResponse(response, doc);
+        assert(doc["ls"].size() == 1 && doc["end"].as<bool>());
+        assert(doc["ls"][0][0] == "valid.bin");
+
+        assert(storage.End().status == obc_storage::STATUS::OK);
+        for (const char* name : names) {
+            const std::string path = std::string(directory) + '/' + name;
+            assert(::unlink(path.c_str()) == 0);
+        }
+        assert(::rmdir(directory) == 0);
+    }
+
 } // namespace
 
 int main(
@@ -217,5 +249,6 @@ int main(
     CheckAircraft();
     CheckMailbox();
     CheckFiles();
+    CheckListWithInvalidNames();
     std::puts("ObcDownlinkCheck: mapping, mailbox and real file extraction passed");
 }

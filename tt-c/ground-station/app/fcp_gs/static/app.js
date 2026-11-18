@@ -16,6 +16,10 @@ const MAX_POINTS = 300;
 
 const $ = (id) => document.getElementById(id);
 const fmt = (value, digits = 1) => (typeof value === "number" ? value.toFixed(digits) : "—");
+// Texto vindo do enlace (qualquer transmissor na sync word) nunca entra cru em HTML.
+const escapeHtml = (value) => String(value).replace(/[&<>"']/g, (c) => ({
+  "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;",
+})[c]);
 const cssVar = (name) => getComputedStyle(document.documentElement).getPropertyValue(name).trim();
 
 let lastPacketAt = null;
@@ -23,79 +27,230 @@ let lastPacketAt = null;
 // ─── Gráfico de linhas em canvas, sem dependências (uso offline) ─────
 
 class LineChart {
-  constructor(canvas, seriesCount) {
+  // names: nome de cada série; unit/digits: formatação; legend: elemento da legenda.
+  constructor(canvas, { names, unit = "", digits = 1, legend = null }) {
     this.canvas = canvas;
-    this.series = Array.from({ length: seriesCount }, () => []);
+    this.names = names;
+    this.unit = unit;
+    this.digits = digits;
+    this.legend = legend;
+    this.series = names.map(() => []);
+    this.times = [];
+    this.hidden = new Set();
+    this.hover = null; // Índice da amostra sob o cursor.
     new ResizeObserver(() => this.draw()).observe(canvas);
+    canvas.addEventListener("mousemove", (e) => this.onHover(e));
+    canvas.addEventListener("mouseleave", () => { this.hover = null; this.draw(); });
+    this.renderLegend();
   }
 
-  push(values) {
-    values.forEach((value, index) => {
-      const points = this.series[index];
-      points.push(typeof value === "number" ? value : null);
+  // Sempre uma amostra por série, mesmo indisponível (null), para não desalinhar.
+  push(values, time = Date.now()) {
+    const list = Array.isArray(values) ? values : [];
+    this.series.forEach((points, index) => {
+      const value = list[index];
+      points.push(typeof value === "number" && Number.isFinite(value) ? value : null);
       if (points.length > MAX_POINTS) points.shift();
     });
+    this.times.push(time);
+    if (this.times.length > MAX_POINTS) this.times.shift();
+    this.draw();
+    this.renderLegend();
+  }
+
+  color(index) {
+    return cssVar(`--series-${(index % 5) + 1}`);
+  }
+
+  value(v) {
+    return v === null || v === undefined ? "—" : `${v.toFixed(this.digits)}${this.unit ? ` ${this.unit}` : ""}`;
+  }
+
+  stats(points) {
+    const valid = points.filter((v) => v !== null);
+    if (!valid.length) return { last: null, min: null, max: null, mean: null, valid: 0, missing: points.length };
+    return {
+      last: points[points.length - 1],
+      min: Math.min(...valid),
+      max: Math.max(...valid),
+      mean: valid.reduce((a, b) => a + b, 0) / valid.length,
+      valid: valid.length,
+      missing: points.length - valid.length,
+    };
+  }
+
+  renderLegend() {
+    if (!this.legend) return;
+    const head = document.createElement("tr");
+    ["", "atual", "mín", "máx", "média", "amostras"].forEach((label) => {
+      const th = document.createElement("th");
+      th.textContent = label;
+      head.append(th);
+    });
+    const rows = this.series.map((points, index) => {
+      const st = this.stats(points);
+      const row = document.createElement("tr");
+      row.className = this.hidden.has(index) ? "off" : "";
+      row.title = "Clique para mostrar ou esconder a série";
+      const name = document.createElement("td");
+      const swatch = document.createElement("span");
+      swatch.className = "swatch";
+      swatch.style.background = this.color(index);
+      name.append(swatch, this.names[index]);
+      row.append(name);
+      const samples = st.missing ? `${st.valid} (${st.missing} indisp.)` : `${st.valid}`;
+      [this.value(st.last), this.value(st.min), this.value(st.max), this.value(st.mean), samples]
+        .forEach((text) => {
+          const td = document.createElement("td");
+          td.textContent = text;
+          row.append(td);
+        });
+      row.addEventListener("click", () => {
+        if (this.hidden.has(index)) this.hidden.delete(index); else this.hidden.add(index);
+        this.draw();
+        this.renderLegend();
+      });
+      return row;
+    });
+    const table = document.createElement("table");
+    table.className = "legend";
+    table.append(head, ...rows);
+    this.legend.replaceChildren(table);
+  }
+
+  geometry() {
+    const width = this.canvas.clientWidth;
+    const height = this.canvas.clientHeight;
+    const left = 44, right = 6, top = 6, bottom = 18;
+    return { width, height, left, right, top, bottom, plotWidth: width - left - right, plotHeight: height - top - bottom };
+  }
+
+  x(i, g) {
+    // Mais recente na borda direita, como antes, com a janela de MAX_POINTS.
+    const offset = MAX_POINTS - this.times.length;
+    return g.left + (g.plotWidth * (i + offset)) / Math.max(MAX_POINTS - 1, 1);
+  }
+
+  onHover(event) {
+    if (!this.times.length) return;
+    const g = this.geometry();
+    const rect = this.canvas.getBoundingClientRect();
+    const offset = MAX_POINTS - this.times.length;
+    const raw = Math.round(((event.clientX - rect.left - g.left) / g.plotWidth) * (MAX_POINTS - 1)) - offset;
+    this.hover = Math.max(0, Math.min(this.times.length - 1, raw));
     this.draw();
   }
 
   draw() {
     const ratio = window.devicePixelRatio || 1;
-    const width = this.canvas.clientWidth;
-    const height = this.canvas.clientHeight;
+    const g = this.geometry();
+    const { width, height } = g;
     this.canvas.width = width * ratio;
     this.canvas.height = height * ratio;
     const ctx = this.canvas.getContext("2d");
     ctx.scale(ratio, ratio);
     ctx.clearRect(0, 0, width, height);
 
-    const values = this.series.flat().filter((v) => v !== null);
+    const visible = this.series.filter((_, index) => !this.hidden.has(index));
+    const values = visible.flat().filter((v) => v !== null);
     ctx.font = "11px system-ui, sans-serif";
     ctx.fillStyle = cssVar("--muted");
     if (values.length === 0) {
-      ctx.fillText("sem dados", 8, height / 2);
+      ctx.fillText(this.times.length ? "sem dados disponíveis (null)" : "sem dados", 8, height / 2);
       return;
     }
 
     let min = Math.min(...values);
     let max = Math.max(...values);
     if (min === max) { min -= 1; max += 1; }
-    const left = 44, right = 6, top = 6, bottom = 6;
-    const plotWidth = width - left - right;
-    const plotHeight = height - top - bottom;
-    const y = (v) => top + plotHeight * (1 - (v - min) / (max - min));
+    const y = (v) => g.top + g.plotHeight * (1 - (v - min) / (max - min));
 
     // Grade e escala.
     ctx.strokeStyle = cssVar("--border");
     ctx.lineWidth = 1;
     [min, (min + max) / 2, max].forEach((v) => {
       ctx.beginPath();
-      ctx.moveTo(left, y(v));
-      ctx.lineTo(width - right, y(v));
+      ctx.moveTo(g.left, y(v));
+      ctx.lineTo(width - g.right, y(v));
       ctx.stroke();
       ctx.fillText(v.toFixed(Math.abs(max - min) < 10 ? 2 : 0), 2, y(v) + 4);
     });
 
+    // Eixo de tempo: primeira e última amostra da janela.
+    const clock = (t) => new Date(t).toLocaleTimeString();
+    const lastLabel = clock(this.times[this.times.length - 1]);
+    const lastX = width - g.right - ctx.measureText(lastLabel).width;
+    ctx.fillText(lastLabel, lastX, height - 4);
+    const firstLabel = clock(this.times[0]);
+    const firstX = Math.max(g.left, this.x(0, g));
+    if (firstX + ctx.measureText(firstLabel).width + 12 < lastX) ctx.fillText(firstLabel, firstX, height - 4);
+
     // Séries.
     this.series.forEach((points, index) => {
-      ctx.strokeStyle = cssVar(`--series-${(index % 5) + 1}`);
+      if (this.hidden.has(index)) return;
+      ctx.strokeStyle = this.color(index);
       ctx.lineWidth = 1.5;
       ctx.beginPath();
       let started = false;
       points.forEach((v, i) => {
         if (v === null) { started = false; return; }
-        const x = left + (plotWidth * i) / Math.max(MAX_POINTS - 1, 1);
-        if (started) ctx.lineTo(x, y(v)); else ctx.moveTo(x, y(v));
+        if (started) ctx.lineTo(this.x(i, g), y(v)); else ctx.moveTo(this.x(i, g), y(v));
         started = true;
       });
       ctx.stroke();
     });
+
+    // Leitura sob o cursor: horário e valor de cada série.
+    if (this.hover === null || this.hover >= this.times.length) return;
+    const hx = this.x(this.hover, g);
+    ctx.strokeStyle = cssVar("--muted");
+    ctx.setLineDash([3, 3]);
+    ctx.beginPath();
+    ctx.moveTo(hx, g.top);
+    ctx.lineTo(hx, g.top + g.plotHeight);
+    ctx.stroke();
+    ctx.setLineDash([]);
+    const lines = [clock(this.times[this.hover])];
+    this.series.forEach((points, index) => {
+      if (this.hidden.has(index)) return;
+      const v = points[this.hover];
+      lines.push([index, `${this.names[index]}: ${this.value(v)}`]);
+      if (v !== null) {
+        ctx.fillStyle = this.color(index);
+        ctx.beginPath();
+        ctx.arc(hx, y(v), 3, 0, 2 * Math.PI);
+        ctx.fill();
+      }
+    });
+    const boxWidth = Math.max(...lines.map((l) => ctx.measureText(typeof l === "string" ? l : l[1]).width)) + 22;
+    const boxHeight = lines.length * 14 + 6;
+    const bx = hx + boxWidth + 8 > width ? hx - boxWidth - 8 : hx + 8;
+    ctx.fillStyle = cssVar("--card");
+    ctx.strokeStyle = cssVar("--border");
+    ctx.fillRect(bx, g.top, boxWidth, boxHeight);
+    ctx.strokeRect(bx, g.top, boxWidth, boxHeight);
+    lines.forEach((line, row) => {
+      const ty = g.top + 14 + row * 14;
+      if (typeof line === "string") {
+        ctx.fillStyle = cssVar("--muted");
+        ctx.fillText(line, bx + 6, ty);
+        return;
+      }
+      ctx.fillStyle = this.color(line[0]);
+      ctx.fillRect(bx + 6, ty - 8, 8, 8);
+      ctx.fillStyle = cssVar("--text");
+      ctx.fillText(line[1], bx + 18, ty);
+    });
   }
 }
 
+// T1–T5 seguem a ordem de tp[0–4] (5x LM75A; localização ainda a confirmar com EPS/Térmico).
+const TEMP_NAMES = ["T1", "T2", "T3", "T4", "T5"];
+
 const charts = {
-  vb: new LineChart($("ch-vb"), 1),
-  tp: new LineChart($("ch-tp"), 5),
-  rssi: new LineChart($("ch-rssi"), 1),
+  vb: new LineChart($("ch-vb"), { names: ["Bateria"], unit: "V", digits: 2, legend: $("lg-vb") }),
+  tp: new LineChart($("ch-tp"), { names: TEMP_NAMES, unit: "°C", digits: 1, legend: $("lg-tp") }),
+  rssi: new LineChart($("ch-rssi"), { names: ["RSSI"], unit: "dBm", digits: 0, legend: $("lg-rssi") }),
 };
 
 // ─── Mapa das aeronaves ──────────────────────────────────────────────
@@ -217,7 +372,7 @@ class AircraftMap {
     const html = `<span class="ac-icon" style="color:${color}"><svg viewBox="0 0 24 24" width="20" height="20" style="transform:rotate(${heading}deg)"><path fill="currentColor" stroke="var(--bg)" stroke-width="0.8" d="M12 2c.8 0 1.4.8 1.4 1.8V9l7.6 4.6v2l-7.6-2.3v4.5l2.2 1.7V21L12 20l-3.6 1v-1.5l2.2-1.7v-4.5L3 15.6v-2L10.6 9V3.8C10.6 2.8 11.2 2 12 2z"/></svg></span>`;
     const icon = L.divIcon({ html, className: "", iconSize: [22, 22], iconAnchor: [11, 11] });
     const course = typeof ac.hdg === "number" ? `${fmt(heading, 0)}°` : "rumo —";
-    const tooltip = `<b class="ac-tip">${icao}</b> ${course}<br>alt ${fmt(ac.alt, 0)} ft · vel ${fmt(ac.vel, 0)} kt · ${ac.cnt ?? "—"} msgs`;
+    const tooltip = `<b class="ac-tip">${escapeHtml(icao)}</b> ${course}<br>alt ${fmt(ac.alt, 0)} ft · vel ${fmt(ac.vel, 0)} kt · ${escapeHtml(ac.cnt ?? "—")} msgs`;
     if (!entry.marker) {
       entry.marker = L.marker(point, { icon, zIndexOffset: 100 }).addTo(this.map)
         .bindTooltip(tooltip, { direction: "top", offset: [0, -12] });
@@ -268,7 +423,25 @@ function renderTelemetry(tm) {
   $("tm-az").textContent = `${fmt(tm.az)}°`;
   $("tm-mis").textContent = `${tm.ac ?? "—"} / ${tm.msg ?? "—"}`;
   $("tm-lnk").textContent = `${tm.rssi ?? "—"} dBm · ${fmt(tm.snr)} dB · rx ${tm.rx ?? "—"} · err ${tm.err ?? "—"} · rst ${tm.rst ?? "—"}`;
-  $("tm-tp").textContent = (tm.tp || []).map((v) => fmt(v)).join(" · ") || "—";
+  renderTemps(tm.tp);
+}
+
+// Temperaturas rotuladas T1–T5, na cor da série do gráfico.
+function renderTemps(tp) {
+  const box = $("tm-tp");
+  if (!Array.isArray(tp)) {
+    box.textContent = "— (indisponível)";
+    return;
+  }
+  box.replaceChildren(...TEMP_NAMES.map((name, index) => {
+    const item = document.createElement("span");
+    item.className = "temp";
+    const swatch = document.createElement("span");
+    swatch.className = "swatch";
+    swatch.style.background = cssVar(`--series-${index + 1}`);
+    item.append(swatch, `${name} ${fmt(tp[index])}`);
+    return item;
+  }));
 }
 
 function renderAircraft(list) {
@@ -343,7 +516,7 @@ function handleEvent(event) {
   if (pkt && pkt.t === "tm") {
     renderTelemetry(pkt);
     charts.vb.push([pkt.vb]);
-    charts.tp.push(pkt.tp || []);
+    charts.tp.push(pkt.tp);
   }
   // Entrega repetida já foi processada: não move o marcador de novo.
   if (pkt && pkt.t === "ac" && !event.delivery?.repeated) map?.upsert([pkt]);
@@ -462,6 +635,40 @@ document.querySelectorAll("form.test").forEach((form) => {
   });
 });
 
+// ─── Demo: troca de cenário ao vivo ─────────────────────────────────
+
+function showScenario(demo) {
+  const current = demo.scenarios.find((s) => s.name === demo.current);
+  $("demo-scenario").value = demo.current;
+  const desc = $("demo-desc");
+  desc.replaceChildren();
+  const title = document.createElement("b");
+  title.textContent = `Demo · ${current?.title ?? demo.current}: `;
+  desc.append(title, current?.description ?? "");
+  desc.hidden = false;
+}
+
+function setupDemo(demo) {
+  const choice = $("demo-scenario");
+  choice.replaceChildren(...demo.scenarios.map((s) => new Option(s.title, s.name)));
+  $("demo-box").hidden = false;
+  showScenario(demo);
+  choice.addEventListener("change", async () => {
+    try {
+      const response = await fetch("/api/demo/scenario", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name: choice.value }),
+      });
+      const result = await response.json();
+      if (!response.ok) throw new Error(result.error);
+      showScenario(result);
+    } catch (error) {
+      appendLog(`cenário do demo: ${error.message}`, "err");
+    }
+  });
+}
+
 // Configuração do servidor (centro do mapa, catálogo) e rastros já recebidos.
 async function init() {
   try {
@@ -472,6 +679,7 @@ async function init() {
       if (config.commands.includes(current)) select.value = current;
     }
     map?.setView(config.map_center, config.map_zoom);
+    if (config.demo) setupDemo(config.demo);
   } catch (error) {
     // Sem /api/config: mantém o catálogo e o centro padrão.
   }

@@ -30,7 +30,7 @@ namespace ttc {
     constexpr int      radio_tx_power_dbm  = 17;
     constexpr int      radio_sync_word     = 0x12;
     constexpr long     radio_preamble_len  = 32;
-    constexpr uint32_t radio_tx_timeout_ms = 1000; // Airtime de 255 bytes ~0,45 s em SF7.
+    constexpr uint32_t radio_tx_timeout_ms = 1000; // Airtime de 255 bytes 0,499968 s em SF7 (DP).
 
     constexpr size_t max_frame_len    = 255; // FIFO do SX1276.
     constexpr size_t max_counter_len  = 10;  // "n":65535, inserido na descida.
@@ -281,6 +281,20 @@ namespace ttc {
     );
 
     /**
+     * @brief Desserializa exatamente um objeto JSON ocupando todo o quadro.
+     *
+     * @details deserializeJson() para no fim do primeiro valor e aceitaria
+     * "{...}lixo". Aqui, depois do objeto só pode haver espaço em branco.
+     *
+     * @return true se o quadro é um único objeto JSON válido.
+     */
+    bool DeserializeFrame(
+        JsonDocument& doc,
+        const char* json,
+        size_t len
+    );
+
+    /**
      * @brief Valida o envelope de um TC: {"t":"tc","seq":N,"cmd":"nome",...}.
      *
      * @param json Texto recebido (não precisa terminar em '\0').
@@ -361,8 +375,25 @@ namespace ttc {
         DELIVERY_ID& out
     );
 
+    /**
+     * @brief Lê o "id":[boot,seq] de um pacote de descida já montado.
+     *
+     * @return true se o pacote é um objeto JSON com ID válido.
+     */
+    bool PacketDeliveryId(
+        const char* json,
+        size_t len,
+        DELIVERY_ID& out
+    );
+
     const char* LogErrorName(
         LOG_ERROR error
+    );
+
+    /** @brief Valida um nome de request_log. O cursor inicial pode ser vazio. */
+    bool ValidLogName(
+        const char* name,
+        bool allow_empty = false
     );
 
     /**
@@ -387,10 +418,12 @@ namespace ttc {
      * @brief {"t":"lg","rq":seq,"op":"list","ls":[["nome",bytes,0|1],...],"end":bool}.
      *
      * @details Inclui o maior prefixo de entries que cabe em max_body_len.
-     * "end" só é true quando todos couberam e more é false.
+     * Nomes fora do padrão de log (ver ParseLogRequest) são pulados, pois não
+     * podem ser pedidos em "read". "end" só é true quando todos foram
+     * consumidos e more é false.
      *
      * @param more Há arquivos depois de entries[count - 1].
-     * @param used Saída: quantidade de entries incluída.
+     * @param used Saída: quantidade de entries consumida (listadas ou puladas).
      *
      * @return Bytes escritos (sem '\0'); 0 se nem o envelope coube.
      */

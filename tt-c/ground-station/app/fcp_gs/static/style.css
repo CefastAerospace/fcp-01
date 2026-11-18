@@ -364,3 +364,95 @@ td:first-child {
 .ac-tip b {
   font-size: 12px;
 }
+/* ─── Seletor de cenário do demo ─── */
+
+.demo-box {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.demo-desc {
+  margin: 0;
+  padding: 8px 16px;
+  font-size: 13px;
+  background: var(--card);
+  border-bottom: 1px solid var(--border);
+  color: var(--muted);
+}
+
+.demo-desc b {
+  color: inherit;
+}
+
+/* ─── Legendas dos gráficos e temperaturas rotuladas ─── */
+
+.swatch {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+  margin-right: 6px;
+  vertical-align: baseline;
+}
+
+.legend-box {
+  overflow-x: auto;
+}
+
+table.legend {
+  width: 100%;
+  margin-top: 6px;
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+  border-collapse: collapse;
+}
+
+table.legend th {
+  font-weight: normal;
+  color: var(--muted);
+  text-align: right;
+  padding: 2px 6px;
+}
+
+table.legend td {
+  text-align: right;
+  padding: 2px 6px;
+  border-top: 1px solid var(--border);
+  white-space: nowrap;
+}
+
+table.legend td:first-child {
+  text-align: left;
+  font-weight: 600;
+}
+
+table.legend tr {
+  cursor: pointer;
+}
+
+table.legend tr.off td {
+  opacity: 0.4;
+  text-decoration: line-through;
+}
+
+.temps {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 14px;
+}
+
+.tile .temp {
+  color: var(--text);
+  font-size: inherit;
+  display: inline-flex;
+  align-items: center;
+  white-space: nowrap;
+}
+
+.tile .temp .swatch {
+  display: inline-block;
+  margin-right: 5px;
+}

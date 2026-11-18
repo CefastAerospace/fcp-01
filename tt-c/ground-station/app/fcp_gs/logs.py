@@ -8,11 +8,13 @@ ferramentas do OBC (obc-dh/tools), aplicadas ao arquivo reconstruído.
 
 import base64
 import binascii
+import os
 import re
 import time
 from pathlib import Path
 
 from .link import Link
+from .session_log import fsync_directory
 from .protocol import LOG_BLOCK_MAX
 
 NAME_PATTERN = re.compile(r"[A-Za-z0-9_.-]{1,39}")
@@ -126,5 +128,10 @@ def download_file(link: Link, name: str, directory: Path, block: int = LOG_BLOCK
                 break
             output.write(data)
             offset += len(data)
+        # Conteúdo no disco antes do rename: sem isso, uma queda logo após o
+        # replace pode deixar o arquivo final vazio ou truncado.
+        output.flush()
+        os.fsync(output.fileno())
     partial.replace(target)
+    fsync_directory(target.parent)
     return target

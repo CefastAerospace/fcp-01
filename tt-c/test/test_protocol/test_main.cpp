@@ -114,9 +114,34 @@ static void TestParseEnvelopeErrors(
     TEST_ASSERT_EQUAL_UINT8(ttc::ERR_UNKNOWN_CMD, info.status);
     TEST_ASSERT_EQUAL_STRING("fly", info.cmd_name);
 
+    // Nome longo ou com caracteres que exigem escape: NACK com "unknown",
+    // nunca um nome cortado nem um ACK que não cabe em max_ack_len.
+    TEST_ASSERT_FALSE(Parse("{\"t\":\"tc\",\"seq\":8,\"cmd\":\"abcdefghijklmnopqrstuvwxyz\"}", info));
+    TEST_ASSERT_EQUAL_STRING("unknown", info.cmd_name);
+    TEST_ASSERT_FALSE(Parse("{\"t\":\"tc\",\"seq\":8,\"cmd\":\"a\\\"\\u0001\\u0002\\u0003\\u0004\"}", info));
+    TEST_ASSERT_EQUAL_STRING("unknown", info.cmd_name);
+    char ack[ttc::max_ack_len];
+    TEST_ASSERT_GREATER_THAN(0, ttc::BuildAck(65535, info.cmd_name, ttc::ERR_UNKNOWN_CMD, -1, ack, sizeof(ack)));
+    TEST_ASSERT_FALSE(Parse("{\"t\":\"tc\",\"seq\":8,\"cmd\":\"abcdefghijklmnopqrstuvw\"}", info));
+    TEST_ASSERT_EQUAL_STRING("abcdefghijklmnopqrstuvw", info.cmd_name); // 23 caracteres: cabe.
+    TEST_ASSERT_GREATER_THAN(0, ttc::BuildAck(65535, info.cmd_name, ttc::ERR_STATE_REJECTED, 2147483647,
+                                              ack, sizeof(ack)));
+
     // args que não é objeto.
     TEST_ASSERT_FALSE(Parse("{\"t\":\"tc\",\"seq\":7,\"cmd\":\"set_time\",\"args\":5}", info));
     TEST_ASSERT_EQUAL_UINT8(ttc::ERR_INVALID_PARAM, info.status);
+}
+
+static void TestParseRejectsTrailingGarbage(
+) {
+    ttc::TC_INFO info;
+    TEST_ASSERT_TRUE(Parse("{\"t\":\"tc\",\"seq\":1,\"cmd\":\"ping\"} \r\n", info));
+    TEST_ASSERT_FALSE(Parse("{\"t\":\"tc\",\"seq\":1,\"cmd\":\"ping\"}xyz", info));
+    TEST_ASSERT_FALSE(Parse("{\"t\":\"tc\",\"seq\":1,\"cmd\":\"ping\"}{}", info));
+
+    ttc::DELIVERY_ID id;
+    const char* cf = "{\"t\":\"cf\",\"id\":[1,2]}x";
+    TEST_ASSERT_EQUAL(ttc::CF_NOT_CONFIRMATION, ttc::ParseConfirmation(cf, strlen(cf), id));
 }
 
 static void TestParseOversized(
@@ -532,6 +557,19 @@ static void TestBuildLogList(
     ttc::BuildLogList(3, &entries[0], 1, true, out, sizeof(out), used);
     TEST_ASSERT_NOT_NULL(strstr(out, "\"end\":false"));
 
+    // Nome inválido é pulado sem interromper a listagem.
+    ttc::LOG_ENTRY mixed[3] = {};
+    strcpy(mixed[0].name, "com espaco.bin");
+    strcpy(mixed[1].name, "a.bin");
+    mixed[1].size = 1;
+    strcpy(mixed[2].name, "b.bin");
+    mixed[2].size = 2;
+    ttc::BuildLogList(5, mixed, 3, false, out, sizeof(out), used);
+    TEST_ASSERT_EQUAL_size_t(3, used);
+    TEST_ASSERT_EQUAL_STRING(
+        "{\"t\":\"lg\",\"rq\":5,\"op\":\"list\",\"ls\":[[\"a.bin\",1,0],[\"b.bin\",2,0]],\"end\":true}",
+        out);
+
     ttc::BuildLogList(4, nullptr, 0, false, out, sizeof(out), used);
     TEST_ASSERT_EQUAL_STRING("{\"t\":\"lg\",\"rq\":4,\"op\":\"list\",\"ls\":[],\"end\":true}", out);
 }
@@ -559,6 +597,7 @@ int main(
     RUN_TEST(TestParseValid);
     RUN_TEST(TestParseMalformed);
     RUN_TEST(TestParseEnvelopeErrors);
+    RUN_TEST(TestParseRejectsTrailingGarbage);
     RUN_TEST(TestParseOversized);
     RUN_TEST(TestBuildAck);
     RUN_TEST(TestBuildTelemetryTypical);

@@ -8,7 +8,7 @@
  * telemetria e demais pacotes JSON sob demanda, assim que o rádio estiver
  * livre, também pelo umbilical quando habilitado. O contador "n" de cada
  * pacote de descida é inserido no momento do TX, com uma sequência estrita
- * por meio. Start() cria a task do enlace (DP §7.2: Core 0,
+ * por meio. Start() cria a task do enlace (DP §7.1: Core 0; DP §7.2:
  * prioridade alta), única a acessar o rádio; os demais métodos podem ser
  * chamados de qualquer task.
  */
@@ -120,8 +120,10 @@ struct TX_FRAME {
 /**
  * @brief Conclusão local de uma entrega enviada por SendDelivery().
  *
- * @details success indica que ao menos um meio de destino terminou o TX;
- * não indica recepção pelo solo, que chega por ReceiveConfirmation().
+ * @details Com LINK_RF no destino, success indica que o TX de RF terminou;
+ * a cópia no cabo não conta, pois a UART "envia" mesmo sem nada ligado. Sem
+ * RF no destino, success indica que ao menos um meio terminou o TX. Não
+ * indica recepção pelo solo, que chega por ReceiveConfirmation().
  */
 struct TX_EVENT {
     ttc::DELIVERY_ID id;
@@ -133,7 +135,7 @@ struct TX_EVENT {
 // ─── ELEMENTOS STATIC ─────────────────────────────────────────────
 
 constexpr BaseType_t  ttc_task_core     = 0;  // DP §7.1: TT&C isolado no Core 0.
-constexpr UBaseType_t ttc_task_priority = 10; // Acima das tasks de aplicação.
+constexpr UBaseType_t ttc_task_priority = 10; // DP §7.2: acima das tasks de aplicação.
 constexpr size_t      ttc_dedup_slots   = 8;  // TCs lembrados para deduplicação.
 constexpr size_t      ttc_tracked_slots = 4;  // Entregas identificadas na fila ou com evento não lido.
 constexpr size_t      ttc_confirm_slots = 8;  // Confirmações do solo aguardando o OBC.
@@ -248,7 +250,8 @@ public:
      * falha localmente; o evento fica reservado até ReceiveTransmitEvent().
      * O JSON precisa carregar o ID (ex.: BuildAircraft com id).
      *
-     * @return false se o ID é inválido, o pacote excede max_body_len, há
+     * @return false se o ID é inválido ou difere do "id" do JSON, o pacote
+     * excede max_body_len, há
      * ttc_tracked_slots entregas pendentes ou a fila de descida está cheia.
      */
     bool SendDelivery(
@@ -313,8 +316,11 @@ public:
      *
      * @details Para cargas de alto consumo que não podem coincidir com o
      * pico de TX (DP §5.2). A recepção continua ativa durante a suspensão.
+     * Os pedidos são contados: o TX só volta quando cada HoldTransmit(true)
+     * tiver seu HoldTransmit(false), inclusive quando o pedido retornou
+     * false por timeout. Liberação sem pedido pendente não tem efeito.
      *
-     * @param hold true suspende; false retoma.
+     * @param hold true suspende; false libera um pedido.
      * @param wait_ms Espera máxima pelo fim de uma transmissão em curso.
      *
      * @return true se nenhuma transmissão está em curso ao retornar.
@@ -387,14 +393,15 @@ private:
     TaskHandle_t task_handle = nullptr;
     SemaphoreHandle_t dedup_mutex = nullptr;
     DEDUP_SLOT dedup[ttc_dedup_slots] = {};
-    size_t dedup_next = 0;
     LINK_STATS stats = {};
     LINK_DIAGNOSTICS diagnostics = {};
     portMUX_TYPE stats_lock = portMUX_INITIALIZER_UNLOCKED;
     uint16_t rf_counter = 0;    // Só a task do enlace usa.
     uint16_t wired_counter = 0; // Só a task do enlace usa.
-    volatile bool hold_tx = false;
-    volatile bool transmitting = false;
+    volatile bool hold_tx = false;               // hold_count > 0.
+    uint8_t       hold_count = 0;                // Pedidos de HoldTransmit(true) pendentes; sob hold_lock.
+    volatile bool transmitting = false;          // Reservado sob hold_lock em TransmitNext().
+    portMUX_TYPE  hold_lock = portMUX_INITIALIZER_UNLOCKED; // hold_tx × início do TX.
     volatile bool radio_healthy = false;
     uint32_t last_health_ms = 0;  // Só a task do enlace usa.
     volatile uint32_t beacon_period_ms = 0;
@@ -481,9 +488,24 @@ private:
     );
 
     /**
+     * @brief Slot do TC a responder: como FindDedupSlot(), mas um TC sem ACK
+     * não expira (execução lenta mantém origem e "q").
+     */
+    int FindAckSlot(
+        uint16_t seq
+    );
+
+    /**
+     * @brief Slot para um TC novo: livre, expirado, respondido mais antigo ou,
+     * só com todos em execução, o mais antigo.
+     */
+    size_t FreeDedupSlot();
+
+    /**
      * @brief Transmite o próximo pacote, ACKs primeiro, em cada meio de destino.
      */
     void TransmitNext();
+    void TransmitFrame(); // Corpo de TransmitNext(), com transmitting já reservado.
 
     /**
      * @brief Insere o contador do meio e transmite uma cópia do pacote.

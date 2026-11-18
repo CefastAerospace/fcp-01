@@ -21,6 +21,7 @@ OPEN_QUIET_S = 1.0     # Serial sem bytes novos: boot terminado.
 OPEN_MAX_WAIT_S = 6.0
 TRACK_POINTS = 200     # Posições guardadas por aeronave para o rastro no mapa.
 LOG_RESPONSES_KEPT = 64  # Respostas "lg" guardadas à espera de request_log().
+MAX_PENDING_LINE = 4096  # Linha sem "\n" maior que isso é tratada assim mesmo (ponte travada).
 
 
 def open_serial(port: str, baud: int = 115200, settle_s: float = OPEN_SETTLE_S,
@@ -69,7 +70,11 @@ class Link:
         self.source = source
         self.log = log
         self.deliveries = deliveries if deliveries is not None else DeliveryStore()
-        self.delivery_counts = {"new": 0, "repeated": 0, "confirmations": 0, "confirm_errors": 0}
+        self.delivery_counts = {"new": 0, "repeated": 0, "confirmations": 0, "confirm_errors": 0,
+                                "withheld": 0}
+        # Roteiros de bancada: devolve False para reter o "cf" (simula confirmação
+        # perdida). O ID já está gravado com fsync quando o filtro é consultado.
+        self.confirmation_filter: Callable[[DeliveryId, bool], bool] | None = None
         self.loss = LossTracker()
         self.counts: dict[str, int] = {}
         self.latest_tm: dict | None = None
@@ -112,29 +117,69 @@ class Link:
     # ─── Recepção ─────────────────────────────────────────────────────
 
     def _read_loop(self) -> None:
+        pending = b""
         while self._running:
             try:
                 raw = self.stream.readline()
             except serial.SerialException as error:
                 self._emit({"dir": "log", "kind": "error", "text": f"serial: {error}"})
+                pending = b""
                 time.sleep(1.0)
+                self._reopen()
                 continue
-            if raw:
+            if not raw:
+                continue
+            # readline() com timeout devolve um pedaço se a linha pausar no meio:
+            # junta até o "\n", para não partir um quadro em dois "logs".
+            pending += raw
+            if not pending.endswith(b"\n"):
+                if len(pending) > MAX_PENDING_LINE:
+                    raw, pending = pending, b""
+                else:
+                    continue
+            else:
+                raw, pending = pending, b""
+            try:
                 self.handle_line(raw.decode("utf-8", errors="replace"))
+            except Exception as error:  # A thread de leitura não pode morrer em silêncio.
+                print(f"[fcp_gs] falha ao tratar linha: {error!r}", flush=True)
 
-    def handle_line(self, line: str) -> None:
-        """Interpreta e distribui uma linha (público para testes e reprodução)."""
+    def _reopen(self) -> None:
+        """Tenta reabrir a porta após desconexão do USB (mesmo nome de dispositivo)."""
+        if not isinstance(self.stream, serial.Serial):
+            return
+        try:
+            self.stream.close()
+            self.stream.open()
+        except (serial.SerialException, OSError):
+            return
+        self._emit({"dir": "log", "kind": "info", "text": f"serial reaberta: {self.stream.port}"})
+
+    def handle_line(self, line: str, injected: bool = False) -> None:
+        """Interpreta e distribui uma linha (público para testes e reprodução).
+
+        injected=True (bancada, /api/inject): atualiza o painel, mas não envia
+        "cf" ao satélite, não grava o ID no registro de entregas e não entra na
+        contagem de perdas. O evento sai com link "inject" no log da sessão.
+        """
         received = parse_line(line)
         if received.kind == "log" and not received.text:
             return
-        delivery, repeated = self._classify_delivery(received)
-        self._update_state(received, repeated)
+        delivery, repeated = (None, False) if injected else self._classify_delivery(received)
+        self._update_state(received, repeated, count_loss=not injected)
         event = self._event(received)
+        if injected:
+            event["link"] = "inject"
         if delivery is not None:
             event["delivery"] = {"id": list(delivery), "repeated": repeated}
-        self._emit(event)  # Grava o pacote no log da sessão antes de confirmar.
+        # Entrega nova: o pacote precisa estar no disco (fsync) antes do "cf".
+        logged = self._emit(event, durable=delivery is not None and not repeated)
         if delivery is not None:
-            self._confirm_delivery(delivery, repeated)
+            if logged:
+                self._confirm_delivery(delivery, repeated)
+            else:
+                with self._cond:
+                    self.delivery_counts["confirm_errors"] += 1
         # O ACK só é entregue a send_tc() depois dos listeners: quem remove o
         # listener ao receber o ACK (ex.: tm-loss) ainda vê o "n" dele.
         self._deliver_ack(received)
@@ -153,20 +198,24 @@ class Link:
         """Registra o ID com fsync e confirma; repetida só recebe a confirmação de novo."""
         try:
             if not repeated and not self.deliveries.record(delivery):
-                repeated = True  # Outra thread (ex.: /api/inject) registrou antes.
+                repeated = True  # Outra thread registrou antes.
         except OSError as error:
             # Sem registro durável, não confirma: o OBC retransmite depois.
             with self._cond:
                 self.delivery_counts["confirm_errors"] += 1
             self._emit({"dir": "log", "kind": "error", "text": f"registro de entregas: {error}"})
             return
+        withhold = self.confirmation_filter is not None and not self.confirmation_filter(delivery, repeated)
         with self._cond:
             self.delivery_counts["repeated" if repeated else "new"] += 1
-            self.delivery_counts["confirmations"] += 1
+            self.delivery_counts["withheld" if withhold else "confirmations"] += 1
+        if withhold:
+            self._emit({"dir": "log", "kind": "info", "text": f"cf {list(delivery)} retido pelo roteiro"})
+            return
         self._write(encode_confirmation(delivery),
                     {"dir": "tx", "kind": "cf", "link": self.source, "pkt": {"t": "cf", "id": list(delivery)}})
 
-    def _update_state(self, received: Received, repeated: bool = False) -> None:
+    def _update_state(self, received: Received, repeated: bool = False, count_loss: bool = True) -> None:
         with self._cond:
             self.counts[received.kind] = self.counts.get(received.kind, 0) + 1
             if received.meta:
@@ -177,7 +226,7 @@ class Link:
 
             kind = str(packet.get("t", "?"))
             self.counts[f"t:{kind}"] = self.counts.get(f"t:{kind}", 0) + 1
-            if isinstance(packet.get("n"), int):
+            if count_loss and isinstance(packet.get("n"), int):
                 self.loss.feed(packet["n"])
             if repeated:
                 return  # Entrega já processada: só a confirmação é repetida.
@@ -229,24 +278,45 @@ class Link:
             event["text"] = received.text
         return event
 
-    def _emit(self, event: dict) -> None:
+    def note(self, text: str) -> None:
+        """Mensagem do operador/sistema no log ao vivo e no log da sessão."""
+        self._emit({"dir": "log", "kind": "info", "text": text})
+
+    def _emit(self, event: dict, durable: bool = False) -> bool:
+        """Grava no log da sessão e avisa os listeners. Devolve False se a gravação falhou."""
+        logged = True
         if self.log is not None:
-            self.log.write(event)
+            try:
+                self.log.write(event, durable=durable)
+            except OSError as error:
+                logged = False
+                failure = {"dir": "log", "kind": "error", "text": f"log da sessão: {error}"}
+                self._notify(failure)
+        self._notify(event)
+        return logged
+
+    def _notify(self, event: dict) -> None:
         with self._cond:
             listeners = list(self._listeners)
         for listener in listeners:
-            listener(event)
+            try:
+                listener(event)
+            except Exception as error:  # Um listener com defeito não pode derrubar a recepção.
+                print(f"[fcp_gs] listener falhou: {error!r}", flush=True)
 
     # ─── Envio ────────────────────────────────────────────────────────
 
-    def send_tc(self, cmd: str, args: dict | None = None, retries: int = 3, timeout: float = 2.0) -> dict:
+    def send_tc(self, cmd: str, args: dict | None = None, retries: int = 3, timeout: float = 2.0,
+                seq: int | None = None) -> dict:
         """Envia um TC e espera o ACK, retransmitindo com o mesmo seq.
 
         rtt_ms mede do primeiro envio ao ACK (ponta a ponta, HLR-COMM-01).
+        seq explícito só para roteiros que repetem um TC já enviado (deduplicação).
         """
         with self._cond:
-            seq = self._next_seq
-            self._next_seq = (seq + 1) % COUNTER_MODULO
+            if seq is None:
+                seq = self._next_seq
+                self._next_seq = (seq + 1) % COUNTER_MODULO
             self._acks.pop(seq, None)
             self._log_responses.pop(seq, None)
         line = encode_tc(seq, cmd, args)
@@ -259,7 +329,8 @@ class Link:
             if ack is not None:
                 rtt_ms = (time.monotonic() - first_send) * 1000
                 return {"seq": seq, "cmd": cmd, "ok": ack.get("st") == "ok", "status": ack.get("st"),
-                        "q": ack.get("q"), "rtt_ms": round(rtt_ms, 1), "attempts": attempt}
+                        "q": ack.get("q"), "rtt_ms": round(rtt_ms, 1), "attempts": attempt,
+                        "n": ack.get("n")}
 
         return {"seq": seq, "cmd": cmd, "ok": False, "status": "timeout", "q": None,
                 "rtt_ms": None, "attempts": retries}

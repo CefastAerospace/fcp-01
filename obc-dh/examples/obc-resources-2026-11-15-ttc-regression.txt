@@ -1,0 +1,67 @@
+Command: pio test -e native -e esp32 --upload-port /dev/ttyUSB0 --test-port /dev/ttyUSB0
+Testing...
+test/test_protocol/test_main.cpp:558: TestCommandTableRoundTrip	[PASSED]
+test/test_protocol/test_main.cpp:559: TestParseValid	[PASSED]
+test/test_protocol/test_main.cpp:560: TestParseMalformed	[PASSED]
+test/test_protocol/test_main.cpp:561: TestParseEnvelopeErrors	[PASSED]
+test/test_protocol/test_main.cpp:562: TestParseOversized	[PASSED]
+test/test_protocol/test_main.cpp:563: TestBuildAck	[PASSED]
+test/test_protocol/test_main.cpp:564: TestBuildTelemetryTypical	[PASSED]
+test/test_protocol/test_main.cpp:565: TestBuildTelemetryWorstCaseFits	[PASSED]
+test/test_protocol/test_main.cpp:566: TestBuildAircraftWorstCaseFits	[PASSED]
+test/test_protocol/test_main.cpp:567: TestBuildRejectsSmallBuffer	[PASSED]
+test/test_protocol/test_main.cpp:568: TestBuildEventAndBeacon	[PASSED]
+test/test_protocol/test_main.cpp:569: TestInsertCounter	[PASSED]
+test/test_protocol/test_main.cpp:570: TestInsertCounterRespectsFrameLimit	[PASSED]
+test/test_protocol/test_main.cpp:571: TestTelemetryAvailability	[PASSED]
+test/test_protocol/test_main.cpp:572: TestBuildAircraftWithIdWorstCaseFits	[PASSED]
+test/test_protocol/test_main.cpp:573: TestBuildAircraftUnavailableFields	[PASSED]
+test/test_protocol/test_main.cpp:574: TestBuildAircraftRejectsInvalidIdentity	[PASSED]
+test/test_protocol/test_main.cpp:575: TestConfirmationRoundTrip	[PASSED]
+test/test_protocol/test_main.cpp:576: TestConfirmationRejectsInvalid	[PASSED]
+test/test_protocol/test_main.cpp:577: TestParseLogRequestValid	[PASSED]
+test/test_protocol/test_main.cpp:578: TestParseLogRequestInvalid	[PASSED]
+test/test_protocol/test_main.cpp:579: TestBuildLogDataWorstCaseFits	[PASSED]
+test/test_protocol/test_main.cpp:580: TestBuildLogDataContent	[PASSED]
+test/test_protocol/test_main.cpp:581: TestBuildLogList	[PASSED]
+test/test_protocol/test_main.cpp:582: TestBuildLogError	[PASSED]
+--------------- native:test_protocol [PASSED] Took 1.57 seconds ---------------
+
+Processing test_ttc in esp32 environment
+--------------------------------------------------------------------------------
+Building & Uploading...
+/home/o-grande-kayky/.local/share/platformio/packages/framework-arduinoespressif32/cores/esp32/esp32-hal-uart.c: In function 'uartSetPins':
+/home/o-grande-kayky/.local/share/platformio/packages/framework-arduinoespressif32/cores/esp32/esp32-hal-uart.c:153:9: warning: 'return' with no value, in function returning non-void
+         return;
+         ^~~~~~
+/home/o-grande-kayky/.local/share/platformio/packages/framework-arduinoespressif32/cores/esp32/esp32-hal-uart.c:149:6: note: declared here
+ bool uartSetPins(uint8_t uart_num, int8_t rxPin, int8_t txPin, int8_t ctsPin, int8_t rtsPin)
+      ^~~~~~~~~~~
+Testing...
+If you don't see any output for the first 10 secs, please reset board (press reset button)
+
+test/test_ttc/test_main.cpp:519: TestTelecommandAndAck	[PASSED]
+test/test_ttc/test_main.cpp:520: TestAckHasPriority	[PASSED]
+test/test_ttc/test_main.cpp:521: TestOneFramePerUpdate	[PASSED]
+test/test_ttc/test_main.cpp:522: TestDuplicateTelecommand	[PASSED]
+test/test_ttc/test_main.cpp:523: TestNackForBadEnvelope	[PASSED]
+test/test_ttc/test_main.cpp:524: TestHoldTransmit	[PASSED]
+test/test_ttc/test_main.cpp:525: TestWiredOriginAndCounters	[PASSED]
+test/test_ttc/test_main.cpp:526: TestRadioHealthReset	[PASSED]
+test/test_ttc/test_main.cpp:527: TestTelemetryFillsLinkFields	[PASSED]
+test/test_ttc/test_main.cpp:528: TestWiredWithoutRadioAndUnavailableTelemetry	[PASSED]
+test/test_ttc/test_main.cpp:529: TestTelemetryQueueFullKeepsAckQueueAvailable	[PASSED]
+test/test_ttc/test_main.cpp:530: TestTelemetryQueuedOutput	[PASSED]
+test/test_ttc/test_main.cpp:531: TestDeliveryEventCarriesId	[PASSED]
+test/test_ttc/test_main.cpp:532: TestDeliveryLocalFailure	[PASSED]
+test/test_ttc/test_main.cpp:533: TestDeliveryReservesEvents	[PASSED]
+test/test_ttc/test_main.cpp:534: TestGroundConfirmation	[PASSED]
+test/test_ttc/test_main.cpp:535: TestExplicitDestination	[PASSED]
+------------------ esp32:test_ttc [PASSED] Took 17.69 seconds ------------------
+
+=================================== SUMMARY ===================================
+Environment    Test           Status    Duration
+-------------  -------------  --------  ------------
+native         test_protocol  PASSED    00:00:01.565
+esp32          test_ttc       PASSED    00:00:17.695
+================= 42 test cases: 42 succeeded in 00:00:19.260 =================

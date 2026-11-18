@@ -5,7 +5,7 @@
 
 ## Situação atual da integração — 10/11/2026
 
-O ambiente atual já declara ArduinoJson 7.0.4, LoRa 0.8.0 e biblioteca local `tt-c`, com ambientes de bancada adicionais. A frase histórica sobre ausência de `lib_deps` descreve a configuração original. A plataforma `espressif32` continua sem versão fixada; os números das evidências não são um lock de dependências. A tarefa permanece concluída no escopo de configuração base. [Integração consumidora](../INT-004-ttc-e-umbilical.md).
+O ambiente atual já declara ArduinoJson 7.0.4, LoRa 0.8.0 e biblioteca local `tt-c`, com ambientes de bancada adicionais. A frase histórica sobre ausência de `lib_deps` descreve a configuração original. A plataforma `espressif32` continua sem versão fixada; os números das evidências não são um lock de dependências. A tarefa permanece concluída no escopo de configuração base. [Integração consumidora](INT-004-ttc-e-umbilical.md).
 
 ## Objetivo
 

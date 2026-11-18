@@ -1,0 +1,40 @@
+Verbosity level can be increased via `-v, -vv, or -vvv` option
+Collected 3 tests
+
+Processing test_protocol in native environment
+--------------------------------------------------------------------------------
+Building...
+Testing...
+test/test_protocol/test_main.cpp:558: TestCommandTableRoundTrip	[PASSED]
+test/test_protocol/test_main.cpp:559: TestParseValid	[PASSED]
+test/test_protocol/test_main.cpp:560: TestParseMalformed	[PASSED]
+test/test_protocol/test_main.cpp:561: TestParseEnvelopeErrors	[PASSED]
+test/test_protocol/test_main.cpp:562: TestParseOversized	[PASSED]
+test/test_protocol/test_main.cpp:563: TestBuildAck	[PASSED]
+test/test_protocol/test_main.cpp:564: TestBuildTelemetryTypical	[PASSED]
+test/test_protocol/test_main.cpp:565: TestBuildTelemetryWorstCaseFits	[PASSED]
+test/test_protocol/test_main.cpp:566: TestBuildAircraftWorstCaseFits	[PASSED]
+test/test_protocol/test_main.cpp:567: TestBuildRejectsSmallBuffer	[PASSED]
+test/test_protocol/test_main.cpp:568: TestBuildEventAndBeacon	[PASSED]
+test/test_protocol/test_main.cpp:569: TestInsertCounter	[PASSED]
+test/test_protocol/test_main.cpp:570: TestInsertCounterRespectsFrameLimit	[PASSED]
+test/test_protocol/test_main.cpp:571: TestTelemetryAvailability	[PASSED]
+test/test_protocol/test_main.cpp:572: TestBuildAircraftWithIdWorstCaseFits	[PASSED]
+test/test_protocol/test_main.cpp:573: TestBuildAircraftUnavailableFields	[PASSED]
+test/test_protocol/test_main.cpp:574: TestBuildAircraftRejectsInvalidIdentity	[PASSED]
+test/test_protocol/test_main.cpp:575: TestConfirmationRoundTrip	[PASSED]
+test/test_protocol/test_main.cpp:576: TestConfirmationRejectsInvalid	[PASSED]
+test/test_protocol/test_main.cpp:577: TestParseLogRequestValid	[PASSED]
+test/test_protocol/test_main.cpp:578: TestParseLogRequestInvalid	[PASSED]
+test/test_protocol/test_main.cpp:579: TestBuildLogDataWorstCaseFits	[PASSED]
+test/test_protocol/test_main.cpp:580: TestBuildLogDataContent	[PASSED]
+test/test_protocol/test_main.cpp:581: TestBuildLogList	[PASSED]
+test/test_protocol/test_main.cpp:582: TestBuildLogError	[PASSED]
+--------------- native:test_protocol [PASSED] Took 0.45 seconds ---------------
+
+=================================== SUMMARY ===================================
+Environment    Test           Status    Duration
+-------------  -------------  --------  ------------
+native         test_protocol  PASSED    00:00:00.451
+================= 25 test cases: 25 succeeded in 00:00:00.451 =================
+

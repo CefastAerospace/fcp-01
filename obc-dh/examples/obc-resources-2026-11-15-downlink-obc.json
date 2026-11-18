@@ -1,0 +1,157 @@
+{
+  "passed": true,
+  "bench": false,
+  "lines": [
+    "ets Jul 29 2019 12:21:46",
+    "rst:0x1 (POWERON_RESET),boot:0x13 (SPI_FAST_FLASH_BOOT)",
+    "configsip: 0, SPIWP:0xee",
+    "clk_drv:0x00,q_drv:0x00,d_drv:0x00,cs0_drv:0x00,hd_drv:0x00,wp_drv:0x00",
+    "mode:DIO, clock div:2",
+    "load:0x3fff0030,len:1184",
+    "load:0x40078000,len:13232",
+    "load:0x40080400,len:3028",
+    "entry 0x400805e4",
+    "[OBC] Boot de bancada: tempo/NVS, I2C e SD",
+    "[   563][E][sd_diskio.cpp:805] sdcard_mount(): f_mount failed: (3) The physical drive cannot work",
+    "[  1064][E][sd_diskio.cpp:126] sdSelectCard(): Select Failed",
+    "[OBC] Tempo/NVS: OK; boot_id=81",
+    "[OBC] I2C: OK; estado do controlador/executor, sem verificar sensores",
+    "[OBC] SD: indisponivel; status=11; errno=0; bytes=0; tentativas=0",
+    "[OBC] Tempo monotonic_ms=107[TT&C] ERRO: SX1276 nao responde.",
+    "[TT&C] ERRO: SX1276 sem resposta ou fora de RX, reinicializando.[OBC] TT&C: radio=indisponivel; umbilical=OK; tarefa=OK",
+    "[FLOW] RAM apos receptor: heap=171556 byte_heap=107420 byte_largest=47092",
+    "[FLOW] Recepcao=OK; SD=indisponivel; heap=159540; maior_bloco=63476",
+    "[TT&C] ERRO: SX1276 nao responde.",
+    "[TTC-HEALTH] state=ok radio=unavailable updating=0 wired_ready=1 age_ms=13 limit_ms=2000 completions=1 rf_seen=0 rf_age_ms=0 wired_seen=0 wired_age_ms=0 resets=1 changed=1 monotonic_ms=1151",
+    "[MEMORY-HEALTH] byte_heap=95404 byte_largest=47092 heap_low=0 block_low=0 stack_low_mask=0 allocation_failures=0 allocation_delta=0 changed=0 monotonic_ms=1151",
+    "[MEMORY-HEALTH] task=uart active=1 stack_free=2204 low=0 monotonic_ms=1151",
+    "[MEMORY-HEALTH] task=process active=1 stack_free=7660 low=0 monotonic_ms=1151",
+    "[MEMORY-HEALTH] task=writer active=0 stack_free=0 low=0 monotonic_ms=1151",
+    "[MEMORY-HEALTH] task=i2c active=1 stack_free=3548 low=0 monotonic_ms=1151",
+    "[MEMORY-HEALTH] task=ttc active=1 stack_free=7368 low=0 monotonic_ms=1151",
+    "[MEMORY-HEALTH] task=loop active=1 stack_free=5008 low=0 monotonic_ms=1151",
+    "[I2C-HEALTH] state=ok service=ready activity=idle age_ms=0 limit_ms=0 sampled_ms=1216 monotonic_ms=1216 changed=0 queued=0 cause=0 failure=0 cycles=0 recovered=0 exhausted=0",
+    "[FLOW] received=0 invalid=0 gaps=0 duplicates=0 written=0 failures=1 dropped=2 SD=0 status=11 poll_gap_ms=2 process_gap_ms=2 stack_rx=7596 stack_sd=0 stack_uart=2204 uart_full=0",
+    "[FLOW-MEMORY] heap=159540 byte_heap=95404 byte_largest=47092 byte_min=89812 parser_peak_bytes=0 parser_limit_bytes=98304",
+    "[STORAGE] state=0 attempt=0 episodes=0 attempts=0 recovered=0 exhausted=0 lifecycle_failures=0 cause=0 end=0 status=0 monotonic_ms=1216",
+    "[HEALTH] task=uart state=ok activity=idle age_ms=1 limit_ms=100 completions=107 sampled_ms=1227 changed=0",
+    "[HEALTH] task=process state=ok activity=idle age_ms=1 limit_ms=2000 completions=106 sampled_ms=1227 changed=0",
+    "[HEALTH] task=writer state=inactive activity=inactive age_ms=0 limit_ms=5000 completions=0 sampled_ms=1227 changed=0",
+    "[DELIVERY] occupied=0 peak=0 accepted=0 repeated=0 lost=0 storage_failures=1 attempts=0 tx_failures=0 confirmed=0 unknown=0 evicted=0 recovery_slot=0",
+    "[TT&C] ERRO: SX1276 sem resposta ou fora de RX, reinicializando.",
+    "[TT&C] ERRO: SX1276 nao responde.",
+    "[FLOW] received=0 invalid=0 gaps=0 duplicates=0 written=0 failures=1 dropped=4 SD=0 status=11 poll_gap_ms=2 process_gap_ms=2 stack_rx=7596 stack_sd=0 stack_uart=2204 uart_full=0",
+    "[FLOW-MEMORY] heap=159540 byte_heap=95404 byte_largest=47092 byte_min=89812 parser_peak_bytes=0 parser_limit_bytes=98304",
+    "[STORAGE] state=0 attempt=0 episodes=0 attempts=0 recovered=0 exhausted=0 lifecycle_failures=0 cause=0 end=0 status=0 monotonic_ms=2220",
+    "[HEALTH] task=uart state=ok activity=idle age_ms=0 limit_ms=100 completions=1020 sampled_ms=2139 changed=0",
+    "[HEALTH] task=process state=ok activity=idle age_ms=0 limit_ms=2000 completions=1019 sampled_ms=2139 changed=0",
+    "[HEALTH] task=writer state=inactive activity=inactive age_ms=0 limit_ms=5000 completions=0 sampled_ms=2139 changed=0",
+    "[DELIVERY] occupied=0 peak=0 accepted=0 repeated=0 lost=0 storage_failures=1 attempts=0 tx_failures=0 confirmed=0 unknown=0 evicted=0 recovery_slot=0",
+    "[TTC-HEALTH] state=ok radio=unavailable updating=0 wired_ready=1 age_ms=1 limit_ms=2000 completions=58 rf_seen=0 rf_age_ms=0 wired_seen=0 wired_age_ms=0 resets=2 changed=0 monotonic_ms=2314",
+    "[MEMORY-HEALTH] byte_heap=95404 byte_largest=47092 heap_low=0 block_low=0 stack_low_mask=0 allocation_failures=0 allocation_delta=0 changed=0 monotonic_ms=2314",
+    "[MEMORY-HEALTH] task=uart active=1 stack_free=2140 low=0 monotonic_ms=2314",
+    "[MEMORY-HEALTH] task=process active=1 stack_free=7596 low=0 monotonic_ms=2314",
+    "[MEMORY-HEALTH] task=writer active=0 stack_free=0 low=0 monotonic_ms=2314",
+    "[MEMORY-HEALTH] task=i2c active=1 stack_free=3548 low=0 monotonic_ms=2314",
+    "[MEMORY-HEALTH] task=ttc active=1 stack_free=7160 low=0 monotonic_ms=2314",
+    "[MEMORY-HEALTH] task=loop active=1 stack_free=5008 low=0 monotonic_ms=2314",
+    "[I2C-HEALTH] state=ok service=ready activity=idle age_ms=0 limit_ms=0 sampled_ms=2378 monotonic_ms=2378 changed=0 queued=0 cause=0 failure=0 cycles=0 recovered=0 exhausted=0",
+    "[TT&C] ERRO: SX1276 sem resposta ou fora de RX, reinicializando.",
+    "[TT&C] ERRO: SX1276 nao responde.",
+    "[FLOW] received=0 invalid=0 gaps=0 duplicates=0 written=0 failures=1 dropped=6 SD=0 status=11 poll_gap_ms=2 process_gap_ms=2 stack_rx=7596 stack_sd=0 stack_uart=2140 uart_full=0",
+    "[FLOW-MEMORY] heap=159540 byte_heap=95404 byte_largest=47092 byte_min=89812 parser_peak_bytes=0 parser_limit_bytes=98304",
+    "[STORAGE] state=0 attempt=0 episodes=0 attempts=0 recovered=0 exhausted=0 lifecycle_failures=0 cause=0 end=0 status=0 monotonic_ms=3225",
+    "[HEALTH] task=uart state=ok activity=idle age_ms=0 limit_ms=100 completions=2085 sampled_ms=3204 changed=0",
+    "[HEALTH] task=process state=ok activity=idle age_ms=0 limit_ms=2000 completions=2084 sampled_ms=3204 changed=0",
+    "[HEALTH] task=writer state=inactive activity=inactive age_ms=0 limit_ms=5000 completions=0 sampled_ms=3204 changed=0",
+    "[DELIVERY] occupied=0 peak=0 accepted=0 repeated=0 lost=0 storage_failures=1 attempts=0 tx_failures=0 confirmed=0 unknown=0 evicted=0 recovery_slot=0",
+    "[TTC-HEALTH] state=ok radio=unavailable updating=0 wired_ready=1 age_ms=12 limit_ms=2000 completions=106 rf_seen=0 rf_age_ms=0 wired_seen=0 wired_age_ms=0 resets=3 changed=0 monotonic_ms=3319",
+    "[MEMORY-HEALTH] byte_heap=95404 byte_largest=47092 heap_low=0 block_low=0 stack_low_mask=0 allocation_failures=0 allocation_delta=0 changed=0 monotonic_ms=3319",
+    "[MEMORY-HEALTH] task=uart active=1 stack_free=2140 low=0 monotonic_ms=3319",
+    "[MEMORY-HEALTH] task=process active=1 stack_free=7596 low=0 monotonic_ms=3319",
+    "[MEMORY-HEALTH] task=writer active=0 stack_free=0 low=0 monotonic_ms=3319",
+    "[MEMORY-HEALTH] task=i2c active=1 stack_free=3548 low=0 monotonic_ms=3319",
+    "[MEMORY-HEALTH] task=ttc active=1 stack_free=7160 low=0 monotonic_ms=3319",
+    "[MEMORY-HEALTH] task=loop active=1 stack_free=4972 low=0 monotonic_ms=3319",
+    "[I2C-HEALTH] state=ok service=ready activity=idle age_ms=0 limit_ms=0 sampled_ms=3383 monotonic_ms=3383 changed=0 queued=0 cause=0 failure=0 cycles=0 recovered=0 exhausted=0",
+    "{\"n\":0,\"t\":\"ack\",\"seq\":1757,\"cmd\":\"ping\",\"st\":\"ok\",\"q\":9}",
+    "{\"n\":1,\"t\":\"ack\",\"seq\":1758,\"cmd\":\"request_log\",\"st\":\"invalid_param\",\"q\":0}",
+    "{\"n\":2,\"t\":\"ack\",\"seq\":1759,\"cmd\":\"request_log\",\"st\":\"invalid_param\",\"q\":0}",
+    "{\"n\":3,\"t\":\"ack\",\"seq\":1760,\"cmd\":\"set_time\",\"st\":\"ok\",\"q\":0}",
+    "{\"n\":4,\"t\":\"ack\",\"seq\":1761,\"cmd\":\"request_log\",\"st\":\"ok\",\"q\":0}",
+    "{\"n\":5,\"t\":\"lg\",\"rq\":1761,\"op\":\"list\",\"err\":\"no_sd\"}",
+    "{\"n\":6,\"t\":\"ack\",\"seq\":1762,\"cmd\":\"ping\",\"st\":\"ok\",\"q\":0}"
+  ],
+  "exchanges": [
+    {
+      "ack": {
+        "n": 0,
+        "t": "ack",
+        "seq": 1757,
+        "cmd": "ping",
+        "st": "ok",
+        "q": 9
+      },
+      "response_ms": 78.369
+    },
+    {
+      "ack": {
+        "n": 1,
+        "t": "ack",
+        "seq": 1758,
+        "cmd": "request_log",
+        "st": "invalid_param",
+        "q": 0
+      },
+      "response_ms": 36.821
+    },
+    {
+      "ack": {
+        "n": 2,
+        "t": "ack",
+        "seq": 1759,
+        "cmd": "request_log",
+        "st": "invalid_param",
+        "q": 0
+      },
+      "response_ms": 22.998
+    },
+    {
+      "ack": {
+        "n": 3,
+        "t": "ack",
+        "seq": 1760,
+        "cmd": "set_time",
+        "st": "ok",
+        "q": 0
+      },
+      "response_ms": 21.124
+    },
+    {
+      "ack": {
+        "n": 4,
+        "t": "ack",
+        "seq": 1761,
+        "cmd": "request_log",
+        "st": "ok",
+        "q": 0
+      },
+      "response_ms": 24.439
+    },
+    {
+      "ack": {
+        "n": 6,
+        "t": "ack",
+        "seq": 1762,
+        "cmd": "ping",
+        "st": "ok",
+        "q": 0
+      },
+      "response_ms": 30.155
+    }
+  ],
+  "files": [],
+  "storage": "no_sd",
+  "deliveries": 0,
+  "retried": false
+}

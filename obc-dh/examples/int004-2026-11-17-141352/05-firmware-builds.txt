@@ -1,0 +1,184 @@
+Processing obc (platform: espressif32@6.6.0; board: esp32doit-devkit-v1; framework: arduino)
+--------------------------------------------------------------------------------
+Verbose mode can be enabled via `-v, --verbose` option
+CONFIGURATION: https://docs.platformio.org/page/boards/espressif32/esp32doit-devkit-v1.html
+PLATFORM: Espressif 32 (6.6.0) > DOIT ESP32 DEVKIT V1
+HARDWARE: ESP32 240MHz, 320KB RAM, 4MB Flash
+DEBUG: Current (cmsis-dap) External (cmsis-dap, esp-bridge, esp-prog, iot-bus-jtag, jlink, minimodule, olimex-arm-usb-ocd, olimex-arm-usb-ocd-h, olimex-arm-usb-tiny-h, olimex-jtag-tiny, tumpa)
+PACKAGES: 
+ - framework-arduinoespressif32 @ 3.20014.231204 (2.0.14) 
+ - tool-esptoolpy @ 1.40501.0 (4.5.1) 
+ - toolchain-xtensa-esp32 @ 8.4.0+2021r2-patch5
+LDF: Library Dependency Finder -> https://bit.ly/configure-pio-ldf
+LDF Modes: Finder ~ chain, Compatibility ~ soft
+Found 36 compatible libraries
+Scanning dependencies...
+Dependency Graph
+|-- ArduinoJson @ 7.0.4
+|-- LoRa @ 0.8.0
+|-- tt-c @ 0.1.0
+|-- Wire @ 2.0.0
+|-- SD @ 2.0.0
+|-- SPI @ 2.0.0
+Building in release mode
+Retrieving maximum program size .pio/build/obc/firmware.elf
+Checking size .pio/build/obc/firmware.elf
+Advanced Memory Usage is available via "PlatformIO Home > Project Inspect"
+RAM:   [=         ]  10.0% (used 32704 bytes from 327680 bytes)
+Flash: [===       ]  33.0% (used 432925 bytes from 1310720 bytes)
+========================= [SUCCESS] Took 2.14 seconds =========================
+
+Processing int006-ttc-check (platform: espressif32@6.6.0; board: esp32doit-devkit-v1; framework: arduino)
+--------------------------------------------------------------------------------
+Verbose mode can be enabled via `-v, --verbose` option
+CONFIGURATION: https://docs.platformio.org/page/boards/espressif32/esp32doit-devkit-v1.html
+PLATFORM: Espressif 32 (6.6.0) > DOIT ESP32 DEVKIT V1
+HARDWARE: ESP32 240MHz, 320KB RAM, 4MB Flash
+DEBUG: Current (cmsis-dap) External (cmsis-dap, esp-bridge, esp-prog, iot-bus-jtag, jlink, minimodule, olimex-arm-usb-ocd, olimex-arm-usb-ocd-h, olimex-arm-usb-tiny-h, olimex-jtag-tiny, tumpa)
+PACKAGES: 
+ - framework-arduinoespressif32 @ 3.20014.231204 (2.0.14) 
+ - tool-esptoolpy @ 1.40501.0 (4.5.1) 
+ - toolchain-xtensa-esp32 @ 8.4.0+2021r2-patch5
+LDF: Library Dependency Finder -> https://bit.ly/configure-pio-ldf
+LDF Modes: Finder ~ chain, Compatibility ~ soft
+Found 36 compatible libraries
+Scanning dependencies...
+Dependency Graph
+|-- ArduinoJson @ 7.0.4
+|-- LoRa @ 0.8.0
+|-- tt-c @ 0.1.0
+|-- Wire @ 2.0.0
+|-- SD @ 2.0.0
+|-- SPI @ 2.0.0
+Building in release mode
+Converting .pio/build/int006-ttc-check/flow-fixtures.fcpu.txt.o
+Compiling .pio/build/int006-ttc-check/src/I2cBus.cpp.o
+Compiling .pio/build/int006-ttc-check/src/I2cRecovery.cpp.o
+Compiling .pio/build/int006-ttc-check/src/ObcData.cpp.o
+Compiling .pio/build/int006-ttc-check/src/ObcDataFlow.cpp.o
+Compiling .pio/build/int006-ttc-check/src/ObcDataFlowEsp32.cpp.o
+Compiling .pio/build/int006-ttc-check/src/ObcDelivery.cpp.o
+Compiling .pio/build/int006-ttc-check/src/ObcDownlink.cpp.o
+Compiling .pio/build/int006-ttc-check/src/ObcEps.cpp.o
+Compiling .pio/build/int006-ttc-check/src/ObcEpsEsp32.cpp.o
+Compiling .pio/build/int006-ttc-check/src/ObcI2cHealth.cpp.o
+Compiling .pio/build/int006-ttc-check/src/ObcRecordCodec.cpp.o
+Compiling .pio/build/int006-ttc-check/src/ObcResourceHealth.cpp.o
+Compiling .pio/build/int006-ttc-check/src/ObcStartup.cpp.o
+Compiling .pio/build/int006-ttc-check/src/ObcStorage.cpp.o
+Compiling .pio/build/int006-ttc-check/src/ObcStorageEsp32.cpp.o
+Compiling .pio/build/int006-ttc-check/src/ObcTaskHealth.cpp.o
+Compiling .pio/build/int006-ttc-check/src/ObcTime.cpp.o
+Compiling .pio/build/int006-ttc-check/src/ObcTimeEsp32.cpp.o
+Compiling .pio/build/int006-ttc-check/src/ObcTtc.cpp.o
+Compiling .pio/build/int006-ttc-check/src/ObcWatchdog.cpp.o
+Compiling .pio/build/int006-ttc-check/src/ObcWatchdogEsp32.cpp.o
+Compiling .pio/build/int006-ttc-check/src/PayloadReceiver.cpp.o
+Compiling .pio/build/int006-ttc-check/src/PayloadReceiverEsp32.cpp.o
+Compiling .pio/build/int006-ttc-check/src/bench/ObcDataFlowCheck.cpp.o
+Building .pio/build/int006-ttc-check/bootloader.bin
+Generating partitions .pio/build/int006-ttc-check/partitions.bin
+esptool.py v4.5.1
+Creating esp32 image...
+Merged 1 ELF section
+Successfully created esp32 image.
+Compiling .pio/build/int006-ttc-check/lib416/SPI/SPI.cpp.o
+Compiling .pio/build/int006-ttc-check/lib96e/LoRa/LoRa.cpp.o
+Compiling .pio/build/int006-ttc-check/lib1da/tt-c/Sx1276Radio.cpp.o
+Archiving .pio/build/int006-ttc-check/lib416/libSPI.a
+Compiling .pio/build/int006-ttc-check/lib1da/tt-c/Ttc.cpp.o
+Indexing .pio/build/int006-ttc-check/lib416/libSPI.a
+Compiling .pio/build/int006-ttc-check/lib1da/tt-c/TtcProtocol.cpp.o
+Compiling .pio/build/int006-ttc-check/lib1da/tt-c/UmbilicalLink.cpp.o
+Compiling .pio/build/int006-ttc-check/lib120/Wire/Wire.cpp.o
+Archiving .pio/build/int006-ttc-check/lib96e/libLoRa.a
+Indexing .pio/build/int006-ttc-check/lib96e/libLoRa.a
+Compiling .pio/build/int006-ttc-check/lib9d0/FS/FS.cpp.o
+Compiling .pio/build/int006-ttc-check/lib9d0/FS/vfs_api.cpp.o
+Compiling .pio/build/int006-ttc-check/libcdd/SD/SD.cpp.o
+Compiling .pio/build/int006-ttc-check/libcdd/SD/sd_diskio.cpp.o
+Compiling .pio/build/int006-ttc-check/libcdd/SD/sd_diskio_crc.c.o
+Compiling .pio/build/int006-ttc-check/FrameworkArduino/Esp.cpp.o
+Archiving .pio/build/int006-ttc-check/lib120/libWire.a
+Indexing .pio/build/int006-ttc-check/lib120/libWire.a
+Compiling .pio/build/int006-ttc-check/FrameworkArduino/FirmwareMSC.cpp.o
+Compiling .pio/build/int006-ttc-check/FrameworkArduino/FunctionalInterrupt.cpp.o
+Compiling .pio/build/int006-ttc-check/FrameworkArduino/HWCDC.cpp.o
+Compiling .pio/build/int006-ttc-check/FrameworkArduino/HardwareSerial.cpp.o
+Compiling .pio/build/int006-ttc-check/FrameworkArduino/IPAddress.cpp.o
+Compiling .pio/build/int006-ttc-check/FrameworkArduino/IPv6Address.cpp.o
+Archiving .pio/build/int006-ttc-check/lib9d0/libFS.a
+Indexing .pio/build/int006-ttc-check/lib9d0/libFS.a
+Compiling .pio/build/int006-ttc-check/FrameworkArduino/MD5Builder.cpp.o
+Archiving .pio/build/int006-ttc-check/libcdd/libSD.a
+Indexing .pio/build/int006-ttc-check/libcdd/libSD.a
+Compiling .pio/build/int006-ttc-check/FrameworkArduino/Print.cpp.o
+Compiling .pio/build/int006-ttc-check/FrameworkArduino/Stream.cpp.o
+Compiling .pio/build/int006-ttc-check/FrameworkArduino/StreamString.cpp.o
+Compiling .pio/build/int006-ttc-check/FrameworkArduino/Tone.cpp.o
+Compiling .pio/build/int006-ttc-check/FrameworkArduino/USB.cpp.o
+Compiling .pio/build/int006-ttc-check/FrameworkArduino/USBCDC.cpp.o
+Compiling .pio/build/int006-ttc-check/FrameworkArduino/USBMSC.cpp.o
+Compiling .pio/build/int006-ttc-check/FrameworkArduino/WMath.cpp.o
+Compiling .pio/build/int006-ttc-check/FrameworkArduino/WString.cpp.o
+Compiling .pio/build/int006-ttc-check/FrameworkArduino/base64.cpp.o
+Compiling .pio/build/int006-ttc-check/FrameworkArduino/cbuf.cpp.o
+Compiling .pio/build/int006-ttc-check/FrameworkArduino/esp32-hal-adc.c.o
+Compiling .pio/build/int006-ttc-check/FrameworkArduino/esp32-hal-bt.c.o
+Archiving .pio/build/int006-ttc-check/lib1da/libtt-c.a
+Indexing .pio/build/int006-ttc-check/lib1da/libtt-c.a
+Compiling .pio/build/int006-ttc-check/FrameworkArduino/esp32-hal-cpu.c.o
+Compiling .pio/build/int006-ttc-check/FrameworkArduino/esp32-hal-dac.c.o
+Compiling .pio/build/int006-ttc-check/FrameworkArduino/esp32-hal-gpio.c.o
+Compiling .pio/build/int006-ttc-check/FrameworkArduino/esp32-hal-i2c-slave.c.o
+Compiling .pio/build/int006-ttc-check/FrameworkArduino/esp32-hal-i2c.c.o
+Compiling .pio/build/int006-ttc-check/FrameworkArduino/esp32-hal-ledc.c.o
+Compiling .pio/build/int006-ttc-check/FrameworkArduino/esp32-hal-matrix.c.o
+Compiling .pio/build/int006-ttc-check/FrameworkArduino/esp32-hal-misc.c.o
+Compiling .pio/build/int006-ttc-check/FrameworkArduino/esp32-hal-psram.c.o
+Compiling .pio/build/int006-ttc-check/FrameworkArduino/esp32-hal-rgb-led.c.o
+Compiling .pio/build/int006-ttc-check/FrameworkArduino/esp32-hal-rmt.c.o
+Compiling .pio/build/int006-ttc-check/FrameworkArduino/esp32-hal-sigmadelta.c.o
+Compiling .pio/build/int006-ttc-check/FrameworkArduino/esp32-hal-spi.c.o
+Compiling .pio/build/int006-ttc-check/FrameworkArduino/esp32-hal-time.c.o
+Compiling .pio/build/int006-ttc-check/FrameworkArduino/esp32-hal-timer.c.o
+Compiling .pio/build/int006-ttc-check/FrameworkArduino/esp32-hal-tinyusb.c.o
+Compiling .pio/build/int006-ttc-check/FrameworkArduino/esp32-hal-touch.c.o
+Compiling .pio/build/int006-ttc-check/FrameworkArduino/esp32-hal-uart.c.o
+Compiling .pio/build/int006-ttc-check/FrameworkArduino/firmware_msc_fat.c.o
+Compiling .pio/build/int006-ttc-check/FrameworkArduino/libb64/cdecode.c.o
+Compiling .pio/build/int006-ttc-check/FrameworkArduino/libb64/cencode.c.o
+Compiling .pio/build/int006-ttc-check/FrameworkArduino/main.cpp.o
+Compiling .pio/build/int006-ttc-check/FrameworkArduino/stdlib_noniso.c.o
+/home/o-grande-kayky/.local/share/platformio/packages/framework-arduinoespressif32/cores/esp32/esp32-hal-uart.c: In function 'uartSetPins':
+/home/o-grande-kayky/.local/share/platformio/packages/framework-arduinoespressif32/cores/esp32/esp32-hal-uart.c:153:9: warning: 'return' with no value, in function returning non-void
+         return;
+         ^~~~~~
+/home/o-grande-kayky/.local/share/platformio/packages/framework-arduinoespressif32/cores/esp32/esp32-hal-uart.c:149:6: note: declared here
+ bool uartSetPins(uint8_t uart_num, int8_t rxPin, int8_t txPin, int8_t ctsPin, int8_t rtsPin)
+      ^~~~~~~~~~~
+Compiling .pio/build/int006-ttc-check/FrameworkArduino/wiring_pulse.c.o
+Compiling .pio/build/int006-ttc-check/FrameworkArduino/wiring_shift.c.o
+Archiving .pio/build/int006-ttc-check/libFrameworkArduino.a
+Indexing .pio/build/int006-ttc-check/libFrameworkArduino.a
+Linking .pio/build/int006-ttc-check/firmware.elf
+Retrieving maximum program size .pio/build/int006-ttc-check/firmware.elf
+Checking size .pio/build/int006-ttc-check/firmware.elf
+Advanced Memory Usage is available via "PlatformIO Home > Project Inspect"
+RAM:   [=         ]  10.9% (used 35768 bytes from 327680 bytes)
+Flash: [====      ]  41.9% (used 548697 bytes from 1310720 bytes)
+Building .pio/build/int006-ttc-check/firmware.bin with action:
+  "$PYTHONEXE" "$OBJCOPY" --chip esp32 elf2image --flash_mode ${__get_board_flash_mode(__env__)} --flash_freq ${__get_board_f_image(__env__)} --flash_size 4MB --elf-sha256-offset 0xb0 -o $TARGET $SOURCES
+Building .pio/build/int006-ttc-check/firmware.bin
+esptool.py v4.5.1
+Creating esp32 image...
+Merged 2 ELF sections
+Successfully created esp32 image.
+========================= [SUCCESS] Took 9.47 seconds =========================
+
+Environment       Status    Duration
+----------------  --------  ------------
+obc               SUCCESS   00:00:02.139
+int006-ttc-check  SUCCESS   00:00:09.472
+========================= 2 succeeded in 00:00:11.611 =========================
+

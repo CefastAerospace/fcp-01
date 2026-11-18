@@ -1,0 +1,59 @@
+command: ["/home/o-grande-kayky/.local/share/platformio/packages/toolchain-xtensa-esp32/bin/xtensa-esp32-elf-objdump", "-d", "--disassemble=xTaskCreatePinnedToCore", ".pio/build/int009-housekeeping-fixtures-check/firmware.elf"]
+
+.pio/build/int009-housekeeping-fixtures-check/firmware.elf:     file format elf32-xtensa-le
+
+
+Disassembly of section .iram0.vectors:
+
+Disassembly of section .iram0.text:
+
+40089d80 <xTaskCreatePinnedToCore>:
+40089d80:	008136        	entry	a1, 64
+40089d83:	7179      	s32i.n	a7, a1, 28
+40089d85:	047d      	mov.n	a7, a4
+40089d87:	07ad      	mov.n	a10, a7
+40089d89:	d9cf41        	l32r	a4, 400804c8 <_iram_text_start+0xc4>
+40089d8c:	04bd      	mov.n	a11, a4
+40089d8e:	066122        	s32i	a2, a1, 24
+40089d91:	0020c0        	memw
+40089d94:	fa09e5        	call8	40083e34 <heap_caps_malloc>
+40089d97:	0a8d      	mov.n	a8, a10
+40089d99:	f27c      	movi.n	a2, -1
+40089d9b:	046a16        	beqz	a10, 40089de5 <xTaskCreatePinnedToCore+0x65>
+40089d9e:	04bd      	mov.n	a11, a4
+40089da0:	58a1a2        	movi	a10, 0x158
+40089da3:	5189      	s32i.n	a8, a1, 20
+40089da5:	0020c0        	memw
+40089da8:	fa08a5        	call8	40083e34 <heap_caps_malloc>
+40089dab:	0a4d      	mov.n	a4, a10
+40089dad:	5188      	l32i.n	a8, a1, 20
+40089daf:	5abc      	beqz.n	a10, 40089de8 <xTaskCreatePinnedToCore+0x68>
+40089db1:	01da22        	addmi	a2, a10, 0x100
+40089db4:	06ed      	mov.n	a14, a6
+40089db6:	05dd      	mov.n	a13, a5
+40089db8:	da89      	s32i.n	a8, a10, 52
+40089dba:	080c      	movi.n	a8, 0
+40089dbc:	07cd      	mov.n	a12, a7
+40089dbe:	03bd      	mov.n	a11, a3
+40089dc0:	554282        	s8i	a8, a2, 85
+40089dc3:	0020c0        	memw
+40089dc6:	102122        	l32i	a2, a1, 64
+40089dc9:	01a9      	s32i.n	a10, a1, 0
+40089dcb:	2129      	s32i.n	a2, a1, 8
+40089dcd:	020c      	movi.n	a2, 0
+40089dcf:	71f8      	l32i.n	a15, a1, 28
+40089dd1:	61a8      	l32i.n	a10, a1, 24
+40089dd3:	1129      	s32i.n	a2, a1, 4
+40089dd5:	0020c0        	memw
+40089dd8:	ffa2a5        	call8	40089804 <prvInitialiseNewTask>
+40089ddb:	04ad      	mov.n	a10, a4
+40089ddd:	120c      	movi.n	a2, 1
+40089ddf:	1021b2        	l32i	a11, a1, 64
+40089de2:	ffd6a5        	call8	40089b4c <prvAddNewTaskToReadyList$isra$6>
+40089de5:	f01d      	retw.n
+40089de7:	00          	.byte 00
+40089de8:	08ad      	mov.n	a10, a8
+40089dea:	03c465        	call8	4008da30 <cfree>
+40089ded:	fffd06        	j	40089de5 <xTaskCreatePinnedToCore+0x65>
+
+Disassembly of section .flash.text:

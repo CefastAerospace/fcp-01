@@ -1,0 +1,3276 @@
+{
+  "passed": true,
+  "bench": true,
+  "lines": [
+    "ets Jul 29 2019 12:21:46",
+    "rst:0x1 (POWERON_RESET),boot:0x13 (SPI_FAST_FLASH_BOOT)",
+    "configsip: 0, SPIWP:0xee",
+    "clk_drv:0x00,q_drv:0x00,d_drv:0x00,cs0_drv:0x00,hd_drv:0x00,wp_drv:0x00",
+    "mode:DIO, clock div:2",
+    "load:0x3fff0030,len:1184",
+    "load:0x40078000,len:13232",
+    "load:0x40080400,len:3028",
+    "entry 0x400805e4",
+    "[FLOW-CHECK] ADS-B em RAM e SD lento simulados; sem ensaio[TT&C] ERRO: SX1276 nao responde.",
+    "[OBC] TT&C: radio=indisponivel; umbilical=OK; tarefa=OK",
+    "[FLOW] RAM apos receptor: heap=181348 byte_heap=109968 byte_largest=47092",
+    "[FLOW] RAM apos bloco SD: bloco=1 heap=116816 byte_heap=45436 byte_largest=16372 stack_budget=19456 margin=4096 reserva=23552 parser_limit=98304",
+    "[FLOW] Recepcao=OK; SD=em inicializacao; heap=96232; maior_bloco=69620",
+    "[FLOW-CHECK] Arquivo simulado: boot_0000000000000046_00000000.bin",
+    "[TTC-HEALTH] state=ok radio=unavailable updating=0 wired_ready=1 age_ms=2 limit_ms=2000 completions=3 rf_seen=0 rf_age_ms=0 wired_seen=0 wired_age_ms=0 resets=0 changed=1 monotonic_ms=126",
+    "[MEMORY-HEALTH] byte_heap=24852 byte_largest=8180 heap_low=0 block_low=0 stack_low_mask=0 allocation_failures=0 allocation_delta=0 changed=0 monotonic_ms=126",
+    "[MEMORY-HEALTH] task=uart active=1 stack_free=2544 low=0 monotonic_ms=126",
+    "[MEMORY-HEALTH] task=process active=1 stack_free=7664 low=0 monotonic_ms=126",
+    "[MEMORY-HEALTH] task=writer active=1 stack_free=5400 low=0 monotonic_ms=126",
+    "[MEMORY-HEALTH] task=i2c active=0 stack_free=0 low=0 monotonic_ms=126",
+    "[MEMORY-HEALTH] task=ttc active=1 stack_free=7156 low=0 monotonic_ms=126",
+    "[MEMORY-HEALTH] task=loop active=1 stack_free=5008 low=0 monotonic_ms=126",
+    "[DELIVERY] recovery=1 data=0 confirm=0 corrupt=0 tails=0 orphan=0 cache_bytes=2912",
+    "[TT&C] ERRO: SX1276 sem resposta ou fora de RX, reinicializando.",
+    "[FLOW] received=0 invalid=0 gaps=0 duplicates=0 written=2 failures=0 dropped=1 SD=1 status=0 poll_gap_ms=1 process_gap_ms=1 stack_rx=7664 stack_sd=5400 stack_uart=2544 uart_full=0",
+    "[TT&C] ERRO: SX1276 nao responde.",
+    "[FLOW-MEMORY] heap=96232 byte_heap=24852 byte_largest=8180 byte_min=22348 parser_peak_bytes=0 parser_limit_bytes=98304",
+    "[STORAGE] state=0 attempt=0 episodes=0 attempts=0 recovered=0 exhausted=0 lifecycle_failures=0 cause=0 end=0 status=0 monotonic_ms=1018",
+    "[HEALTH] task=uart state=ok activity=idle age_ms=1 limit_ms=100 completions=895 sampled_ms=999 changed=0",
+    "[HEALTH] task=process state=ok activity=idle age_ms=1 limit_ms=2000 completions=894 sampled_ms=999 changed=0",
+    "[HEALTH] task=writer state=ok activity=idle age_ms=20 limit_ms=5000 completions=43 sampled_ms=999 changed=0",
+    "[DELIVERY] occupied=0 peak=0 accepted=0 repeated=0 lost=0 storage_failures=0 attempts=0 tx_failures=0 confirmed=0 unknown=0 evicted=0 recovery_slot=0",
+    "[TTC-HEALTH] state=ok radio=unavailable updating=0 wired_ready=1 age_ms=0 limit_ms=2000 completions=51 rf_seen=0 rf_age_ms=0 wired_seen=0 wired_age_ms=0 resets=1 changed=0 monotonic_ms=1113",
+    "[I2C-HEALTH] state=inactive service=uninitialized activity=inactive age_ms=0 limit_ms=0 sampled_ms=0 monotonic_ms=1123 changed=0 queued=0 cause=0 failure=0 cycles=0 recovered=0 exhausted=0",
+    "[MEMORY-HEALTH] byte_heap=24852 byte_largest=8180 heap_low=0 block_low=0 stack_low_mask=0 allocation_failures=0 allocation_delta=0 changed=0 monotonic_ms=1225",
+    "[MEMORY-HEALTH] task=uart active=1 stack_free=2544 low=0 monotonic_ms=1225",
+    "[MEMORY-HEALTH] task=process active=1 stack_free=7664 low=0 monotonic_ms=1225",
+    "[MEMORY-HEALTH] task=writer active=1 stack_free=5400 low=0 monotonic_ms=1225",
+    "[MEMORY-HEALTH] task=i2c active=0 stack_free=0 low=0 monotonic_ms=1225",
+    "[MEMORY-HEALTH] task=ttc active=1 stack_free=7156 low=0 monotonic_ms=1225",
+    "[MEMORY-HEALTH] task=loop active=1 stack_free=5008 low=0 monotonic_ms=1225",
+    "[FLOW] received=0 invalid=0 gaps=0 duplicates=0 written=4 failures=0 dropped=1 SD=1 status=0 poll_gap_ms=1 process_gap_ms=1 stack_rx=7664 stack_sd=5400 stack_uart=2544 uart_full=0",
+    "[TT&C] ERRO: SX1276 sem resposta ou fora de RX, reinicializando.",
+    "[FLOW-MEMORY] heap=96232 byte_heap=24852 byte_largest=8180 byte_min=22348 parser_peak_bytes=0 parser_limit_bytes=98304",
+    "[STORAGE] state=0 attempt=0 episodes=0 attempts=0 recovered=0 exhausted=0 lifecycle_failures=0 cause=0 end=0 status=0 monotonic_ms=2025",
+    "[TT&C] ERRO: SX1276 nao responde.",
+    "[HEALTH] task=uart state=ok activity=idle age_ms=1 limit_ms=100 completions=1882 sampled_ms=1986 changed=0",
+    "[HEALTH] task=process state=ok activity=idle age_ms=1 limit_ms=2000 completions=1881 sampled_ms=1986 changed=0",
+    "[HEALTH] task=writer state=ok activity=idle age_ms=20 limit_ms=5000 completions=86 sampled_ms=1986 changed=0",
+    "[DELIVERY] occupied=0 peak=0 accepted=0 repeated=0 lost=0 storage_failures=0 attempts=0 tx_failures=0 confirmed=0 unknown=0 evicted=0 recovery_slot=0",
+    "[TTC-HEALTH] state=ok radio=unavailable updating=0 wired_ready=1 age_ms=0 limit_ms=2000 completions=99 rf_seen=0 rf_age_ms=0 wired_seen=0 wired_age_ms=0 resets=2 changed=0 monotonic_ms=2130",
+    "[I2C-HEALTH] state=inactive service=uninitialized activity=inactive age_ms=0 limit_ms=0 sampled_ms=0 monotonic_ms=2140 changed=0 queued=0 cause=0 failure=0 cycles=0 recovered=0 exhausted=0",
+    "[MEMORY-HEALTH] byte_heap=24852 byte_largest=8180 heap_low=0 block_low=0 stack_low_mask=0 allocation_failures=0 allocation_delta=0 changed=0 monotonic_ms=2242",
+    "[MEMORY-HEALTH] task=uart active=1 stack_free=2324 low=0 monotonic_ms=2242",
+    "[MEMORY-HEALTH] task=process active=1 stack_free=7664 low=0 monotonic_ms=2242",
+    "[MEMORY-HEALTH] task=writer active=1 stack_free=5400 low=0 monotonic_ms=2242",
+    "[MEMORY-HEALTH] task=i2c active=0 stack_free=0 low=0 monotonic_ms=2242",
+    "[MEMORY-HEALTH] task=ttc active=1 stack_free=7156 low=0 monotonic_ms=2242",
+    "[MEMORY-HEALTH] task=loop active=1 stack_free=4924 low=0 monotonic_ms=2242",
+    "[FLOW] received=0 invalid=0 gaps=0 duplicates=0 written=5 failures=0 dropped=1 SD=1 status=0 poll_gap_ms=1 process_gap_ms=1 stack_rx=7664 stack_sd=5400 stack_uart=2324 uart_full=0",
+    "[TT&C] ERRO: SX1276 sem resposta ou fora de RX, reinicializando.",
+    "[FLOW-MEMORY] heap=96232 byte_heap=24852 byte_largest=8180 byte_min=22348 parser_peak_bytes=0 parser_limit_bytes=98304",
+    "[STORAGE] state=0 attempt=0 episodes=0 attempts=0 recovered=0 exhausted=0 lifecycle_failures=0 cause=0 end=0 status=0 monotonic_ms=3042",
+    "[TT&C] ERRO: SX1276 nao responde.",
+    "[HEALTH] task=uart state=ok activity=idle age_ms=1 limit_ms=100 completions=2899 sampled_ms=3003 changed=0",
+    "[HEALTH] task=process state=ok activity=idle age_ms=1 limit_ms=2000 completions=2898 sampled_ms=3003 changed=0",
+    "[HEALTH] task=writer state=ok activity=idle age_ms=16 limit_ms=5000 completions=134 sampled_ms=3003 changed=0",
+    "[DELIVERY] occupied=0 peak=0 accepted=0 repeated=0 lost=0 storage_failures=0 attempts=0 tx_failures=0 confirmed=0 unknown=0 evicted=0 recovery_slot=0",
+    "[HEALTH-CHECK] start=1 monotonic_ms=3130",
+    "[FLOW-CHECK] UTC recebida; inicio da injecao em 1000 ms",
+    "[TTC-HEALTH] state=ok radio=unavailable updating=1 wired_ready=1 age_ms=0 limit_ms=2000 completions=146 rf_seen=0 rf_age_ms=0 wired_seen=1 wired_age_ms=2 resets=3 changed=0 monotonic_ms=3132",
+    "{\"n\":0,\"t\":\"ack\",\"seq\":61555,\"cmd\":\"set_time\",\"st\":\"ok\",\"q\":0}",
+    "[I2C-HEALTH] state=inactive service=uninitialized activity=inactive age_ms=0 limit_ms=0 sampled_ms=0 monotonic_ms=3153 changed=0 queued=0 cause=0 failure=0 cycles=0 recovered=0 exhausted=0",
+    "{\"n\":1,\"t\":\"ack\",\"seq\":61556,\"cmd\":\"ping\",\"st\":\"ok\",\"q\":42}",
+    "{\"n\":2,\"t\":\"tm\",\"ts\":1700000000,\"md\":\"bench\",\"vb\":null,\"ib\":null,\"vs\":null,\"is\":null,\"tp\":null,\"w\":null,\"az\":null,\"ac\":null,\"msg\":null,\"rssi\":null,\"snr\":null,\"rx\":3,\"err\":0,\"rst\":3}",
+    "[TT&C] Falha no TX de 181 bytes.",
+    "{\"n\":3,\"t\":\"ack\",\"seq\":61557,\"cmd\":\"request_tm\",\"st\":\"ok\",\"q\":0}",
+    "[MEMORY-HEALTH] byte_heap=24852 byte_largest=8180 heap_low=0 block_low=0 stack_low_mask=0 allocation_failures=0 allocation_delta=0 changed=0 monotonic_ms=3338",
+    "[MEMORY-HEALTH] task=uart active=1 stack_free=1332 low=0 monotonic_ms=3338",
+    "[MEMORY-HEALTH] task=process active=1 stack_free=7664 low=0 monotonic_ms=3338",
+    "[MEMORY-HEALTH] task=writer active=1 stack_free=5400 low=0 monotonic_ms=3338",
+    "[MEMORY-HEALTH] task=i2c active=0 stack_free=0 low=0 monotonic_ms=3338",
+    "[MEMORY-HEALTH] task=ttc active=1 stack_free=6136 low=0 monotonic_ms=3338",
+    "[MEMORY-HEALTH] task=loop active=1 stack_free=4924 low=0 monotonic_ms=3338",
+    "[FLOW-CHECK] v3 ts_available=1 ts=1700000000 ac_available=0 ac=0 msg_available=0 stable=1",
+    "{\"n\":4,\"t\":\"ack\",\"seq\":61558,\"cmd\":\"ping\",\"st\":\"ok\",\"q\":0}",
+    "{\"n\":5,\"t\":\"tm\",\"ts\":1700000000,\"md\":\"bench\",\"vb\":null,\"ib\":null,\"vs\":null,\"is\":null,\"tp\":null,\"w\":null,\"az\":null,\"ac\":null,\"msg\":null,\"rssi\":null,\"snr\":null,\"rx\":5,\"err\":0,\"rst\":3}",
+    "[TT&C] Falha no TX de 181 bytes.",
+    "{\"n\":6,\"t\":\"ack\",\"seq\":61559,\"cmd\":\"request_tm\",\"st\":\"ok\",\"q\":0}",
+    "[FLOW-CHECK] v3 ts_available=1 ts=1700000000 ac_available=0 ac=0 msg_available=0 stable=1",
+    "[TT&C] ERRO: SX1276 sem resposta ou fora de RX, reinicializando.",
+    "[FLOW] received=0 invalid=0 gaps=0 duplicates=0 written=9 failures=0 dropped=1 SD=1 status=0 poll_gap_ms=1 process_gap_ms=2 stack_rx=7632 stack_sd=5352 stack_uart=1332 uart_full=0",
+    "[FLOW-MEMORY] heap=96232 byte_heap=24852 byte_largest=8180 byte_min=21140 parser_peak_bytes=0 parser_limit_bytes=98304",
+    "[TT&C] ERRO: SX1276 nao responde.",
+    "[STORAGE] state=0 attempt=0 episodes=0 attempts=0 recovered=0 exhausted=0 lifecycle_failures=0 cause=0 end=0 status=0 monotonic_ms=4058",
+    "[HEALTH] task=uart state=ok activity=idle age_ms=1 limit_ms=100 completions=3895 sampled_ms=3999 changed=0",
+    "[HEALTH] task=process state=ok activity=idle age_ms=1 limit_ms=2000 completions=3894 sampled_ms=3999 changed=0",
+    "[HEALTH] task=writer state=ok activity=idle age_ms=3 limit_ms=5000 completions=172 sampled_ms=3999 changed=0",
+    "[DELIVERY] occupied=0 peak=0 accepted=0 repeated=0 lost=0 storage_failures=0 attempts=0 tx_failures=0 confirmed=0 unknown=0 evicted=0 recovery_slot=0",
+    "[TTC-HEALTH] state=ok radio=unavailable updating=0 wired_ready=1 age_ms=11 limit_ms=2000 completions=200 rf_seen=0 rf_age_ms=0 wired_seen=1 wired_age_ms=419 resets=4 changed=0 monotonic_ms=4154",
+    "[I2C-HEALTH] state=inactive service=uninitialized activity=inactive age_ms=0 limit_ms=0 sampled_ms=0 monotonic_ms=4164 changed=0 queued=0 cause=0 failure=0 cycles=0 recovered=0 exhausted=0",
+    "{\"n\":7,\"t\":\"ac\",\"id\":[70,1],\"ts\":null,\"icao\":\"e49a48\",\"lat\":-20.10978,\"lon\":-44.37088,\"alt\":38000,\"vel\":null,\"hdg\":null,\"cnt\":null}",
+    "[TT&C] Falha no TX de 131 bytes.",
+    "{\"n\":8,\"t\":\"ack\",\"seq\":61560,\"cmd\":\"ping\",\"st\":\"ok\",\"q\":0}",
+    "{\"n\":9,\"t\":\"tm\",\"ts\":1700000001,\"md\":\"bench\",\"vb\":null,\"ib\":null,\"vs\":null,\"is\":null,\"tp\":null,\"w\":null,\"az\":null,\"ac\":7,\"msg\":null,\"rssi\":null,\"snr\":null,\"rx\":7,\"err\":0,\"rst\":4}",
+    "[TT&C] Falha no TX de 178 bytes.",
+    "{\"n\":10,\"t\":\"ack\",\"seq\":61561,\"cmd\":\"request_tm\",\"st\":\"ok\",\"q\":0}",
+    "[FLOW-CHECK] Arquivo simulado: boot_0000000000000046_00000001.bin",
+    "[MEMORY-HEALTH] byte_heap=24852 byte_largest=8180 heap_low=0 block_low=0 stack_low_mask=0 allocation_failures=0 allocation_delta=0 changed=0 monotonic_ms=4375",
+    "[MEMORY-HEALTH] task=uart active=1 stack_free=1332 low=0 monotonic_ms=4375",
+    "[MEMORY-HEALTH] task=process active=1 stack_free=3184 low=0 monotonic_ms=4375",
+    "[MEMORY-HEALTH] task=writer active=1 stack_free=5352 low=0 monotonic_ms=4375",
+    "[MEMORY-HEALTH] task=i2c active=0 stack_free=0 low=0 monotonic_ms=4375",
+    "[MEMORY-HEALTH] task=ttc active=1 stack_free=6136 low=0 monotonic_ms=4375",
+    "[MEMORY-HEALTH] task=loop active=1 stack_free=4924 low=0 monotonic_ms=4375",
+    "{\"n\":11,\"t\":\"ac\",\"id\":[70,2],\"ts\":null,\"icao\":\"e4924a\",\"lat\":-19.80653,\"lon\":-43.49178,\"alt\":33000,\"vel\":null,\"hdg\":null,\"cnt\":null}",
+    "[TT&C] Falha no TX de 131 bytes.",
+    "[FLOW-CHECK] v3 ts_available=1 ts=1700000001 ac_available=1 ac=7 msg_available=0 stable=1",
+    "{\"n\":12,\"t\":\"ack\",\"seq\":61562,\"cmd\":\"ping\",\"st\":\"ok\",\"q\":1}",
+    "{\"n\":13,\"t\":\"tm\",\"ts\":1700000001,\"md\":\"bench\",\"vb\":null,\"ib\":null,\"vs\":null,\"is\":null,\"tp\":null,\"w\":null,\"az\":null,\"ac\":7,\"msg\":null,\"rssi\":null,\"snr\":null,\"rx\":9,\"err\":0,\"rst\":4}",
+    "[TT&C] Falha no TX de 178 bytes.",
+    "{\"n\":14,\"t\":\"ack\",\"seq\":61563,\"cmd\":\"request_tm\",\"st\":\"ok\",\"q\":1}",
+    "[FLOW-CHECK] Arquivo simulado: boot_0000000000000046_00000002.bin",
+    "[TT&C] ERRO: SX1276 sem resposta ou fora de RX, reinicializando.",
+    "[FLOW] received=12 invalid=0 gaps=0 duplicates=1 written=15 failures=0 dropped=10 SD=1 status=0 poll_gap_ms=1 process_gap_ms=21 stack_rx=3152 stack_sd=5352 stack_uart=1332 uart_full=325",
+    "[FLOW-MEMORY] heap=96232 byte_heap=24852 byte_largest=8180 byte_min=15384 parser_peak_bytes=7190 parser_limit_bytes=98304",
+    "[TT&C] ERRO: SX1276 nao responde.",
+    "{\"n\":15,\"t\":\"ac\",\"id\":[70,3],\"ts\":null,\"icao\":\"e495b2\",\"lat\":null,\"lon\":null,\"alt\":13050,\"vel\":null,\"hdg\":null,\"cnt\":null}",
+    "[TT&C] Falha no TX de 121 bytes.",
+    "[STORAGE] state=0 attempt=0 episodes=0 attempts=0 recovered=0 exhausted=0 lifecycle_failures=0 cause=0 end=0 status=0 monotonic_ms=5068",
+    "[HEALTH] task=uart state=ok activity=idle age_ms=0 limit_ms=100 completions=4922 sampled_ms=5025 changed=0",
+    "[HEALTH] task=process state=ok activity=idle age_ms=0 limit_ms=2000 completions=4395 sampled_ms=5025 changed=0",
+    "[HEALTH] task=writer state=ok activity=write age_ms=75 limit_ms=5000 completions=195 sampled_ms=5025 changed=0",
+    "[DELIVERY] occupied=6 peak=7 accepted=7 repeated=77 lost=0 storage_failures=0 attempts=3 tx_failures=0 confirmed=2 unknown=0 evicted=0 recovery_slot=0",
+    "[FLOW-CHECK] v3 ts_available=1 ts=1700000001 ac_available=1 ac=7 msg_available=0 stable=1",
+    "[TTC-HEALTH] state=ok radio=unavailable updating=0 wired_ready=1 age_ms=3 limit_ms=2000 completions=255 rf_seen=0 rf_age_ms=0 wired_seen=1 wired_age_ms=44 resets=5 changed=0 monotonic_ms=5179",
+    "[I2C-HEALTH] state=inactive service=uninitialized activity=inactive age_ms=0 limit_ms=0 sampled_ms=0 monotonic_ms=5190 changed=0 queued=0 cause=0 failure=0 cycles=0 recovered=0 exhausted=0",
+    "{\"n\":16,\"t\":\"ack\",\"seq\":61564,\"cmd\":\"ping\",\"st\":\"ok\",\"q\":1}",
+    "{\"n\":17,\"t\":\"tm\",\"ts\":1700000002,\"md\":\"bench\",\"vb\":null,\"ib\":null,\"vs\":null,\"is\":null,\"tp\":null,\"w\":null,\"az\":null,\"ac\":7,\"msg\":null,\"rssi\":null,\"snr\":null,\"rx\":11,\"err\":0,\"rst\":5}",
+    "[TT&C] Falha no TX de 179 bytes.",
+    "{\"n\":18,\"t\":\"ack\",\"seq\":61565,\"cmd\":\"request_tm\",\"st\":\"ok\",\"q\":0}",
+    "[FLOW-CHECK] Arquivo simulado: boot_0000000000000046_00000003.bin",
+    "[MEMORY-HEALTH] byte_heap=24852 byte_largest=8180 heap_low=0 block_low=0 stack_low_mask=0 allocation_failures=0 allocation_delta=0 changed=0 monotonic_ms=5404",
+    "[MEMORY-HEALTH] task=uart active=1 stack_free=1332 low=0 monotonic_ms=5404",
+    "[MEMORY-HEALTH] task=process active=1 stack_free=3104 low=0 monotonic_ms=5404",
+    "[MEMORY-HEALTH] task=writer active=1 stack_free=5352 low=0 monotonic_ms=5404",
+    "[MEMORY-HEALTH] task=i2c active=0 stack_free=0 low=0 monotonic_ms=5404",
+    "[MEMORY-HEALTH] task=ttc active=1 stack_free=6136 low=0 monotonic_ms=5404",
+    "[MEMORY-HEALTH] task=loop active=1 stack_free=4892 low=0 monotonic_ms=5404",
+    "{\"n\":19,\"t\":\"ac\",\"id\":[70,4],\"ts\":null,\"icao\":\"e49fb3\",\"lat\":-20.07603,\"lon\":-44.37643,\"alt\":14200,\"vel\":null,\"hdg\":null,\"cnt\":null}",
+    "[TT&C] Falha no TX de 131 bytes.",
+    "[FLOW-CHECK] Arquivo simulado: boot_0000000000000046_00000004.bin",
+    "{\"n\":20,\"t\":\"ack\",\"seq\":61566,\"cmd\":\"ping\",\"st\":\"ok\",\"q\":0}",
+    "{\"n\":21,\"t\":\"tm\",\"ts\":1700000002,\"md\":\"bench\",\"vb\":null,\"ib\":null,\"vs\":null,\"is\":null,\"tp\":null,\"w\":null,\"az\":null,\"ac\":0,\"msg\":null,\"rssi\":null,\"snr\":null,\"rx\":13,\"err\":0,\"rst\":5}",
+    "[TT&C] Falha no TX de 179 bytes.",
+    "{\"n\":22,\"t\":\"ack\",\"seq\":61567,\"cmd\":\"request_tm\",\"st\":\"ok\",\"q\":0}",
+    "[TT&C] ERRO: SX1276 sem resposta ou fora de RX, reinicializando.",
+    "[FLOW] received=24 invalid=1 gaps=0 duplicates=1 written=25 failures=0 dropped=19 SD=1 status=0 poll_gap_ms=1 process_gap_ms=21 stack_rx=3104 stack_sd=5352 stack_uart=1332 uart_full=595",
+    "[FLOW-MEMORY] heap=96232 byte_heap=24852 byte_largest=8180 byte_min=14156 parser_peak_bytes=7190 parser_limit_bytes=98304",
+    "[TT&C] ERRO: SX1276 nao responde.",
+    "[STORAGE] state=0 attempt=0 episodes=0 attempts=0 recovered=0 exhausted=0 lifecycle_failures=0 cause=0 end=0 status=0 monotonic_ms=6075",
+    "[HEALTH] task=uart state=ok activity=idle age_ms=1 limit_ms=100 completions=5891 sampled_ms=5995 changed=0",
+    "[HEALTH] task=process state=ok activity=idle age_ms=1 limit_ms=2000 completions=4874 sampled_ms=5995 changed=0",
+    "[HEALTH] task=writer state=ok activity=write age_ms=84 limit_ms=5000 completions=224 sampled_ms=5995 changed=0",
+    "[HEALTH-CHECK] pause_begin=uart activity=transport duration_ms=300 monotonic_ms=6130",
+    "[DELIVERY] occupied=5 peak=7 accepted=7 repeated=140 lost=0 storage_failures=0 attempts=4 tx_failures=0 confirmed=4 unknown=0 evicted=0 recovery_slot=0",
+    "{\"n\":23,\"t\":\"ac\",\"id\":[70,5],\"ts\":null,\"icao\":\"e491a2\",\"lat\":null,\"lon\":null,\"alt\":35025,\"vel\":null,\"hdg\":null,\"cnt\":null}",
+    "[TT&C] Falha no TX de 122 bytes.",
+    "[TTC-HEALTH] state=ok radio=unavailable updating=1 wired_ready=1 age_ms=0 limit_ms=2000 completions=308 rf_seen=0 rf_age_ms=0 wired_seen=1 wired_age_ms=249 resets=6 changed=0 monotonic_ms=6181",
+    "[I2C-HEALTH] state=inactive service=uninitialized activity=inactive age_ms=0 limit_ms=0 sampled_ms=0 monotonic_ms=6201 changed=0 queued=0 cause=0 failure=0 cycles=0 recovered=0 exhausted=0",
+    "[HEALTH] task=uart state=suspect activity=transport age_ms=175 limit_ms=100 completions=6026 sampled_ms=6305 changed=1",
+    "[FLOW-CHECK] Arquivo simulado: boot_0000000000000046_00000005.bin",
+    "{\"n\":24,\"t\":\"ack\",\"seq\":61568,\"cmd\":\"ping\",\"st\":\"ok\",\"q\":0}",
+    "{\"n\":25,\"t\":\"tm\",\"ts\":1700000003,\"md\":\"bench\",\"vb\":null,\"ib\":null,\"vs\":null,\"is\":null,\"tp\":null,\"w\":null,\"az\":null,\"ac\":0,\"msg\":null,\"rssi\":null,\"snr\":null,\"rx\":15,\"err\":0,\"rst\":6}",
+    "[HEALTH-CHECK] pause_end=uart monotonic_ms=6449",
+    "[TT&C] Falha no TX de 180 bytes.",
+    "{\"n\":26,\"t\":\"ack\",\"seq\":61569,\"cmd\":\"request_tm\",\"st\":\"ok\",\"q\":0}",
+    "[MEMORY-HEALTH] byte_heap=24852 byte_largest=8180 heap_low=0 block_low=0 stack_low_mask=0 allocation_failures=0 allocation_delta=0 changed=0 monotonic_ms=6499",
+    "[MEMORY-HEALTH] task=uart active=1 stack_free=1332 low=0 monotonic_ms=6499",
+    "[MEMORY-HEALTH] task=process active=1 stack_free=3104 low=0 monotonic_ms=6499",
+    "[MEMORY-HEALTH] task=writer active=1 stack_free=5352 low=0 monotonic_ms=6499",
+    "[MEMORY-HEALTH] task=i2c active=0 stack_free=0 low=0 monotonic_ms=6499",
+    "[MEMORY-HEALTH] task=ttc active=1 stack_free=6136 low=0 monotonic_ms=6499",
+    "[MEMORY-HEALTH] task=loop active=1 stack_free=4892 low=0 monotonic_ms=6499",
+    "[HEALTH] task=uart state=ok activity=idle age_ms=0 limit_ms=100 completions=6112 sampled_ms=6552 changed=1",
+    "{\"n\":27,\"t\":\"ac\",\"id\":[70,6],\"ts\":null,\"icao\":\"e4970f\",\"lat\":null,\"lon\":null,\"alt\":null,\"vel\":null,\"hdg\":null,\"cnt\":null}",
+    "[TT&C] Falha no TX de 121 bytes.",
+    "[FLOW-CHECK] v3 ts_available=1 ts=1700000002 ac_available=1 ac=7 msg_available=0 stable=1",
+    "[FLOW-CHECK] Arquivo simulado: boot_0000000000000046_00000006.bin",
+    "{\"n\":28,\"t\":\"ack\",\"seq\":61570,\"cmd\":\"ping\",\"st\":\"ok\",\"q\":0}",
+    "{\"n\":29,\"t\":\"tm\",\"ts\":1700000003,\"md\":\"bench\",\"vb\":null,\"ib\":null,\"vs\":null,\"is\":null,\"tp\":null,\"w\":null,\"az\":null,\"ac\":0,\"msg\":null,\"rssi\":null,\"snr\":null,\"rx\":17,\"err\":0,\"rst\":6}",
+    "[TT&C] Falha no TX de 180 bytes.",
+    "{\"n\":30,\"t\":\"ack\",\"seq\":61571,\"cmd\":\"request_tm\",\"st\":\"ok\",\"q\":0}",
+    "{\"n\":31,\"t\":\"ac\",\"id\":[70,7],\"ts\":null,\"icao\":\"e49830\",\"lat\":null,\"lon\":null,\"alt\":36000,\"vel\":null,\"hdg\":null,\"cnt\":null}",
+    "[TT&C] Falha no TX de 122 bytes.",
+    "[TT&C] ERRO: SX1276 sem resposta ou fora de RX, reinicializando.",
+    "[FLOW] received=24 invalid=1 gaps=0 duplicates=1 written=34 failures=0 dropped=19 SD=1 status=0 poll_gap_ms=338 process_gap_ms=21 stack_rx=3104 stack_sd=5352 stack_uart=1332 uart_full=595",
+    "[FLOW-MEMORY] heap=96232 byte_heap=24852 byte_largest=8180 byte_min=14156 parser_peak_bytes=7190 parser_limit_bytes=98304",
+    "[TT&C] ERRO: SX1276 nao responde.",
+    "[STORAGE] state=0 attempt=0 episodes=0 attempts=0 recovered=0 exhausted=0 lifecycle_failures=0 cause=0 end=0 status=0 monotonic_ms=7090",
+    "[HEALTH] task=uart state=ok activity=idle age_ms=1 limit_ms=100 completions=6650 sampled_ms=7091 changed=0",
+    "[HEALTH] task=process state=ok activity=idle age_ms=1 limit_ms=2000 completions=5970 sampled_ms=7091 changed=0",
+    "[HEALTH] task=writer state=ok activity=write age_ms=59 limit_ms=5000 completions=277 sampled_ms=7091 changed=0",
+    "[DELIVERY] occupied=4 peak=7 accepted=7 repeated=140 lost=0 storage_failures=0 attempts=7 tx_failures=0 confirmed=7 unknown=0 evicted=0 recovery_slot=0",
+    "[FLOW-CHECK] v3 ts_available=1 ts=1700000002 ac_available=1 ac=0 msg_available=0 stable=1",
+    "[TTC-HEALTH] state=ok radio=unavailable updating=0 wired_ready=1 age_ms=10 limit_ms=2000 completions=361 rf_seen=0 rf_age_ms=0 wired_seen=1 wired_age_ms=125 resets=7 changed=0 monotonic_ms=7196",
+    "[I2C-HEALTH] state=inactive service=uninitialized activity=inactive age_ms=0 limit_ms=0 sampled_ms=0 monotonic_ms=7206 changed=0 queued=0 cause=0 failure=0 cycles=0 recovered=0 exhausted=0",
+    "[FLOW-CHECK] Arquivo simulado: boot_0000000000000046_00000007.bin",
+    "[HEALTH-CHECK] pause_begin=process activity=processing duration_ms=2500 monotonic_ms=7467",
+    "{\"n\":32,\"t\":\"ack\",\"seq\":61572,\"cmd\":\"ping\",\"st\":\"ok\",\"q\":0}",
+    "{\"n\":33,\"t\":\"tm\",\"ts\":1700000004,\"md\":\"bench\",\"vb\":null,\"ib\":null,\"vs\":null,\"is\":null,\"tp\":null,\"w\":null,\"az\":null,\"ac\":0,\"msg\":null,\"rssi\":null,\"snr\":null,\"rx\":19,\"err\":0,\"rst\":7}",
+    "[TT&C] Falha no TX de 180 bytes.",
+    "{\"n\":34,\"t\":\"ack\",\"seq\":61573,\"cmd\":\"request_tm\",\"st\":\"ok\",\"q\":0}",
+    "[MEMORY-HEALTH] byte_heap=24852 byte_largest=8180 heap_low=0 block_low=0 stack_low_mask=0 allocation_failures=0 allocation_delta=0 changed=0 monotonic_ms=7522",
+    "[MEMORY-HEALTH] task=uart active=1 stack_free=1332 low=0 monotonic_ms=7522",
+    "[MEMORY-HEALTH] task=process active=1 stack_free=3104 low=0 monotonic_ms=7522",
+    "[MEMORY-HEALTH] task=writer active=1 stack_free=5352 low=0 monotonic_ms=7522",
+    "[MEMORY-HEALTH] task=i2c active=0 stack_free=0 low=0 monotonic_ms=7522",
+    "[MEMORY-HEALTH] task=ttc active=1 stack_free=6136 low=0 monotonic_ms=7522",
+    "[MEMORY-HEALTH] task=loop active=1 stack_free=4892 low=0 monotonic_ms=7522",
+    "[FLOW-CHECK] Arquivo simulado: boot_0000000000000046_00000008.bin",
+    "{\"n\":35,\"t\":\"ack\",\"seq\":61574,\"cmd\":\"ping\",\"st\":\"ok\",\"q\":0}",
+    "{\"n\":36,\"t\":\"tm\",\"ts\":1700000004,\"md\":\"bench\",\"vb\":null,\"ib\":null,\"vs\":null,\"is\":null,\"tp\":null,\"w\":null,\"az\":null,\"ac\":0,\"msg\":null,\"rssi\":null,\"snr\":null,\"rx\":21,\"err\":0,\"rst\":7}",
+    "[TT&C] Falha no TX de 180 bytes.",
+    "{\"n\":37,\"t\":\"ack\",\"seq\":61575,\"cmd\":\"request_tm\",\"st\":\"ok\",\"q\":0}",
+    "[FLOW] received=24 invalid=1 gaps=0 duplicates=1 written=46 failures=0 dropped=19 SD=1 status=0 poll_gap_ms=338 process_gap_ms=21 stack_rx=3104 stack_sd=5352 stack_uart=1332 uart_full=595",
+    "[TT&C] ERRO: SX1276 sem resposta ou fora de RX, reinicializando.",
+    "[FLOW-CHECK] Arquivo simulado: boot_0000000000000046_00000009.bin",
+    "[FLOW-MEMORY] heap=96148 byte_heap=24768 byte_largest=8180 byte_min=14156 parser_peak_bytes=7190 parser_limit_bytes=98304",
+    "[STORAGE] state=0 attempt=0 episodes=0 attempts=0 recovered=0 exhausted=0 lifecycle_failures=0 cause=0 end=0 status=0 monotonic_ms=8090",
+    "[TT&C] ERRO: SX1276 nao responde.",
+    "[HEALTH] task=uart state=ok activity=idle age_ms=1 limit_ms=100 completions=7650 sampled_ms=8091 changed=0",
+    "[HEALTH] task=process state=ok activity=processing age_ms=624 limit_ms=2000 completions=6346 sampled_ms=8091 changed=0",
+    "[HEALTH] task=writer state=ok activity=write age_ms=96 limit_ms=5000 completions=309 sampled_ms=8091 changed=0",
+    "[DELIVERY] occupied=3 peak=7 accepted=7 repeated=140 lost=0 storage_failures=0 attempts=7 tx_failures=0 confirmed=7 unknown=0 evicted=0 recovery_slot=0",
+    "[TTC-HEALTH] state=ok radio=unavailable updating=0 wired_ready=1 age_ms=0 limit_ms=2000 completions=415 rf_seen=0 rf_age_ms=0 wired_seen=1 wired_age_ms=186 resets=8 changed=0 monotonic_ms=8205",
+    "[I2C-HEALTH] state=inactive service=uninitialized activity=inactive age_ms=0 limit_ms=0 sampled_ms=0 monotonic_ms=8215 changed=0 queued=0 cause=0 failure=0 cycles=0 recovered=0 exhausted=0",
+    "[HEALTH-CHECK] record_code=256 kind=fault",
+    "[FLOW-CHECK] Arquivo simulado: boot_0000000000000046_0000000a.bin",
+    "{\"n\":38,\"t\":\"ack\",\"seq\":61576,\"cmd\":\"ping\",\"st\":\"ok\",\"q\":0}",
+    "{\"n\":39,\"t\":\"tm\",\"ts\":1700000005,\"md\":\"bench\",\"vb\":null,\"ib\":null,\"vs\":null,\"is\":null,\"tp\":null,\"w\":null,\"az\":null,\"ac\":0,\"msg\":null,\"rssi\":null,\"snr\":null,\"rx\":23,\"err\":0,\"rst\":8}",
+    "[TT&C] Falha no TX de 180 bytes.",
+    "{\"n\":40,\"t\":\"ack\",\"seq\":61577,\"cmd\":\"request_tm\",\"st\":\"ok\",\"q\":0}",
+    "[MEMORY-HEALTH] byte_heap=24852 byte_largest=8180 heap_low=0 block_low=0 stack_low_mask=0 allocation_failures=0 allocation_delta=0 changed=0 monotonic_ms=8631",
+    "[MEMORY-HEALTH] task=uart active=1 stack_free=1332 low=0 monotonic_ms=8631",
+    "[MEMORY-HEALTH] task=process active=1 stack_free=3104 low=0 monotonic_ms=8631",
+    "[MEMORY-HEALTH] task=writer active=1 stack_free=5352 low=0 monotonic_ms=8631",
+    "[MEMORY-HEALTH] task=i2c active=0 stack_free=0 low=0 monotonic_ms=8631",
+    "[MEMORY-HEALTH] task=ttc active=1 stack_free=6136 low=0 monotonic_ms=8631",
+    "[MEMORY-HEALTH] task=loop active=1 stack_free=4892 low=0 monotonic_ms=8631",
+    "[FLOW-CHECK] v3 ts_available=1 ts=1700000003 ac_available=1 ac=0 msg_available=0 stable=1",
+    "[FLOW-CHECK] Arquivo simulado: boot_0000000000000046_0000000b.bin",
+    "{\"n\":41,\"t\":\"ack\",\"seq\":61578,\"cmd\":\"ping\",\"st\":\"ok\",\"q\":0}",
+    "{\"n\":42,\"t\":\"tm\",\"ts\":1700000005,\"md\":\"bench\",\"vb\":null,\"ib\":null,\"vs\":null,\"is\":null,\"tp\":null,\"w\":null,\"az\":null,\"ac\":0,\"msg\":null,\"rssi\":null,\"snr\":null,\"rx\":25,\"err\":0,\"rst\":8}",
+    "[TT&C] Falha no TX de 180 bytes.",
+    "{\"n\":43,\"t\":\"ack\",\"seq\":61579,\"cmd\":\"request_tm\",\"st\":\"ok\",\"q\":0}",
+    "[FLOW] received=24 invalid=1 gaps=0 duplicates=1 written=54 failures=0 dropped=19 SD=1 status=0 poll_gap_ms=338 process_gap_ms=21 stack_rx=3104 stack_sd=5352 stack_uart=1332 uart_full=595",
+    "[TT&C] ERRO: SX1276 sem resposta ou fora de RX, reinicializando.",
+    "[FLOW-MEMORY] heap=96232 byte_heap=24852 byte_largest=8180 byte_min=14156 parser_peak_bytes=7190 parser_limit_bytes=98304",
+    "[STORAGE] state=0 attempt=0 episodes=0 attempts=0 recovered=0 exhausted=0 lifecycle_failures=0 cause=0 end=0 status=0 monotonic_ms=9098",
+    "[TT&C] ERRO: SX1276 nao responde.",
+    "[HEALTH] task=uart state=ok activity=idle age_ms=1 limit_ms=100 completions=8658 sampled_ms=9099 changed=0",
+    "[HEALTH] task=process state=ok activity=processing age_ms=1632 limit_ms=2000 completions=6346 sampled_ms=9099 changed=0",
+    "[HEALTH] task=writer state=ok activity=write age_ms=83 limit_ms=5000 completions=327 sampled_ms=9099 changed=0",
+    "[DELIVERY] occupied=2 peak=7 accepted=7 repeated=140 lost=0 storage_failures=0 attempts=7 tx_failures=0 confirmed=7 unknown=0 evicted=0 recovery_slot=0",
+    "[HEALTH-CHECK] record_code=256 kind=event",
+    "[TTC-HEALTH] state=ok radio=unavailable updating=0 wired_ready=1 age_ms=1 limit_ms=2000 completions=473 rf_seen=0 rf_age_ms=0 wired_seen=1 wired_age_ms=256 resets=9 changed=0 monotonic_ms=9304",
+    "[I2C-HEALTH] state=inactive service=uninitialized activity=inactive age_ms=0 limit_ms=0 sampled_ms=0 monotonic_ms=9314 changed=0 queued=0 cause=0 failure=0 cycles=0 recovered=0 exhausted=0",
+    "[FLOW-CHECK] Arquivo simulado: boot_0000000000000046_0000000c.bin",
+    "[HEALTH] task=process state=suspect activity=processing age_ms=2050 limit_ms=2000 completions=6346 sampled_ms=9517 changed=1",
+    "{\"n\":44,\"t\":\"ack\",\"seq\":61580,\"cmd\":\"ping\",\"st\":\"ok\",\"q\":0}",
+    "{\"n\":45,\"t\":\"tm\",\"ts\":1700000006,\"md\":\"bench\",\"vb\":null,\"ib\":null,\"vs\":null,\"is\":null,\"tp\":null,\"w\":null,\"az\":null,\"ac\":0,\"msg\":null,\"rssi\":null,\"snr\":null,\"rx\":27,\"err\":0,\"rst\":9}",
+    "[TT&C] Falha no TX de 180 bytes.",
+    "{\"n\":46,\"t\":\"ack\",\"seq\":61581,\"cmd\":\"request_tm\",\"st\":\"ok\",\"q\":0}",
+    "[FLOW-CHECK] v3 ts_available=1 ts=1700000003 ac_available=1 ac=0 msg_available=0 stable=1",
+    "[MEMORY-HEALTH] byte_heap=24852 byte_largest=8180 heap_low=0 block_low=0 stack_low_mask=0 allocation_failures=0 allocation_delta=0 changed=0 monotonic_ms=9731",
+    "[MEMORY-HEALTH] task=uart active=1 stack_free=1332 low=0 monotonic_ms=9731",
+    "[MEMORY-HEALTH] task=process active=1 stack_free=3104 low=0 monotonic_ms=9731",
+    "[MEMORY-HEALTH] task=writer active=1 stack_free=5352 low=0 monotonic_ms=9731",
+    "[MEMORY-HEALTH] task=i2c active=0 stack_free=0 low=0 monotonic_ms=9731",
+    "[MEMORY-HEALTH] task=ttc active=1 stack_free=6136 low=0 monotonic_ms=9731",
+    "[MEMORY-HEALTH] task=loop active=1 stack_free=4892 low=0 monotonic_ms=9731",
+    "[FLOW-CHECK] Arquivo simulado: boot_0000000000000046_0000000d.bin",
+    "[HEALTH-CHECK] pause_end=process monotonic_ms=9967",
+    "[HEALTH] task=process state=ok activity=idle age_ms=1 limit_ms=2000 completions=6366 sampled_ms=9987 changed=1",
+    "[FLOW] received=24 invalid=1 gaps=0 duplicates=1 written=66 failures=0 dropped=20 SD=1 status=0 poll_gap_ms=338 process_gap_ms=2501 stack_rx=3104 stack_sd=5352 stack_uart=1332 uart_full=595",
+    "[FLOW-MEMORY] heap=96232 byte_heap=24852 byte_largest=8180 byte_min=14156 parser_peak_bytes=7190 parser_limit_bytes=98304",
+    "[TT&C] ERRO: SX1276 sem resposta ou fora de RX, reinicializando.",
+    "[STORAGE] state=0 attempt=0 episodes=0 attempts=0 recovered=0 exhausted=0 lifecycle_failures=0 cause=0 end=0 status=0 monotonic_ms=10108",
+    "[HEALTH] task=uart state=ok activity=idle age_ms=1 limit_ms=100 completions=9648 sampled_ms=10089 changed=0",
+    "[TT&C] ERRO: SX1276 nao responde.",
+    "[HEALTH] task=process state=ok activity=idle age_ms=1 limit_ms=2000 completions=6468 sampled_ms=10089 changed=0",
+    "[HEALTH] task=writer state=ok activity=write age_ms=4 limit_ms=5000 completions=344 sampled_ms=10089 changed=0",
+    "[DELIVERY] occupied=1 peak=7 accepted=7 repeated=140 lost=0 storage_failures=0 attempts=7 tx_failures=0 confirmed=7 unknown=0 evicted=0 recovery_slot=0",
+    "[FLOW-CHECK] Arquivo simulado: boot_0000000000000046_0000000e.bin",
+    "{\"n\":47,\"t\":\"ack\",\"seq\":61582,\"cmd\":\"ping\",\"st\":\"ok\",\"q\":10}",
+    "{\"n\":48,\"t\":\"tm\",\"ts\":1700000007,\"md\":\"bench\",\"vb\":null,\"ib\":null,\"vs\":null,\"is\":null,\"tp\":null,\"w\":null,\"az\":null,\"ac\":0,\"msg\":null,\"rssi\":null,\"snr\":null,\"rx\":29,\"err\":0,\"rst\":10}",
+    "[TT&C] Falha no TX de 181 bytes.",
+    "{\"n\":49,\"t\":\"ack\",\"seq\":61583,\"cmd\":\"request_tm\",\"st\":\"ok\",\"q\":0}",
+    "[TTC-HEALTH] state=ok radio=unavailable updating=0 wired_ready=1 age_ms=19 limit_ms=2000 completions=523 rf_seen=0 rf_age_ms=0 wired_seen=1 wired_age_ms=101 resets=10 changed=0 monotonic_ms=10307",
+    "[I2C-HEALTH] state=inactive service=uninitialized activity=inactive age_ms=0 limit_ms=0 sampled_ms=0 monotonic_ms=10317 changed=0 queued=0 cause=0 failure=0 cycles=0 recovered=0 exhausted=0",
+    "[FLOW-CHECK] v3 ts_available=1 ts=1700000004 ac_available=1 ac=0 msg_available=0 stable=1",
+    "[FLOW-CHECK] v3 ts_available=1 ts=1700000004 ac_available=1 ac=0 msg_available=0 stable=1",
+    "{\"n\":50,\"t\":\"ack\",\"seq\":61584,\"cmd\":\"ping\",\"st\":\"ok\",\"q\":0}",
+    "{\"n\":51,\"t\":\"tm\",\"ts\":1700000007,\"md\":\"bench\",\"vb\":null,\"ib\":null,\"vs\":null,\"is\":null,\"tp\":null,\"w\":null,\"az\":null,\"ac\":0,\"msg\":null,\"rssi\":null,\"snr\":null,\"rx\":31,\"err\":0,\"rst\":10}",
+    "[TT&C] Falha no TX de 181 bytes.",
+    "{\"n\":52,\"t\":\"ack\",\"seq\":61585,\"cmd\":\"request_tm\",\"st\":\"ok\",\"q\":0}",
+    "[FLOW-CHECK] v3 ts_available=1 ts=1700000005 ac_available=1 ac=0 msg_available=0 stable=1",
+    "[MEMORY-HEALTH] byte_heap=24852 byte_largest=8180 heap_low=0 block_low=0 stack_low_mask=0 allocation_failures=0 allocation_delta=0 changed=0 monotonic_ms=10824",
+    "[MEMORY-HEALTH] task=uart active=1 stack_free=1332 low=0 monotonic_ms=10824",
+    "[MEMORY-HEALTH] task=process active=1 stack_free=3104 low=0 monotonic_ms=10824",
+    "[MEMORY-HEALTH] task=writer active=1 stack_free=5352 low=0 monotonic_ms=10824",
+    "[MEMORY-HEALTH] task=i2c active=0 stack_free=0 low=0 monotonic_ms=10824",
+    "[MEMORY-HEALTH] task=ttc active=1 stack_free=6136 low=0 monotonic_ms=10824",
+    "[MEMORY-HEALTH] task=loop active=1 stack_free=4892 low=0 monotonic_ms=10824",
+    "[FLOW-CHECK] v3 ts_available=1 ts=1700000005 ac_available=1 ac=0 msg_available=0 stable=1",
+    "[HEALTH-CHECK] record_code=257 kind=fault",
+    "[HEALTH-CHECK] pause_begin=writer activity=write duration_ms=5500 monotonic_ms=11009",
+    "[FLOW] received=24 invalid=1 gaps=0 duplicates=1 written=75 failures=0 dropped=23 SD=1 status=0 poll_gap_ms=338 process_gap_ms=2501 stack_rx=3104 stack_sd=5352 stack_uart=1332 uart_full=595",
+    "[TT&C] ERRO: SX1276 sem resposta ou fora de RX, reinicializando.",
+    "[FLOW-MEMORY] heap=96232 byte_heap=24852 byte_largest=8180 byte_min=14156 parser_peak_bytes=7190 parser_limit_bytes=98304",
+    "[STORAGE] state=0 attempt=0 episodes=0 attempts=0 recovered=0 exhausted=0 lifecycle_failures=0 cause=0 end=0 status=0 monotonic_ms=11119",
+    "[TT&C] ERRO: SX1276 nao responde.",
+    "[HEALTH] task=uart state=ok activity=idle age_ms=1 limit_ms=100 completions=10639 sampled_ms=11080 changed=0",
+    "[HEALTH] task=process state=ok activity=idle age_ms=1 limit_ms=2000 completions=7459 sampled_ms=11080 changed=0",
+    "[HEALTH] task=writer state=ok activity=write age_ms=71 limit_ms=5000 completions=361 sampled_ms=11080 changed=0",
+    "[DELIVERY] occupied=0 peak=7 accepted=7 repeated=140 lost=0 storage_failures=0 attempts=7 tx_failures=0 confirmed=7 unknown=0 evicted=0 recovery_slot=0",
+    "{\"n\":53,\"t\":\"ack\",\"seq\":61586,\"cmd\":\"ping\",\"st\":\"ok\",\"q\":10}",
+    "{\"n\":54,\"t\":\"tm\",\"ts\":1700000008,\"md\":\"bench\",\"vb\":null,\"ib\":null,\"vs\":null,\"is\":null,\"tp\":null,\"w\":null,\"az\":null,\"ac\":0,\"msg\":null,\"rssi\":null,\"snr\":null,\"rx\":33,\"err\":0,\"rst\":11}",
+    "[TT&C] Falha no TX de 181 bytes.",
+    "{\"n\":55,\"t\":\"ack\",\"seq\":61587,\"cmd\":\"request_tm\",\"st\":\"ok\",\"q\":0}",
+    "[TTC-HEALTH] state=ok radio=unavailable updating=0 wired_ready=1 age_ms=10 limit_ms=2000 completions=574 rf_seen=0 rf_age_ms=0 wired_seen=1 wired_age_ms=101 resets=11 changed=0 monotonic_ms=11308",
+    "[I2C-HEALTH] state=inactive service=uninitialized activity=inactive age_ms=0 limit_ms=0 sampled_ms=0 monotonic_ms=11318 changed=0 queued=0 cause=0 failure=0 cycles=0 recovered=0 exhausted=0",
+    "{\"n\":56,\"t\":\"ack\",\"seq\":61588,\"cmd\":\"ping\",\"st\":\"ok\",\"q\":0}",
+    "{\"n\":57,\"t\":\"tm\",\"ts\":1700000008,\"md\":\"bench\",\"vb\":null,\"ib\":null,\"vs\":null,\"is\":null,\"tp\":null,\"w\":null,\"az\":null,\"ac\":0,\"msg\":null,\"rssi\":null,\"snr\":null,\"rx\":35,\"err\":0,\"rst\":11}",
+    "[TT&C] Falha no TX de 181 bytes.",
+    "{\"n\":58,\"t\":\"ack\",\"seq\":61589,\"cmd\":\"request_tm\",\"st\":\"ok\",\"q\":0}",
+    "[MEMORY-HEALTH] byte_heap=24852 byte_largest=8180 heap_low=0 block_low=0 stack_low_mask=0 allocation_failures=0 allocation_delta=0 changed=0 monotonic_ms=11825",
+    "[MEMORY-HEALTH] task=uart active=1 stack_free=1332 low=0 monotonic_ms=11825",
+    "[MEMORY-HEALTH] task=process active=1 stack_free=3104 low=0 monotonic_ms=11825",
+    "[MEMORY-HEALTH] task=writer active=1 stack_free=5352 low=0 monotonic_ms=11825",
+    "[MEMORY-HEALTH] task=i2c active=0 stack_free=0 low=0 monotonic_ms=11825",
+    "[MEMORY-HEALTH] task=ttc active=1 stack_free=6136 low=0 monotonic_ms=11825",
+    "[MEMORY-HEALTH] task=loop active=1 stack_free=4892 low=0 monotonic_ms=11825",
+    "[FLOW] received=24 invalid=1 gaps=0 duplicates=1 written=75 failures=0 dropped=23 SD=1 status=0 poll_gap_ms=338 process_gap_ms=2501 stack_rx=3104 stack_sd=5352 stack_uart=1332 uart_full=595",
+    "[TT&C] ERRO: SX1276 sem resposta ou fora de RX, reinicializando.",
+    "[FLOW-MEMORY] heap=96232 byte_heap=24852 byte_largest=8180 byte_min=14156 parser_peak_bytes=7190 parser_limit_bytes=98304",
+    "[STORAGE] state=0 attempt=0 episodes=0 attempts=0 recovered=0 exhausted=0 lifecycle_failures=0 cause=0 end=0 status=0 monotonic_ms=12120",
+    "[TT&C] ERRO: SX1276 nao responde.",
+    "[HEALTH] task=uart state=ok activity=idle age_ms=1 limit_ms=100 completions=11640 sampled_ms=12081 changed=0",
+    "[HEALTH] task=process state=ok activity=idle age_ms=1 limit_ms=2000 completions=8460 sampled_ms=12081 changed=0",
+    "[HEALTH] task=writer state=ok activity=write age_ms=1072 limit_ms=5000 completions=361 sampled_ms=12081 changed=0",
+    "[DELIVERY] occupied=0 peak=7 accepted=7 repeated=140 lost=0 storage_failures=0 attempts=7 tx_failures=0 confirmed=7 unknown=0 evicted=0 recovery_slot=0",
+    "{\"n\":59,\"t\":\"ack\",\"seq\":61590,\"cmd\":\"ping\",\"st\":\"ok\",\"q\":1}",
+    "{\"n\":60,\"t\":\"tm\",\"ts\":1700000009,\"md\":\"bench\",\"vb\":null,\"ib\":null,\"vs\":null,\"is\":null,\"tp\":null,\"w\":null,\"az\":null,\"ac\":0,\"msg\":null,\"rssi\":null,\"snr\":null,\"rx\":37,\"err\":0,\"rst\":12}",
+    "[TT&C] Falha no TX de 181 bytes.",
+    "{\"n\":61,\"t\":\"ack\",\"seq\":61591,\"cmd\":\"request_tm\",\"st\":\"ok\",\"q\":0}",
+    "[TTC-HEALTH] state=ok radio=unavailable updating=0 wired_ready=1 age_ms=10 limit_ms=2000 completions=626 rf_seen=0 rf_age_ms=0 wired_seen=1 wired_age_ms=101 resets=12 changed=0 monotonic_ms=12310",
+    "[I2C-HEALTH] state=inactive service=uninitialized activity=inactive age_ms=0 limit_ms=0 sampled_ms=0 monotonic_ms=12320 changed=0 queued=0 cause=0 failure=0 cycles=0 recovered=0 exhausted=0",
+    "{\"n\":62,\"t\":\"ack\",\"seq\":61592,\"cmd\":\"ping\",\"st\":\"ok\",\"q\":0}",
+    "{\"n\":63,\"t\":\"tm\",\"ts\":1700000009,\"md\":\"bench\",\"vb\":null,\"ib\":null,\"vs\":null,\"is\":null,\"tp\":null,\"w\":null,\"az\":null,\"ac\":0,\"msg\":null,\"rssi\":null,\"snr\":null,\"rx\":39,\"err\":0,\"rst\":12}",
+    "[TT&C] Falha no TX de 181 bytes.",
+    "{\"n\":64,\"t\":\"ack\",\"seq\":61593,\"cmd\":\"request_tm\",\"st\":\"ok\",\"q\":0}",
+    "[MEMORY-HEALTH] byte_heap=24852 byte_largest=8180 heap_low=0 block_low=0 stack_low_mask=0 allocation_failures=0 allocation_delta=0 changed=0 monotonic_ms=12826",
+    "[MEMORY-HEALTH] task=uart active=1 stack_free=1332 low=0 monotonic_ms=12826",
+    "[MEMORY-HEALTH] task=process active=1 stack_free=3104 low=0 monotonic_ms=12826",
+    "[MEMORY-HEALTH] task=writer active=1 stack_free=5352 low=0 monotonic_ms=12826",
+    "[MEMORY-HEALTH] task=i2c active=0 stack_free=0 low=0 monotonic_ms=12826",
+    "[MEMORY-HEALTH] task=ttc active=1 stack_free=6136 low=0 monotonic_ms=12826",
+    "[MEMORY-HEALTH] task=loop active=1 stack_free=4892 low=0 monotonic_ms=12826",
+    "[FLOW] received=24 invalid=1 gaps=0 duplicates=1 written=75 failures=0 dropped=24 SD=1 status=0 poll_gap_ms=338 process_gap_ms=2501 stack_rx=3104 stack_sd=5352 stack_uart=1332 uart_full=595",
+    "[TT&C] ERRO: SX1276 sem resposta ou fora de RX, reinicializando.",
+    "[FLOW-MEMORY] heap=96232 byte_heap=24852 byte_largest=8180 byte_min=14156 parser_peak_bytes=7190 parser_limit_bytes=98304",
+    "[STORAGE] state=0 attempt=0 episodes=0 attempts=0 recovered=0 exhausted=0 lifecycle_failures=0 cause=0 end=0 status=0 monotonic_ms=13121",
+    "[TT&C] ERRO: SX1276 nao responde.",
+    "[HEALTH] task=uart state=ok activity=idle age_ms=1 limit_ms=100 completions=12641 sampled_ms=13082 changed=0",
+    "[HEALTH] task=process state=ok activity=idle age_ms=1 limit_ms=2000 completions=9461 sampled_ms=13082 changed=0",
+    "[HEALTH] task=writer state=ok activity=write age_ms=2073 limit_ms=5000 completions=361 sampled_ms=13082 changed=0",
+    "[DELIVERY] occupied=0 peak=7 accepted=7 repeated=140 lost=0 storage_failures=0 attempts=7 tx_failures=0 confirmed=7 unknown=0 evicted=0 recovery_slot=0",
+    "[TTC-HEALTH] state=ok radio=unavailable updating=0 wired_ready=1 age_ms=1 limit_ms=2000 completions=678 rf_seen=0 rf_age_ms=0 wired_seen=1 wired_age_ms=562 resets=13 changed=0 monotonic_ms=13327",
+    "[I2C-HEALTH] state=inactive service=uninitialized activity=inactive age_ms=0 limit_ms=0 sampled_ms=0 monotonic_ms=13337 changed=0 queued=0 cause=0 failure=0 cycles=0 recovered=0 exhausted=0",
+    "{\"n\":65,\"t\":\"ack\",\"seq\":61594,\"cmd\":\"ping\",\"st\":\"ok\",\"q\":0}",
+    "{\"n\":66,\"t\":\"tm\",\"ts\":1700000010,\"md\":\"bench\",\"vb\":null,\"ib\":null,\"vs\":null,\"is\":null,\"tp\":null,\"w\":null,\"az\":null,\"ac\":0,\"msg\":null,\"rssi\":null,\"snr\":null,\"rx\":41,\"err\":0,\"rst\":13}",
+    "[TT&C] Falha no TX de 181 bytes.",
+    "{\"n\":67,\"t\":\"ack\",\"seq\":61595,\"cmd\":\"request_tm\",\"st\":\"ok\",\"q\":0}",
+    "[MEMORY-HEALTH] byte_heap=24852 byte_largest=8180 heap_low=0 block_low=0 stack_low_mask=0 allocation_failures=0 allocation_delta=0 changed=0 monotonic_ms=13847",
+    "[MEMORY-HEALTH] task=uart active=1 stack_free=1332 low=0 monotonic_ms=13847",
+    "[MEMORY-HEALTH] task=process active=1 stack_free=3104 low=0 monotonic_ms=13847",
+    "[MEMORY-HEALTH] task=writer active=1 stack_free=5352 low=0 monotonic_ms=13847",
+    "[MEMORY-HEALTH] task=i2c active=0 stack_free=0 low=0 monotonic_ms=13847",
+    "[MEMORY-HEALTH] task=ttc active=1 stack_free=6136 low=0 monotonic_ms=13847",
+    "[MEMORY-HEALTH] task=loop active=1 stack_free=4892 low=0 monotonic_ms=13847",
+    "{\"n\":68,\"t\":\"ack\",\"seq\":61596,\"cmd\":\"ping\",\"st\":\"ok\",\"q\":0}",
+    "{\"n\":69,\"t\":\"ack\",\"seq\":61597,\"cmd\":\"request_tm\",\"st\":\"ok\",\"q\":0}",
+    "{\"n\":70,\"t\":\"tm\",\"ts\":1700000010,\"md\":\"bench\",\"vb\":null,\"ib\":null,\"vs\":null,\"is\":null,\"tp\":null,\"w\":null,\"az\":null,\"ac\":0,\"msg\":null,\"rssi\":null,\"snr\":null,\"rx\":43,\"err\":0,\"rst\":13}",
+    "[TT&C] Falha no TX de 181 bytes.",
+    "[FLOW] received=24 invalid=1 gaps=0 duplicates=1 written=75 failures=0 dropped=28 SD=1 status=0 poll_gap_ms=338 process_gap_ms=2501 stack_rx=3104 stack_sd=5352 stack_uart=1332 uart_full=595",
+    "[FLOW-MEMORY] heap=96232 byte_heap=24852 byte_largest=8180 byte_min=14156 parser_peak_bytes=7190 parser_limit_bytes=98304",
+    "[TT&C] ERRO: SX1276 sem resposta ou fora de RX, reinicializando.",
+    "[STORAGE] state=0 attempt=0 episodes=0 attempts=0 recovered=0 exhausted=0 lifecycle_failures=0 cause=0 end=0 status=0 monotonic_ms=14126",
+    "[HEALTH] task=uart state=ok activity=idle age_ms=1 limit_ms=100 completions=13666 sampled_ms=14107 changed=0",
+    "[TT&C] ERRO: SX1276 nao responde.",
+    "[HEALTH] task=process state=ok activity=idle age_ms=1 limit_ms=2000 completions=10486 sampled_ms=14107 changed=0",
+    "[HEALTH] task=writer state=ok activity=write age_ms=3098 limit_ms=5000 completions=361 sampled_ms=14107 changed=0",
+    "[DELIVERY] occupied=0 peak=7 accepted=7 repeated=140 lost=0 storage_failures=0 attempts=7 tx_failures=0 confirmed=7 unknown=0 evicted=0 recovery_slot=0",
+    "[TTC-HEALTH] state=ok radio=unavailable updating=0 wired_ready=1 age_ms=11 limit_ms=2000 completions=730 rf_seen=0 rf_age_ms=0 wired_seen=1 wired_age_ms=437 resets=14 changed=0 monotonic_ms=14332",
+    "[I2C-HEALTH] state=inactive service=uninitialized activity=inactive age_ms=0 limit_ms=0 sampled_ms=0 monotonic_ms=14342 changed=0 queued=0 cause=0 failure=0 cycles=0 recovered=0 exhausted=0",
+    "{\"n\":71,\"t\":\"ack\",\"seq\":61598,\"cmd\":\"ping\",\"st\":\"ok\",\"q\":0}",
+    "{\"n\":72,\"t\":\"tm\",\"ts\":1700000011,\"md\":\"bench\",\"vb\":null,\"ib\":null,\"vs\":null,\"is\":null,\"tp\":null,\"w\":null,\"az\":null,\"ac\":0,\"msg\":null,\"rssi\":null,\"snr\":null,\"rx\":45,\"err\":0,\"rst\":14}",
+    "[TT&C] Falha no TX de 181 bytes.",
+    "{\"n\":73,\"t\":\"ack\",\"seq\":61599,\"cmd\":\"request_tm\",\"st\":\"ok\",\"q\":0}",
+    "[MEMORY-HEALTH] byte_heap=24852 byte_largest=8180 heap_low=0 block_low=0 stack_low_mask=0 allocation_failures=0 allocation_delta=0 changed=0 monotonic_ms=14852",
+    "[MEMORY-HEALTH] task=uart active=1 stack_free=1332 low=0 monotonic_ms=14852",
+    "[MEMORY-HEALTH] task=process active=1 stack_free=3104 low=0 monotonic_ms=14852",
+    "[MEMORY-HEALTH] task=writer active=1 stack_free=5352 low=0 monotonic_ms=14852",
+    "[MEMORY-HEALTH] task=i2c active=0 stack_free=0 low=0 monotonic_ms=14852",
+    "[MEMORY-HEALTH] task=ttc active=1 stack_free=6136 low=0 monotonic_ms=14852",
+    "[MEMORY-HEALTH] task=loop active=1 stack_free=4892 low=0 monotonic_ms=14852",
+    "{\"n\":74,\"t\":\"ack\",\"seq\":61600,\"cmd\":\"ping\",\"st\":\"ok\",\"q\":0}",
+    "{\"n\":75,\"t\":\"tm\",\"ts\":1700000011,\"md\":\"bench\",\"vb\":null,\"ib\":null,\"vs\":null,\"is\":null,\"tp\":null,\"w\":null,\"az\":null,\"ac\":0,\"msg\":null,\"rssi\":null,\"snr\":null,\"rx\":47,\"err\":0,\"rst\":14}",
+    "[TT&C] Falha no TX de 181 bytes.",
+    "{\"n\":76,\"t\":\"ack\",\"seq\":61601,\"cmd\":\"request_tm\",\"st\":\"ok\",\"q\":1}",
+    "[FLOW] received=24 invalid=1 gaps=0 duplicates=1 written=75 failures=0 dropped=32 SD=1 status=0 poll_gap_ms=338 process_gap_ms=2501 stack_rx=3104 stack_sd=5352 stack_uart=1332 uart_full=595",
+    "[TT&C] ERRO: SX1276 sem resposta ou fora de RX, reinicializando.",
+    "[FLOW-MEMORY] heap=96232 byte_heap=24852 byte_largest=8180 byte_min=14156 parser_peak_bytes=7190 parser_limit_bytes=98304",
+    "[STORAGE] state=0 attempt=0 episodes=0 attempts=0 recovered=0 exhausted=0 lifecycle_failures=0 cause=0 end=0 status=0 monotonic_ms=15141",
+    "[TT&C] ERRO: SX1276 nao responde.",
+    "[HEALTH] task=uart state=ok activity=idle age_ms=1 limit_ms=100 completions=14681 sampled_ms=15122 changed=0",
+    "[HEALTH] task=process state=ok activity=idle age_ms=1 limit_ms=2000 completions=11501 sampled_ms=15122 changed=0",
+    "[HEALTH] task=writer state=ok activity=write age_ms=4113 limit_ms=5000 completions=361 sampled_ms=15122 changed=0",
+    "[DELIVERY] occupied=0 peak=7 accepted=7 repeated=140 lost=0 storage_failures=0 attempts=7 tx_failures=0 confirmed=7 unknown=0 evicted=0 recovery_slot=0",
+    "[TTC-HEALTH] state=ok radio=unavailable updating=0 wired_ready=1 age_ms=1 limit_ms=2000 completions=784 rf_seen=0 rf_age_ms=0 wired_seen=1 wired_age_ms=438 resets=15 changed=0 monotonic_ms=15347",
+    "[I2C-HEALTH] state=inactive service=uninitialized activity=inactive age_ms=0 limit_ms=0 sampled_ms=0 monotonic_ms=15357 changed=0 queued=0 cause=0 failure=0 cycles=0 recovered=0 exhausted=0",
+    "{\"n\":77,\"t\":\"ack\",\"seq\":61602,\"cmd\":\"ping\",\"st\":\"ok\",\"q\":0}",
+    "{\"n\":78,\"t\":\"tm\",\"ts\":1700000012,\"md\":\"bench\",\"vb\":null,\"ib\":null,\"vs\":null,\"is\":null,\"tp\":null,\"w\":null,\"az\":null,\"ac\":0,\"msg\":null,\"rssi\":null,\"snr\":null,\"rx\":49,\"err\":0,\"rst\":15}",
+    "[TT&C] Falha no TX de 181 bytes.",
+    "{\"n\":79,\"t\":\"ack\",\"seq\":61603,\"cmd\":\"request_tm\",\"st\":\"ok\",\"q\":0}",
+    "[MEMORY-HEALTH] byte_heap=24852 byte_largest=8180 heap_low=0 block_low=0 stack_low_mask=0 allocation_failures=0 allocation_delta=0 changed=0 monotonic_ms=15867",
+    "[MEMORY-HEALTH] task=uart active=1 stack_free=1332 low=0 monotonic_ms=15867",
+    "[MEMORY-HEALTH] task=process active=1 stack_free=3104 low=0 monotonic_ms=15867",
+    "[MEMORY-HEALTH] task=writer active=1 stack_free=5352 low=0 monotonic_ms=15867",
+    "[MEMORY-HEALTH] task=i2c active=0 stack_free=0 low=0 monotonic_ms=15867",
+    "[MEMORY-HEALTH] task=ttc active=1 stack_free=6136 low=0 monotonic_ms=15867",
+    "[MEMORY-HEALTH] task=loop active=1 stack_free=4892 low=0 monotonic_ms=15867",
+    "{\"n\":80,\"t\":\"ack\",\"seq\":61604,\"cmd\":\"ping\",\"st\":\"ok\",\"q\":0}",
+    "{\"n\":81,\"t\":\"tm\",\"ts\":1700000012,\"md\":\"bench\",\"vb\":null,\"ib\":null,\"vs\":null,\"is\":null,\"tp\":null,\"w\":null,\"az\":null,\"ac\":0,\"msg\":null,\"rssi\":null,\"snr\":null,\"rx\":51,\"err\":0,\"rst\":15}",
+    "[TT&C] Falha no TX de 181 bytes.",
+    "{\"n\":82,\"t\":\"ack\",\"seq\":61605,\"cmd\":\"request_tm\",\"st\":\"ok\",\"q\":0}",
+    "[HEALTH] task=writer state=suspect activity=write age_ms=5018 limit_ms=5000 completions=361 sampled_ms=16027 changed=1",
+    "[FLOW] received=24 invalid=1 gaps=0 duplicates=1 written=75 failures=0 dropped=37 SD=1 status=0 poll_gap_ms=338 process_gap_ms=2501 stack_rx=3104 stack_sd=5352 stack_uart=1332 uart_full=595",
+    "[FLOW-MEMORY] heap=96232 byte_heap=24852 byte_largest=8180 byte_min=14156 parser_peak_bytes=7190 parser_limit_bytes=98304",
+    "[TT&C] ERRO: SX1276 sem resposta ou fora de RX, reinicializando.",
+    "[STORAGE] state=0 attempt=0 episodes=0 attempts=0 recovered=0 exhausted=0 lifecycle_failures=0 cause=0 end=0 status=0 monotonic_ms=16148",
+    "[HEALTH] task=uart state=ok activity=idle age_ms=1 limit_ms=100 completions=15688 sampled_ms=16129 changed=0",
+    "[TT&C] ERRO: SX1276 nao responde.",
+    "[HEALTH] task=process state=ok activity=idle age_ms=1 limit_ms=2000 completions=12508 sampled_ms=16129 changed=0",
+    "[HEALTH] task=writer state=suspect activity=write age_ms=5120 limit_ms=5000 completions=361 sampled_ms=16129 changed=0",
+    "[DELIVERY] occupied=0 peak=7 accepted=7 repeated=140 lost=0 storage_failures=0 attempts=7 tx_failures=0 confirmed=7 unknown=0 evicted=0 recovery_slot=0",
+    "[TTC-HEALTH] state=ok radio=unavailable updating=0 wired_ready=1 age_ms=11 limit_ms=2000 completions=836 rf_seen=0 rf_age_ms=0 wired_seen=1 wired_age_ms=429 resets=16 changed=0 monotonic_ms=16354",
+    "[I2C-HEALTH] state=inactive service=uninitialized activity=inactive age_ms=0 limit_ms=0 sampled_ms=0 monotonic_ms=16364 changed=0 queued=0 cause=0 failure=0 cycles=0 recovered=0 exhausted=0",
+    "{\"n\":83,\"t\":\"ack\",\"seq\":61606,\"cmd\":\"ping\",\"st\":\"ok\",\"q\":0}",
+    "{\"n\":84,\"t\":\"tm\",\"ts\":1700000013,\"md\":\"bench\",\"vb\":null,\"ib\":null,\"vs\":null,\"is\":null,\"tp\":null,\"w\":null,\"az\":null,\"ac\":0,\"msg\":null,\"rssi\":null,\"snr\":null,\"rx\":53,\"err\":0,\"rst\":16}",
+    "[TT&C] Falha no TX de 181 bytes.",
+    "{\"n\":85,\"t\":\"ack\",\"seq\":61607,\"cmd\":\"request_tm\",\"st\":\"ok\",\"q\":0}",
+    "[HEALTH-CHECK] pause_end=writer monotonic_ms=16509",
+    "[FLOW-CHECK] v3 ts_available=1 ts=1700000006 ac_available=1 ac=0 msg_available=0 stable=1",
+    "[HEALTH] task=writer state=ok activity=write age_ms=61 limit_ms=5000 completions=363 sampled_ms=16672 changed=1",
+    "[HEALTH-CHECK] record_code=257 kind=event",
+    "[FLOW-CHECK] v3 ts_available=1 ts=1700000007 ac_available=1 ac=0 msg_available=0 stable=1",
+    "[MEMORY-HEALTH] byte_heap=24852 byte_largest=8180 heap_low=0 block_low=0 stack_low_mask=0 allocation_failures=0 allocation_delta=0 changed=0 monotonic_ms=16874",
+    "[MEMORY-HEALTH] task=uart active=1 stack_free=1332 low=0 monotonic_ms=16874",
+    "[MEMORY-HEALTH] task=process active=1 stack_free=3104 low=0 monotonic_ms=16874",
+    "[MEMORY-HEALTH] task=writer active=1 stack_free=5352 low=0 monotonic_ms=16874",
+    "[MEMORY-HEALTH] task=i2c active=0 stack_free=0 low=0 monotonic_ms=16874",
+    "[MEMORY-HEALTH] task=ttc active=1 stack_free=6136 low=0 monotonic_ms=16874",
+    "[MEMORY-HEALTH] task=loop active=1 stack_free=4892 low=0 monotonic_ms=16874",
+    "{\"n\":86,\"t\":\"ack\",\"seq\":61608,\"cmd\":\"ping\",\"st\":\"ok\",\"q\":0}",
+    "{\"n\":87,\"t\":\"tm\",\"ts\":1700000013,\"md\":\"bench\",\"vb\":null,\"ib\":null,\"vs\":null,\"is\":null,\"tp\":null,\"w\":null,\"az\":null,\"ac\":0,\"msg\":null,\"rssi\":null,\"snr\":null,\"rx\":55,\"err\":0,\"rst\":16}",
+    "[TT&C] Falha no TX de 181 bytes.",
+    "{\"n\":88,\"t\":\"ack\",\"seq\":61609,\"cmd\":\"request_tm\",\"st\":\"ok\",\"q\":0}",
+    "[FLOW-CHECK] v3 ts_available=1 ts=1700000008 ac_available=1 ac=0 msg_available=0 stable=1",
+    "[FLOW] received=24 invalid=1 gaps=0 duplicates=1 written=81 failures=0 dropped=40 SD=1 status=0 poll_gap_ms=338 process_gap_ms=2501 stack_rx=3104 stack_sd=5352 stack_uart=1332 uart_full=595",
+    "[FLOW-MEMORY] heap=96232 byte_heap=24852 byte_largest=8180 byte_min=14156 parser_peak_bytes=7190 parser_limit_bytes=98304",
+    "[TT&C] ERRO: SX1276 sem resposta ou fora de RX, reinicializando.",
+    "[STORAGE] state=0 attempt=0 episodes=0 attempts=0 recovered=0 exhausted=0 lifecycle_failures=0 cause=0 end=0 status=0 monotonic_ms=17153",
+    "[HEALTH] task=uart state=ok activity=idle age_ms=1 limit_ms=100 completions=16693 sampled_ms=17134 changed=0",
+    "[TT&C] ERRO: SX1276 nao responde.",
+    "[HEALTH] task=process state=ok activity=idle age_ms=1 limit_ms=2000 completions=13513 sampled_ms=17134 changed=0",
+    "[HEALTH] task=writer state=ok activity=write age_ms=19 limit_ms=5000 completions=373 sampled_ms=17134 changed=0",
+    "[DELIVERY] occupied=0 peak=7 accepted=7 repeated=140 lost=0 storage_failures=0 attempts=7 tx_failures=0 confirmed=7 unknown=0 evicted=0 recovery_slot=0",
+    "[FLOW-CHECK] v3 ts_available=1 ts=1700000008 ac_available=1 ac=0 msg_available=0 stable=1",
+    "[TTC-HEALTH] state=ok radio=unavailable updating=0 wired_ready=1 age_ms=10 limit_ms=2000 completions=889 rf_seen=0 rf_age_ms=0 wired_seen=1 wired_age_ms=428 resets=17 changed=0 monotonic_ms=17359",
+    "[I2C-HEALTH] state=inactive service=uninitialized activity=inactive age_ms=0 limit_ms=0 sampled_ms=0 monotonic_ms=17369 changed=0 queued=0 cause=0 failure=0 cycles=0 recovered=0 exhausted=0",
+    "{\"n\":89,\"t\":\"ack\",\"seq\":61610,\"cmd\":\"ping\",\"st\":\"ok\",\"q\":0}",
+    "{\"n\":90,\"t\":\"tm\",\"ts\":1700000014,\"md\":\"bench\",\"vb\":null,\"ib\":null,\"vs\":null,\"is\":null,\"tp\":null,\"w\":null,\"az\":null,\"ac\":0,\"msg\":null,\"rssi\":null,\"snr\":null,\"rx\":57,\"err\":0,\"rst\":17}",
+    "[TT&C] Falha no TX de 181 bytes.",
+    "{\"n\":91,\"t\":\"ack\",\"seq\":61611,\"cmd\":\"request_tm\",\"st\":\"ok\",\"q\":1}",
+    "[FLOW-CHECK] v3 ts_available=1 ts=1700000009 ac_available=1 ac=0 msg_available=0 stable=1",
+    "[HEALTH-CHECK] record_code=258 kind=event",
+    "[HEALTH-CHECK] scan_begin=1 monotonic_ms=17550",
+    "[MEMORY-HEALTH] byte_heap=24852 byte_largest=8180 heap_low=0 block_low=0 stack_low_mask=0 allocation_failures=0 allocation_delta=0 changed=0 monotonic_ms=17970",
+    "[MEMORY-HEALTH] task=uart active=1 stack_free=1332 low=0 monotonic_ms=17970",
+    "[MEMORY-HEALTH] task=process active=1 stack_free=3104 low=0 monotonic_ms=17970",
+    "[MEMORY-HEALTH] task=writer active=1 stack_free=5352 low=0 monotonic_ms=17970",
+    "[MEMORY-HEALTH] task=i2c active=0 stack_free=0 low=0 monotonic_ms=17970",
+    "[MEMORY-HEALTH] task=ttc active=1 stack_free=6136 low=0 monotonic_ms=17970",
+    "[MEMORY-HEALTH] task=loop active=1 stack_free=4892 low=0 monotonic_ms=17970",
+    "{\"n\":92,\"t\":\"ack\",\"seq\":61612,\"cmd\":\"ping\",\"st\":\"ok\",\"q\":0}",
+    "{\"n\":93,\"t\":\"tm\",\"ts\":1700000014,\"md\":\"bench\",\"vb\":null,\"ib\":null,\"vs\":null,\"is\":null,\"tp\":null,\"w\":null,\"az\":null,\"ac\":0,\"msg\":null,\"rssi\":null,\"snr\":null,\"rx\":59,\"err\":0,\"rst\":17}",
+    "[TT&C] Falha no TX de 181 bytes.",
+    "{\"n\":94,\"t\":\"ack\",\"seq\":61613,\"cmd\":\"request_tm\",\"st\":\"ok\",\"q\":0}",
+    "[FLOW] received=24 invalid=1 gaps=0 duplicates=1 written=85 failures=0 dropped=40 SD=1 status=0 poll_gap_ms=338 process_gap_ms=2501 stack_rx=3104 stack_sd=5352 stack_uart=1332 uart_full=595",
+    "[FLOW-MEMORY] heap=96232 byte_heap=24852 byte_largest=8180 byte_min=14156 parser_peak_bytes=7190 parser_limit_bytes=98304",
+    "[TT&C] ERRO: SX1276 sem resposta ou fora de RX, reinicializando.",
+    "[STORAGE] state=0 attempt=0 episodes=0 attempts=0 recovered=0 exhausted=0 lifecycle_failures=0 cause=0 end=0 status=0 monotonic_ms=18169",
+    "[HEALTH] task=uart state=ok activity=idle age_ms=1 limit_ms=100 completions=17689 sampled_ms=18130 changed=0",
+    "[TT&C] ERRO: SX1276 nao responde.",
+    "[HEALTH] task=process state=ok activity=idle age_ms=1 limit_ms=2000 completions=14509 sampled_ms=18130 changed=0",
+    "[HEALTH] task=writer state=ok activity=list age_ms=178 limit_ms=5000 completions=383 sampled_ms=18130 changed=0",
+    "[DELIVERY] occupied=0 peak=7 accepted=7 repeated=140 lost=0 storage_failures=0 attempts=7 tx_failures=0 confirmed=7 unknown=0 evicted=0 recovery_slot=0",
+    "[TTC-HEALTH] state=ok radio=unavailable updating=0 wired_ready=1 age_ms=11 limit_ms=2000 completions=941 rf_seen=0 rf_age_ms=0 wired_seen=1 wired_age_ms=347 resets=18 changed=0 monotonic_ms=18375",
+    "[I2C-HEALTH] state=inactive service=uninitialized activity=inactive age_ms=0 limit_ms=0 sampled_ms=0 monotonic_ms=18385 changed=0 queued=0 cause=0 failure=0 cycles=0 recovered=0 exhausted=0",
+    "{\"n\":95,\"t\":\"ack\",\"seq\":61614,\"cmd\":\"ping\",\"st\":\"ok\",\"q\":0}",
+    "{\"n\":96,\"t\":\"tm\",\"ts\":1700000015,\"md\":\"bench\",\"vb\":null,\"ib\":null,\"vs\":null,\"is\":null,\"tp\":null,\"w\":null,\"az\":null,\"ac\":0,\"msg\":null,\"rssi\":null,\"snr\":null,\"rx\":61,\"err\":0,\"rst\":18}",
+    "[TT&C] Falha no TX de 181 bytes.",
+    "{\"n\":97,\"t\":\"ack\",\"seq\":61615,\"cmd\":\"request_tm\",\"st\":\"ok\",\"q\":0}",
+    "[MEMORY-HEALTH] byte_heap=24852 byte_largest=8180 heap_low=0 block_low=0 stack_low_mask=0 allocation_failures=0 allocation_delta=0 changed=0 monotonic_ms=18996",
+    "[MEMORY-HEALTH] task=uart active=1 stack_free=1332 low=0 monotonic_ms=18996",
+    "[MEMORY-HEALTH] task=process active=1 stack_free=3104 low=0 monotonic_ms=18996",
+    "[MEMORY-HEALTH] task=writer active=1 stack_free=4884 low=0 monotonic_ms=18996",
+    "[MEMORY-HEALTH] task=i2c active=0 stack_free=0 low=0 monotonic_ms=18996",
+    "[MEMORY-HEALTH] task=ttc active=1 stack_free=6136 low=0 monotonic_ms=18996",
+    "[MEMORY-HEALTH] task=loop active=1 stack_free=4892 low=0 monotonic_ms=18996",
+    "{\"n\":98,\"t\":\"ack\",\"seq\":61616,\"cmd\":\"ping\",\"st\":\"ok\",\"q\":0}",
+    "{\"n\":99,\"t\":\"tm\",\"ts\":1700000015,\"md\":\"bench\",\"vb\":null,\"ib\":null,\"vs\":null,\"is\":null,\"tp\":null,\"w\":null,\"az\":null,\"ac\":0,\"msg\":null,\"rssi\":null,\"snr\":null,\"rx\":63,\"err\":0,\"rst\":18}",
+    "[TT&C] Falha no TX de 181 bytes.",
+    "{\"n\":100,\"t\":\"ack\",\"seq\":61617,\"cmd\":\"request_tm\",\"st\":\"ok\",\"q\":0}",
+    "[FLOW] received=24 invalid=1 gaps=0 duplicates=1 written=85 failures=0 dropped=40 SD=1 status=0 poll_gap_ms=338 process_gap_ms=2501 stack_rx=3104 stack_sd=4884 stack_uart=1332 uart_full=595",
+    "[FLOW-MEMORY] heap=96232 byte_heap=24852 byte_largest=8180 byte_min=14156 parser_peak_bytes=7190 parser_limit_bytes=98304",
+    "[TT&C] ERRO: SX1276 sem resposta ou fora de RX, reinicializando.",
+    "[STORAGE] state=0 attempt=0 episodes=0 attempts=0 recovered=0 exhausted=0 lifecycle_failures=0 cause=0 end=0 status=0 monotonic_ms=19174",
+    "[HEALTH] task=uart state=ok activity=idle age_ms=1 limit_ms=100 completions=18714 sampled_ms=19155 changed=0",
+    "[TT&C] ERRO: SX1276 nao responde.",
+    "[HEALTH] task=process state=ok activity=idle age_ms=1 limit_ms=2000 completions=15534 sampled_ms=19155 changed=0",
+    "[HEALTH] task=writer state=ok activity=read age_ms=202 limit_ms=5000 completions=388 sampled_ms=19155 changed=0",
+    "[DELIVERY] occupied=0 peak=7 accepted=7 repeated=140 lost=0 storage_failures=0 attempts=7 tx_failures=0 confirmed=7 unknown=0 evicted=0 recovery_slot=0",
+    "[TTC-HEALTH] state=ok radio=unavailable updating=0 wired_ready=1 age_ms=11 limit_ms=2000 completions=994 rf_seen=0 rf_age_ms=0 wired_seen=1 wired_age_ms=327 resets=19 changed=0 monotonic_ms=19380",
+    "[I2C-HEALTH] state=inactive service=uninitialized activity=inactive age_ms=0 limit_ms=0 sampled_ms=0 monotonic_ms=19390 changed=0 queued=0 cause=0 failure=0 cycles=0 recovered=0 exhausted=0",
+    "{\"n\":101,\"t\":\"ack\",\"seq\":61618,\"cmd\":\"ping\",\"st\":\"ok\",\"q\":0}",
+    "{\"n\":102,\"t\":\"tm\",\"ts\":1700000016,\"md\":\"bench\",\"vb\":null,\"ib\":null,\"vs\":null,\"is\":null,\"tp\":null,\"w\":null,\"az\":null,\"ac\":0,\"msg\":null,\"rssi\":null,\"snr\":null,\"rx\":65,\"err\":0,\"rst\":19}",
+    "[TT&C] Falha no TX de 181 bytes.",
+    "{\"n\":103,\"t\":\"ack\",\"seq\":61619,\"cmd\":\"request_tm\",\"st\":\"ok\",\"q\":0}",
+    "[MEMORY-HEALTH] byte_heap=24852 byte_largest=8180 heap_low=0 block_low=0 stack_low_mask=0 allocation_failures=0 allocation_delta=0 changed=0 monotonic_ms=20010",
+    "[MEMORY-HEALTH] task=uart active=1 stack_free=1332 low=0 monotonic_ms=20010",
+    "[MEMORY-HEALTH] task=process active=1 stack_free=3104 low=0 monotonic_ms=20010",
+    "[MEMORY-HEALTH] task=writer active=1 stack_free=4884 low=0 monotonic_ms=20010",
+    "[MEMORY-HEALTH] task=i2c active=0 stack_free=0 low=0 monotonic_ms=20010",
+    "[MEMORY-HEALTH] task=ttc active=1 stack_free=6136 low=0 monotonic_ms=20010",
+    "[MEMORY-HEALTH] task=loop active=1 stack_free=4892 low=0 monotonic_ms=20010",
+    "{\"n\":104,\"t\":\"ack\",\"seq\":61620,\"cmd\":\"ping\",\"st\":\"ok\",\"q\":0}",
+    "{\"n\":105,\"t\":\"tm\",\"ts\":1700000016,\"md\":\"bench\",\"vb\":null,\"ib\":null,\"vs\":null,\"is\":null,\"tp\":null,\"w\":null,\"az\":null,\"ac\":0,\"msg\":null,\"rssi\":null,\"snr\":null,\"rx\":67,\"err\":0,\"rst\":19}",
+    "[TT&C] Falha no TX de 181 bytes.",
+    "{\"n\":106,\"t\":\"ack\",\"seq\":61621,\"cmd\":\"request_tm\",\"st\":\"ok\",\"q\":0}",
+    "[FLOW] received=24 invalid=1 gaps=0 duplicates=1 written=85 failures=0 dropped=43 SD=1 status=0 poll_gap_ms=338 process_gap_ms=2501 stack_rx=3104 stack_sd=4884 stack_uart=1332 uart_full=595",
+    "[FLOW-MEMORY] heap=96232 byte_heap=24852 byte_largest=8180 byte_min=14156 parser_peak_bytes=7190 parser_limit_bytes=98304",
+    "[TT&C] ERRO: SX1276 sem resposta ou fora de RX, reinicializando.",
+    "[STORAGE] state=0 attempt=0 episodes=0 attempts=0 recovered=0 exhausted=0 lifecycle_failures=0 cause=0 end=0 status=0 monotonic_ms=20188",
+    "[HEALTH] task=uart state=ok activity=idle age_ms=1 limit_ms=100 completions=19728 sampled_ms=20169 changed=0",
+    "[TT&C] ERRO: SX1276 nao responde.",
+    "[HEALTH] task=process state=ok activity=idle age_ms=1 limit_ms=2000 completions=16548 sampled_ms=20169 changed=0",
+    "[HEALTH] task=writer state=ok activity=read age_ms=12 limit_ms=5000 completions=394 sampled_ms=20169 changed=0",
+    "[DELIVERY] occupied=0 peak=7 accepted=7 repeated=140 lost=0 storage_failures=0 attempts=7 tx_failures=0 confirmed=7 unknown=0 evicted=0 recovery_slot=0",
+    "[TTC-HEALTH] state=ok radio=unavailable updating=0 wired_ready=1 age_ms=11 limit_ms=2000 completions=1047 rf_seen=0 rf_age_ms=0 wired_seen=1 wired_age_ms=327 resets=20 changed=0 monotonic_ms=20394",
+    "[I2C-HEALTH] state=inactive service=uninitialized activity=inactive age_ms=0 limit_ms=0 sampled_ms=0 monotonic_ms=20404 changed=0 queued=0 cause=0 failure=0 cycles=0 recovered=0 exhausted=0",
+    "{\"n\":107,\"t\":\"ack\",\"seq\":61622,\"cmd\":\"ping\",\"st\":\"ok\",\"q\":0}",
+    "{\"n\":108,\"t\":\"tm\",\"ts\":1700000017,\"md\":\"bench\",\"vb\":null,\"ib\":null,\"vs\":null,\"is\":null,\"tp\":null,\"w\":null,\"az\":null,\"ac\":0,\"msg\":null,\"rssi\":null,\"snr\":null,\"rx\":69,\"err\":0,\"rst\":20}",
+    "[TT&C] Falha no TX de 181 bytes.",
+    "{\"n\":109,\"t\":\"ack\",\"seq\":61623,\"cmd\":\"request_tm\",\"st\":\"ok\",\"q\":0}",
+    "[MEMORY-HEALTH] byte_heap=24852 byte_largest=8180 heap_low=0 block_low=0 stack_low_mask=0 allocation_failures=0 allocation_delta=0 changed=0 monotonic_ms=21024",
+    "[MEMORY-HEALTH] task=uart active=1 stack_free=1332 low=0 monotonic_ms=21024",
+    "[MEMORY-HEALTH] task=process active=1 stack_free=3104 low=0 monotonic_ms=21024",
+    "[MEMORY-HEALTH] task=writer active=1 stack_free=4884 low=0 monotonic_ms=21024",
+    "[MEMORY-HEALTH] task=i2c active=0 stack_free=0 low=0 monotonic_ms=21024",
+    "[MEMORY-HEALTH] task=ttc active=1 stack_free=6136 low=0 monotonic_ms=21024",
+    "[MEMORY-HEALTH] task=loop active=1 stack_free=4892 low=0 monotonic_ms=21024",
+    "{\"n\":110,\"t\":\"ack\",\"seq\":61624,\"cmd\":\"ping\",\"st\":\"ok\",\"q\":10}",
+    "{\"n\":111,\"t\":\"ack\",\"seq\":61625,\"cmd\":\"request_tm\",\"st\":\"ok\",\"q\":0}",
+    "{\"n\":112,\"t\":\"tm\",\"ts\":1700000017,\"md\":\"bench\",\"vb\":null,\"ib\":null,\"vs\":null,\"is\":null,\"tp\":null,\"w\":null,\"az\":null,\"ac\":0,\"msg\":null,\"rssi\":null,\"snr\":null,\"rx\":71,\"err\":0,\"rst\":20}",
+    "[TT&C] Falha no TX de 181 bytes.",
+    "[FLOW] received=24 invalid=1 gaps=0 duplicates=1 written=85 failures=0 dropped=47 SD=1 status=0 poll_gap_ms=338 process_gap_ms=2501 stack_rx=3104 stack_sd=4884 stack_uart=1332 uart_full=595",
+    "[FLOW-MEMORY] heap=96232 byte_heap=24852 byte_largest=8180 byte_min=14156 parser_peak_bytes=7190 parser_limit_bytes=98304",
+    "[TT&C] ERRO: SX1276 sem resposta ou fora de RX, reinicializando.",
+    "[STORAGE] state=0 attempt=0 episodes=0 attempts=0 recovered=0 exhausted=0 lifecycle_failures=0 cause=0 end=0 status=0 monotonic_ms=21202",
+    "[HEALTH] task=uart state=ok activity=idle age_ms=1 limit_ms=100 completions=20742 sampled_ms=21183 changed=0",
+    "[TT&C] ERRO: SX1276 nao responde.",
+    "[HEALTH] task=process state=ok activity=idle age_ms=1 limit_ms=2000 completions=17562 sampled_ms=21183 changed=0",
+    "[HEALTH] task=writer state=ok activity=list age_ms=22 limit_ms=5000 completions=399 sampled_ms=21183 changed=0",
+    "[DELIVERY] occupied=0 peak=7 accepted=7 repeated=140 lost=0 storage_failures=0 attempts=7 tx_failures=0 confirmed=7 unknown=0 evicted=0 recovery_slot=0",
+    "[TTC-HEALTH] state=ok radio=unavailable updating=0 wired_ready=1 age_ms=11 limit_ms=2000 completions=1100 rf_seen=0 rf_age_ms=0 wired_seen=1 wired_age_ms=337 resets=21 changed=0 monotonic_ms=21408",
+    "[I2C-HEALTH] state=inactive service=uninitialized activity=inactive age_ms=0 limit_ms=0 sampled_ms=0 monotonic_ms=21418 changed=0 queued=0 cause=0 failure=0 cycles=0 recovered=0 exhausted=0",
+    "{\"n\":113,\"t\":\"ack\",\"seq\":61626,\"cmd\":\"ping\",\"st\":\"ok\",\"q\":0}",
+    "{\"n\":114,\"t\":\"tm\",\"ts\":1700000018,\"md\":\"bench\",\"vb\":null,\"ib\":null,\"vs\":null,\"is\":null,\"tp\":null,\"w\":null,\"az\":null,\"ac\":0,\"msg\":null,\"rssi\":null,\"snr\":null,\"rx\":73,\"err\":0,\"rst\":21}",
+    "[TT&C] Falha no TX de 181 bytes.",
+    "{\"n\":115,\"t\":\"ack\",\"seq\":61627,\"cmd\":\"request_tm\",\"st\":\"ok\",\"q\":0}",
+    "[MEMORY-HEALTH] byte_heap=24852 byte_largest=8180 heap_low=0 block_low=0 stack_low_mask=0 allocation_failures=0 allocation_delta=0 changed=0 monotonic_ms=22038",
+    "[MEMORY-HEALTH] task=uart active=1 stack_free=1332 low=0 monotonic_ms=22038",
+    "[MEMORY-HEALTH] task=process active=1 stack_free=3104 low=0 monotonic_ms=22038",
+    "[MEMORY-HEALTH] task=writer active=1 stack_free=4884 low=0 monotonic_ms=22038",
+    "[MEMORY-HEALTH] task=i2c active=0 stack_free=0 low=0 monotonic_ms=22038",
+    "[MEMORY-HEALTH] task=ttc active=1 stack_free=6136 low=0 monotonic_ms=22038",
+    "[MEMORY-HEALTH] task=loop active=1 stack_free=4892 low=0 monotonic_ms=22038",
+    "{\"n\":116,\"t\":\"ack\",\"seq\":61628,\"cmd\":\"ping\",\"st\":\"ok\",\"q\":10}",
+    "{\"n\":117,\"t\":\"ack\",\"seq\":61629,\"cmd\":\"request_tm\",\"st\":\"ok\",\"q\":0}",
+    "{\"n\":118,\"t\":\"tm\",\"ts\":1700000018,\"md\":\"bench\",\"vb\":null,\"ib\":null,\"vs\":null,\"is\":null,\"tp\":null,\"w\":null,\"az\":null,\"ac\":0,\"msg\":null,\"rssi\":null,\"snr\":null,\"rx\":75,\"err\":0,\"rst\":21}",
+    "[TT&C] Falha no TX de 181 bytes.",
+    "[FLOW] received=24 invalid=1 gaps=0 duplicates=1 written=85 failures=0 dropped=51 SD=1 status=0 poll_gap_ms=338 process_gap_ms=2501 stack_rx=3104 stack_sd=4884 stack_uart=1332 uart_full=595",
+    "[FLOW-MEMORY] heap=96232 byte_heap=24852 byte_largest=8180 byte_min=14156 parser_peak_bytes=7190 parser_limit_bytes=98304",
+    "[TT&C] ERRO: SX1276 sem resposta ou fora de RX, reinicializando.",
+    "[STORAGE] state=0 attempt=0 episodes=0 attempts=0 recovered=0 exhausted=0 lifecycle_failures=0 cause=0 end=0 status=0 monotonic_ms=22217",
+    "[HEALTH] task=uart state=ok activity=idle age_ms=1 limit_ms=100 completions=21757 sampled_ms=22198 changed=0",
+    "[TT&C] ERRO: SX1276 nao responde.",
+    "[HEALTH] task=process state=ok activity=idle age_ms=1 limit_ms=2000 completions=18577 sampled_ms=22198 changed=0",
+    "[HEALTH] task=writer state=ok activity=read age_ms=36 limit_ms=5000 completions=404 sampled_ms=22198 changed=0",
+    "[DELIVERY] occupied=0 peak=7 accepted=7 repeated=140 lost=0 storage_failures=0 attempts=7 tx_failures=0 confirmed=7 unknown=0 evicted=0 recovery_slot=0",
+    "[TTC-HEALTH] state=ok radio=unavailable updating=0 wired_ready=1 age_ms=11 limit_ms=2000 completions=1153 rf_seen=0 rf_age_ms=0 wired_seen=1 wired_age_ms=337 resets=22 changed=0 monotonic_ms=22423",
+    "[I2C-HEALTH] state=inactive service=uninitialized activity=inactive age_ms=0 limit_ms=0 sampled_ms=0 monotonic_ms=22433 changed=0 queued=0 cause=0 failure=0 cycles=0 recovered=0 exhausted=0",
+    "{\"n\":119,\"t\":\"ack\",\"seq\":61630,\"cmd\":\"ping\",\"st\":\"ok\",\"q\":0}",
+    "{\"n\":120,\"t\":\"tm\",\"ts\":1700000019,\"md\":\"bench\",\"vb\":null,\"ib\":null,\"vs\":null,\"is\":null,\"tp\":null,\"w\":null,\"az\":null,\"ac\":0,\"msg\":null,\"rssi\":null,\"snr\":null,\"rx\":77,\"err\":0,\"rst\":22}",
+    "[TT&C] Falha no TX de 181 bytes.",
+    "{\"n\":121,\"t\":\"ack\",\"seq\":61631,\"cmd\":\"request_tm\",\"st\":\"ok\",\"q\":0}",
+    "[MEMORY-HEALTH] byte_heap=24852 byte_largest=8180 heap_low=0 block_low=0 stack_low_mask=0 allocation_failures=0 allocation_delta=0 changed=0 monotonic_ms=23044",
+    "[MEMORY-HEALTH] task=uart active=1 stack_free=1332 low=0 monotonic_ms=23044",
+    "[MEMORY-HEALTH] task=process active=1 stack_free=3104 low=0 monotonic_ms=23044",
+    "[MEMORY-HEALTH] task=writer active=1 stack_free=4884 low=0 monotonic_ms=23044",
+    "[MEMORY-HEALTH] task=i2c active=0 stack_free=0 low=0 monotonic_ms=23044",
+    "[MEMORY-HEALTH] task=ttc active=1 stack_free=6136 low=0 monotonic_ms=23044",
+    "[MEMORY-HEALTH] task=loop active=1 stack_free=4892 low=0 monotonic_ms=23044",
+    "{\"n\":122,\"t\":\"ack\",\"seq\":61632,\"cmd\":\"ping\",\"st\":\"ok\",\"q\":0}",
+    "{\"n\":123,\"t\":\"tm\",\"ts\":1700000019,\"md\":\"bench\",\"vb\":null,\"ib\":null,\"vs\":null,\"is\":null,\"tp\":null,\"w\":null,\"az\":null,\"ac\":0,\"msg\":null,\"rssi\":null,\"snr\":null,\"rx\":79,\"err\":0,\"rst\":22}",
+    "[TT&C] Falha no TX de 181 bytes.",
+    "{\"n\":124,\"t\":\"ack\",\"seq\":61633,\"cmd\":\"request_tm\",\"st\":\"ok\",\"q\":0}",
+    "[FLOW] received=24 invalid=1 gaps=0 duplicates=1 written=85 failures=0 dropped=55 SD=1 status=0 poll_gap_ms=338 process_gap_ms=2501 stack_rx=3104 stack_sd=4884 stack_uart=1332 uart_full=595",
+    "[FLOW-MEMORY] heap=96232 byte_heap=24852 byte_largest=8180 byte_min=14156 parser_peak_bytes=7190 parser_limit_bytes=98304",
+    "[TT&C] ERRO: SX1276 sem resposta ou fora de RX, reinicializando.",
+    "[STORAGE] state=0 attempt=0 episodes=0 attempts=0 recovered=0 exhausted=0 lifecycle_failures=0 cause=0 end=0 status=0 monotonic_ms=23222",
+    "[HEALTH] task=uart state=ok activity=idle age_ms=1 limit_ms=100 completions=22762 sampled_ms=23203 changed=0",
+    "[TT&C] ERRO: SX1276 nao responde.",
+    "[HEALTH] task=process state=ok activity=idle age_ms=1 limit_ms=2000 completions=19582 sampled_ms=23203 changed=0",
+    "[HEALTH] task=writer state=ok activity=list age_ms=37 limit_ms=5000 completions=409 sampled_ms=23203 changed=0",
+    "[DELIVERY] occupied=0 peak=7 accepted=7 repeated=140 lost=0 storage_failures=0 attempts=7 tx_failures=0 confirmed=7 unknown=0 evicted=0 recovery_slot=0",
+    "[TTC-HEALTH] state=ok radio=unavailable updating=0 wired_ready=1 age_ms=11 limit_ms=2000 completions=1206 rf_seen=0 rf_age_ms=0 wired_seen=1 wired_age_ms=327 resets=23 changed=0 monotonic_ms=23428",
+    "[I2C-HEALTH] state=inactive service=uninitialized activity=inactive age_ms=0 limit_ms=0 sampled_ms=0 monotonic_ms=23438 changed=0 queued=0 cause=0 failure=0 cycles=0 recovered=0 exhausted=0",
+    "{\"n\":125,\"t\":\"ack\",\"seq\":61634,\"cmd\":\"ping\",\"st\":\"ok\",\"q\":0}",
+    "{\"n\":126,\"t\":\"tm\",\"ts\":1700000020,\"md\":\"bench\",\"vb\":null,\"ib\":null,\"vs\":null,\"is\":null,\"tp\":null,\"w\":null,\"az\":null,\"ac\":0,\"msg\":null,\"rssi\":null,\"snr\":null,\"rx\":81,\"err\":0,\"rst\":23}",
+    "[TT&C] Falha no TX de 181 bytes.",
+    "{\"n\":127,\"t\":\"ack\",\"seq\":61635,\"cmd\":\"request_tm\",\"st\":\"ok\",\"q\":0}",
+    "[HEALTH-CHECK] scan_end=1 operations=32 elapsed_ms=6465 monotonic_ms=24015",
+    "[MEMORY-HEALTH] byte_heap=24852 byte_largest=8180 heap_low=0 block_low=0 stack_low_mask=0 allocation_failures=0 allocation_delta=0 changed=0 monotonic_ms=24047",
+    "[MEMORY-HEALTH] task=uart active=1 stack_free=1332 low=0 monotonic_ms=24047",
+    "[MEMORY-HEALTH] task=process active=1 stack_free=3104 low=0 monotonic_ms=24047",
+    "[MEMORY-HEALTH] task=writer active=1 stack_free=4884 low=0 monotonic_ms=24047",
+    "[MEMORY-HEALTH] task=i2c active=0 stack_free=0 low=0 monotonic_ms=24047",
+    "[MEMORY-HEALTH] task=ttc active=1 stack_free=6136 low=0 monotonic_ms=24047",
+    "[MEMORY-HEALTH] task=loop active=1 stack_free=4892 low=0 monotonic_ms=24047",
+    "[FLOW-CHECK] v3 ts_available=1 ts=1700000013 ac_available=1 ac=0 msg_available=0 stable=1",
+    "[FLOW] received=24 invalid=1 gaps=0 duplicates=1 written=87 failures=0 dropped=58 SD=1 status=0 poll_gap_ms=338 process_gap_ms=2501 stack_rx=3104 stack_sd=4884 stack_uart=1332 uart_full=595",
+    "[TT&C] ERRO: SX1276 sem resposta ou fora de RX, reinicializando.",
+    "[FLOW-MEMORY] heap=96232 byte_heap=24852 byte_largest=8180 byte_min=14156 parser_peak_bytes=7190 parser_limit_bytes=98304",
+    "[STORAGE] state=0 attempt=0 episodes=0 attempts=0 recovered=0 exhausted=0 lifecycle_failures=0 cause=0 end=0 status=0 monotonic_ms=24241",
+    "[TT&C] ERRO: SX1276 nao responde.",
+    "[HEALTH] task=uart state=ok activity=idle age_ms=1 limit_ms=100 completions=23761 sampled_ms=24202 changed=0",
+    "[HEALTH] task=process state=ok activity=idle age_ms=1 limit_ms=2000 completions=20581 sampled_ms=24202 changed=0",
+    "[HEALTH] task=writer state=ok activity=write age_ms=85 limit_ms=5000 completions=511 sampled_ms=24202 changed=0",
+    "[DELIVERY] occupied=0 peak=7 accepted=7 repeated=140 lost=0 storage_failures=0 attempts=7 tx_failures=0 confirmed=7 unknown=0 evicted=0 recovery_slot=0",
+    "{\"n\":128,\"t\":\"ack\",\"seq\":61636,\"cmd\":\"ping\",\"st\":\"ok\",\"q\":0}",
+    "{\"n\":129,\"t\":\"tm\",\"ts\":1700000021,\"md\":\"bench\",\"vb\":null,\"ib\":null,\"vs\":null,\"is\":null,\"tp\":null,\"w\":null,\"az\":null,\"ac\":0,\"msg\":null,\"rssi\":null,\"snr\":null,\"rx\":83,\"err\":0,\"rst\":24}",
+    "[TT&C] Falha no TX de 181 bytes.",
+    "{\"n\":130,\"t\":\"ack\",\"seq\":61637,\"cmd\":\"request_tm\",\"st\":\"ok\",\"q\":0}",
+    "[FLOW-CHECK] v3 ts_available=1 ts=1700000014 ac_available=1 ac=0 msg_available=0 stable=1",
+    "[TTC-HEALTH] state=ok radio=unavailable updating=0 wired_ready=1 age_ms=10 limit_ms=2000 completions=1257 rf_seen=0 rf_age_ms=0 wired_seen=1 wired_age_ms=102 resets=24 changed=0 monotonic_ms=24431",
+    "[I2C-HEALTH] state=inactive service=uninitialized activity=inactive age_ms=0 limit_ms=0 sampled_ms=0 monotonic_ms=24441 changed=0 queued=0 cause=0 failure=0 cycles=0 recovered=0 exhausted=0",
+    "[FLOW-CHECK] v3 ts_available=1 ts=1700000014 ac_available=1 ac=0 msg_available=0 stable=1",
+    "[FLOW-CHECK] v3 ts_available=1 ts=1700000015 ac_available=1 ac=0 msg_available=0 stable=1",
+    "{\"n\":131,\"t\":\"ack\",\"seq\":61638,\"cmd\":\"ping\",\"st\":\"ok\",\"q\":0}",
+    "{\"n\":132,\"t\":\"tm\",\"ts\":1700000021,\"md\":\"bench\",\"vb\":null,\"ib\":null,\"vs\":null,\"is\":null,\"tp\":null,\"w\":null,\"az\":null,\"ac\":0,\"msg\":null,\"rssi\":null,\"snr\":null,\"rx\":85,\"err\":0,\"rst\":24}",
+    "[TT&C] Falha no TX de 181 bytes.",
+    "{\"n\":133,\"t\":\"ack\",\"seq\":61639,\"cmd\":\"request_tm\",\"st\":\"ok\",\"q\":0}",
+    "[FLOW-CHECK] v3 ts_available=1 ts=1700000015 ac_available=1 ac=0 msg_available=0 stable=1",
+    "[HEALTH-CHECK] recovery_begin=1 monotonic_ms=25023",
+    "[MEMORY-HEALTH] byte_heap=24852 byte_largest=8180 heap_low=0 block_low=0 stack_low_mask=0 allocation_failures=0 allocation_delta=0 changed=0 monotonic_ms=25049",
+    "[MEMORY-HEALTH] task=uart active=1 stack_free=1332 low=0 monotonic_ms=25049",
+    "[MEMORY-HEALTH] task=process active=1 stack_free=3104 low=0 monotonic_ms=25049",
+    "[MEMORY-HEALTH] task=writer active=1 stack_free=4884 low=0 monotonic_ms=25049",
+    "[MEMORY-HEALTH] task=i2c active=0 stack_free=0 low=0 monotonic_ms=25049",
+    "[MEMORY-HEALTH] task=ttc active=1 stack_free=6136 low=0 monotonic_ms=25049",
+    "[MEMORY-HEALTH] task=loop active=1 stack_free=4892 low=0 monotonic_ms=25049",
+    "[FLOW] received=24 invalid=1 gaps=0 duplicates=1 written=95 failures=1 dropped=60 SD=0 status=13 poll_gap_ms=338 process_gap_ms=2501 stack_rx=3104 stack_sd=4884 stack_uart=1332 uart_full=595",
+    "[TT&C] ERRO: SX1276 sem resposta ou fora de RX, reinicializando.",
+    "[FLOW-MEMORY] heap=96232 byte_heap=24852 byte_largest=8180 byte_min=14156 parser_peak_bytes=7190 parser_limit_bytes=98304",
+    "[STORAGE] state=1 attempt=0 episodes=1 attempts=0 recovered=0 exhausted=0 lifecycle_failures=0 cause=13 end=0 status=0 monotonic_ms=25243",
+    "[TT&C] ERRO: SX1276 nao responde.",
+    "[HEALTH] task=uart state=ok activity=idle age_ms=1 limit_ms=100 completions=24763 sampled_ms=25204 changed=0",
+    "[HEALTH] task=process state=ok activity=idle age_ms=1 limit_ms=2000 completions=21583 sampled_ms=25204 changed=0",
+    "[HEALTH] task=writer state=ok activity=recovery_wait age_ms=20 limit_ms=5000 completions=543 sampled_ms=25204 changed=0",
+    "[DELIVERY] occupied=0 peak=7 accepted=7 repeated=140 lost=0 storage_failures=0 attempts=7 tx_failures=0 confirmed=7 unknown=0 evicted=0 recovery_slot=0",
+    "{\"n\":134,\"t\":\"ack\",\"seq\":61640,\"cmd\":\"ping\",\"st\":\"ok\",\"q\":20}",
+    "{\"n\":135,\"t\":\"tm\",\"ts\":1700000022,\"md\":\"bench\",\"vb\":null,\"ib\":null,\"vs\":null,\"is\":null,\"tp\":null,\"w\":null,\"az\":null,\"ac\":0,\"msg\":null,\"rssi\":null,\"snr\":null,\"rx\":87,\"err\":0,\"rst\":25}",
+    "[TT&C] Falha no TX de 181 bytes.",
+    "{\"n\":136,\"t\":\"ack\",\"seq\":61641,\"cmd\":\"request_tm\",\"st\":\"ok\",\"q\":0}",
+    "[TTC-HEALTH] state=ok radio=unavailable updating=0 wired_ready=1 age_ms=9 limit_ms=2000 completions=1309 rf_seen=0 rf_age_ms=0 wired_seen=1 wired_age_ms=102 resets=25 changed=0 monotonic_ms=25432",
+    "[I2C-HEALTH] state=inactive service=uninitialized activity=inactive age_ms=0 limit_ms=0 sampled_ms=0 monotonic_ms=25442 changed=0 queued=0 cause=0 failure=0 cycles=0 recovered=0 exhausted=0",
+    "{\"n\":137,\"t\":\"ack\",\"seq\":61642,\"cmd\":\"ping\",\"st\":\"ok\",\"q\":0}",
+    "{\"n\":138,\"t\":\"tm\",\"ts\":1700000022,\"md\":\"bench\",\"vb\":null,\"ib\":null,\"vs\":null,\"is\":null,\"tp\":null,\"w\":null,\"az\":null,\"ac\":0,\"msg\":null,\"rssi\":null,\"snr\":null,\"rx\":89,\"err\":0,\"rst\":25}",
+    "[TT&C] Falha no TX de 181 bytes.",
+    "{\"n\":139,\"t\":\"ack\",\"seq\":61643,\"cmd\":\"request_tm\",\"st\":\"ok\",\"q\":0}",
+    "[MEMORY-HEALTH] byte_heap=24852 byte_largest=8180 heap_low=0 block_low=0 stack_low_mask=0 allocation_failures=0 allocation_delta=0 changed=0 monotonic_ms=26050",
+    "[MEMORY-HEALTH] task=uart active=1 stack_free=1332 low=0 monotonic_ms=26050",
+    "[MEMORY-HEALTH] task=process active=1 stack_free=3104 low=0 monotonic_ms=26050",
+    "[MEMORY-HEALTH] task=writer active=1 stack_free=4884 low=0 monotonic_ms=26050",
+    "[MEMORY-HEALTH] task=i2c active=0 stack_free=0 low=0 monotonic_ms=26050",
+    "[MEMORY-HEALTH] task=ttc active=1 stack_free=6136 low=0 monotonic_ms=26050",
+    "[MEMORY-HEALTH] task=loop active=1 stack_free=4892 low=0 monotonic_ms=26050",
+    "[FLOW] received=24 invalid=1 gaps=0 duplicates=1 written=95 failures=1 dropped=64 SD=0 status=13 poll_gap_ms=338 process_gap_ms=2501 stack_rx=3104 stack_sd=4884 stack_uart=1332 uart_full=595",
+    "[TT&C] ERRO: SX1276 sem resposta ou fora de RX, reinicializando.",
+    "[FLOW-MEMORY] heap=96232 byte_heap=24852 byte_largest=8180 byte_min=14156 parser_peak_bytes=7190 parser_limit_bytes=98304",
+    "[STORAGE] state=1 attempt=0 episodes=1 attempts=0 recovered=0 exhausted=0 lifecycle_failures=0 cause=13 end=0 status=0 monotonic_ms=26244",
+    "[TT&C] ERRO: SX1276 nao responde.",
+    "[HEALTH] task=uart state=ok activity=idle age_ms=1 limit_ms=100 completions=25763 sampled_ms=26205 changed=0",
+    "[HEALTH] task=process state=ok activity=idle age_ms=1 limit_ms=2000 completions=22583 sampled_ms=26205 changed=0",
+    "[HEALTH] task=writer state=ok activity=recovery_wait age_ms=19 limit_ms=5000 completions=593 sampled_ms=26205 changed=0",
+    "[DELIVERY] occupied=0 peak=7 accepted=7 repeated=140 lost=0 storage_failures=0 attempts=7 tx_failures=0 confirmed=7 unknown=0 evicted=0 recovery_slot=0",
+    "{\"n\":140,\"t\":\"ack\",\"seq\":61644,\"cmd\":\"ping\",\"st\":\"ok\",\"q\":10}",
+    "{\"n\":141,\"t\":\"tm\",\"ts\":1700000023,\"md\":\"bench\",\"vb\":null,\"ib\":null,\"vs\":null,\"is\":null,\"tp\":null,\"w\":null,\"az\":null,\"ac\":0,\"msg\":null,\"rssi\":null,\"snr\":null,\"rx\":91,\"err\":0,\"rst\":26}",
+    "[TT&C] Falha no TX de 181 bytes.",
+    "{\"n\":142,\"t\":\"ack\",\"seq\":61645,\"cmd\":\"request_tm\",\"st\":\"ok\",\"q\":0}",
+    "[TTC-HEALTH] state=ok radio=unavailable updating=0 wired_ready=1 age_ms=9 limit_ms=2000 completions=1360 rf_seen=0 rf_age_ms=0 wired_seen=1 wired_age_ms=101 resets=26 changed=0 monotonic_ms=26433",
+    "[I2C-HEALTH] state=inactive service=uninitialized activity=inactive age_ms=0 limit_ms=0 sampled_ms=0 monotonic_ms=26443 changed=0 queued=0 cause=0 failure=0 cycles=0 recovered=0 exhausted=0",
+    "{\"n\":143,\"t\":\"ack\",\"seq\":61646,\"cmd\":\"ping\",\"st\":\"ok\",\"q\":0}",
+    "{\"n\":144,\"t\":\"tm\",\"ts\":1700000023,\"md\":\"bench\",\"vb\":null,\"ib\":null,\"vs\":null,\"is\":null,\"tp\":null,\"w\":null,\"az\":null,\"ac\":0,\"msg\":null,\"rssi\":null,\"snr\":null,\"rx\":93,\"err\":0,\"rst\":26}",
+    "[TT&C] Falha no TX de 181 bytes.",
+    "{\"n\":145,\"t\":\"ack\",\"seq\":61647,\"cmd\":\"request_tm\",\"st\":\"ok\",\"q\":0}",
+    "[MEMORY-HEALTH] byte_heap=24852 byte_largest=8180 heap_low=0 block_low=0 stack_low_mask=0 allocation_failures=0 allocation_delta=0 changed=0 monotonic_ms=27050",
+    "[MEMORY-HEALTH] task=uart active=1 stack_free=1332 low=0 monotonic_ms=27050",
+    "[MEMORY-HEALTH] task=process active=1 stack_free=3104 low=0 monotonic_ms=27050",
+    "[MEMORY-HEALTH] task=writer active=1 stack_free=4884 low=0 monotonic_ms=27050",
+    "[MEMORY-HEALTH] task=i2c active=0 stack_free=0 low=0 monotonic_ms=27050",
+    "[MEMORY-HEALTH] task=ttc active=1 stack_free=6136 low=0 monotonic_ms=27050",
+    "[MEMORY-HEALTH] task=loop active=1 stack_free=4892 low=0 monotonic_ms=27050",
+    "[FLOW] received=24 invalid=1 gaps=0 duplicates=1 written=95 failures=1 dropped=68 SD=0 status=13 poll_gap_ms=338 process_gap_ms=2501 stack_rx=3104 stack_sd=4884 stack_uart=1332 uart_full=595",
+    "[TT&C] ERRO: SX1276 sem resposta ou fora de RX, reinicializando.",
+    "[FLOW-MEMORY] heap=96232 byte_heap=24852 byte_largest=8180 byte_min=14156 parser_peak_bytes=7190 parser_limit_bytes=98304",
+    "[STORAGE] state=1 attempt=0 episodes=1 attempts=0 recovered=0 exhausted=0 lifecycle_failures=0 cause=13 end=0 status=0 monotonic_ms=27244",
+    "[TT&C] ERRO: SX1276 nao responde.",
+    "[HEALTH] task=uart state=ok activity=idle age_ms=1 limit_ms=100 completions=26763 sampled_ms=27205 changed=0",
+    "[HEALTH] task=process state=ok activity=idle age_ms=1 limit_ms=2000 completions=23583 sampled_ms=27205 changed=0",
+    "[HEALTH] task=writer state=ok activity=recovery_wait age_ms=17 limit_ms=5000 completions=643 sampled_ms=27205 changed=0",
+    "[DELIVERY] occupied=0 peak=7 accepted=7 repeated=140 lost=0 storage_failures=0 attempts=7 tx_failures=0 confirmed=7 unknown=0 evicted=0 recovery_slot=0",
+    "[TTC-HEALTH] state=ok radio=unavailable updating=1 wired_ready=1 age_ms=0 limit_ms=2000 completions=1412 rf_seen=0 rf_age_ms=0 wired_seen=1 wired_age_ms=1 resets=27 changed=0 monotonic_ms=27451",
+    "{\"n\":146,\"t\":\"ack\",\"seq\":61648,\"cmd\":\"ping\",\"st\":\"ok\",\"q\":0}",
+    "[I2C-HEALTH] state=inactive service=uninitialized activity=inactive age_ms=0 limit_ms=0 sampled_ms=0 monotonic_ms=27461 changed=0 queued=0 cause=0 failure=0 cycles=0 recovered=0 exhausted=0",
+    "{\"n\":147,\"t\":\"tm\",\"ts\":1700000024,\"md\":\"bench\",\"vb\":null,\"ib\":null,\"vs\":null,\"is\":null,\"tp\":null,\"w\":null,\"az\":null,\"ac\":0,\"msg\":null,\"rssi\":null,\"snr\":null,\"rx\":95,\"err\":0,\"rst\":27}",
+    "[TT&C] Falha no TX de 181 bytes.",
+    "{\"n\":148,\"t\":\"ack\",\"seq\":61649,\"cmd\":\"request_tm\",\"st\":\"ok\",\"q\":31}",
+    "{\"n\":149,\"t\":\"ack\",\"seq\":61650,\"cmd\":\"ping\",\"st\":\"ok\",\"q\":0}",
+    "{\"n\":150,\"t\":\"tm\",\"ts\":1700000024,\"md\":\"bench\",\"vb\":null,\"ib\":null,\"vs\":null,\"is\":null,\"tp\":null,\"w\":null,\"az\":null,\"ac\":0,\"msg\":null,\"rssi\":null,\"snr\":null,\"rx\":97,\"err\":0,\"rst\":27}",
+    "[TT&C] Falha no TX de 181 bytes.",
+    "{\"n\":151,\"t\":\"ack\",\"seq\":61651,\"cmd\":\"request_tm\",\"st\":\"ok\",\"q\":0}",
+    "[MEMORY-HEALTH] byte_heap=24852 byte_largest=8180 heap_low=0 block_low=0 stack_low_mask=0 allocation_failures=0 allocation_delta=0 changed=0 monotonic_ms=28078",
+    "[MEMORY-HEALTH] task=uart active=1 stack_free=1332 low=0 monotonic_ms=28078",
+    "[MEMORY-HEALTH] task=process active=1 stack_free=3104 low=0 monotonic_ms=28078",
+    "[MEMORY-HEALTH] task=writer active=1 stack_free=4884 low=0 monotonic_ms=28078",
+    "[MEMORY-HEALTH] task=i2c active=0 stack_free=0 low=0 monotonic_ms=28078",
+    "[MEMORY-HEALTH] task=ttc active=1 stack_free=6008 low=0 monotonic_ms=28078",
+    "[MEMORY-HEALTH] task=loop active=1 stack_free=4892 low=0 monotonic_ms=28078",
+    "[FLOW] received=24 invalid=1 gaps=0 duplicates=1 written=95 failures=1 dropped=72 SD=0 status=13 poll_gap_ms=338 process_gap_ms=2501 stack_rx=3104 stack_sd=4884 stack_uart=1332 uart_full=595",
+    "[FLOW-MEMORY] heap=96232 byte_heap=24852 byte_largest=8180 byte_min=14156 parser_peak_bytes=7190 parser_limit_bytes=98304",
+    "[TT&C] ERRO: SX1276 sem resposta ou fora de RX, reinicializando.",
+    "[STORAGE] state=1 attempt=0 episodes=1 attempts=0 recovered=0 exhausted=0 lifecycle_failures=0 cause=13 end=0 status=0 monotonic_ms=28252",
+    "[HEALTH] task=uart state=ok activity=idle age_ms=1 limit_ms=100 completions=27790 sampled_ms=28233 changed=0",
+    "[TT&C] ERRO: SX1276 nao responde.",
+    "[HEALTH] task=process state=ok activity=idle age_ms=1 limit_ms=2000 completions=24610 sampled_ms=28233 changed=0",
+    "[HEALTH] task=writer state=ok activity=recovery_wait age_ms=3 limit_ms=5000 completions=695 sampled_ms=28233 changed=0",
+    "[DELIVERY] occupied=0 peak=7 accepted=7 repeated=140 lost=0 storage_failures=0 attempts=7 tx_failures=0 confirmed=7 unknown=0 evicted=0 recovery_slot=0",
+    "[TTC-HEALTH] state=ok radio=unavailable updating=0 wired_ready=1 age_ms=11 limit_ms=2000 completions=1464 rf_seen=0 rf_age_ms=0 wired_seen=1 wired_age_ms=410 resets=28 changed=0 monotonic_ms=28458",
+    "[I2C-HEALTH] state=inactive service=uninitialized activity=inactive age_ms=0 limit_ms=0 sampled_ms=0 monotonic_ms=28468 changed=0 queued=0 cause=0 failure=0 cycles=0 recovered=0 exhausted=0",
+    "{\"n\":152,\"t\":\"ack\",\"seq\":61652,\"cmd\":\"ping\",\"st\":\"ok\",\"q\":0}",
+    "{\"n\":153,\"t\":\"tm\",\"ts\":1700000025,\"md\":\"bench\",\"vb\":null,\"ib\":null,\"vs\":null,\"is\":null,\"tp\":null,\"w\":null,\"az\":null,\"ac\":0,\"msg\":null,\"rssi\":null,\"snr\":null,\"rx\":99,\"err\":0,\"rst\":28}",
+    "[TT&C] Falha no TX de 181 bytes.",
+    "{\"n\":154,\"t\":\"ack\",\"seq\":61653,\"cmd\":\"request_tm\",\"st\":\"ok\",\"q\":0}",
+    "[MEMORY-HEALTH] byte_heap=24852 byte_largest=8180 heap_low=0 block_low=0 stack_low_mask=0 allocation_failures=0 allocation_delta=0 changed=0 monotonic_ms=29089",
+    "[MEMORY-HEALTH] task=uart active=1 stack_free=1332 low=0 monotonic_ms=29089",
+    "[MEMORY-HEALTH] task=process active=1 stack_free=3104 low=0 monotonic_ms=29089",
+    "[MEMORY-HEALTH] task=writer active=1 stack_free=4884 low=0 monotonic_ms=29089",
+    "[MEMORY-HEALTH] task=i2c active=0 stack_free=0 low=0 monotonic_ms=29089",
+    "[MEMORY-HEALTH] task=ttc active=1 stack_free=6008 low=0 monotonic_ms=29089",
+    "[MEMORY-HEALTH] task=loop active=1 stack_free=4892 low=0 monotonic_ms=29089",
+    "{\"n\":155,\"t\":\"ack\",\"seq\":61654,\"cmd\":\"ping\",\"st\":\"ok\",\"q\":0}",
+    "{\"n\":156,\"t\":\"ack\",\"seq\":61655,\"cmd\":\"request_tm\",\"st\":\"ok\",\"q\":0}",
+    "{\"n\":157,\"t\":\"tm\",\"ts\":1700000026,\"md\":\"bench\",\"vb\":null,\"ib\":null,\"vs\":null,\"is\":null,\"tp\":null,\"w\":null,\"az\":null,\"ac\":0,\"msg\":null,\"rssi\":null,\"snr\":null,\"rx\":101,\"err\":0,\"rst\":28}",
+    "[TT&C] Falha no TX de 182 bytes.",
+    "[FLOW] received=24 invalid=1 gaps=0 duplicates=1 written=95 failures=1 dropped=76 SD=0 status=13 poll_gap_ms=338 process_gap_ms=2501 stack_rx=3104 stack_sd=4884 stack_uart=1332 uart_full=595",
+    "[FLOW-MEMORY] heap=96232 byte_heap=24852 byte_largest=8180 byte_min=14156 parser_peak_bytes=7190 parser_limit_bytes=98304",
+    "[TT&C] ERRO: SX1276 sem resposta ou fora de RX, reinicializando.",
+    "[STORAGE] state=1 attempt=0 episodes=1 attempts=0 recovered=0 exhausted=0 lifecycle_failures=0 cause=13 end=0 status=0 monotonic_ms=29267",
+    "[HEALTH] task=uart state=ok activity=idle age_ms=1 limit_ms=100 completions=28805 sampled_ms=29248 changed=0",
+    "[TT&C] ERRO: SX1276 nao responde.",
+    "[HEALTH] task=process state=ok activity=idle age_ms=1 limit_ms=2000 completions=25625 sampled_ms=29248 changed=0",
+    "[HEALTH] task=writer state=ok activity=recovery_wait age_ms=17 limit_ms=5000 completions=745 sampled_ms=29248 changed=0",
+    "[DELIVERY] occupied=0 peak=7 accepted=7 repeated=140 lost=0 storage_failures=0 attempts=7 tx_failures=0 confirmed=7 unknown=0 evicted=0 recovery_slot=0",
+    "[TTC-HEALTH] state=ok radio=unavailable updating=0 wired_ready=1 age_ms=11 limit_ms=2000 completions=1517 rf_seen=0 rf_age_ms=0 wired_seen=1 wired_age_ms=337 resets=29 changed=0 monotonic_ms=29473",
+    "[I2C-HEALTH] state=inactive service=uninitialized activity=inactive age_ms=0 limit_ms=0 sampled_ms=0 monotonic_ms=29483 changed=0 queued=0 cause=0 failure=0 cycles=0 recovered=0 exhausted=0",
+    "{\"n\":158,\"t\":\"ack\",\"seq\":61656,\"cmd\":\"ping\",\"st\":\"ok\",\"q\":0}",
+    "{\"n\":159,\"t\":\"tm\",\"ts\":1700000026,\"md\":\"bench\",\"vb\":null,\"ib\":null,\"vs\":null,\"is\":null,\"tp\":null,\"w\":null,\"az\":null,\"ac\":0,\"msg\":null,\"rssi\":null,\"snr\":null,\"rx\":103,\"err\":0,\"rst\":29}",
+    "[TT&C] Falha no TX de 182 bytes.",
+    "{\"n\":160,\"t\":\"ack\",\"seq\":61657,\"cmd\":\"request_tm\",\"st\":\"ok\",\"q\":0}",
+    "[FLOW-CHECK] Arquivo simulado: boot_0000000000000046_0000000f.bin",
+    "[MEMORY-HEALTH] byte_heap=24852 byte_largest=8180 heap_low=0 block_low=0 stack_low_mask=0 allocation_failures=0 allocation_delta=0 changed=0 monotonic_ms=30103",
+    "[MEMORY-HEALTH] task=uart active=1 stack_free=1332 low=0 monotonic_ms=30103",
+    "[MEMORY-HEALTH] task=process active=1 stack_free=3104 low=0 monotonic_ms=30103",
+    "[MEMORY-HEALTH] task=writer active=1 stack_free=4884 low=0 monotonic_ms=30103",
+    "[MEMORY-HEALTH] task=i2c active=0 stack_free=0 low=0 monotonic_ms=30103",
+    "[MEMORY-HEALTH] task=ttc active=1 stack_free=6008 low=0 monotonic_ms=30103",
+    "[MEMORY-HEALTH] task=loop active=1 stack_free=4892 low=0 monotonic_ms=30103",
+    "{\"n\":161,\"t\":\"ack\",\"seq\":61658,\"cmd\":\"ping\",\"st\":\"ok\",\"q\":0}",
+    "{\"n\":162,\"t\":\"tm\",\"ts\":1700000027,\"md\":\"bench\",\"vb\":null,\"ib\":null,\"vs\":null,\"is\":null,\"tp\":null,\"w\":null,\"az\":null,\"ac\":0,\"msg\":null,\"rssi\":null,\"snr\":null,\"rx\":105,\"err\":0,\"rst\":29}",
+    "[TT&C] Falha no TX de 182 bytes.",
+    "{\"n\":163,\"t\":\"ack\",\"seq\":61659,\"cmd\":\"request_tm\",\"st\":\"ok\",\"q\":0}",
+    "[FLOW] received=24 invalid=1 gaps=0 duplicates=1 written=95 failures=1 dropped=80 SD=0 status=13 poll_gap_ms=338 process_gap_ms=2501 stack_rx=3104 stack_sd=4884 stack_uart=1332 uart_full=595",
+    "[FLOW-MEMORY] heap=96232 byte_heap=24852 byte_largest=8180 byte_min=14156 parser_peak_bytes=7190 parser_limit_bytes=98304",
+    "[TT&C] ERRO: SX1276 sem resposta ou fora de RX, reinicializando.",
+    "[STORAGE] state=1 attempt=0 episodes=1 attempts=0 recovered=0 exhausted=0 lifecycle_failures=0 cause=13 end=0 status=0 monotonic_ms=30281",
+    "[HEALTH] task=uart state=ok activity=idle age_ms=1 limit_ms=100 completions=29819 sampled_ms=30262 changed=0",
+    "[TT&C] ERRO: SX1276 nao responde.",
+    "[HEALTH] task=process state=ok activity=idle age_ms=1 limit_ms=2000 completions=26639 sampled_ms=30262 changed=0",
+    "[HEALTH] task=writer state=ok activity=read age_ms=2 limit_ms=5000 completions=846 sampled_ms=30262 changed=0",
+    "[DELIVERY] occupied=0 peak=7 accepted=7 repeated=140 lost=0 storage_failures=0 attempts=7 tx_failures=0 confirmed=7 unknown=0 evicted=0 recovery_slot=0",
+    "[TTC-HEALTH] state=ok radio=unavailable updating=0 wired_ready=1 age_ms=12 limit_ms=2000 completions=1570 rf_seen=0 rf_age_ms=0 wired_seen=1 wired_age_ms=328 resets=30 changed=0 monotonic_ms=30488",
+    "[I2C-HEALTH] state=inactive service=uninitialized activity=inactive age_ms=0 limit_ms=0 sampled_ms=0 monotonic_ms=30498 changed=0 queued=0 cause=0 failure=0 cycles=0 recovered=0 exhausted=0",
+    "{\"n\":164,\"t\":\"ack\",\"seq\":61660,\"cmd\":\"ping\",\"st\":\"ok\",\"q\":0}",
+    "{\"n\":165,\"t\":\"tm\",\"ts\":1700000027,\"md\":\"bench\",\"vb\":null,\"ib\":null,\"vs\":null,\"is\":null,\"tp\":null,\"w\":null,\"az\":null,\"ac\":0,\"msg\":null,\"rssi\":null,\"snr\":null,\"rx\":107,\"err\":0,\"rst\":30}",
+    "[TT&C] Falha no TX de 182 bytes.",
+    "{\"n\":166,\"t\":\"ack\",\"seq\":61661,\"cmd\":\"request_tm\",\"st\":\"ok\",\"q\":0}",
+    "[FLOW-CHECK] v3 ts_available=1 ts=1700000027 ac_available=1 ac=0 msg_available=0 stable=1",
+    "[HEALTH-CHECK] recovery_end=1 done=1 monotonic_ms=30846",
+    "[MEMORY-HEALTH] byte_heap=24852 byte_largest=8180 heap_low=0 block_low=0 stack_low_mask=0 allocation_failures=0 allocation_delta=0 changed=0 monotonic_ms=31109",
+    "[MEMORY-HEALTH] task=uart active=1 stack_free=1332 low=0 monotonic_ms=31109",
+    "[MEMORY-HEALTH] task=process active=1 stack_free=3104 low=0 monotonic_ms=31109",
+    "[MEMORY-HEALTH] task=writer active=1 stack_free=4884 low=0 monotonic_ms=31109",
+    "[MEMORY-HEALTH] task=i2c active=0 stack_free=0 low=0 monotonic_ms=31109",
+    "[MEMORY-HEALTH] task=ttc active=1 stack_free=6008 low=0 monotonic_ms=31109",
+    "[MEMORY-HEALTH] task=loop active=1 stack_free=4892 low=0 monotonic_ms=31109",
+    "{\"n\":167,\"t\":\"ack\",\"seq\":61662,\"cmd\":\"ping\",\"st\":\"ok\",\"q\":0}",
+    "{\"n\":168,\"t\":\"ack\",\"seq\":61663,\"cmd\":\"request_tm\",\"st\":\"ok\",\"q\":0}",
+    "{\"n\":169,\"t\":\"tm\",\"ts\":1700000028,\"md\":\"bench\",\"vb\":null,\"ib\":null,\"vs\":null,\"is\":null,\"tp\":null,\"w\":null,\"az\":null,\"ac\":0,\"msg\":null,\"rssi\":null,\"snr\":null,\"rx\":109,\"err\":0,\"rst\":30}",
+    "[TT&C] Falha no TX de 182 bytes.",
+    "[FLOW-CHECK] v3 ts_available=1 ts=1700000028 ac_available=1 ac=0 msg_available=0 stable=1",
+    "[FLOW] received=24 invalid=1 gaps=0 duplicates=1 written=101 failures=1 dropped=82 SD=1 status=0 poll_gap_ms=338 process_gap_ms=2501 stack_rx=3104 stack_sd=4884 stack_uart=1332 uart_full=595",
+    "[FLOW-MEMORY] heap=96232 byte_heap=24852 byte_largest=8180 byte_min=14156 parser_peak_bytes=7190 parser_limit_bytes=98304",
+    "[TT&C] ERRO: SX1276 sem resposta ou fora de RX, reinicializando.",
+    "[STORAGE] state=0 attempt=0 episodes=1 attempts=1 recovered=1 exhausted=0 lifecycle_failures=0 cause=13 end=0 status=0 monotonic_ms=31288",
+    "[HEALTH] task=uart state=ok activity=idle age_ms=1 limit_ms=100 completions=30826 sampled_ms=31269 changed=0",
+    "[TT&C] ERRO: SX1276 nao responde.",
+    "[HEALTH] task=process state=ok activity=idle age_ms=1 limit_ms=2000 completions=27646 sampled_ms=31269 changed=0",
+    "[HEALTH] task=writer state=ok activity=idle age_ms=11 limit_ms=5000 completions=982 sampled_ms=31269 changed=0",
+    "[DELIVERY] occupied=0 peak=7 accepted=7 repeated=140 lost=0 storage_failures=0 attempts=7 tx_failures=0 confirmed=7 unknown=0 evicted=0 recovery_slot=0",
+    "[TTC-HEALTH] state=ok radio=unavailable updating=0 wired_ready=1 age_ms=11 limit_ms=2000 completions=1623 rf_seen=0 rf_age_ms=0 wired_seen=1 wired_age_ms=337 resets=31 changed=0 monotonic_ms=31494",
+    "[I2C-HEALTH] state=inactive service=uninitialized activity=inactive age_ms=0 limit_ms=0 sampled_ms=0 monotonic_ms=31504 changed=0 queued=0 cause=0 failure=0 cycles=0 recovered=0 exhausted=0",
+    "{\"n\":170,\"t\":\"ack\",\"seq\":61664,\"cmd\":\"ping\",\"st\":\"ok\",\"q\":0}",
+    "{\"n\":171,\"t\":\"tm\",\"ts\":1700000028,\"md\":\"bench\",\"vb\":null,\"ib\":null,\"vs\":null,\"is\":null,\"tp\":null,\"w\":null,\"az\":null,\"ac\":0,\"msg\":null,\"rssi\":null,\"snr\":null,\"rx\":111,\"err\":0,\"rst\":31}",
+    "[TT&C] Falha no TX de 182 bytes.",
+    "{\"n\":172,\"t\":\"ack\",\"seq\":61665,\"cmd\":\"request_tm\",\"st\":\"ok\",\"q\":0}",
+    "[FLOW-CHECK] v3 ts_available=1 ts=1700000028 ac_available=1 ac=0 msg_available=0 stable=1",
+    "[MEMORY-HEALTH] byte_heap=24852 byte_largest=8180 heap_low=0 block_low=0 stack_low_mask=0 allocation_failures=0 allocation_delta=0 changed=0 monotonic_ms=32123",
+    "[MEMORY-HEALTH] task=uart active=1 stack_free=1332 low=0 monotonic_ms=32123",
+    "[MEMORY-HEALTH] task=process active=1 stack_free=3104 low=0 monotonic_ms=32123",
+    "[MEMORY-HEALTH] task=writer active=1 stack_free=4884 low=0 monotonic_ms=32123",
+    "[MEMORY-HEALTH] task=i2c active=0 stack_free=0 low=0 monotonic_ms=32123",
+    "[MEMORY-HEALTH] task=ttc active=1 stack_free=6008 low=0 monotonic_ms=32123",
+    "[MEMORY-HEALTH] task=loop active=1 stack_free=4892 low=0 monotonic_ms=32123",
+    "{\"n\":173,\"t\":\"ack\",\"seq\":61666,\"cmd\":\"ping\",\"st\":\"ok\",\"q\":0}",
+    "[FLOW] received=24 invalid=1 gaps=0 duplicates=1 written=104 failures=1 dropped=82 SD=1 status=0 poll_gap_ms=338 process_gap_ms=2501 stack_rx=3104 stack_sd=4884 stack_uart=1332 uart_full=595",
+    "[TT&C] ERRO: SX1276 sem resposta ou fora de RX, reinicializando.",
+    "[FLOW-MEMORY] heap=96232 byte_heap=24852 byte_largest=8180 byte_min=14156 parser_peak_bytes=7190 parser_limit_bytes=98304",
+    "[STORAGE] state=0 attempt=0 episodes=1 attempts=1 recovered=1 exhausted=0 lifecycle_failures=0 cause=13 end=0 status=0 monotonic_ms=32298",
+    "[TT&C] ERRO: SX1276 nao responde.",
+    "[HEALTH] task=uart state=ok activity=idle age_ms=1 limit_ms=100 completions=31835 sampled_ms=32278 changed=0",
+    "[HEALTH] task=process state=ok activity=idle age_ms=1 limit_ms=2000 completions=28655 sampled_ms=32278 changed=0",
+    "[HEALTH] task=writer state=ok activity=idle age_ms=7 limit_ms=5000 completions=1024 sampled_ms=32278 changed=0",
+    "[DELIVERY] occupied=0 peak=7 accepted=7 repeated=140 lost=0 storage_failures=0 attempts=7 tx_failures=0 confirmed=7 unknown=0 evicted=0 recovery_slot=0",
+    "{\"n\":174,\"t\":\"tm\",\"ts\":1700000029,\"md\":\"bench\",\"vb\":null,\"ib\":null,\"vs\":null,\"is\":null,\"tp\":null,\"w\":null,\"az\":null,\"ac\":0,\"msg\":null,\"rssi\":null,\"snr\":null,\"rx\":113,\"err\":0,\"rst\":32}",
+    "[TT&C] Falha no TX de 182 bytes.",
+    "{\"n\":175,\"t\":\"ack\",\"seq\":61667,\"cmd\":\"request_tm\",\"st\":\"ok\",\"q\":94}",
+    "[FLOW-CHECK] v3 ts_available=1 ts=1700000029 ac_available=1 ac=0 msg_available=0 stable=1",
+    "[TTC-HEALTH] state=ok radio=unavailable updating=0 wired_ready=1 age_ms=10 limit_ms=2000 completions=1677 rf_seen=0 rf_age_ms=0 wired_seen=1 wired_age_ms=205 resets=32 changed=0 monotonic_ms=32505",
+    "[I2C-HEALTH] state=inactive service=uninitialized activity=inactive age_ms=0 limit_ms=0 sampled_ms=0 monotonic_ms=32515 changed=0 queued=0 cause=0 failure=0 cycles=0 recovered=0 exhausted=0",
+    "{\"n\":176,\"t\":\"ack\",\"seq\":61668,\"cmd\":\"ping\",\"st\":\"ok\",\"q\":0}",
+    "{\"n\":177,\"t\":\"tm\",\"ts\":1700000029,\"md\":\"bench\",\"vb\":null,\"ib\":null,\"vs\":null,\"is\":null,\"tp\":null,\"w\":null,\"az\":null,\"ac\":0,\"msg\":null,\"rssi\":null,\"snr\":null,\"rx\":115,\"err\":0,\"rst\":32}",
+    "[TT&C] Falha no TX de 182 bytes.",
+    "{\"n\":178,\"t\":\"ack\",\"seq\":61669,\"cmd\":\"request_tm\",\"st\":\"ok\",\"q\":0}"
+  ],
+  "health": [
+    {
+      "task": "uart",
+      "state": "ok",
+      "activity": "idle",
+      "age_ms": 1,
+      "limit_ms": 100,
+      "completions": 895,
+      "sampled_ms": 999,
+      "changed": 0
+    },
+    {
+      "task": "process",
+      "state": "ok",
+      "activity": "idle",
+      "age_ms": 1,
+      "limit_ms": 2000,
+      "completions": 894,
+      "sampled_ms": 999,
+      "changed": 0
+    },
+    {
+      "task": "writer",
+      "state": "ok",
+      "activity": "idle",
+      "age_ms": 20,
+      "limit_ms": 5000,
+      "completions": 43,
+      "sampled_ms": 999,
+      "changed": 0
+    },
+    {
+      "task": "uart",
+      "state": "ok",
+      "activity": "idle",
+      "age_ms": 1,
+      "limit_ms": 100,
+      "completions": 1882,
+      "sampled_ms": 1986,
+      "changed": 0
+    },
+    {
+      "task": "process",
+      "state": "ok",
+      "activity": "idle",
+      "age_ms": 1,
+      "limit_ms": 2000,
+      "completions": 1881,
+      "sampled_ms": 1986,
+      "changed": 0
+    },
+    {
+      "task": "writer",
+      "state": "ok",
+      "activity": "idle",
+      "age_ms": 20,
+      "limit_ms": 5000,
+      "completions": 86,
+      "sampled_ms": 1986,
+      "changed": 0
+    },
+    {
+      "task": "uart",
+      "state": "ok",
+      "activity": "idle",
+      "age_ms": 1,
+      "limit_ms": 100,
+      "completions": 2899,
+      "sampled_ms": 3003,
+      "changed": 0
+    },
+    {
+      "task": "process",
+      "state": "ok",
+      "activity": "idle",
+      "age_ms": 1,
+      "limit_ms": 2000,
+      "completions": 2898,
+      "sampled_ms": 3003,
+      "changed": 0
+    },
+    {
+      "task": "writer",
+      "state": "ok",
+      "activity": "idle",
+      "age_ms": 16,
+      "limit_ms": 5000,
+      "completions": 134,
+      "sampled_ms": 3003,
+      "changed": 0
+    },
+    {
+      "task": "uart",
+      "state": "ok",
+      "activity": "idle",
+      "age_ms": 1,
+      "limit_ms": 100,
+      "completions": 3895,
+      "sampled_ms": 3999,
+      "changed": 0
+    },
+    {
+      "task": "process",
+      "state": "ok",
+      "activity": "idle",
+      "age_ms": 1,
+      "limit_ms": 2000,
+      "completions": 3894,
+      "sampled_ms": 3999,
+      "changed": 0
+    },
+    {
+      "task": "writer",
+      "state": "ok",
+      "activity": "idle",
+      "age_ms": 3,
+      "limit_ms": 5000,
+      "completions": 172,
+      "sampled_ms": 3999,
+      "changed": 0
+    },
+    {
+      "task": "uart",
+      "state": "ok",
+      "activity": "idle",
+      "age_ms": 0,
+      "limit_ms": 100,
+      "completions": 4922,
+      "sampled_ms": 5025,
+      "changed": 0
+    },
+    {
+      "task": "process",
+      "state": "ok",
+      "activity": "idle",
+      "age_ms": 0,
+      "limit_ms": 2000,
+      "completions": 4395,
+      "sampled_ms": 5025,
+      "changed": 0
+    },
+    {
+      "task": "writer",
+      "state": "ok",
+      "activity": "write",
+      "age_ms": 75,
+      "limit_ms": 5000,
+      "completions": 195,
+      "sampled_ms": 5025,
+      "changed": 0
+    },
+    {
+      "task": "uart",
+      "state": "ok",
+      "activity": "idle",
+      "age_ms": 1,
+      "limit_ms": 100,
+      "completions": 5891,
+      "sampled_ms": 5995,
+      "changed": 0
+    },
+    {
+      "task": "process",
+      "state": "ok",
+      "activity": "idle",
+      "age_ms": 1,
+      "limit_ms": 2000,
+      "completions": 4874,
+      "sampled_ms": 5995,
+      "changed": 0
+    },
+    {
+      "task": "writer",
+      "state": "ok",
+      "activity": "write",
+      "age_ms": 84,
+      "limit_ms": 5000,
+      "completions": 224,
+      "sampled_ms": 5995,
+      "changed": 0
+    },
+    {
+      "task": "uart",
+      "state": "suspect",
+      "activity": "transport",
+      "age_ms": 175,
+      "limit_ms": 100,
+      "completions": 6026,
+      "sampled_ms": 6305,
+      "changed": 1
+    },
+    {
+      "task": "uart",
+      "state": "ok",
+      "activity": "idle",
+      "age_ms": 0,
+      "limit_ms": 100,
+      "completions": 6112,
+      "sampled_ms": 6552,
+      "changed": 1
+    },
+    {
+      "task": "uart",
+      "state": "ok",
+      "activity": "idle",
+      "age_ms": 1,
+      "limit_ms": 100,
+      "completions": 6650,
+      "sampled_ms": 7091,
+      "changed": 0
+    },
+    {
+      "task": "process",
+      "state": "ok",
+      "activity": "idle",
+      "age_ms": 1,
+      "limit_ms": 2000,
+      "completions": 5970,
+      "sampled_ms": 7091,
+      "changed": 0
+    },
+    {
+      "task": "writer",
+      "state": "ok",
+      "activity": "write",
+      "age_ms": 59,
+      "limit_ms": 5000,
+      "completions": 277,
+      "sampled_ms": 7091,
+      "changed": 0
+    },
+    {
+      "task": "uart",
+      "state": "ok",
+      "activity": "idle",
+      "age_ms": 1,
+      "limit_ms": 100,
+      "completions": 7650,
+      "sampled_ms": 8091,
+      "changed": 0
+    },
+    {
+      "task": "process",
+      "state": "ok",
+      "activity": "processing",
+      "age_ms": 624,
+      "limit_ms": 2000,
+      "completions": 6346,
+      "sampled_ms": 8091,
+      "changed": 0
+    },
+    {
+      "task": "writer",
+      "state": "ok",
+      "activity": "write",
+      "age_ms": 96,
+      "limit_ms": 5000,
+      "completions": 309,
+      "sampled_ms": 8091,
+      "changed": 0
+    },
+    {
+      "task": "uart",
+      "state": "ok",
+      "activity": "idle",
+      "age_ms": 1,
+      "limit_ms": 100,
+      "completions": 8658,
+      "sampled_ms": 9099,
+      "changed": 0
+    },
+    {
+      "task": "process",
+      "state": "ok",
+      "activity": "processing",
+      "age_ms": 1632,
+      "limit_ms": 2000,
+      "completions": 6346,
+      "sampled_ms": 9099,
+      "changed": 0
+    },
+    {
+      "task": "writer",
+      "state": "ok",
+      "activity": "write",
+      "age_ms": 83,
+      "limit_ms": 5000,
+      "completions": 327,
+      "sampled_ms": 9099,
+      "changed": 0
+    },
+    {
+      "task": "process",
+      "state": "suspect",
+      "activity": "processing",
+      "age_ms": 2050,
+      "limit_ms": 2000,
+      "completions": 6346,
+      "sampled_ms": 9517,
+      "changed": 1
+    },
+    {
+      "task": "process",
+      "state": "ok",
+      "activity": "idle",
+      "age_ms": 1,
+      "limit_ms": 2000,
+      "completions": 6366,
+      "sampled_ms": 9987,
+      "changed": 1
+    },
+    {
+      "task": "uart",
+      "state": "ok",
+      "activity": "idle",
+      "age_ms": 1,
+      "limit_ms": 100,
+      "completions": 9648,
+      "sampled_ms": 10089,
+      "changed": 0
+    },
+    {
+      "task": "process",
+      "state": "ok",
+      "activity": "idle",
+      "age_ms": 1,
+      "limit_ms": 2000,
+      "completions": 6468,
+      "sampled_ms": 10089,
+      "changed": 0
+    },
+    {
+      "task": "writer",
+      "state": "ok",
+      "activity": "write",
+      "age_ms": 4,
+      "limit_ms": 5000,
+      "completions": 344,
+      "sampled_ms": 10089,
+      "changed": 0
+    },
+    {
+      "task": "uart",
+      "state": "ok",
+      "activity": "idle",
+      "age_ms": 1,
+      "limit_ms": 100,
+      "completions": 10639,
+      "sampled_ms": 11080,
+      "changed": 0
+    },
+    {
+      "task": "process",
+      "state": "ok",
+      "activity": "idle",
+      "age_ms": 1,
+      "limit_ms": 2000,
+      "completions": 7459,
+      "sampled_ms": 11080,
+      "changed": 0
+    },
+    {
+      "task": "writer",
+      "state": "ok",
+      "activity": "write",
+      "age_ms": 71,
+      "limit_ms": 5000,
+      "completions": 361,
+      "sampled_ms": 11080,
+      "changed": 0
+    },
+    {
+      "task": "uart",
+      "state": "ok",
+      "activity": "idle",
+      "age_ms": 1,
+      "limit_ms": 100,
+      "completions": 11640,
+      "sampled_ms": 12081,
+      "changed": 0
+    },
+    {
+      "task": "process",
+      "state": "ok",
+      "activity": "idle",
+      "age_ms": 1,
+      "limit_ms": 2000,
+      "completions": 8460,
+      "sampled_ms": 12081,
+      "changed": 0
+    },
+    {
+      "task": "writer",
+      "state": "ok",
+      "activity": "write",
+      "age_ms": 1072,
+      "limit_ms": 5000,
+      "completions": 361,
+      "sampled_ms": 12081,
+      "changed": 0
+    },
+    {
+      "task": "uart",
+      "state": "ok",
+      "activity": "idle",
+      "age_ms": 1,
+      "limit_ms": 100,
+      "completions": 12641,
+      "sampled_ms": 13082,
+      "changed": 0
+    },
+    {
+      "task": "process",
+      "state": "ok",
+      "activity": "idle",
+      "age_ms": 1,
+      "limit_ms": 2000,
+      "completions": 9461,
+      "sampled_ms": 13082,
+      "changed": 0
+    },
+    {
+      "task": "writer",
+      "state": "ok",
+      "activity": "write",
+      "age_ms": 2073,
+      "limit_ms": 5000,
+      "completions": 361,
+      "sampled_ms": 13082,
+      "changed": 0
+    },
+    {
+      "task": "uart",
+      "state": "ok",
+      "activity": "idle",
+      "age_ms": 1,
+      "limit_ms": 100,
+      "completions": 13666,
+      "sampled_ms": 14107,
+      "changed": 0
+    },
+    {
+      "task": "process",
+      "state": "ok",
+      "activity": "idle",
+      "age_ms": 1,
+      "limit_ms": 2000,
+      "completions": 10486,
+      "sampled_ms": 14107,
+      "changed": 0
+    },
+    {
+      "task": "writer",
+      "state": "ok",
+      "activity": "write",
+      "age_ms": 3098,
+      "limit_ms": 5000,
+      "completions": 361,
+      "sampled_ms": 14107,
+      "changed": 0
+    },
+    {
+      "task": "uart",
+      "state": "ok",
+      "activity": "idle",
+      "age_ms": 1,
+      "limit_ms": 100,
+      "completions": 14681,
+      "sampled_ms": 15122,
+      "changed": 0
+    },
+    {
+      "task": "process",
+      "state": "ok",
+      "activity": "idle",
+      "age_ms": 1,
+      "limit_ms": 2000,
+      "completions": 11501,
+      "sampled_ms": 15122,
+      "changed": 0
+    },
+    {
+      "task": "writer",
+      "state": "ok",
+      "activity": "write",
+      "age_ms": 4113,
+      "limit_ms": 5000,
+      "completions": 361,
+      "sampled_ms": 15122,
+      "changed": 0
+    },
+    {
+      "task": "writer",
+      "state": "suspect",
+      "activity": "write",
+      "age_ms": 5018,
+      "limit_ms": 5000,
+      "completions": 361,
+      "sampled_ms": 16027,
+      "changed": 1
+    },
+    {
+      "task": "uart",
+      "state": "ok",
+      "activity": "idle",
+      "age_ms": 1,
+      "limit_ms": 100,
+      "completions": 15688,
+      "sampled_ms": 16129,
+      "changed": 0
+    },
+    {
+      "task": "process",
+      "state": "ok",
+      "activity": "idle",
+      "age_ms": 1,
+      "limit_ms": 2000,
+      "completions": 12508,
+      "sampled_ms": 16129,
+      "changed": 0
+    },
+    {
+      "task": "writer",
+      "state": "suspect",
+      "activity": "write",
+      "age_ms": 5120,
+      "limit_ms": 5000,
+      "completions": 361,
+      "sampled_ms": 16129,
+      "changed": 0
+    },
+    {
+      "task": "writer",
+      "state": "ok",
+      "activity": "write",
+      "age_ms": 61,
+      "limit_ms": 5000,
+      "completions": 363,
+      "sampled_ms": 16672,
+      "changed": 1
+    },
+    {
+      "task": "uart",
+      "state": "ok",
+      "activity": "idle",
+      "age_ms": 1,
+      "limit_ms": 100,
+      "completions": 16693,
+      "sampled_ms": 17134,
+      "changed": 0
+    },
+    {
+      "task": "process",
+      "state": "ok",
+      "activity": "idle",
+      "age_ms": 1,
+      "limit_ms": 2000,
+      "completions": 13513,
+      "sampled_ms": 17134,
+      "changed": 0
+    },
+    {
+      "task": "writer",
+      "state": "ok",
+      "activity": "write",
+      "age_ms": 19,
+      "limit_ms": 5000,
+      "completions": 373,
+      "sampled_ms": 17134,
+      "changed": 0
+    },
+    {
+      "task": "uart",
+      "state": "ok",
+      "activity": "idle",
+      "age_ms": 1,
+      "limit_ms": 100,
+      "completions": 17689,
+      "sampled_ms": 18130,
+      "changed": 0
+    },
+    {
+      "task": "process",
+      "state": "ok",
+      "activity": "idle",
+      "age_ms": 1,
+      "limit_ms": 2000,
+      "completions": 14509,
+      "sampled_ms": 18130,
+      "changed": 0
+    },
+    {
+      "task": "writer",
+      "state": "ok",
+      "activity": "list",
+      "age_ms": 178,
+      "limit_ms": 5000,
+      "completions": 383,
+      "sampled_ms": 18130,
+      "changed": 0
+    },
+    {
+      "task": "uart",
+      "state": "ok",
+      "activity": "idle",
+      "age_ms": 1,
+      "limit_ms": 100,
+      "completions": 18714,
+      "sampled_ms": 19155,
+      "changed": 0
+    },
+    {
+      "task": "process",
+      "state": "ok",
+      "activity": "idle",
+      "age_ms": 1,
+      "limit_ms": 2000,
+      "completions": 15534,
+      "sampled_ms": 19155,
+      "changed": 0
+    },
+    {
+      "task": "writer",
+      "state": "ok",
+      "activity": "read",
+      "age_ms": 202,
+      "limit_ms": 5000,
+      "completions": 388,
+      "sampled_ms": 19155,
+      "changed": 0
+    },
+    {
+      "task": "uart",
+      "state": "ok",
+      "activity": "idle",
+      "age_ms": 1,
+      "limit_ms": 100,
+      "completions": 19728,
+      "sampled_ms": 20169,
+      "changed": 0
+    },
+    {
+      "task": "process",
+      "state": "ok",
+      "activity": "idle",
+      "age_ms": 1,
+      "limit_ms": 2000,
+      "completions": 16548,
+      "sampled_ms": 20169,
+      "changed": 0
+    },
+    {
+      "task": "writer",
+      "state": "ok",
+      "activity": "read",
+      "age_ms": 12,
+      "limit_ms": 5000,
+      "completions": 394,
+      "sampled_ms": 20169,
+      "changed": 0
+    },
+    {
+      "task": "uart",
+      "state": "ok",
+      "activity": "idle",
+      "age_ms": 1,
+      "limit_ms": 100,
+      "completions": 20742,
+      "sampled_ms": 21183,
+      "changed": 0
+    },
+    {
+      "task": "process",
+      "state": "ok",
+      "activity": "idle",
+      "age_ms": 1,
+      "limit_ms": 2000,
+      "completions": 17562,
+      "sampled_ms": 21183,
+      "changed": 0
+    },
+    {
+      "task": "writer",
+      "state": "ok",
+      "activity": "list",
+      "age_ms": 22,
+      "limit_ms": 5000,
+      "completions": 399,
+      "sampled_ms": 21183,
+      "changed": 0
+    },
+    {
+      "task": "uart",
+      "state": "ok",
+      "activity": "idle",
+      "age_ms": 1,
+      "limit_ms": 100,
+      "completions": 21757,
+      "sampled_ms": 22198,
+      "changed": 0
+    },
+    {
+      "task": "process",
+      "state": "ok",
+      "activity": "idle",
+      "age_ms": 1,
+      "limit_ms": 2000,
+      "completions": 18577,
+      "sampled_ms": 22198,
+      "changed": 0
+    },
+    {
+      "task": "writer",
+      "state": "ok",
+      "activity": "read",
+      "age_ms": 36,
+      "limit_ms": 5000,
+      "completions": 404,
+      "sampled_ms": 22198,
+      "changed": 0
+    },
+    {
+      "task": "uart",
+      "state": "ok",
+      "activity": "idle",
+      "age_ms": 1,
+      "limit_ms": 100,
+      "completions": 22762,
+      "sampled_ms": 23203,
+      "changed": 0
+    },
+    {
+      "task": "process",
+      "state": "ok",
+      "activity": "idle",
+      "age_ms": 1,
+      "limit_ms": 2000,
+      "completions": 19582,
+      "sampled_ms": 23203,
+      "changed": 0
+    },
+    {
+      "task": "writer",
+      "state": "ok",
+      "activity": "list",
+      "age_ms": 37,
+      "limit_ms": 5000,
+      "completions": 409,
+      "sampled_ms": 23203,
+      "changed": 0
+    },
+    {
+      "task": "uart",
+      "state": "ok",
+      "activity": "idle",
+      "age_ms": 1,
+      "limit_ms": 100,
+      "completions": 23761,
+      "sampled_ms": 24202,
+      "changed": 0
+    },
+    {
+      "task": "process",
+      "state": "ok",
+      "activity": "idle",
+      "age_ms": 1,
+      "limit_ms": 2000,
+      "completions": 20581,
+      "sampled_ms": 24202,
+      "changed": 0
+    },
+    {
+      "task": "writer",
+      "state": "ok",
+      "activity": "write",
+      "age_ms": 85,
+      "limit_ms": 5000,
+      "completions": 511,
+      "sampled_ms": 24202,
+      "changed": 0
+    },
+    {
+      "task": "uart",
+      "state": "ok",
+      "activity": "idle",
+      "age_ms": 1,
+      "limit_ms": 100,
+      "completions": 24763,
+      "sampled_ms": 25204,
+      "changed": 0
+    },
+    {
+      "task": "process",
+      "state": "ok",
+      "activity": "idle",
+      "age_ms": 1,
+      "limit_ms": 2000,
+      "completions": 21583,
+      "sampled_ms": 25204,
+      "changed": 0
+    },
+    {
+      "task": "writer",
+      "state": "ok",
+      "activity": "recovery_wait",
+      "age_ms": 20,
+      "limit_ms": 5000,
+      "completions": 543,
+      "sampled_ms": 25204,
+      "changed": 0
+    },
+    {
+      "task": "uart",
+      "state": "ok",
+      "activity": "idle",
+      "age_ms": 1,
+      "limit_ms": 100,
+      "completions": 25763,
+      "sampled_ms": 26205,
+      "changed": 0
+    },
+    {
+      "task": "process",
+      "state": "ok",
+      "activity": "idle",
+      "age_ms": 1,
+      "limit_ms": 2000,
+      "completions": 22583,
+      "sampled_ms": 26205,
+      "changed": 0
+    },
+    {
+      "task": "writer",
+      "state": "ok",
+      "activity": "recovery_wait",
+      "age_ms": 19,
+      "limit_ms": 5000,
+      "completions": 593,
+      "sampled_ms": 26205,
+      "changed": 0
+    },
+    {
+      "task": "uart",
+      "state": "ok",
+      "activity": "idle",
+      "age_ms": 1,
+      "limit_ms": 100,
+      "completions": 26763,
+      "sampled_ms": 27205,
+      "changed": 0
+    },
+    {
+      "task": "process",
+      "state": "ok",
+      "activity": "idle",
+      "age_ms": 1,
+      "limit_ms": 2000,
+      "completions": 23583,
+      "sampled_ms": 27205,
+      "changed": 0
+    },
+    {
+      "task": "writer",
+      "state": "ok",
+      "activity": "recovery_wait",
+      "age_ms": 17,
+      "limit_ms": 5000,
+      "completions": 643,
+      "sampled_ms": 27205,
+      "changed": 0
+    },
+    {
+      "task": "uart",
+      "state": "ok",
+      "activity": "idle",
+      "age_ms": 1,
+      "limit_ms": 100,
+      "completions": 27790,
+      "sampled_ms": 28233,
+      "changed": 0
+    },
+    {
+      "task": "process",
+      "state": "ok",
+      "activity": "idle",
+      "age_ms": 1,
+      "limit_ms": 2000,
+      "completions": 24610,
+      "sampled_ms": 28233,
+      "changed": 0
+    },
+    {
+      "task": "writer",
+      "state": "ok",
+      "activity": "recovery_wait",
+      "age_ms": 3,
+      "limit_ms": 5000,
+      "completions": 695,
+      "sampled_ms": 28233,
+      "changed": 0
+    },
+    {
+      "task": "uart",
+      "state": "ok",
+      "activity": "idle",
+      "age_ms": 1,
+      "limit_ms": 100,
+      "completions": 28805,
+      "sampled_ms": 29248,
+      "changed": 0
+    },
+    {
+      "task": "process",
+      "state": "ok",
+      "activity": "idle",
+      "age_ms": 1,
+      "limit_ms": 2000,
+      "completions": 25625,
+      "sampled_ms": 29248,
+      "changed": 0
+    },
+    {
+      "task": "writer",
+      "state": "ok",
+      "activity": "recovery_wait",
+      "age_ms": 17,
+      "limit_ms": 5000,
+      "completions": 745,
+      "sampled_ms": 29248,
+      "changed": 0
+    },
+    {
+      "task": "uart",
+      "state": "ok",
+      "activity": "idle",
+      "age_ms": 1,
+      "limit_ms": 100,
+      "completions": 29819,
+      "sampled_ms": 30262,
+      "changed": 0
+    },
+    {
+      "task": "process",
+      "state": "ok",
+      "activity": "idle",
+      "age_ms": 1,
+      "limit_ms": 2000,
+      "completions": 26639,
+      "sampled_ms": 30262,
+      "changed": 0
+    },
+    {
+      "task": "writer",
+      "state": "ok",
+      "activity": "read",
+      "age_ms": 2,
+      "limit_ms": 5000,
+      "completions": 846,
+      "sampled_ms": 30262,
+      "changed": 0
+    },
+    {
+      "task": "uart",
+      "state": "ok",
+      "activity": "idle",
+      "age_ms": 1,
+      "limit_ms": 100,
+      "completions": 30826,
+      "sampled_ms": 31269,
+      "changed": 0
+    },
+    {
+      "task": "process",
+      "state": "ok",
+      "activity": "idle",
+      "age_ms": 1,
+      "limit_ms": 2000,
+      "completions": 27646,
+      "sampled_ms": 31269,
+      "changed": 0
+    },
+    {
+      "task": "writer",
+      "state": "ok",
+      "activity": "idle",
+      "age_ms": 11,
+      "limit_ms": 5000,
+      "completions": 982,
+      "sampled_ms": 31269,
+      "changed": 0
+    },
+    {
+      "task": "uart",
+      "state": "ok",
+      "activity": "idle",
+      "age_ms": 1,
+      "limit_ms": 100,
+      "completions": 31835,
+      "sampled_ms": 32278,
+      "changed": 0
+    },
+    {
+      "task": "process",
+      "state": "ok",
+      "activity": "idle",
+      "age_ms": 1,
+      "limit_ms": 2000,
+      "completions": 28655,
+      "sampled_ms": 32278,
+      "changed": 0
+    },
+    {
+      "task": "writer",
+      "state": "ok",
+      "activity": "idle",
+      "age_ms": 7,
+      "limit_ms": 5000,
+      "completions": 1024,
+      "sampled_ms": 32278,
+      "changed": 0
+    }
+  ],
+  "exchanges": [
+    {
+      "ack": {
+        "n": 0,
+        "t": "ack",
+        "seq": 61555,
+        "cmd": "set_time",
+        "st": "ok",
+        "q": 0
+      },
+      "response_ms": 145.005
+    },
+    {
+      "ack": {
+        "n": 1,
+        "t": "ack",
+        "seq": 61556,
+        "cmd": "ping",
+        "st": "ok",
+        "q": 42
+      },
+      "response_ms": 145.701
+    },
+    {
+      "ack": {
+        "n": 3,
+        "t": "ack",
+        "seq": 61557,
+        "cmd": "request_tm",
+        "st": "ok",
+        "q": 0
+      },
+      "response_ms": 148.977
+    },
+    {
+      "ack": {
+        "n": 4,
+        "t": "ack",
+        "seq": 61558,
+        "cmd": "ping",
+        "st": "ok",
+        "q": 0
+      },
+      "response_ms": 36.2
+    },
+    {
+      "ack": {
+        "n": 6,
+        "t": "ack",
+        "seq": 61559,
+        "cmd": "request_tm",
+        "st": "ok",
+        "q": 0
+      },
+      "response_ms": 61.986
+    },
+    {
+      "ack": {
+        "n": 8,
+        "t": "ack",
+        "seq": 61560,
+        "cmd": "ping",
+        "st": "ok",
+        "q": 0
+      },
+      "response_ms": 44.927
+    },
+    {
+      "ack": {
+        "n": 10,
+        "t": "ack",
+        "seq": 61561,
+        "cmd": "request_tm",
+        "st": "ok",
+        "q": 0
+      },
+      "response_ms": 68.053
+    },
+    {
+      "ack": {
+        "n": 12,
+        "t": "ack",
+        "seq": 61562,
+        "cmd": "ping",
+        "st": "ok",
+        "q": 1
+      },
+      "response_ms": 20.65
+    },
+    {
+      "ack": {
+        "n": 14,
+        "t": "ack",
+        "seq": 61563,
+        "cmd": "request_tm",
+        "st": "ok",
+        "q": 1
+      },
+      "response_ms": 47.873
+    },
+    {
+      "ack": {
+        "n": 16,
+        "t": "ack",
+        "seq": 61564,
+        "cmd": "ping",
+        "st": "ok",
+        "q": 1
+      },
+      "response_ms": 23.708
+    },
+    {
+      "ack": {
+        "n": 18,
+        "t": "ack",
+        "seq": 61565,
+        "cmd": "request_tm",
+        "st": "ok",
+        "q": 0
+      },
+      "response_ms": 47.872
+    },
+    {
+      "ack": {
+        "n": 20,
+        "t": "ack",
+        "seq": 61566,
+        "cmd": "ping",
+        "st": "ok",
+        "q": 0
+      },
+      "response_ms": 18.626
+    },
+    {
+      "ack": {
+        "n": 22,
+        "t": "ack",
+        "seq": 61567,
+        "cmd": "request_tm",
+        "st": "ok",
+        "q": 0
+      },
+      "response_ms": 44.747
+    },
+    {
+      "ack": {
+        "n": 24,
+        "t": "ack",
+        "seq": 61568,
+        "cmd": "ping",
+        "st": "ok",
+        "q": 0
+      },
+      "response_ms": 26.4
+    },
+    {
+      "ack": {
+        "n": 26,
+        "t": "ack",
+        "seq": 61569,
+        "cmd": "request_tm",
+        "st": "ok",
+        "q": 0
+      },
+      "response_ms": 55.696
+    },
+    {
+      "ack": {
+        "n": 28,
+        "t": "ack",
+        "seq": 61570,
+        "cmd": "ping",
+        "st": "ok",
+        "q": 0
+      },
+      "response_ms": 21.016
+    },
+    {
+      "ack": {
+        "n": 30,
+        "t": "ack",
+        "seq": 61571,
+        "cmd": "request_tm",
+        "st": "ok",
+        "q": 0
+      },
+      "response_ms": 46.573
+    },
+    {
+      "ack": {
+        "n": 32,
+        "t": "ack",
+        "seq": 61572,
+        "cmd": "ping",
+        "st": "ok",
+        "q": 0
+      },
+      "response_ms": 18.706
+    },
+    {
+      "ack": {
+        "n": 34,
+        "t": "ack",
+        "seq": 61573,
+        "cmd": "request_tm",
+        "st": "ok",
+        "q": 0
+      },
+      "response_ms": 43.794
+    },
+    {
+      "ack": {
+        "n": 35,
+        "t": "ack",
+        "seq": 61574,
+        "cmd": "ping",
+        "st": "ok",
+        "q": 0
+      },
+      "response_ms": 24.017
+    },
+    {
+      "ack": {
+        "n": 37,
+        "t": "ack",
+        "seq": 61575,
+        "cmd": "request_tm",
+        "st": "ok",
+        "q": 0
+      },
+      "response_ms": 45.491
+    },
+    {
+      "ack": {
+        "n": 38,
+        "t": "ack",
+        "seq": 61576,
+        "cmd": "ping",
+        "st": "ok",
+        "q": 0
+      },
+      "response_ms": 24.948
+    },
+    {
+      "ack": {
+        "n": 40,
+        "t": "ack",
+        "seq": 61577,
+        "cmd": "request_tm",
+        "st": "ok",
+        "q": 0
+      },
+      "response_ms": 49.159
+    },
+    {
+      "ack": {
+        "n": 41,
+        "t": "ack",
+        "seq": 61578,
+        "cmd": "ping",
+        "st": "ok",
+        "q": 0
+      },
+      "response_ms": 31.131
+    },
+    {
+      "ack": {
+        "n": 43,
+        "t": "ack",
+        "seq": 61579,
+        "cmd": "request_tm",
+        "st": "ok",
+        "q": 0
+      },
+      "response_ms": 55.282
+    },
+    {
+      "ack": {
+        "n": 44,
+        "t": "ack",
+        "seq": 61580,
+        "cmd": "ping",
+        "st": "ok",
+        "q": 0
+      },
+      "response_ms": 33.699
+    },
+    {
+      "ack": {
+        "n": 46,
+        "t": "ack",
+        "seq": 61581,
+        "cmd": "request_tm",
+        "st": "ok",
+        "q": 0
+      },
+      "response_ms": 58.278
+    },
+    {
+      "ack": {
+        "n": 47,
+        "t": "ack",
+        "seq": 61582,
+        "cmd": "ping",
+        "st": "ok",
+        "q": 10
+      },
+      "response_ms": 113.966
+    },
+    {
+      "ack": {
+        "n": 49,
+        "t": "ack",
+        "seq": 61583,
+        "cmd": "request_tm",
+        "st": "ok",
+        "q": 0
+      },
+      "response_ms": 137.774
+    },
+    {
+      "ack": {
+        "n": 50,
+        "t": "ack",
+        "seq": 61584,
+        "cmd": "ping",
+        "st": "ok",
+        "q": 0
+      },
+      "response_ms": 30.472
+    },
+    {
+      "ack": {
+        "n": 52,
+        "t": "ack",
+        "seq": 61585,
+        "cmd": "request_tm",
+        "st": "ok",
+        "q": 0
+      },
+      "response_ms": 56.042
+    },
+    {
+      "ack": {
+        "n": 53,
+        "t": "ack",
+        "seq": 61586,
+        "cmd": "ping",
+        "st": "ok",
+        "q": 10
+      },
+      "response_ms": 79.804
+    },
+    {
+      "ack": {
+        "n": 55,
+        "t": "ack",
+        "seq": 61587,
+        "cmd": "request_tm",
+        "st": "ok",
+        "q": 0
+      },
+      "response_ms": 103.657
+    },
+    {
+      "ack": {
+        "n": 56,
+        "t": "ack",
+        "seq": 61588,
+        "cmd": "ping",
+        "st": "ok",
+        "q": 0
+      },
+      "response_ms": 22.64
+    },
+    {
+      "ack": {
+        "n": 58,
+        "t": "ack",
+        "seq": 61589,
+        "cmd": "request_tm",
+        "st": "ok",
+        "q": 0
+      },
+      "response_ms": 47.788
+    },
+    {
+      "ack": {
+        "n": 59,
+        "t": "ack",
+        "seq": 61590,
+        "cmd": "ping",
+        "st": "ok",
+        "q": 1
+      },
+      "response_ms": 63.856
+    },
+    {
+      "ack": {
+        "n": 61,
+        "t": "ack",
+        "seq": 61591,
+        "cmd": "request_tm",
+        "st": "ok",
+        "q": 0
+      },
+      "response_ms": 87.608
+    },
+    {
+      "ack": {
+        "n": 62,
+        "t": "ack",
+        "seq": 61592,
+        "cmd": "ping",
+        "st": "ok",
+        "q": 0
+      },
+      "response_ms": 22.801
+    },
+    {
+      "ack": {
+        "n": 64,
+        "t": "ack",
+        "seq": 61593,
+        "cmd": "request_tm",
+        "st": "ok",
+        "q": 0
+      },
+      "response_ms": 49.951
+    },
+    {
+      "ack": {
+        "n": 65,
+        "t": "ack",
+        "seq": 61594,
+        "cmd": "ping",
+        "st": "ok",
+        "q": 0
+      },
+      "response_ms": 47.037
+    },
+    {
+      "ack": {
+        "n": 67,
+        "t": "ack",
+        "seq": 61595,
+        "cmd": "request_tm",
+        "st": "ok",
+        "q": 0
+      },
+      "response_ms": 72.683
+    },
+    {
+      "ack": {
+        "n": 68,
+        "t": "ack",
+        "seq": 61596,
+        "cmd": "ping",
+        "st": "ok",
+        "q": 0
+      },
+      "response_ms": 45.701
+    },
+    {
+      "ack": {
+        "n": 69,
+        "t": "ack",
+        "seq": 61597,
+        "cmd": "request_tm",
+        "st": "ok",
+        "q": 0
+      },
+      "response_ms": 50.394
+    },
+    {
+      "ack": {
+        "n": 71,
+        "t": "ack",
+        "seq": 61598,
+        "cmd": "ping",
+        "st": "ok",
+        "q": 0
+      },
+      "response_ms": 24.619
+    },
+    {
+      "ack": {
+        "n": 73,
+        "t": "ack",
+        "seq": 61599,
+        "cmd": "request_tm",
+        "st": "ok",
+        "q": 0
+      },
+      "response_ms": 50.433
+    },
+    {
+      "ack": {
+        "n": 74,
+        "t": "ack",
+        "seq": 61600,
+        "cmd": "ping",
+        "st": "ok",
+        "q": 0
+      },
+      "response_ms": 47.596
+    },
+    {
+      "ack": {
+        "n": 76,
+        "t": "ack",
+        "seq": 61601,
+        "cmd": "request_tm",
+        "st": "ok",
+        "q": 1
+      },
+      "response_ms": 72.309
+    },
+    {
+      "ack": {
+        "n": 77,
+        "t": "ack",
+        "seq": 61602,
+        "cmd": "ping",
+        "st": "ok",
+        "q": 0
+      },
+      "response_ms": 24.911
+    },
+    {
+      "ack": {
+        "n": 79,
+        "t": "ack",
+        "seq": 61603,
+        "cmd": "request_tm",
+        "st": "ok",
+        "q": 0
+      },
+      "response_ms": 51.683
+    },
+    {
+      "ack": {
+        "n": 80,
+        "t": "ack",
+        "seq": 61604,
+        "cmd": "ping",
+        "st": "ok",
+        "q": 0
+      },
+      "response_ms": 47.232
+    },
+    {
+      "ack": {
+        "n": 82,
+        "t": "ack",
+        "seq": 61605,
+        "cmd": "request_tm",
+        "st": "ok",
+        "q": 0
+      },
+      "response_ms": 72.773
+    },
+    {
+      "ack": {
+        "n": 83,
+        "t": "ack",
+        "seq": 61606,
+        "cmd": "ping",
+        "st": "ok",
+        "q": 0
+      },
+      "response_ms": 24.83
+    },
+    {
+      "ack": {
+        "n": 85,
+        "t": "ack",
+        "seq": 61607,
+        "cmd": "request_tm",
+        "st": "ok",
+        "q": 0
+      },
+      "response_ms": 50.27
+    },
+    {
+      "ack": {
+        "n": 86,
+        "t": "ack",
+        "seq": 61608,
+        "cmd": "ping",
+        "st": "ok",
+        "q": 0
+      },
+      "response_ms": 48.232
+    },
+    {
+      "ack": {
+        "n": 88,
+        "t": "ack",
+        "seq": 61609,
+        "cmd": "request_tm",
+        "st": "ok",
+        "q": 0
+      },
+      "response_ms": 72.375
+    },
+    {
+      "ack": {
+        "n": 89,
+        "t": "ack",
+        "seq": 61610,
+        "cmd": "ping",
+        "st": "ok",
+        "q": 0
+      },
+      "response_ms": 24.16
+    },
+    {
+      "ack": {
+        "n": 91,
+        "t": "ack",
+        "seq": 61611,
+        "cmd": "request_tm",
+        "st": "ok",
+        "q": 1
+      },
+      "response_ms": 50.582
+    },
+    {
+      "ack": {
+        "n": 92,
+        "t": "ack",
+        "seq": 61612,
+        "cmd": "ping",
+        "st": "ok",
+        "q": 0
+      },
+      "response_ms": 71.622
+    },
+    {
+      "ack": {
+        "n": 94,
+        "t": "ack",
+        "seq": 61613,
+        "cmd": "request_tm",
+        "st": "ok",
+        "q": 0
+      },
+      "response_ms": 96.233
+    },
+    {
+      "ack": {
+        "n": 95,
+        "t": "ack",
+        "seq": 61614,
+        "cmd": "ping",
+        "st": "ok",
+        "q": 0
+      },
+      "response_ms": 24.675
+    },
+    {
+      "ack": {
+        "n": 97,
+        "t": "ack",
+        "seq": 61615,
+        "cmd": "request_tm",
+        "st": "ok",
+        "q": 0
+      },
+      "response_ms": 50.241
+    },
+    {
+      "ack": {
+        "n": 98,
+        "t": "ack",
+        "seq": 61616,
+        "cmd": "ping",
+        "st": "ok",
+        "q": 0
+      },
+      "response_ms": 46.927
+    },
+    {
+      "ack": {
+        "n": 100,
+        "t": "ack",
+        "seq": 61617,
+        "cmd": "request_tm",
+        "st": "ok",
+        "q": 0
+      },
+      "response_ms": 70.955
+    },
+    {
+      "ack": {
+        "n": 101,
+        "t": "ack",
+        "seq": 61618,
+        "cmd": "ping",
+        "st": "ok",
+        "q": 0
+      },
+      "response_ms": 24.514
+    },
+    {
+      "ack": {
+        "n": 103,
+        "t": "ack",
+        "seq": 61619,
+        "cmd": "request_tm",
+        "st": "ok",
+        "q": 0
+      },
+      "response_ms": 50.186
+    },
+    {
+      "ack": {
+        "n": 104,
+        "t": "ack",
+        "seq": 61620,
+        "cmd": "ping",
+        "st": "ok",
+        "q": 0
+      },
+      "response_ms": 48.024
+    },
+    {
+      "ack": {
+        "n": 106,
+        "t": "ack",
+        "seq": 61621,
+        "cmd": "request_tm",
+        "st": "ok",
+        "q": 0
+      },
+      "response_ms": 70.571
+    },
+    {
+      "ack": {
+        "n": 107,
+        "t": "ack",
+        "seq": 61622,
+        "cmd": "ping",
+        "st": "ok",
+        "q": 0
+      },
+      "response_ms": 24.156
+    },
+    {
+      "ack": {
+        "n": 109,
+        "t": "ack",
+        "seq": 61623,
+        "cmd": "request_tm",
+        "st": "ok",
+        "q": 0
+      },
+      "response_ms": 50.499
+    },
+    {
+      "ack": {
+        "n": 110,
+        "t": "ack",
+        "seq": 61624,
+        "cmd": "ping",
+        "st": "ok",
+        "q": 10
+      },
+      "response_ms": 47.344
+    },
+    {
+      "ack": {
+        "n": 111,
+        "t": "ack",
+        "seq": 61625,
+        "cmd": "request_tm",
+        "st": "ok",
+        "q": 0
+      },
+      "response_ms": 52.17
+    },
+    {
+      "ack": {
+        "n": 113,
+        "t": "ack",
+        "seq": 61626,
+        "cmd": "ping",
+        "st": "ok",
+        "q": 0
+      },
+      "response_ms": 23.689
+    },
+    {
+      "ack": {
+        "n": 115,
+        "t": "ack",
+        "seq": 61627,
+        "cmd": "request_tm",
+        "st": "ok",
+        "q": 0
+      },
+      "response_ms": 49.835
+    },
+    {
+      "ack": {
+        "n": 116,
+        "t": "ack",
+        "seq": 61628,
+        "cmd": "ping",
+        "st": "ok",
+        "q": 10
+      },
+      "response_ms": 45.139
+    },
+    {
+      "ack": {
+        "n": 117,
+        "t": "ack",
+        "seq": 61629,
+        "cmd": "request_tm",
+        "st": "ok",
+        "q": 0
+      },
+      "response_ms": 47.948
+    },
+    {
+      "ack": {
+        "n": 119,
+        "t": "ack",
+        "seq": 61630,
+        "cmd": "ping",
+        "st": "ok",
+        "q": 0
+      },
+      "response_ms": 24.143
+    },
+    {
+      "ack": {
+        "n": 121,
+        "t": "ack",
+        "seq": 61631,
+        "cmd": "request_tm",
+        "st": "ok",
+        "q": 0
+      },
+      "response_ms": 49.868
+    },
+    {
+      "ack": {
+        "n": 122,
+        "t": "ack",
+        "seq": 61632,
+        "cmd": "ping",
+        "st": "ok",
+        "q": 0
+      },
+      "response_ms": 40.382
+    },
+    {
+      "ack": {
+        "n": 124,
+        "t": "ack",
+        "seq": 61633,
+        "cmd": "request_tm",
+        "st": "ok",
+        "q": 0
+      },
+      "response_ms": 63.142
+    },
+    {
+      "ack": {
+        "n": 125,
+        "t": "ack",
+        "seq": 61634,
+        "cmd": "ping",
+        "st": "ok",
+        "q": 0
+      },
+      "response_ms": 23.841
+    },
+    {
+      "ack": {
+        "n": 127,
+        "t": "ack",
+        "seq": 61635,
+        "cmd": "request_tm",
+        "st": "ok",
+        "q": 0
+      },
+      "response_ms": 49.114
+    },
+    {
+      "ack": {
+        "n": 128,
+        "t": "ack",
+        "seq": 61636,
+        "cmd": "ping",
+        "st": "ok",
+        "q": 0
+      },
+      "response_ms": 112.842
+    },
+    {
+      "ack": {
+        "n": 130,
+        "t": "ack",
+        "seq": 61637,
+        "cmd": "request_tm",
+        "st": "ok",
+        "q": 0
+      },
+      "response_ms": 136.741
+    },
+    {
+      "ack": {
+        "n": 131,
+        "t": "ack",
+        "seq": 61638,
+        "cmd": "ping",
+        "st": "ok",
+        "q": 0
+      },
+      "response_ms": 19.586
+    },
+    {
+      "ack": {
+        "n": 133,
+        "t": "ack",
+        "seq": 61639,
+        "cmd": "request_tm",
+        "st": "ok",
+        "q": 0
+      },
+      "response_ms": 44.983
+    },
+    {
+      "ack": {
+        "n": 134,
+        "t": "ack",
+        "seq": 61640,
+        "cmd": "ping",
+        "st": "ok",
+        "q": 20
+      },
+      "response_ms": 79.857
+    },
+    {
+      "ack": {
+        "n": 136,
+        "t": "ack",
+        "seq": 61641,
+        "cmd": "request_tm",
+        "st": "ok",
+        "q": 0
+      },
+      "response_ms": 104.142
+    },
+    {
+      "ack": {
+        "n": 137,
+        "t": "ack",
+        "seq": 61642,
+        "cmd": "ping",
+        "st": "ok",
+        "q": 0
+      },
+      "response_ms": 23.123
+    },
+    {
+      "ack": {
+        "n": 139,
+        "t": "ack",
+        "seq": 61643,
+        "cmd": "request_tm",
+        "st": "ok",
+        "q": 0
+      },
+      "response_ms": 49.236
+    },
+    {
+      "ack": {
+        "n": 140,
+        "t": "ack",
+        "seq": 61644,
+        "cmd": "ping",
+        "st": "ok",
+        "q": 10
+      },
+      "response_ms": 73.316
+    },
+    {
+      "ack": {
+        "n": 142,
+        "t": "ack",
+        "seq": 61645,
+        "cmd": "request_tm",
+        "st": "ok",
+        "q": 0
+      },
+      "response_ms": 97.628
+    },
+    {
+      "ack": {
+        "n": 143,
+        "t": "ack",
+        "seq": 61646,
+        "cmd": "ping",
+        "st": "ok",
+        "q": 0
+      },
+      "response_ms": 23.154
+    },
+    {
+      "ack": {
+        "n": 145,
+        "t": "ack",
+        "seq": 61647,
+        "cmd": "request_tm",
+        "st": "ok",
+        "q": 0
+      },
+      "response_ms": 48.823
+    },
+    {
+      "ack": {
+        "n": 146,
+        "t": "ack",
+        "seq": 61648,
+        "cmd": "ping",
+        "st": "ok",
+        "q": 0
+      },
+      "response_ms": 34.854
+    },
+    {
+      "ack": {
+        "n": 148,
+        "t": "ack",
+        "seq": 61649,
+        "cmd": "request_tm",
+        "st": "ok",
+        "q": 31
+      },
+      "response_ms": 76.04
+    },
+    {
+      "ack": {
+        "n": 149,
+        "t": "ack",
+        "seq": 61650,
+        "cmd": "ping",
+        "st": "ok",
+        "q": 0
+      },
+      "response_ms": 34.157
+    },
+    {
+      "ack": {
+        "n": 151,
+        "t": "ack",
+        "seq": 61651,
+        "cmd": "request_tm",
+        "st": "ok",
+        "q": 0
+      },
+      "response_ms": 59.953
+    },
+    {
+      "ack": {
+        "n": 152,
+        "t": "ack",
+        "seq": 61652,
+        "cmd": "ping",
+        "st": "ok",
+        "q": 0
+      },
+      "response_ms": 24.917
+    },
+    {
+      "ack": {
+        "n": 154,
+        "t": "ack",
+        "seq": 61653,
+        "cmd": "request_tm",
+        "st": "ok",
+        "q": 0
+      },
+      "response_ms": 49.995
+    },
+    {
+      "ack": {
+        "n": 155,
+        "t": "ack",
+        "seq": 61654,
+        "cmd": "ping",
+        "st": "ok",
+        "q": 0
+      },
+      "response_ms": 47.073
+    },
+    {
+      "ack": {
+        "n": 156,
+        "t": "ack",
+        "seq": 61655,
+        "cmd": "request_tm",
+        "st": "ok",
+        "q": 0
+      },
+      "response_ms": 52.679
+    },
+    {
+      "ack": {
+        "n": 158,
+        "t": "ack",
+        "seq": 61656,
+        "cmd": "ping",
+        "st": "ok",
+        "q": 0
+      },
+      "response_ms": 25.314
+    },
+    {
+      "ack": {
+        "n": 160,
+        "t": "ack",
+        "seq": 61657,
+        "cmd": "request_tm",
+        "st": "ok",
+        "q": 0
+      },
+      "response_ms": 52.58
+    },
+    {
+      "ack": {
+        "n": 161,
+        "t": "ack",
+        "seq": 61658,
+        "cmd": "ping",
+        "st": "ok",
+        "q": 0
+      },
+      "response_ms": 47.972
+    },
+    {
+      "ack": {
+        "n": 163,
+        "t": "ack",
+        "seq": 61659,
+        "cmd": "request_tm",
+        "st": "ok",
+        "q": 0
+      },
+      "response_ms": 71.587
+    },
+    {
+      "ack": {
+        "n": 164,
+        "t": "ack",
+        "seq": 61660,
+        "cmd": "ping",
+        "st": "ok",
+        "q": 0
+      },
+      "response_ms": 25.425
+    },
+    {
+      "ack": {
+        "n": 166,
+        "t": "ack",
+        "seq": 61661,
+        "cmd": "request_tm",
+        "st": "ok",
+        "q": 0
+      },
+      "response_ms": 50.288
+    },
+    {
+      "ack": {
+        "n": 167,
+        "t": "ack",
+        "seq": 61662,
+        "cmd": "ping",
+        "st": "ok",
+        "q": 0
+      },
+      "response_ms": 38.835
+    },
+    {
+      "ack": {
+        "n": 168,
+        "t": "ack",
+        "seq": 61663,
+        "cmd": "request_tm",
+        "st": "ok",
+        "q": 0
+      },
+      "response_ms": 44.586
+    },
+    {
+      "ack": {
+        "n": 170,
+        "t": "ack",
+        "seq": 61664,
+        "cmd": "ping",
+        "st": "ok",
+        "q": 0
+      },
+      "response_ms": 24.199
+    },
+    {
+      "ack": {
+        "n": 172,
+        "t": "ack",
+        "seq": 61665,
+        "cmd": "request_tm",
+        "st": "ok",
+        "q": 0
+      },
+      "response_ms": 50.658
+    },
+    {
+      "ack": {
+        "n": 173,
+        "t": "ack",
+        "seq": 61666,
+        "cmd": "ping",
+        "st": "ok",
+        "q": 0
+      },
+      "response_ms": 24.843
+    },
+    {
+      "ack": {
+        "n": 175,
+        "t": "ack",
+        "seq": 61667,
+        "cmd": "request_tm",
+        "st": "ok",
+        "q": 94
+      },
+      "response_ms": 140.028
+    },
+    {
+      "ack": {
+        "n": 176,
+        "t": "ack",
+        "seq": 61668,
+        "cmd": "ping",
+        "st": "ok",
+        "q": 0
+      },
+      "response_ms": 19.008
+    },
+    {
+      "ack": {
+        "n": 178,
+        "t": "ack",
+        "seq": 61669,
+        "cmd": "request_tm",
+        "st": "ok",
+        "q": 0
+      },
+      "response_ms": 44.821
+    }
+  ],
+  "checks": [
+    "UART 300ms, processamento 2.5s e escrita 5.5s: suspeita e retorno uma vez por tarefa",
+    "varredura >6s com 32 operacoes progredindo, sem falso alerta",
+    "espera real de recuperacao >=5s sem falso alerta ou reboot",
+    "7 entregas; ping/TM ativos; q<=200ms, ACK<=2s, quadros<=255 bytes e n consecutivo"
+  ],
+  "markers": [
+    {
+      "start": "1",
+      "monotonic_ms": "3130"
+    },
+    {
+      "pause_begin": "uart",
+      "activity": "transport",
+      "duration_ms": "300",
+      "monotonic_ms": "6130"
+    },
+    {
+      "pause_end": "uart",
+      "monotonic_ms": "6449"
+    },
+    {
+      "pause_begin": "process",
+      "activity": "processing",
+      "duration_ms": "2500",
+      "monotonic_ms": "7467"
+    },
+    {
+      "record_code": "256",
+      "kind": "fault"
+    },
+    {
+      "record_code": "256",
+      "kind": "event"
+    },
+    {
+      "pause_end": "process",
+      "monotonic_ms": "9967"
+    },
+    {
+      "record_code": "257",
+      "kind": "fault"
+    },
+    {
+      "pause_begin": "writer",
+      "activity": "write",
+      "duration_ms": "5500",
+      "monotonic_ms": "11009"
+    },
+    {
+      "pause_end": "writer",
+      "monotonic_ms": "16509"
+    },
+    {
+      "record_code": "257",
+      "kind": "event"
+    },
+    {
+      "record_code": "258",
+      "kind": "event"
+    },
+    {
+      "scan_begin": "1",
+      "monotonic_ms": "17550"
+    },
+    {
+      "scan_end": "1",
+      "operations": "32",
+      "elapsed_ms": "6465",
+      "monotonic_ms": "24015"
+    },
+    {
+      "recovery_begin": "1",
+      "monotonic_ms": "25023"
+    },
+    {
+      "recovery_end": "1",
+      "done": "1",
+      "monotonic_ms": "30846"
+    }
+  ]
+}

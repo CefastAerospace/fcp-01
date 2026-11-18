@@ -70,6 +70,15 @@ bool State::SetTime(
 }
 
 // Público:
+bool State::GetTimeReference(
+    obc_time::TIME_REFERENCE& reference
+) const {
+    if (!has_reference_) return false;
+    reference = reference_;
+    return true;
+}
+
+// Público:
 obc_data::TELEMETRY_DATA State::ComposeTelemetry(
     uint64_t now_ms
 ) const {
@@ -131,6 +140,47 @@ obc_data::STATISTICS_DATA State::GetStatistics(
 // ─── DEMAIS MÉTODOS ───────────────────────────────────────────────
 
 // Público:
+bool SnapshotBuffers::Reserve(
+    size_t size
+) {
+    if (size < obc_record::min_snapshot_record_bytes || size > obc_record::max_snapshot_record_bytes) return false;
+    Reset();
+    const size_t first_size = size < snapshot_first_bytes ? size : snapshot_first_bytes;
+    first_.reset(new (std::nothrow) uint8_t[first_size]);
+    if (!first_) return false;
+    const size_t second_size = size - first_size;
+    if (second_size != 0) second_.reset(new (std::nothrow) uint8_t[second_size]);
+    if (second_size != 0 && !second_) {
+        Reset();
+        return false;
+    }
+    return true;
+}
+
+// Público:
+void SnapshotBuffers::Reset(
+) {
+    first_.reset();
+    second_.reset();
+}
+
+// ─── GETTERS ──────────────────────────────────────────────────────
+
+// Público:
+uint8_t* SnapshotBuffers::GetFirstData(
+) const { return first_.get(); }
+
+// Público:
+uint8_t* SnapshotBuffers::GetSecondData(
+) const { return second_.get(); }
+
+// ==================================================================
+// === CLASSE =======================================================
+// ==================================================================
+
+// ─── DEMAIS MÉTODOS ───────────────────────────────────────────────
+
+// Público:
 bool RecordQueue::Push(
     const uint8_t* bytes,
     size_t size
@@ -176,7 +226,52 @@ bool Journal::Init(
     record.body.boot = {stamp.boot_id - 1, reset_reason};
     size_t written = 0;
     if (obc_record::Encode(record, boot_, sizeof(boot_), written) != obc_record::STATUS::OK) return false;
+    boot_encoded_ = true;
     return OpenSegment();
+}
+
+// Público:
+bool Journal::Resume(
+    const obc_time::TIME_REFERENCE* reference
+) {
+    if (!boot_encoded_ || ready_) return false;
+    if (reference) {
+        obc_record::RECORD record = {};
+        record.header = {1, obc_data::RECORD_TYPE::TIME_REFERENCE, 36, reference->reception};
+        record.body.time_reference = *reference;
+        uint8_t bytes[sizeof(reference_)];
+        size_t size = 0;
+        if (reference->reception.boot_id != boot_stamp_.boot_id
+                || obc_record::Encode(record, bytes, sizeof(bytes), size) != obc_record::STATUS::OK) {
+            last_ = {obc_storage::STATUS::INVALID_ARGUMENT, 0, 0, 0};
+            Add(failures_);
+            return false;
+        }
+        std::memcpy(reference_, bytes, sizeof(reference_));
+        has_reference_ = true;
+    }
+    if (segment_ == UINT32_MAX) {
+        last_ = {obc_storage::STATUS::FILE_LIMIT, 0, 0, 0};
+        Add(failures_);
+        return false;
+    }
+    ++segment_;
+    return OpenSegment();
+}
+
+// Público:
+bool Journal::WriteReference(
+    const obc_time::TIME_REFERENCE& reference
+) {
+    if (!ready_ || reference.reception.boot_id != boot_stamp_.boot_id) return false;
+    obc_record::RECORD record = {};
+    record.header = {1, obc_data::RECORD_TYPE::TIME_REFERENCE, 36, reference.reception};
+    record.body.time_reference = reference;
+    uint8_t bytes[sizeof(reference_)];
+    size_t size = 0;
+    if (obc_record::Encode(record, bytes, sizeof(bytes), size) != obc_record::STATUS::OK) return false;
+    if (has_reference_ && std::memcmp(reference_, bytes, size) == 0) return true;
+    return Write(bytes, size);
 }
 
 // Privado:
@@ -303,5 +398,90 @@ uint64_t Journal::GetFailures(
 // Público:
 obc_storage::RESULT Journal::GetLastResult(
 ) const { return last_; }
+
+// ==================================================================
+// === CLASSE =======================================================
+// ==================================================================
+
+// ─── DEMAIS MÉTODOS ───────────────────────────────────────────────
+
+// Público:
+bool StorageRecovery::Service(
+    const RECOVERY_IO& io,
+    Journal& journal,
+    uint64_t now_ms,
+    const obc_time::TIME_REFERENCE* reference
+) {
+    if (!io.end || !io.init || journal.IsReady()
+            || diagnostic_.state == RECOVERY_STATE::EXHAUSTED) return false;
+    if (diagnostic_.state != RECOVERY_STATE::WAITING) {
+        if (diagnostic_.state == RECOVERY_STATE::IDLE) {
+            Add(diagnostic_.episodes);
+            diagnostic_.cause = journal.GetLastResult();
+        }
+        if (diagnostic_.attempts == max_attempts) {
+            Exhaust();
+            return false;
+        }
+        diagnostic_.state = RECOVERY_STATE::WAITING;
+        waiting_since_ms_ = now_ms;
+        return false;
+    }
+    if (now_ms - waiting_since_ms_ < retry_delay_ms) return false;
+    ++diagnostic_.attempts;
+    Add(diagnostic_.total_attempts);
+    diagnostic_.last_end = io.end(io.context);
+    diagnostic_.last_result = diagnostic_.last_end;
+    // Estes erros conservam o resultado do fechamento, mas End já liberou
+    // os recursos. BUSY/contexto inválido não autorizam iniciar por cima.
+    const auto ended = diagnostic_.last_end.status;
+    const bool released = ended == obc_storage::STATUS::OK
+        || ended == obc_storage::STATUS::WRITER_FAILED
+        || ended == obc_storage::STATUS::SYNC_FAILED
+        || ended == obc_storage::STATUS::CLOSE_FAILED;
+    bool mounted = false;
+    if (released) {
+        diagnostic_.last_result = io.init(io.context);
+        mounted = diagnostic_.last_result.status == obc_storage::STATUS::OK;
+    }
+    if (!mounted) Add(diagnostic_.lifecycle_failures);
+    if (mounted) {
+        const bool resumed = journal.Resume(reference);
+        diagnostic_.last_result = journal.GetLastResult();
+        if (resumed) {
+            diagnostic_.state = RECOVERY_STATE::VERIFYING;
+            return true;
+        }
+    }
+    // A próxima chamada captura o tempo após o retorno do I/O. Assim uma
+    // montagem lenta não consome os 5 s de espera da tentativa seguinte.
+    diagnostic_.state = RECOVERY_STATE::RETRY;
+    if (diagnostic_.attempts == max_attempts
+            || diagnostic_.last_result.status == obc_storage::STATUS::FILE_LIMIT) Exhaust();
+    return false;
+}
+
+// Privado:
+void StorageRecovery::Exhaust(
+) {
+    diagnostic_.state = RECOVERY_STATE::EXHAUSTED;
+    Add(diagnostic_.exhausted);
+}
+
+// Público:
+void StorageRecovery::ObserveWrite(
+    bool success
+) {
+    if (!success || diagnostic_.state != RECOVERY_STATE::VERIFYING) return;
+    diagnostic_.state = RECOVERY_STATE::IDLE;
+    diagnostic_.attempts = 0;
+    Add(diagnostic_.recovered);
+}
+
+// ─── GETTERS ──────────────────────────────────────────────────────
+
+// Público:
+STORAGE_RECOVERY_DIAGNOSTICS StorageRecovery::GetDiagnostics(
+) const { return diagnostic_; }
 
 } // namespace obc_flow

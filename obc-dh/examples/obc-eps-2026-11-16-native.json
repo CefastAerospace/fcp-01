@@ -1,0 +1,272 @@
+{
+  "passed": true,
+  "checks": [
+    {
+      "name": "eps",
+      "commands": [
+        {
+          "argv": [
+            "g++",
+            "-std=c++11",
+            "-Wall",
+            "-Wextra",
+            "-Werror",
+            "-fno-sanitize-recover=undefined",
+            "-fsanitize=address,undefined",
+            "-fno-omit-frame-pointer",
+            "-Itests/eps_native",
+            "-Iheaders",
+            "-I../eps-tc/EPS_INA219_Standard/src",
+            "src/ObcEps.cpp",
+            "../eps-tc/EPS_INA219_Standard/src/EPS_INA219.cpp",
+            "tests/ObcEpsCheck.cpp",
+            "-o",
+            "/tmp/fcp01-int009-eps"
+          ],
+          "returncode": 0,
+          "stdout": "",
+          "stderr": ""
+        },
+        {
+          "argv": [
+            "/tmp/fcp01-int009-eps"
+          ],
+          "returncode": 0,
+          "stdout": "INA219: driver real, disponibilidade parcial, erros, cadencia e retomada aprovados\n",
+          "stderr": ""
+        }
+      ]
+    },
+    {
+      "name": "eps-macro",
+      "commands": [
+        {
+          "argv": [
+            "g++",
+            "-std=c++11",
+            "-Wall",
+            "-Wextra",
+            "-Werror",
+            "-fno-sanitize-recover=undefined",
+            "-fsanitize=address,undefined",
+            "-fno-omit-frame-pointer",
+            "-DEPS=192",
+            "-Itests/eps_native",
+            "-Iheaders",
+            "-I../eps-tc/EPS_INA219_Standard/src",
+            "src/ObcEps.cpp",
+            "../eps-tc/EPS_INA219_Standard/src/EPS_INA219.cpp",
+            "tests/ObcEpsCheck.cpp",
+            "-o",
+            "/tmp/fcp01-int009-eps-macro"
+          ],
+          "returncode": 0,
+          "stdout": "",
+          "stderr": ""
+        },
+        {
+          "argv": [
+            "/tmp/fcp01-int009-eps-macro"
+          ],
+          "returncode": 0,
+          "stdout": "INA219: driver real, disponibilidade parcial, erros, cadencia e retomada aprovados\n",
+          "stderr": ""
+        }
+      ]
+    },
+    {
+      "name": "startup",
+      "commands": [
+        {
+          "argv": [
+            "g++",
+            "-std=c++11",
+            "-Wall",
+            "-Wextra",
+            "-Werror",
+            "-fno-sanitize-recover=undefined",
+            "-fsanitize=undefined",
+            "-Iheaders",
+            "src/ObcStartup.cpp",
+            "tests/ObcStartupCheck.cpp",
+            "-o",
+            "/tmp/fcp01-int009-startup"
+          ],
+          "returncode": 0,
+          "stdout": "",
+          "stderr": ""
+        },
+        {
+          "argv": [
+            "/tmp/fcp01-int009-startup"
+          ],
+          "returncode": 0,
+          "stdout": "Boot de bancada: ordem, oito combinacoes e falhas independentes aprovadas.\n",
+          "stderr": ""
+        }
+      ]
+    },
+    {
+      "name": "i2c-scheduling",
+      "commands": [
+        {
+          "argv": [
+            "g++",
+            "-std=c++11",
+            "-Wall",
+            "-Wextra",
+            "-Werror",
+            "-fno-sanitize-recover=undefined",
+            "-fsanitize=undefined",
+            "tests/I2cSchedulingCheck.cpp",
+            "-o",
+            "/tmp/fcp01-int009-i2c-scheduling"
+          ],
+          "returncode": 0,
+          "stdout": "",
+          "stderr": ""
+        },
+        {
+          "argv": [
+            "/tmp/fcp01-int009-i2c-scheduling"
+          ],
+          "returncode": 0,
+          "stdout": "",
+          "stderr": ""
+        }
+      ]
+    },
+    {
+      "name": "i2c-health",
+      "commands": [
+        {
+          "argv": [
+            "g++",
+            "-std=c++11",
+            "-Wall",
+            "-Wextra",
+            "-Werror",
+            "-fno-sanitize-recover=undefined",
+            "-fsanitize=address,undefined",
+            "-fno-omit-frame-pointer",
+            "-Iheaders",
+            "src/ObcData.cpp",
+            "src/ObcTime.cpp",
+            "src/ObcRecordCodec.cpp",
+            "src/ObcI2cHealth.cpp",
+            "tests/ObcI2cHealthCheck.cpp",
+            "-o",
+            "/tmp/fcp01-int009-i2c-health"
+          ],
+          "returncode": 0,
+          "stdout": "",
+          "stderr": ""
+        },
+        {
+          "argv": [
+            "/tmp/fcp01-int009-i2c-health"
+          ],
+          "returncode": 0,
+          "stdout": "Saude I2C: limites, ociosidade, recuperacao, wrap, transicoes e registros aprovados\n",
+          "stderr": ""
+        }
+      ]
+    },
+    {
+      "name": "watchdog",
+      "commands": [
+        {
+          "argv": [
+            "g++",
+            "-std=c++11",
+            "-Wall",
+            "-Wextra",
+            "-Werror",
+            "-fno-sanitize-recover=undefined",
+            "-fsanitize=address,undefined",
+            "-fno-omit-frame-pointer",
+            "-Iheaders",
+            "src/ObcWatchdog.cpp",
+            "tests/ObcWatchdogCheck.cpp",
+            "-o",
+            "/tmp/fcp01-int009-watchdog"
+          ],
+          "returncode": 0,
+          "stdout": "",
+          "stderr": ""
+        },
+        {
+          "argv": [
+            "/tmp/fcp01-int009-watchdog"
+          ],
+          "returncode": 0,
+          "stdout": "ObcWatchdogCheck passed\n",
+          "stderr": ""
+        }
+      ]
+    }
+  ],
+  "source_sha256": {
+    "eps-tc/EPS_INA219_Standard/src/EPS_INA219.cpp": "78a32724e12bf480716f65bde7d0c2cb11145e29c55b25eddc61c9a3df1dd52b",
+    "eps-tc/EPS_INA219_Standard/src/EPS_INA219.h": "56c903a3a770f6bf29ffabb3cc1e18dc99d477253664a22f391a290482fd7802",
+    "obc-dh/src/ObcEps.cpp": "58f99d3b64c6bb8e370da8a8f9d32b55978c66c3b751f5dcf1367b2eeb1b8169",
+    "obc-dh/tests/ObcEpsCheck.cpp": "18447a9f2444b572c66b2ad1ddd20a9b00b1423b2bc329b9e4fd67bfbbe21cea",
+    "obc-dh/src/ObcEpsEsp32.cpp": "bd1a0d178f53d07259bcc02a9cf0125b4a8e790d6a28718bbef5e453986302a5",
+    "obc-dh/headers/ObcEpsEsp32.h": "86be894529a40a322b964a7e44b28e4032769120f7c5c0e3c145c86d1ed10da0",
+    "obc-dh/headers/ObcEps.h": "01a385d90620eaa8edf1638459b4222b43e66d82e9dd5f4b169b82954c1cabce",
+    "obc-dh/src/main.cpp": "0e5ce41a8cb8bac4a8815ed6dcc60bd4984a738c6a706b19e6db98a3e4c0ccb2",
+    "obc-dh/platformio.ini": "b53d644d3dc01041fe48e97529c8ee7d379935cf3115508238e0574679f0388d",
+    "obc-dh/tests/ObcEpsBenchCheck.py": "43b363c20958fe82f180b8a4d59cebc9ec47a6f033cddb3ef3dda3b49ad11e64",
+    "obc-dh/tests/eps_native/Wire.h": "5e5f90d5d6e4988c7740f54fadf76536799f0d3ed356a75ae10def42ed77a669",
+    "obc-dh/tests/eps_native/Arduino.h": "6b19ba60273febd411dfd57879b98f4d64cfec767fd47dbf1a6bcbf46adae6e6"
+  },
+  "git_head": "36322b2546c1e4dec5e9b6660fcb13f0f36a6173",
+  "working_tree_changes": true,
+  "platform": {
+    "espressif32": "6.6.0",
+    "arduino_esp32": "2.0.14",
+    "arduinojson": "7.0.4",
+    "lora": "0.8.0"
+  },
+  "builds": [
+    {
+      "environment": "obc",
+      "passed": true,
+      "static_ram_bytes": 32704,
+      "flash_bytes": 432925,
+      "firmware_sha256": "e1618fe92ffefe8c26bdf02bfd4c05684df5169ddb64f5f83f5136395487230a"
+    },
+    {
+      "environment": "int009-ina219-check",
+      "passed": true,
+      "static_ram_bytes": 33072,
+      "flash_bytes": 444405,
+      "firmware_sha256": "1b524416c4a73c36e241926ac66cfc4e9ab9cc5dd78f93646e355378a033fa7c"
+    }
+  ],
+  "usb": {
+    "executed": false,
+    "reason": "Nenhuma porta ttyUSB/ttyACM disponivel; sem upload nesta operacao"
+  },
+  "usb_script": {
+    "syntax": "passed",
+    "help": "passed with PlatformIO Python and pyserial 3.5",
+    "hardware_execution": false
+  },
+  "isolation_symbols": {
+    "obc_eps_init_in_obc": false,
+    "obc_eps_init_in_int009": true
+  },
+  "static_stack_frames_bytes": {
+    "ExecuteRequest": 208,
+    "RunWorker": 752,
+    "ReportDiagnostics": 1200
+  },
+  "unchanged_existing_tests": {
+    "obc-dh/tests/ObcStartupCheck.cpp": true,
+    "obc-dh/tests/I2cSchedulingCheck.cpp": true,
+    "obc-dh/tests/ObcI2cHealthCheck.cpp": true,
+    "obc-dh/tests/ObcWatchdogCheck.cpp": true,
+    "obc-dh/tests/ObcDownlinkCheck.py": true
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "partition": {
+    "offset": "0x3f0000",
+    "size_bytes": 65536,
+    "source": "default.csv e partitions.bin carregado com hash verificado"
+  },
+  "image_size_bytes": 11460,
+  "elf_magic_offset": 24,
+  "stored_crc32": "ffffffff",
+  "calculated_crc32": "1b646d2e",
+  "matches_boot_diagnostic": true,
+  "bytes_different_from_ff": 608,
+  "sha256": "c214d55e0d3940447f0f00cd8af468a22276303070967fc92ddef9ea9d0548ba",
+  "sdk_config": {
+    "CONFIG_ESP_COREDUMP_ENABLE_TO_FLASH": 1,
+    "CONFIG_ESP_COREDUMP_DATA_FORMAT_ELF": 1,
+    "CONFIG_ESP_COREDUMP_CHECKSUM_CRC32": 1,
+    "CONFIG_ESP_COREDUMP_CHECK_BOOT": 1
+  },
+  "diagnosis": "Imagem persistida de core dump invalida/incompleta; verificacao automatica no boot reproduz o CRC observado. Causa e instante da gravacao incompleta nao determinados. Nao comprova crash novo nesta execucao.",
+  "changes_to_flash": "Somente leitura da particao; nenhum apagamento/reparo. Esptool reinicia obc por RTS ao terminar."
+}

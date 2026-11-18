@@ -2,6 +2,14 @@
 
 Checklist do enlace TT&C do FCP-01, levantado a partir do Design Package (`DP_Master_EN.pdf`, seções 3.1, 3.5, 3.8, 4.2.4, 5.2, 5.3, 7.1–7.4 e 8.3) comparado ao código de `tt-c/`. Atualizado em 14/10/2026.
 
+**Atualização de integração OBC — 17/11/2026:** o adaptador central e o
+despacho de `request_log` já estão implementados. A
+[INT-004](../obc-dh/.tasks/03-integracao/done/INT-004-ttc-e-umbilical.md)
+consolida o contrato consumido, as verificações locais e o registro de aceite
+OBC–TT&C. O responsável OBC-DH informou nesta sessão o aceite TT&C das
+definições e autorizou o encerramento em 17/11/2026; a INT-004 está concluída.
+Esta atualização não aprova ensaios, modos de voo ou a durabilidade da estação.
+
 O DP já foi enviado ao comitê e é a referência normativa: em qualquer divergência, prevalece o que está no DP, e o código deve ser ajustado a ele.
 
 Itens marcados como concluídos estão implementados e compilam; a validação em hardware é tratada à parte na seção 5. Decisões de equipe aparecem como **[DECISÃO]**.
@@ -18,7 +26,7 @@ Itens marcados como concluídos estão implementados e compilam; a validação e
 
 | Área | Evidência | Trabalho restante |
 |---|---|---|
-| Biblioteca do enlace | `TtcProtocol`, `Ttc`, `Sx1276Radio`, `UmbilicalLink`: SF7, JSON, TX intercalado com ACK prioritário, DIO0 por interrupção, task no Core 0, umbilical, deduplicação, verificação de saúde, beacon. | Validação em bancada (seção 5) e integração com o OBC (seção 6). |
+| Biblioteca do enlace | `TtcProtocol`, `Ttc`, `Sx1276Radio`, `UmbilicalLink`: SF7, JSON, TX intercalado com ACK prioritário, DIO0 por interrupção, task no Core 0, umbilical, deduplicação, verificação de saúde, beacon; adaptador OBC integrado e contrato base aceito. | Validação em bancada (seção 5) e integrações operacionais restantes (seção 6). |
 | Estação terrena | `ground-station/` (ponte ESP32) e `ground-station/app/` (Python, interface web, logs, roteiros de verificação, análise pós-passagem). | Ensaio com o hardware; fotos e descrição para o DP. |
 | Firmware de teste | `examples/link-test/`: simula o OBC (TM, aeronaves, `test_tm`, beacon em safe). | — |
 | Testes | `test/test_protocol` (nativo, 25 casos), `test/test_ttc` (na placa, 17 casos), `ground-station/app/tests` (pytest, 61 casos). | Rodar `test_ttc` na placa. |
@@ -56,7 +64,7 @@ Itens marcados como concluídos estão implementados e compilam; a validação e
 - [x] Verificação de saúde do SX1276 a cada 1 s (RegVersion e RegOpMode), com reinicialização pelo RST; contador `rst` na TM.
 - [x] Deduplicação de TCs por `seq` (8 TCs, 30 s), com reenvio do ACK anterior.
 - [x] Entregas identificadas da INT-006 (11/11/2026): `id` no pacote de aeronave, confirmação `cf` do solo, eventos de TX por ID (`SendAircraft`/`SendDelivery`, `ReceiveTransmitEvent`, `ReceiveConfirmation`), campos `null` na aeronave e `Send` com destino explícito. Contrato em `common/protocol/ttc-json.md`.
-- [x] Contrato do `request_log` (validação de `args`, respostas `lg` e erros) e cliente na estação (`fcp_gs logs`). Falta a execução no OBC.
+- [x] Contrato do `request_log` (validação de `args`, respostas `lg` e erros) e cliente na estação (`fcp_gs logs`). Despacho OBC implementado na INT-006; verificações USB com SD simulado registradas, sem comprovar cartão/RF físicos ou durabilidade da estação.
 - [ ] Acordar com o OBC o timeout de confirmação (proposta ≥ 10 s) e medir na bancada a ida e volta aeronave → `cf` e a preservação das alterações sob congestionamento.
 - [ ] Acordar com o Payload a origem e as unidades de `ts`, `vel`, `hdg` e `cnt` da aeronave.
 - [x] Campos `flags` e `timestamp` do TC binário eliminados na migração para JSON.
@@ -95,7 +103,7 @@ Ferramentas prontas; falta executar em bancada e anexar os relatórios de `groun
 
 ## 6. Dependências externas
 
-- [ ] Integração com o OBC: task do OBC consumindo `Ttc::ReceiveTelecommand()`, executando os TCs e respondendo com `Ttc::SendAck()` (`obc-dh/src/main.cpp` está vazio). O `examples/link-test` serve de referência.
+- [x] Aceite conjunto da integração OBC registrado em 17/11/2026: `main.cpp` inicia `ObcTtc`, que consome `Ttc::ReceiveTelecommand()` e responde com `Ttc::SendAck()`. O responsável OBC-DH informou o aceite TT&C das definições; mapeamento, evidências e encerramento na [INT-004](../obc-dh/.tasks/03-integracao/done/INT-004-ttc-e-umbilical.md). Comandos de missão continuam nas integrações próprias.
 - [ ] Acionamento do burn-wire (mecanismo do EPS, comando do OBC) fora de TX; `Ttc::HoldTransmit()` está disponível para isso.
 - [ ] O SD do OBC deve usar uma instância própria de HSPI; o rádio usa o `SPI` global (VSPI).
-- [ ] Alinhar o contrato JSON com o OBC-DH (parte TT&C de [P-DADOS](../obc-dh/.agents/TODO.md#p-dados)).
+- [x] Concordância TT&C sobre o contrato JSON consumido pelo OBC-DH informada pelo responsável OBC-DH em 17/11/2026, registrada na [INT-004](../obc-dh/.tasks/03-integracao/done/INT-004-ttc-e-umbilical.md). Unidades, formato e disponibilidade de `common/protocol/ttc-json.md` aceitos no escopo da matriz; fontes físicas e contratos operacionais restantes continuam nas respectivas integrações.

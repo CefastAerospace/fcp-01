@@ -1,0 +1,128 @@
+{
+  "passed": true,
+  "bench": false,
+  "lines": [
+    "ets Jul 29 2019 12:21:46",
+    "rst:0x1 (POWERON_RESET),boot:0x13 (SPI_FAST_FLASH_BOOT)",
+    "configsip: 0, SPIWP:0xee",
+    "clk_drv:0x00,q_drv:0x00,d_drv:0x00,cs0_drv:0x00,hd_drv:0x00,wp_drv:0x00",
+    "mode:DIO, clock div:2",
+    "load:0x3fff0030,len:1184",
+    "load:0x40078000,len:13232",
+    "load:0x40080400,len:3028",
+    "entry 0x400805e4",
+    "[OBC] Boot de bancada: tempo/NVS, I2C e SD",
+    "[   562][E][sd_diskio.cpp:805] sdcard_mount(): f_mount failed: (3) The physical drive cannot work",
+    "[  1063][E][sd_diskio.cpp:126] sdSelectCard(): Select Failed",
+    "[OBC] Tempo/NVS: OK; boot_id=46",
+    "[OBC] I2C: OK; estado do controlador/executor, sem verificar sensores",
+    "[OBC] SD: indisponivel; status=11; errno=0; bytes=0; tentativas=0",
+    "[OBC] Tempo monotonic_ms=1[TT&C] ERRO: SX1276 nao responde.",
+    "[OBC] TT&C: radio=indisponivel; umbilical=OK; tarefa=OK",
+    "[TT&C] ERRO: SX1276 sem resposta ou fora de RX, reinicializando.[FLOW] RAM apos receptor: heap=172332 byte_heap=108196 byte_largest=47092",
+    "[FLOW] Recepcao=OK; SD=indisponivel; heap=160316; maior_bloco=63476",
+    "[TT&C] ERRO: SX1276 nao responde.",
+    "[FLOW] received=0 invalid=0 gaps=0 duplicates=0 written=0 failures=1 dropped=1 SD=0 status=11 poll_gap_ms=1 process_gap_ms=1 stack_rx=7668 stack_sd=0 stack_uart=2204 uart_full=0",
+    "[FLOW-MEMORY] heap=160316 byte_heap=96180 byte_largest=47092 byte_min=90600 parser_peak_bytes=0 parser_limit_bytes=98304",
+    "[DELIVERY] occupied=0 peak=0 accepted=0 repeated=0 lost=0 storage_failures=1 attempts=0 tx_failures=0 confirmed=0 unknown=0 evicted=0",
+    "[TT&C] ERRO: SX1276 sem resposta ou fora de RX, reinicializando.",
+    "[TT&C] ERRO: SX1276 nao responde.",
+    "[FLOW] received=0 invalid=0 gaps=0 duplicates=0 written=0 failures=1 dropped=3 SD=0 status=11 poll_gap_ms=1 process_gap_ms=1 stack_rx=7668 stack_sd=0 stack_uart=2204 uart_full=0",
+    "[FLOW-MEMORY] heap=160316 byte_heap=96180 byte_largest=47092 byte_min=90600 parser_peak_bytes=0 parser_limit_bytes=98304",
+    "[DELIVERY] occupied=0 peak=0 accepted=0 repeated=0 lost=0 storage_failures=1 attempts=0 tx_failures=0 confirmed=0 unknown=0 evicted=0",
+    "[TT&C] ERRO: SX1276 sem resposta ou fora de RX, reinicializando.",
+    "[TT&C] ERRO: SX1276 nao responde.",
+    "[FLOW] received=0 invalid=0 gaps=0 duplicates=0 written=0 failures=1 dropped=5 SD=0 status=11 poll_gap_ms=1 process_gap_ms=1 stack_rx=7668 stack_sd=0 stack_uart=2204 uart_full=0",
+    "[FLOW-MEMORY] heap=160316 byte_heap=96180 byte_largest=47092 byte_min=90600 parser_peak_bytes=0 parser_limit_bytes=98304",
+    "[DELIVERY] occupied=0 peak=0 accepted=0 repeated=0 lost=0 storage_failures=1 attempts=0 tx_failures=0 confirmed=0 unknown=0 evicted=0",
+    "[TT&C] ERRO: SX1276 sem resposta ou fora de RX, reinicializando.",
+    "[TT&C] ERRO: SX1276 nao responde.",
+    "[FLOW] received=0 invalid=0 gaps=0 duplicates=0 written=0 failures=1 dropped=7 SD=0 status=11 poll_gap_ms=2 process_gap_ms=2 stack_rx=7668 stack_sd=0 stack_uart=2140 uart_full=0",
+    "[FLOW-MEMORY] heap=160316 byte_heap=96180 byte_largest=47092 byte_min=90600 parser_peak_bytes=0 parser_limit_bytes=98304",
+    "[DELIVERY] occupied=0 peak=0 accepted=0 repeated=0 lost=0 storage_failures=1 attempts=0 tx_failures=0 confirmed=0 unknown=0 evicted=0",
+    "[TT&C] ERRO: SX1276 sem resposta ou fora de RX, reinicializando.",
+    "[TT&C] ERRO: SX1276 nao responde.",
+    "[FLOW] received=0 invalid=0 gaps=0 duplicates=0 written=0 failures=1 dropped=9 SD=0 status=11 poll_gap_ms=2 process_gap_ms=2 stack_rx=7668 stack_sd=0 stack_uart=2140 uart_full=0",
+    "[FLOW-MEMORY] heap=160316 byte_heap=96180 byte_largest=47092 byte_min=90600 parser_peak_bytes=0 parser_limit_bytes=98304",
+    "[DELIVERY] occupied=0 peak=0 accepted=0 repeated=0 lost=0 storage_failures=1 attempts=0 tx_failures=0 confirmed=0 unknown=0 evicted=0",
+    "{\"n\":0,\"t\":\"ack\",\"seq\":29195,\"cmd\":\"ping\",\"st\":\"ok\",\"q\":0}",
+    "{\"n\":1,\"t\":\"ack\",\"seq\":29196,\"cmd\":\"request_log\",\"st\":\"invalid_param\",\"q\":0}",
+    "{\"n\":2,\"t\":\"ack\",\"seq\":29197,\"cmd\":\"request_log\",\"st\":\"invalid_param\",\"q\":1}",
+    "{\"n\":3,\"t\":\"ack\",\"seq\":29198,\"cmd\":\"set_time\",\"st\":\"ok\",\"q\":0}",
+    "{\"n\":4,\"t\":\"ack\",\"seq\":29199,\"cmd\":\"request_log\",\"st\":\"ok\",\"q\":0}",
+    "{\"n\":5,\"t\":\"lg\",\"rq\":29199,\"op\":\"list\",\"err\":\"no_sd\"}",
+    "{\"n\":6,\"t\":\"ack\",\"seq\":29200,\"cmd\":\"ping\",\"st\":\"ok\",\"q\":0}"
+  ],
+  "exchanges": [
+    {
+      "ack": {
+        "n": 0,
+        "t": "ack",
+        "seq": 29195,
+        "cmd": "ping",
+        "st": "ok",
+        "q": 0
+      },
+      "response_ms": 19.471
+    },
+    {
+      "ack": {
+        "n": 1,
+        "t": "ack",
+        "seq": 29196,
+        "cmd": "request_log",
+        "st": "invalid_param",
+        "q": 0
+      },
+      "response_ms": 24.57
+    },
+    {
+      "ack": {
+        "n": 2,
+        "t": "ack",
+        "seq": 29197,
+        "cmd": "request_log",
+        "st": "invalid_param",
+        "q": 1
+      },
+      "response_ms": 23.531
+    },
+    {
+      "ack": {
+        "n": 3,
+        "t": "ack",
+        "seq": 29198,
+        "cmd": "set_time",
+        "st": "ok",
+        "q": 0
+      },
+      "response_ms": 20.452
+    },
+    {
+      "ack": {
+        "n": 4,
+        "t": "ack",
+        "seq": 29199,
+        "cmd": "request_log",
+        "st": "ok",
+        "q": 0
+      },
+      "response_ms": 24.247
+    },
+    {
+      "ack": {
+        "n": 6,
+        "t": "ack",
+        "seq": 29200,
+        "cmd": "ping",
+        "st": "ok",
+        "q": 0
+      },
+      "response_ms": 30.438
+    }
+  ],
+  "files": [],
+  "storage": "no_sd",
+  "deliveries": 0,
+  "retried": false
+}

@@ -4,6 +4,12 @@
 #include "I2cBus.h" // Inicialização do controlador e executor existentes.
 #include "ObcStorageEsp32.h" // Montagem SD/HSPI, sem abrir arquivos.
 #include "ObcTtc.h" // Enlace TT&C e atendimento dos comandos de bancada.
+#ifdef OBC_EPS_BENCH
+#include "ObcEpsEsp32.h" // Aquisição isolada, sem publicar energia na TM operacional.
+#endif
+#ifdef OBC_THERMAL_BENCH
+#include "ObcThermalEsp32.h" // Bancada LM75A isolada, sem TM ou proteção térmica.
+#endif
 
 // ─── ATENÇÃO ──────────────────────────────────────────────────────
 /*
@@ -14,6 +20,29 @@
 namespace {
 
     // ─── HELPERS ──────────────────────────────────────────────────────
+
+    // Checkpoints ocorrem somente depois do retorno; chamada presa não alimenta.
+    obc_time::STATUS StartBoot(
+        uint64_t& boot_id
+    ) {
+        const auto result = obc_time::esp32::StartBoot(boot_id);
+        obc_watchdog::esp32::Checkpoint();
+        return result;
+    }
+
+    bool InitI2c(
+    ) {
+        const bool result = i2c::Init();
+        obc_watchdog::esp32::Checkpoint();
+        return result;
+    }
+
+    obc_storage::RESULT InitStorage(
+    ) {
+        const auto result = obc_storage::esp32::Init();
+        obc_watchdog::esp32::Checkpoint();
+        return result;
+    }
 
     // Emite diagnóstico uma vez, em linhas que o contrato umbilical permite
     // ignorar. Não publica TC/TM ou confunde tempo relativo com horário UTC.
@@ -48,16 +77,30 @@ void setup(
 ) {
     // Não aguarda conexão do computador nem inicia missão ou atuadores.
     Serial.begin(115200);
+    obc_watchdog::esp32::Init();
     Serial.print("[OBC] Boot de bancada: tempo/NVS, I2C e SD\n");
     const obc_startup::INITIALIZERS initializers = {
-        obc_time::esp32::StartBoot,
-        i2c::Init,
-        obc_storage::esp32::Init
+        StartBoot,
+        InitI2c,
+        InitStorage
     };
     const obc_startup::STARTUP_REPORT report = obc_startup::Initialize(initializers);
     LogStartup(report);
     obc_ttc::Init();
+    obc_watchdog::esp32::Checkpoint();
     obc_flow::esp32::Init(report);
+    obc_watchdog::esp32::Checkpoint();
+#ifdef OBC_EPS_BENCH
+    Serial.printf("[EPS] init=%s; parametros provisorios de bancada\n",
+        obc_eps::esp32::Init() ? "iniciada" : "indisponivel");
+    obc_watchdog::esp32::Checkpoint();
+#endif
+#ifdef OBC_THERMAL_BENCH
+    Serial.printf("[THERMAL] init=%s; NXP LM75A e parametros provisorios de bancada\n",
+        obc_thermal::esp32::Init() ? "iniciada" : "indisponivel");
+    obc_watchdog::esp32::Checkpoint();
+#endif
+    obc_watchdog::esp32::StartRuntime();
 }
 
 /**
@@ -67,4 +110,11 @@ void loop(
 ) {
     obc_ttc::Service();
     obc_flow::esp32::ReportDiagnostics();
+#ifdef OBC_EPS_BENCH
+    obc_eps::esp32::ReportDiagnostics();
+#endif
+#ifdef OBC_THERMAL_BENCH
+    obc_thermal::esp32::ReportDiagnostics();
+#endif
+    obc_watchdog::esp32::Service(obc_ttc::GetDiagnostics());
 }

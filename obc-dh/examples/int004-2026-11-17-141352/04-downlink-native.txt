@@ -1,0 +1,2 @@
+ObcDownlinkCheck: mapping, mailbox and real file extraction passed
+

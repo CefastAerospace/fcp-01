@@ -1,0 +1,13 @@
+{
+  "diagnostic_only": true,
+  "original_functional_passed": false,
+  "original_report": "62-on-demand-acquisition-usb.json",
+  "original_report_sha256": "4fa9e18398a630f96fe1e92c30631f7280a86930914013d410153ad56bde66a6",
+  "captured_records": 49,
+  "decoded_records": 49,
+  "decoded_telemetry": 19,
+  "reader_exit_code": 0,
+  "reader_stderr": "Registros válidos: 49; trechos descartados: 0; bytes descartados: 0.\n",
+  "binary": "65-partial-captured-records.bin",
+  "jsonl": "65-partial-captured-records.jsonl"
+}

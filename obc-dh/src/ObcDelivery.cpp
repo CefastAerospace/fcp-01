@@ -392,7 +392,8 @@ Queue::ENTRY* Queue::Reserve(
     // A admissão conserva uma posição livre até a consulta durável terminar.
     const bool free_slot_allowed = for_recovery || disk_checked_ || statistics_.occupied < cache_slots - 1;
     if (free_slot_allowed) {
-        for (auto& entry : entries_) {
+        for (size_t index = 0; index < cache_slots; ++index) {
+            auto& entry = entries_[index];
             if (!entry.used) {
                 entry = {};
                 entry.used = true;
@@ -403,7 +404,8 @@ Queue::ENTRY* Queue::Reserve(
         }
     }
     // Somente cópias duráveis e sem consumidor podem sair do cache.
-    for (auto& entry : entries_) {
+    for (size_t index = 0; index < cache_slots; ++index) {
+        auto& entry = entries_[index];
         if (entry.stored && !entry.confirmed && !entry.busy && Compare(entry.delivery.id, inflight_) != 0) {
             disk_checked_ = false;
             Add(statistics_.evicted);
@@ -416,6 +418,16 @@ Queue::ENTRY* Queue::Reserve(
             entry.used = true;
             return &entry;
         }
+    }
+    // Uma remontagem pode encontrar o cache já cheio de cópias não duráveis.
+    // A reserva independente evita depender de um TX que a própria consulta
+    // pendente impede. Nunca substitui uma recuperação ainda em uso.
+    if (for_recovery && !entries_[cache_slots].used) {
+        ENTRY& entry = entries_[cache_slots];
+        entry = {};
+        entry.used = true;
+        statistics_.recovery_occupied = true;
+        return &entry;
     }
     return nullptr;
 }
@@ -432,8 +444,10 @@ Queue::ENTRY* Queue::Find(
 void Queue::Release(
     ENTRY& entry
 ) {
+    const bool recovery = &entry == &entries_[cache_slots];
     entry = {};
-    --statistics_.occupied;
+    if (recovery) statistics_.recovery_occupied = false;
+    else --statistics_.occupied;
 }
 
 // Público:
@@ -564,6 +578,10 @@ void Queue::ReaderFailed(
     disk_checked_ = true;
     Add(statistics_.storage_failures);
 }
+
+// Público:
+void Queue::RecheckStorage(
+) { disk_checked_ = false; }
 
 // Público:
 STATISTICS Queue::GetStatistics(

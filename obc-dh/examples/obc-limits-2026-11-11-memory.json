@@ -1,0 +1,3006 @@
+{
+  "passed": true,
+  "case": "memory",
+  "lines": [
+    "ets Jul 29 2019 12:21:46",
+    "rst:0x1 (POWERON_RESET),boot:0x13 (SPI_FAST_FLASH_BOOT)",
+    "configsip: 0, SPIWP:0xee",
+    "clk_drv:0x00,q_drv:0x00,d_drv:0x00,cs0_drv:0x00,hd_drv:0x00,wp_drv:0x00",
+    "mode:DIO, clock div:2",
+    "load:0x3fff0030,len:1184",
+    "load:0x40078000,len:13232",
+    "load:0x40080400,len:3028",
+    "entry 0x400805e4",
+    "[LIMITS] scenario=memory files=32",
+    "[FLOW-CHECK] ADS-B em RAM e SD len[TT&C] ERRO: SX1276 nao responde.",
+    "[OBC] TT&C: radio=indisponivel; umbilical=OK; tarefa=OK",
+    "[FLOW] RAM apos receptor: heap=182260 byte_heap=110880 byte_largest=47092",
+    "[FLOW] RAM apos bloco SD: bloco=1 heap=117728 byte_heap=46348 byte_largest=16372 stack_budget=19456 margin=4096 reserva=23552 parser_limit=98304",
+    "[FLOW] Recepcao=OK; SD=em inicializacao; heap=97144; maior_bloco=69620",
+    "[FLOW-CHECK] Arquivo simulado: boot_000000000000002c_00000000.bin",
+    "[DELIVERY] recovery=1 data=0 confirm=0 corrupt=0 tails=0 orphan=0 cache_bytes=2840",
+    "[TT&C] ERRO: SX1276 sem resposta ou fora de RX, reinicializando.",
+    "[FLOW] received=0 invalid=0 gaps=0 duplicates=0 written=2 failures=0 dropped=0 SD=1 status=0 poll_gap_ms=1 process_gap_ms=1 stack_rx=7600 stack_sd=5736 stack_uart=2544 uart_full=0",
+    "[FLOW-MEMORY] heap=97144 byte_heap=25764 byte_largest=8180 byte_min=23268 parser_peak_bytes=0 parser_limit_bytes=98304",
+    "[TT&C] ERRO: SX1276 nao responde.",
+    "[DELIVERY] occupied=0 peak=0 accepted=0 repeated=0 lost=0 storage_failures=0 attempts=0 tx_failures=0 confirmed=0 unknown=0 evicted=0",
+    "[TT&C] ERRO: SX1276 sem resposta ou fora de RX, reinicializando.",
+    "[FLOW] received=0 invalid=0 gaps=0 duplicates=0 written=3 failures=0 dropped=0 SD=1 status=0 poll_gap_ms=2 process_gap_ms=2 stack_rx=7600 stack_sd=5736 stack_uart=2544 uart_full=0",
+    "[FLOW-MEMORY] heap=97144 byte_heap=25764 byte_largest=8180 byte_min=23268 parser_peak_bytes=0 parser_limit_bytes=98304",
+    "[TT&C] ERRO: SX1276 nao responde.",
+    "[DELIVERY] occupied=0 peak=0 accepted=0 repeated=0 lost=0 storage_failures=0 attempts=0 tx_failures=0 confirmed=0 unknown=0 evicted=0",
+    "[TT&C] ERRO: SX1276 sem resposta ou fora de RX, reinicializando.",
+    "[FLOW] received=0 invalid=0 gaps=0 duplicates=0 written=4 failures=0 dropped=0 SD=1 status=0 poll_gap_ms=2 process_gap_ms=2 stack_rx=7600 stack_sd=5736 stack_uart=2544 uart_full=0",
+    "[FLOW-MEMORY] heap=97144 byte_heap=25764 byte_largest=8180 byte_min=23268 parser_peak_bytes=0 parser_limit_bytes=98304",
+    "[TT&C] ERRO: SX1276 nao responde.",
+    "[DELIVERY] occupied=0 peak=0 accepted=0 repeated=0 lost=0 storage_failures=0 attempts=0 tx_failures=0 confirmed=0 unknown=0 evicted=0",
+    "[TT&C] ERRO: SX1276 sem resposta ou fora de RX, reinicializando.",
+    "[FLOW] received=0 invalid=0 gaps=0 duplicates=0 written=5 failures=0 dropped=0 SD=1 status=0 poll_gap_ms=2 process_gap_ms=2 stack_rx=7600 stack_sd=5736 stack_uart=2544 uart_full=0",
+    "[FLOW-MEMORY] heap=97144 byte_heap=25764 byte_largest=8180 byte_min=23268 parser_peak_bytes=0 parser_limit_bytes=98304",
+    "[TT&C] ERRO: SX1276 nao responde.",
+    "[DELIVERY] occupied=0 peak=0 accepted=0 repeated=0 lost=0 storage_failures=0 attempts=0 tx_failures=0 confirmed=0 unknown=0 evicted=0",
+    "[TT&C] ERRO: SX1276 sem resposta ou fora de RX, reinicializando.",
+    "[FLOW] received=0 invalid=0 gaps=0 duplicates=0 written=6 failures=0 dropped=0 SD=1 status=0 poll_gap_ms=2 process_gap_ms=2 stack_rx=7600 stack_sd=5736 stack_uart=2544 uart_full=0",
+    "[FLOW-MEMORY] heap=97144 byte_heap=25764 byte_largest=8180 byte_min=23268 parser_peak_bytes=0 parser_limit_bytes=98304",
+    "[TT&C] ERRO: SX1276 nao responde.",
+    "[DELIVERY] occupied=0 peak=0 accepted=0 repeated=0 lost=0 storage_failures=0 attempts=0 tx_failures=0 confirmed=0 unknown=0 evicted=0",
+    "{\"n\":0,\"t\":\"ack\",\"seq\":63455,\"cmd\":\"ping\",\"st\":\"ok\",\"q\":0}",
+    "{\"n\":1,\"t\":\"ack\",\"seq\":63456,\"cmd\":\"set_time\",\"st\":\"ok\",\"q\":0}",
+    "[FLOW-CHECK] UTC recebida; inicio da injecao em 1000 ms",
+    "{\"n\":2,\"t\":\"ack\",\"seq\":63457,\"cmd\":\"ping\",\"st\":\"ok\",\"q\":0}",
+    "{\"n\":3,\"t\":\"tm\",\"ts\":1794429751,\"md\":\"bench\",\"vb\":null,\"ib\":null,\"vs\":null,\"is\":null,\"tp\":null,\"w\":null,\"az\":null,\"ac\":null,\"msg\":null,\"rssi\":null,\"snr\":null,\"rx\":4,\"err\":0,\"rst\":5}",
+    "[TT&C] Falha no TX de 181 bytes.",
+    "{\"n\":4,\"t\":\"ack\",\"seq\":63458,\"cmd\":\"request_tm\",\"st\":\"ok\",\"q\":0}",
+    "{\"n\":5,\"t\":\"ack\",\"seq\":63459,\"cmd\":\"ping\",\"st\":\"ok\",\"q\":0}",
+    "[FLOW-CHECK] v3 ts_available=1 ts=1794429751 ac_available=0 ac=0 msg_available=0 stable=1",
+    "{\"n\":6,\"t\":\"tm\",\"ts\":1794429751,\"md\":\"bench\",\"vb\":null,\"ib\":null,\"vs\":null,\"is\":null,\"tp\":null,\"w\":null,\"az\":null,\"ac\":null,\"msg\":null,\"rssi\":null,\"snr\":null,\"rx\":6,\"err\":0,\"rst\":5}",
+    "[TT&C] Falha no TX de 181 bytes.",
+    "[TT&C] ERRO: SX1276 sem resposta ou fora de RX, reinicializando.",
+    "[FLOW] received=0 invalid=0 gaps=0 duplicates=0 written=9 failures=0 dropped=0 SD=1 status=0 poll_gap_ms=2 process_gap_ms=2 stack_rx=7520 stack_sd=5736 stack_uart=1332 uart_full=0",
+    "[TT&C] ERRO: SX1276 nao responde.",
+    "{\"n\":7,\"t\":\"ack\",\"seq\":63460,\"cmd\":\"request_tm\",\"st\":\"ok\",\"q\":0}",
+    "[FLOW-MEMORY] heap=97144 byte_heap=25764 byte_largest=8180 byte_min=22192 parser_peak_bytes=0 parser_limit_bytes=98304",
+    "[DELIVERY] occupied=0 peak=0 accepted=0 repeated=0 lost=0 storage_failures=0 attempts=0 tx_failures=0 confirmed=0 unknown=0 evicted=0",
+    "[FLOW-CHECK] v3 ts_available=1 ts=1794429751 ac_available=0 ac=0 msg_available=0 stable=1",
+    "{\"n\":8,\"t\":\"ack\",\"seq\":63461,\"cmd\":\"ping\",\"st\":\"ok\",\"q\":0}",
+    "{\"n\":9,\"t\":\"tm\",\"ts\":1794429751,\"md\":\"bench\",\"vb\":null,\"ib\":null,\"vs\":null,\"is\":null,\"tp\":null,\"w\":null,\"az\":null,\"ac\":null,\"msg\":null,\"rssi\":null,\"snr\":null,\"rx\":8,\"err\":0,\"rst\":6}",
+    "[TT&C] Falha no TX de 181 bytes.",
+    "{\"n\":10,\"t\":\"ack\",\"seq\":63462,\"cmd\":\"request_tm\",\"st\":\"ok\",\"q\":0}",
+    "[FLOW-CHECK] v3 ts_available=1 ts=1794429751 ac_available=0 ac=0 msg_available=0 stable=1",
+    "{\"n\":11,\"t\":\"ack\",\"seq\":63463,\"cmd\":\"ping\",\"st\":\"ok\",\"q\":0}",
+    "{\"n\":12,\"t\":\"tm\",\"ts\":1794429751,\"md\":\"bench\",\"vb\":null,\"ib\":null,\"vs\":null,\"is\":null,\"tp\":null,\"w\":null,\"az\":null,\"ac\":null,\"msg\":null,\"rssi\":null,\"snr\":null,\"rx\":10,\"err\":0,\"rst\":6}",
+    "[TT&C] Falha no TX de 182 bytes.",
+    "{\"n\":13,\"t\":\"ack\",\"seq\":63464,\"cmd\":\"request_tm\",\"st\":\"ok\",\"q\":0}",
+    "[FLOW-CHECK] v3 ts_available=1 ts=1794429751 ac_available=0 ac=0 msg_available=0 stable=1",
+    "{\"n\":14,\"t\":\"ack\",\"seq\":63465,\"cmd\":\"ping\",\"st\":\"ok\",\"q\":0}",
+    "{\"n\":15,\"t\":\"tm\",\"ts\":1794429751,\"md\":\"bench\",\"vb\":null,\"ib\":null,\"vs\":null,\"is\":null,\"tp\":null,\"w\":null,\"az\":null,\"ac\":null,\"msg\":null,\"rssi\":null,\"snr\":null,\"rx\":12,\"err\":0,\"rst\":6}",
+    "[TT&C] Falha no TX de 182 bytes.",
+    "{\"n\":16,\"t\":\"ack\",\"seq\":63466,\"cmd\":\"request_tm\",\"st\":\"ok\",\"q\":0}",
+    "[LIMITS-PAYLOAD] case=1 status=READY id=1 count=1 crc=3540954241 valid=1 extras=0 identification=0 tick=0 accepted=1 lost=0 occupied=1 peak=1",
+    "{\"n\":17,\"t\":\"ac\",\"id\":[44,1],\"ts\":null,\"icao\":\"000001\",\"lat\":0,\"lon\":0,\"alt\":100,\"vel\":null,\"hdg\":null,\"cnt\":null}",
+    "[TT&C] Falha no TX de 113 bytes.",
+    "[FLOW-CHECK] v3 ts_available=1 ts=1794429751 ac_available=0 ac=0 msg_available=0 stable=1",
+    "{\"n\":18,\"t\":\"ack\",\"seq\":63467,\"cmd\":\"ping\",\"st\":\"ok\",\"q\":0}",
+    "{\"n\":19,\"t\":\"tm\",\"ts\":1794429752,\"md\":\"bench\",\"vb\":null,\"ib\":null,\"vs\":null,\"is\":null,\"tp\":null,\"w\":null,\"az\":null,\"ac\":1,\"msg\":null,\"rssi\":null,\"snr\":null,\"rx\":14,\"err\":0,\"rst\":6}",
+    "[TT&C] Falha no TX de 179 bytes.",
+    "{\"n\":20,\"t\":\"ack\",\"seq\":63468,\"cmd\":\"request_tm\",\"st\":\"ok\",\"q\":0}",
+    "[TT&C] ERRO: SX1276 sem resposta ou fora de RX, reinicializando.",
+    "[TT&C] ERRO: SX1276 nao responde.",
+    "[FLOW-CHECK] Arquivo simulado: boot_000000000000002c_00000001.bin",
+    "[FLOW] received=1 invalid=0 gaps=0 duplicates=0 written=15 failures=0 dropped=0 SD=1 status=0 poll_gap_ms=2 process_gap_ms=31 stack_rx=3344 stack_sd=5736 stack_uart=1332 uart_full=0",
+    "[FLOW-MEMORY] heap=97144 byte_heap=25764 byte_largest=8180 byte_min=21996 parser_peak_bytes=1313 parser_limit_bytes=98304",
+    "[DELIVERY] occupied=1 peak=1 accepted=1 repeated=0 lost=0 storage_failures=0 attempts=1 tx_failures=0 confirmed=0 unknown=0 evicted=0",
+    "{\"n\":21,\"t\":\"ack\",\"seq\":63470,\"cmd\":\"ping\",\"st\":\"ok\",\"q\":0}",
+    "[FLOW-CHECK] v3 ts_available=1 ts=1794429752 ac_available=1 ac=1 msg_available=0 stable=1",
+    "{\"n\":22,\"t\":\"lg\",\"rq\":63469,\"op\":\"read\",\"name\":\"boot_000000000000002c_00000000.bin\",\"off\":0,\"tot\":68,\"d\":\"RkNEMQEBRAAsAAAAAAAAAAEAAAAAAAAAlhoAAAAAAAABAAAABwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABZQIqHdq8=\"}",
+    "{\"n\":23,\"t\":\"ack\",\"seq\":63469,\"cmd\":\"request_log\",\"st\":\"ok\",\"q\":0}",
+    "{\"n\":24,\"t\":\"ack\",\"seq\":63471,\"cmd\":\"ping\",\"st\":\"ok\",\"q\":0}",
+    "{\"n\":25,\"t\":\"tm\",\"ts\":1794429752,\"md\":\"bench\",\"vb\":null,\"ib\":null,\"vs\":null,\"is\":null,\"tp\":null,\"w\":null,\"az\":null,\"ac\":1,\"msg\":null,\"rssi\":null,\"snr\":null,\"rx\":18,\"err\":0,\"rst\":7}",
+    "[TT&C] Falha no TX de 179 bytes.",
+    "{\"n\":26,\"t\":\"ack\",\"seq\":63472,\"cmd\":\"request_tm\",\"st\":\"ok\",\"q\":0}",
+    "[FLOW-CHECK] v3 ts_available=1 ts=1794429752 ac_available=1 ac=1 msg_available=0 stable=1",
+    "{\"n\":27,\"t\":\"ack\",\"seq\":63474,\"cmd\":\"ping\",\"st\":\"ok\",\"q\":0}",
+    "{\"n\":28,\"t\":\"lg\",\"rq\":63473,\"op\":\"read\",\"name\":\"boot_000000000000002c_00000000.bin\",\"off\":0,\"tot\":68,\"d\":\"RkNEMQEBRAAsAAAAAAAAAAEAAAAAAAAAlhoAAAAAAAABAAAABwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABZQIqHdq8=\"}",
+    "{\"n\":29,\"t\":\"ack\",\"seq\":63473,\"cmd\":\"request_log\",\"st\":\"ok\",\"q\":0}",
+    "{\"n\":30,\"t\":\"ack\",\"seq\":63475,\"cmd\":\"ping\",\"st\":\"ok\",\"q\":0}",
+    "{\"n\":31,\"t\":\"tm\",\"ts\":1794429752,\"md\":\"bench\",\"vb\":null,\"ib\":null,\"vs\":null,\"is\":null,\"tp\":null,\"w\":null,\"az\":null,\"ac\":1,\"msg\":null,\"rssi\":null,\"snr\":null,\"rx\":22,\"err\":0,\"rst\":7}",
+    "[TT&C] Falha no TX de 179 bytes.",
+    "{\"n\":32,\"t\":\"ack\",\"seq\":63476,\"cmd\":\"request_tm\",\"st\":\"ok\",\"q\":0}",
+    "[FLOW-CHECK] v3 ts_available=1 ts=1794429752 ac_available=1 ac=1 msg_available=0 stable=1",
+    "{\"n\":33,\"t\":\"ack\",\"seq\":63478,\"cmd\":\"ping\",\"st\":\"ok\",\"q\":0}",
+    "{\"n\":34,\"t\":\"lg\",\"rq\":63477,\"op\":\"read\",\"name\":\"boot_000000000000002c_00000000.bin\",\"off\":0,\"tot\":68,\"d\":\"RkNEMQEBRAAsAAAAAAAAAAEAAAAAAAAAlhoAAAAAAAABAAAABwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABZQIqHdq8=\"}",
+    "{\"n\":35,\"t\":\"ack\",\"seq\":63477,\"cmd\":\"request_log\",\"st\":\"ok\",\"q\":1}",
+    "{\"n\":36,\"t\":\"ack\",\"seq\":63479,\"cmd\":\"ping\",\"st\":\"ok\",\"q\":0}",
+    "{\"n\":37,\"t\":\"tm\",\"ts\":1794429753,\"md\":\"bench\",\"vb\":null,\"ib\":null,\"vs\":null,\"is\":null,\"tp\":null,\"w\":null,\"az\":null,\"ac\":1,\"msg\":null,\"rssi\":null,\"snr\":null,\"rx\":26,\"err\":0,\"rst\":7}",
+    "[TT&C] Falha no TX de 179 bytes.",
+    "[TT&C] ERRO: SX1276 sem resposta ou fora de RX, reinicializando.",
+    "[TT&C] ERRO: SX1276 nao responde.",
+    "{\"n\":38,\"t\":\"ack\",\"seq\":63480,\"cmd\":\"request_tm\",\"st\":\"ok\",\"q\":1}",
+    "[FLOW] received=1 invalid=0 gaps=0 duplicates=0 written=22 failures=0 dropped=0 SD=1 status=0 poll_gap_ms=2 process_gap_ms=31 stack_rx=3344 stack_sd=5736 stack_uart=1332 uart_full=128",
+    "[FLOW-MEMORY] heap=97144 byte_heap=25764 byte_largest=8180 byte_min=21956 parser_peak_bytes=1313 parser_limit_bytes=98304",
+    "[DELIVERY] occupied=1 peak=1 accepted=1 repeated=0 lost=0 storage_failures=0 attempts=1 tx_failures=0 confirmed=0 unknown=0 evicted=0",
+    "[FLOW-CHECK] v3 ts_available=1 ts=1794429753 ac_available=1 ac=1 msg_available=0 stable=1",
+    "{\"n\":39,\"t\":\"ack\",\"seq\":63482,\"cmd\":\"ping\",\"st\":\"ok\",\"q\":0}",
+    "{\"n\":40,\"t\":\"lg\",\"rq\":63481,\"op\":\"read\",\"name\":\"boot_000000000000002c_00000000.bin\",\"off\":0,\"tot\":68,\"d\":\"RkNEMQEBRAAsAAAAAAAAAAEAAAAAAAAAlhoAAAAAAAABAAAABwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABZQIqHdq8=\"}",
+    "{\"n\":41,\"t\":\"ack\",\"seq\":63481,\"cmd\":\"request_log\",\"st\":\"ok\",\"q\":0}",
+    "[LIMITS-PAYLOAD] case=2 status=READY id=2 count=1 crc=1293764325 valid=1 extras=0 identification=0 tick=0 accepted=1 lost=0 occupied=1 peak=1",
+    "{\"n\":42,\"t\":\"ack\",\"seq\":63483,\"cmd\":\"ping\",\"st\":\"ok\",\"q\":30}",
+    "{\"n\":43,\"t\":\"tm\",\"ts\":1794429753,\"md\":\"bench\",\"vb\":null,\"ib\":null,\"vs\":null,\"is\":null,\"tp\":null,\"w\":null,\"az\":null,\"ac\":1,\"msg\":null,\"rssi\":null,\"snr\":null,\"rx\":30,\"err\":0,\"rst\":8}",
+    "[TT&C] Falha no TX de 180 bytes.",
+    "{\"n\":44,\"t\":\"ack\",\"seq\":63484,\"cmd\":\"request_tm\",\"st\":\"ok\",\"q\":0}",
+    "{\"n\":45,\"t\":\"ack\",\"seq\":63486,\"cmd\":\"ping\",\"st\":\"ok\",\"q\":0}",
+    "[FLOW-CHECK] v3 ts_available=1 ts=1794429753 ac_available=1 ac=1 msg_available=0 stable=1",
+    "{\"n\":46,\"t\":\"lg\",\"rq\":63485,\"op\":\"read\",\"name\":\"boot_000000000000002c_00000000.bin\",\"off\":0,\"tot\":68,\"d\":\"RkNEMQEBRAAsAAAAAAAAAAEAAAAAAAAAlhoAAAAAAAABAAAABwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABZQIqHdq8=\"}",
+    "{\"n\":47,\"t\":\"ack\",\"seq\":63485,\"cmd\":\"request_log\",\"st\":\"ok\",\"q\":0}",
+    "{\"n\":48,\"t\":\"ack\",\"seq\":63487,\"cmd\":\"ping\",\"st\":\"ok\",\"q\":0}",
+    "{\"n\":49,\"t\":\"tm\",\"ts\":1794429753,\"md\":\"bench\",\"vb\":null,\"ib\":null,\"vs\":null,\"is\":null,\"tp\":null,\"w\":null,\"az\":null,\"ac\":1,\"msg\":null,\"rssi\":null,\"snr\":null,\"rx\":34,\"err\":0,\"rst\":8}",
+    "[TT&C] Falha no TX de 180 bytes.",
+    "{\"n\":50,\"t\":\"ack\",\"seq\":63488,\"cmd\":\"request_tm\",\"st\":\"ok\",\"q\":0}",
+    "[FLOW-CHECK] v3 ts_available=1 ts=1794429753 ac_available=1 ac=1 msg_available=0 stable=1",
+    "{\"n\":51,\"t\":\"ack\",\"seq\":63490,\"cmd\":\"ping\",\"st\":\"ok\",\"q\":0}",
+    "{\"n\":52,\"t\":\"lg\",\"rq\":63489,\"op\":\"read\",\"name\":\"boot_000000000000002c_00000000.bin\",\"off\":0,\"tot\":68,\"d\":\"RkNEMQEBRAAsAAAAAAAAAAEAAAAAAAAAlhoAAAAAAAABAAAABwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABZQIqHdq8=\"}",
+    "{\"n\":53,\"t\":\"ack\",\"seq\":63489,\"cmd\":\"request_log\",\"st\":\"ok\",\"q\":0}",
+    "{\"n\":54,\"t\":\"ack\",\"seq\":63491,\"cmd\":\"ping\",\"st\":\"ok\",\"q\":0}",
+    "{\"n\":55,\"t\":\"tm\",\"ts\":1794429754,\"md\":\"bench\",\"vb\":null,\"ib\":null,\"vs\":null,\"is\":null,\"tp\":null,\"w\":null,\"az\":null,\"ac\":1,\"msg\":null,\"rssi\":null,\"snr\":null,\"rx\":38,\"err\":0,\"rst\":8}",
+    "[TT&C] Falha no TX de 180 bytes.",
+    "{\"n\":56,\"t\":\"ack\",\"seq\":63492,\"cmd\":\"request_tm\",\"st\":\"ok\",\"q\":0}",
+    "[TT&C] ERRO: SX1276 sem resposta ou fora de RX, reinicializando.",
+    "[TT&C] ERRO: SX1276 nao responde.",
+    "[FLOW-CHECK] v3 ts_available=1 ts=1794429754 ac_available=1 ac=1 msg_available=0 stable=1",
+    "[FLOW] received=2 invalid=0 gaps=0 duplicates=0 written=28 failures=0 dropped=0 SD=1 status=0 poll_gap_ms=2 process_gap_ms=60 stack_rx=3344 stack_sd=5736 stack_uart=1332 uart_full=243",
+    "[FLOW-MEMORY] heap=97144 byte_heap=25764 byte_largest=8180 byte_min=21956 parser_peak_bytes=1313 parser_limit_bytes=98304",
+    "[DELIVERY] occupied=1 peak=1 accepted=1 repeated=1 lost=0 storage_failures=0 attempts=1 tx_failures=0 confirmed=0 unknown=0 evicted=0",
+    "{\"n\":57,\"t\":\"ack\",\"seq\":63494,\"cmd\":\"ping\",\"st\":\"ok\",\"q\":0}",
+    "{\"n\":58,\"t\":\"lg\",\"rq\":63493,\"op\":\"read\",\"name\":\"boot_000000000000002c_00000000.bin\",\"off\":0,\"tot\":68,\"d\":\"RkNEMQEBRAAsAAAAAAAAAAEAAAAAAAAAlhoAAAAAAAABAAAABwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABZQIqHdq8=\"}",
+    "{\"n\":59,\"t\":\"ack\",\"seq\":63493,\"cmd\":\"request_log\",\"st\":\"ok\",\"q\":0}",
+    "{\"n\":60,\"t\":\"ack\",\"seq\":63495,\"cmd\":\"ping\",\"st\":\"ok\",\"q\":0}",
+    "{\"n\":61,\"t\":\"tm\",\"ts\":1794429754,\"md\":\"bench\",\"vb\":null,\"ib\":null,\"vs\":null,\"is\":null,\"tp\":null,\"w\":null,\"az\":null,\"ac\":1,\"msg\":null,\"rssi\":null,\"snr\":null,\"rx\":42,\"err\":0,\"rst\":9}",
+    "[TT&C] Falha no TX de 180 bytes.",
+    "{\"n\":62,\"t\":\"ack\",\"seq\":63496,\"cmd\":\"request_tm\",\"st\":\"ok\",\"q\":0}",
+    "[FLOW-CHECK] v3 ts_available=1 ts=1794429754 ac_available=1 ac=1 msg_available=0 stable=1",
+    "{\"n\":63,\"t\":\"ack\",\"seq\":63498,\"cmd\":\"ping\",\"st\":\"ok\",\"q\":1}",
+    "{\"n\":64,\"t\":\"lg\",\"rq\":63497,\"op\":\"read\",\"name\":\"boot_000000000000002c_00000000.bin\",\"off\":0,\"tot\":68,\"d\":\"RkNEMQEBRAAsAAAAAAAAAAEAAAAAAAAAlhoAAAAAAAABAAAABwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABZQIqHdq8=\"}",
+    "{\"n\":65,\"t\":\"ack\",\"seq\":63497,\"cmd\":\"request_log\",\"st\":\"ok\",\"q\":1}",
+    "{\"n\":66,\"t\":\"ack\",\"seq\":63499,\"cmd\":\"ping\",\"st\":\"ok\",\"q\":1}",
+    "{\"n\":67,\"t\":\"tm\",\"ts\":1794429754,\"md\":\"bench\",\"vb\":null,\"ib\":null,\"vs\":null,\"is\":null,\"tp\":null,\"w\":null,\"az\":null,\"ac\":1,\"msg\":null,\"rssi\":null,\"snr\":null,\"rx\":46,\"err\":0,\"rst\":9}",
+    "[TT&C] Falha no TX de 180 bytes.",
+    "{\"n\":68,\"t\":\"ack\",\"seq\":63500,\"cmd\":\"request_tm\",\"st\":\"ok\",\"q\":1}",
+    "[FLOW-CHECK] v3 ts_available=1 ts=1794429754 ac_available=1 ac=1 msg_available=0 stable=1",
+    "[LIMITS-PAYLOAD] case=3 status=READY id=3 count=20 crc=3899320051 valid=1 extras=32 identification=16 tick=40 accepted=20 lost=0 occupied=20 peak=20",
+    "{\"n\":69,\"t\":\"ack\",\"seq\":63502,\"cmd\":\"ping\",\"st\":\"ok\",\"q\":81}",
+    "[FLOW-CHECK] Arquivo simulado: boot_000000000000002c_00000002.bin",
+    "[TT&C] ERRO: SX1276 sem resposta ou fora de RX, reinicializando.",
+    "[TT&C] ERRO: SX1276 nao responde.",
+    "[FLOW] received=3 invalid=0 gaps=0 duplicates=0 written=31 failures=0 dropped=0 SD=1 status=0 poll_gap_ms=2 process_gap_ms=152 stack_rx=3104 stack_sd=5736 stack_uart=1332 uart_full=476",
+    "[FLOW-MEMORY] heap=97144 byte_heap=25764 byte_largest=8180 byte_min=7392 parser_peak_bytes=15630 parser_limit_bytes=98304",
+    "[DELIVERY] occupied=20 peak=20 accepted=20 repeated=2 lost=0 storage_failures=0 attempts=1 tx_failures=0 confirmed=0 unknown=0 evicted=0",
+    "{\"n\":70,\"t\":\"lg\",\"rq\":63501,\"op\":\"read\",\"name\":\"boot_000000000000002c_00000000.bin\",\"off\":0,\"tot\":68,\"d\":\"RkNEMQEBRAAsAAAAAAAAAAEAAAAAAAAAlhoAAAAAAAABAAAABwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABZQIqHdq8=\"}",
+    "{\"n\":71,\"t\":\"ack\",\"seq\":63501,\"cmd\":\"request_log\",\"st\":\"ok\",\"q\":92}",
+    "{\"n\":72,\"t\":\"ack\",\"seq\":63503,\"cmd\":\"ping\",\"st\":\"ok\",\"q\":0}",
+    "{\"n\":73,\"t\":\"tm\",\"ts\":1794429755,\"md\":\"bench\",\"vb\":null,\"ib\":null,\"vs\":null,\"is\":null,\"tp\":null,\"w\":null,\"az\":null,\"ac\":20,\"msg\":null,\"rssi\":null,\"snr\":null,\"rx\":50,\"err\":0,\"rst\":10}",
+    "[TT&C] Falha no TX de 182 bytes.",
+    "{\"n\":74,\"t\":\"ack\",\"seq\":63504,\"cmd\":\"request_tm\",\"st\":\"ok\",\"q\":0}",
+    "[FLOW-CHECK] Arquivo simulado: boot_000000000000002c_00000003.bin",
+    "{\"n\":75,\"t\":\"ack\",\"seq\":63506,\"cmd\":\"ping\",\"st\":\"ok\",\"q\":0}",
+    "[FLOW-CHECK] v3 ts_available=1 ts=1794429755 ac_available=1 ac=20 msg_available=0 stable=1",
+    "{\"n\":76,\"t\":\"lg\",\"rq\":63505,\"op\":\"read\",\"name\":\"boot_000000000000002c_00000000.bin\",\"off\":0,\"tot\":68,\"d\":\"RkNEMQEBRAAsAAAAAAAAAAEAAAAAAAAAlhoAAAAAAAABAAAABwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABZQIqHdq8=\"}",
+    "{\"n\":77,\"t\":\"ack\",\"seq\":63505,\"cmd\":\"request_log\",\"st\":\"ok\",\"q\":1}",
+    "{\"n\":78,\"t\":\"ack\",\"seq\":63507,\"cmd\":\"ping\",\"st\":\"ok\",\"q\":0}",
+    "[TT&C] ERRO: SX1276 sem resposta ou fora de RX, reinicializando.",
+    "[TT&C] ERRO: SX1276 nao responde.",
+    "{\"n\":79,\"t\":\"tm\",\"ts\":1794429756,\"md\":\"bench\",\"vb\":null,\"ib\":null,\"vs\":null,\"is\":null,\"tp\":null,\"w\":null,\"az\":null,\"ac\":20,\"msg\":null,\"rssi\":null,\"snr\":null,\"rx\":54,\"err\":0,\"rst\":11}",
+    "[TT&C] Falha no TX de 182 bytes.",
+    "{\"n\":80,\"t\":\"ack\",\"seq\":63508,\"cmd\":\"request_tm\",\"st\":\"ok\",\"q\":0}",
+    "[FLOW-CHECK] Arquivo simulado: boot_000000000000002c_00000004.bin",
+    "[FLOW] received=3 invalid=0 gaps=0 duplicates=0 written=40 failures=0 dropped=0 SD=1 status=0 poll_gap_ms=2 process_gap_ms=152 stack_rx=3104 stack_sd=5736 stack_uart=1332 uart_full=631",
+    "[FLOW-MEMORY] heap=97144 byte_heap=25764 byte_largest=8180 byte_min=7392 parser_peak_bytes=15630 parser_limit_bytes=98304",
+    "[DELIVERY] occupied=20 peak=20 accepted=20 repeated=2 lost=0 storage_failures=0 attempts=1 tx_failures=0 confirmed=0 unknown=0 evicted=0",
+    "[LIMITS-PAYLOAD] case=4 status=NO_MEMORY id=3 count=20 crc=3899320051 valid=1 extras=32 identification=16 tick=40 accepted=20 lost=0 occupied=20 peak=20",
+    "{\"n\":81,\"t\":\"ack\",\"seq\":63510,\"cmd\":\"ping\",\"st\":\"ok\",\"q\":0}",
+    "[FLOW-CHECK] v3 ts_available=1 ts=1794429756 ac_available=1 ac=20 msg_available=0 stable=1",
+    "{\"n\":82,\"t\":\"lg\",\"rq\":63509,\"op\":\"read\",\"name\":\"boot_000000000000002c_00000000.bin\",\"off\":0,\"tot\":68,\"d\":\"RkNEMQEBRAAsAAAAAAAAAAEAAAAAAAAAlhoAAAAAAAABAAAABwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABZQIqHdq8=\"}",
+    "{\"n\":83,\"t\":\"ack\",\"seq\":63509,\"cmd\":\"request_log\",\"st\":\"ok\",\"q\":0}",
+    "{\"n\":84,\"t\":\"ack\",\"seq\":63511,\"cmd\":\"ping\",\"st\":\"ok\",\"q\":0}",
+    "{\"n\":85,\"t\":\"tm\",\"ts\":1794429756,\"md\":\"bench\",\"vb\":null,\"ib\":null,\"vs\":null,\"is\":null,\"tp\":null,\"w\":null,\"az\":null,\"ac\":20,\"msg\":null,\"rssi\":null,\"snr\":null,\"rx\":58,\"err\":0,\"rst\":11}",
+    "[TT&C] Falha no TX de 182 bytes.",
+    "{\"n\":86,\"t\":\"ack\",\"seq\":63512,\"cmd\":\"request_tm\",\"st\":\"ok\",\"q\":0}",
+    "[FLOW-CHECK] Arquivo simulado: boot_000000000000002c_00000005.bin",
+    "{\"n\":87,\"t\":\"ack\",\"seq\":63514,\"cmd\":\"ping\",\"st\":\"ok\",\"q\":0}",
+    "{\"n\":88,\"t\":\"lg\",\"rq\":63513,\"op\":\"read\",\"name\":\"boot_000000000000002c_00000000.bin\",\"off\":0,\"tot\":68,\"d\":\"RkNEMQEBRAAsAAAAAAAAAAEAAAAAAAAAlhoAAAAAAAABAAAABwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABZQIqHdq8=\"}",
+    "{\"n\":89,\"t\":\"ack\",\"seq\":63513,\"cmd\":\"request_log\",\"st\":\"ok\",\"q\":0}",
+    "{\"n\":90,\"t\":\"ack\",\"seq\":63515,\"cmd\":\"ping\",\"st\":\"ok\",\"q\":0}",
+    "{\"n\":91,\"t\":\"tm\",\"ts\":1794429757,\"md\":\"bench\",\"vb\":null,\"ib\":null,\"vs\":null,\"is\":null,\"tp\":null,\"w\":null,\"az\":null,\"ac\":20,\"msg\":null,\"rssi\":null,\"snr\":null,\"rx\":62,\"err\":0,\"rst\":11}",
+    "[TT&C] Falha no TX de 182 bytes.",
+    "{\"n\":92,\"t\":\"ack\",\"seq\":63516,\"cmd\":\"request_tm\",\"st\":\"ok\",\"q\":0}",
+    "[FLOW-CHECK] Arquivo simulado: boot_000000000000002c_00000006.bin",
+    "[TT&C] ERRO: SX1276 sem resposta ou fora de RX, reinicializando.",
+    "[TT&C] ERRO: SX1276 nao responde.",
+    "{\"n\":93,\"t\":\"ack\",\"seq\":63518,\"cmd\":\"ping\",\"st\":\"ok\",\"q\":0}",
+    "[FLOW] received=4 invalid=1 gaps=0 duplicates=0 written=48 failures=0 dropped=0 SD=1 status=0 poll_gap_ms=2 process_gap_ms=152 stack_rx=3104 stack_sd=5736 stack_uart=1332 uart_full=658",
+    "[FLOW-MEMORY] heap=97144 byte_heap=25764 byte_largest=8180 byte_min=1040 parser_peak_bytes=22220 parser_limit_bytes=98304",
+    "[DELIVERY] occupied=20 peak=20 accepted=20 repeated=2 lost=0 storage_failures=0 attempts=1 tx_failures=0 confirmed=0 unknown=0 evicted=0",
+    "[LIMITS-PAYLOAD] case=5 status=READY id=5 count=1 crc=2781126805 valid=1 extras=0 identification=0 tick=0 accepted=21 lost=0 occupied=21 peak=21",
+    "[FLOW-CHECK] v3 ts_available=1 ts=1794429756 ac_available=1 ac=20 msg_available=0 stable=1",
+    "{\"n\":94,\"t\":\"lg\",\"rq\":63517,\"op\":\"read\",\"name\":\"boot_000000000000002c_00000000.bin\",\"off\":0,\"tot\":68,\"d\":\"RkNEMQEBRAAsAAAAAAAAAAEAAAAAAAAAlhoAAAAAAAABAAAABwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABZQIqHdq8=\"}",
+    "{\"n\":95,\"t\":\"ack\",\"seq\":63517,\"cmd\":\"request_log\",\"st\":\"ok\",\"q\":1}",
+    "{\"n\":96,\"t\":\"ack\",\"seq\":63520,\"cmd\":\"ping\",\"st\":\"ok\",\"q\":0}",
+    "[FLOW-CHECK] Arquivo simulado: boot_000000000000002c_00000007.bin",
+    "[FLOW-CHECK] v3 ts_available=1 ts=1794429757 ac_available=1 ac=20 msg_available=0 stable=1",
+    "{\"n\":97,\"t\":\"lg\",\"rq\":63519,\"op\":\"list\",\"ls\":[[\"boot_000000000000002c_00000000.bin\",68,0],[\"boot_000000000000002c_00000001.bin\",68,0],[\"boot_000000000000002c_00000002.bin\",68,0],[\"boot_000000000000002c_00000003.bin\",68,0]],\"end\":false}",
+    "{\"n\":98,\"t\":\"ack\",\"seq\":63519,\"cmd\":\"request_log\",\"st\":\"ok\",\"q\":0}",
+    "{\"n\":99,\"t\":\"ack\",\"seq\":63522,\"cmd\":\"ping\",\"st\":\"ok\",\"q\":0}",
+    "[FLOW-CHECK] Arquivo simulado: boot_000000000000002c_00000008.bin",
+    "[TT&C] ERRO: SX1276 sem resposta ou fora de RX, reinicializando.",
+    "[TT&C] ERRO: SX1276 nao responde.",
+    "[FLOW] received=5 invalid=1 gaps=0 duplicates=0 written=57 failures=0 dropped=0 SD=1 status=0 poll_gap_ms=2 process_gap_ms=152 stack_rx=3104 stack_sd=5736 stack_uart=1332 uart_full=658",
+    "[FLOW-MEMORY] heap=97144 byte_heap=25764 byte_largest=8180 byte_min=1040 parser_peak_bytes=22220 parser_limit_bytes=98304",
+    "[DELIVERY] occupied=21 peak=21 accepted=21 repeated=2 lost=0 storage_failures=0 attempts=1 tx_failures=0 confirmed=0 unknown=0 evicted=0",
+    "{\"n\":100,\"t\":\"lg\",\"rq\":63521,\"op\":\"list\",\"ls\":[[\"boot_000000000000002c_00000004.bin\",68,0],[\"boot_000000000000002c_00000005.bin\",68,0],[\"boot_000000000000002c_00000006.bin\",68,0],[\"boot_000000000000002c_00000007.bin\",68,0]],\"end\":true}",
+    "{\"n\":101,\"t\":\"ack\",\"seq\":63521,\"cmd\":\"request_log\",\"st\":\"ok\",\"q\":0}",
+    "{\"n\":102,\"t\":\"ack\",\"seq\":63524,\"cmd\":\"ping\",\"st\":\"ok\",\"q\":0}",
+    "[FLOW-CHECK] Arquivo simulado: boot_000000000000002c_00000009.bin",
+    "{\"n\":103,\"t\":\"lg\",\"rq\":63523,\"op\":\"read\",\"name\":\"boot_000000000000002c_00000000.bin\",\"off\":0,\"tot\":68,\"d\":\"RkNEMQEBRAAsAAAAAAAAAAEAAAAAAAAAlhoAAAAAAAABAAAABwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABZQIqHdq8=\"}",
+    "{\"n\":104,\"t\":\"ack\",\"seq\":63523,\"cmd\":\"request_log\",\"st\":\"ok\",\"q\":0}"
+  ],
+  "sent": [
+    {
+      "seq": 63455,
+      "cmd": "ping",
+      "args": null
+    },
+    {
+      "seq": 63456,
+      "cmd": "set_time",
+      "args": {
+        "unix": 1794429751
+      }
+    },
+    {
+      "seq": 63457,
+      "cmd": "ping",
+      "args": null
+    },
+    {
+      "seq": 63458,
+      "cmd": "request_tm",
+      "args": null
+    },
+    {
+      "seq": 63459,
+      "cmd": "ping",
+      "args": null
+    },
+    {
+      "seq": 63460,
+      "cmd": "request_tm",
+      "args": null
+    },
+    {
+      "seq": 63461,
+      "cmd": "ping",
+      "args": null
+    },
+    {
+      "seq": 63462,
+      "cmd": "request_tm",
+      "args": null
+    },
+    {
+      "seq": 63463,
+      "cmd": "ping",
+      "args": null
+    },
+    {
+      "seq": 63464,
+      "cmd": "request_tm",
+      "args": null
+    },
+    {
+      "seq": 63465,
+      "cmd": "ping",
+      "args": null
+    },
+    {
+      "seq": 63466,
+      "cmd": "request_tm",
+      "args": null
+    },
+    {
+      "seq": 63467,
+      "cmd": "ping",
+      "args": null
+    },
+    {
+      "seq": 63468,
+      "cmd": "request_tm",
+      "args": null
+    },
+    {
+      "seq": 63469,
+      "cmd": "request_log",
+      "args": {
+        "op": "read",
+        "name": "boot_000000000000002c_00000000.bin",
+        "off": 0,
+        "len": 90,
+        "to": "wired"
+      }
+    },
+    {
+      "seq": 63470,
+      "cmd": "ping",
+      "args": null
+    },
+    {
+      "seq": 63471,
+      "cmd": "ping",
+      "args": null
+    },
+    {
+      "seq": 63472,
+      "cmd": "request_tm",
+      "args": null
+    },
+    {
+      "seq": 63473,
+      "cmd": "request_log",
+      "args": {
+        "op": "read",
+        "name": "boot_000000000000002c_00000000.bin",
+        "off": 0,
+        "len": 90,
+        "to": "wired"
+      }
+    },
+    {
+      "seq": 63474,
+      "cmd": "ping",
+      "args": null
+    },
+    {
+      "seq": 63475,
+      "cmd": "ping",
+      "args": null
+    },
+    {
+      "seq": 63476,
+      "cmd": "request_tm",
+      "args": null
+    },
+    {
+      "seq": 63477,
+      "cmd": "request_log",
+      "args": {
+        "op": "read",
+        "name": "boot_000000000000002c_00000000.bin",
+        "off": 0,
+        "len": 90,
+        "to": "wired"
+      }
+    },
+    {
+      "seq": 63478,
+      "cmd": "ping",
+      "args": null
+    },
+    {
+      "seq": 63479,
+      "cmd": "ping",
+      "args": null
+    },
+    {
+      "seq": 63480,
+      "cmd": "request_tm",
+      "args": null
+    },
+    {
+      "seq": 63481,
+      "cmd": "request_log",
+      "args": {
+        "op": "read",
+        "name": "boot_000000000000002c_00000000.bin",
+        "off": 0,
+        "len": 90,
+        "to": "wired"
+      }
+    },
+    {
+      "seq": 63482,
+      "cmd": "ping",
+      "args": null
+    },
+    {
+      "seq": 63483,
+      "cmd": "ping",
+      "args": null
+    },
+    {
+      "seq": 63484,
+      "cmd": "request_tm",
+      "args": null
+    },
+    {
+      "seq": 63485,
+      "cmd": "request_log",
+      "args": {
+        "op": "read",
+        "name": "boot_000000000000002c_00000000.bin",
+        "off": 0,
+        "len": 90,
+        "to": "wired"
+      }
+    },
+    {
+      "seq": 63486,
+      "cmd": "ping",
+      "args": null
+    },
+    {
+      "seq": 63487,
+      "cmd": "ping",
+      "args": null
+    },
+    {
+      "seq": 63488,
+      "cmd": "request_tm",
+      "args": null
+    },
+    {
+      "seq": 63489,
+      "cmd": "request_log",
+      "args": {
+        "op": "read",
+        "name": "boot_000000000000002c_00000000.bin",
+        "off": 0,
+        "len": 90,
+        "to": "wired"
+      }
+    },
+    {
+      "seq": 63490,
+      "cmd": "ping",
+      "args": null
+    },
+    {
+      "seq": 63491,
+      "cmd": "ping",
+      "args": null
+    },
+    {
+      "seq": 63492,
+      "cmd": "request_tm",
+      "args": null
+    },
+    {
+      "seq": 63493,
+      "cmd": "request_log",
+      "args": {
+        "op": "read",
+        "name": "boot_000000000000002c_00000000.bin",
+        "off": 0,
+        "len": 90,
+        "to": "wired"
+      }
+    },
+    {
+      "seq": 63494,
+      "cmd": "ping",
+      "args": null
+    },
+    {
+      "seq": 63495,
+      "cmd": "ping",
+      "args": null
+    },
+    {
+      "seq": 63496,
+      "cmd": "request_tm",
+      "args": null
+    },
+    {
+      "seq": 63497,
+      "cmd": "request_log",
+      "args": {
+        "op": "read",
+        "name": "boot_000000000000002c_00000000.bin",
+        "off": 0,
+        "len": 90,
+        "to": "wired"
+      }
+    },
+    {
+      "seq": 63498,
+      "cmd": "ping",
+      "args": null
+    },
+    {
+      "seq": 63499,
+      "cmd": "ping",
+      "args": null
+    },
+    {
+      "seq": 63500,
+      "cmd": "request_tm",
+      "args": null
+    },
+    {
+      "seq": 63501,
+      "cmd": "request_log",
+      "args": {
+        "op": "read",
+        "name": "boot_000000000000002c_00000000.bin",
+        "off": 0,
+        "len": 90,
+        "to": "wired"
+      }
+    },
+    {
+      "seq": 63502,
+      "cmd": "ping",
+      "args": null
+    },
+    {
+      "seq": 63503,
+      "cmd": "ping",
+      "args": null
+    },
+    {
+      "seq": 63504,
+      "cmd": "request_tm",
+      "args": null
+    },
+    {
+      "seq": 63505,
+      "cmd": "request_log",
+      "args": {
+        "op": "read",
+        "name": "boot_000000000000002c_00000000.bin",
+        "off": 0,
+        "len": 90,
+        "to": "wired"
+      }
+    },
+    {
+      "seq": 63506,
+      "cmd": "ping",
+      "args": null
+    },
+    {
+      "seq": 63507,
+      "cmd": "ping",
+      "args": null
+    },
+    {
+      "seq": 63508,
+      "cmd": "request_tm",
+      "args": null
+    },
+    {
+      "seq": 63509,
+      "cmd": "request_log",
+      "args": {
+        "op": "read",
+        "name": "boot_000000000000002c_00000000.bin",
+        "off": 0,
+        "len": 90,
+        "to": "wired"
+      }
+    },
+    {
+      "seq": 63510,
+      "cmd": "ping",
+      "args": null
+    },
+    {
+      "seq": 63511,
+      "cmd": "ping",
+      "args": null
+    },
+    {
+      "seq": 63512,
+      "cmd": "request_tm",
+      "args": null
+    },
+    {
+      "seq": 63513,
+      "cmd": "request_log",
+      "args": {
+        "op": "read",
+        "name": "boot_000000000000002c_00000000.bin",
+        "off": 0,
+        "len": 90,
+        "to": "wired"
+      }
+    },
+    {
+      "seq": 63514,
+      "cmd": "ping",
+      "args": null
+    },
+    {
+      "seq": 63515,
+      "cmd": "ping",
+      "args": null
+    },
+    {
+      "seq": 63516,
+      "cmd": "request_tm",
+      "args": null
+    },
+    {
+      "seq": 63517,
+      "cmd": "request_log",
+      "args": {
+        "op": "read",
+        "name": "boot_000000000000002c_00000000.bin",
+        "off": 0,
+        "len": 90,
+        "to": "wired"
+      }
+    },
+    {
+      "seq": 63518,
+      "cmd": "ping",
+      "args": null
+    },
+    {
+      "seq": 63519,
+      "cmd": "request_log",
+      "args": {
+        "op": "list",
+        "after": "",
+        "to": "wired"
+      }
+    },
+    {
+      "seq": 63520,
+      "cmd": "ping",
+      "args": null
+    },
+    {
+      "seq": 63521,
+      "cmd": "request_log",
+      "args": {
+        "op": "list",
+        "after": "boot_000000000000002c_00000003.bin",
+        "to": "wired"
+      }
+    },
+    {
+      "seq": 63522,
+      "cmd": "ping",
+      "args": null
+    },
+    {
+      "seq": 63523,
+      "cmd": "request_log",
+      "args": {
+        "op": "read",
+        "name": "boot_000000000000002c_00000000.bin",
+        "off": 0,
+        "len": 90,
+        "to": "wired"
+      }
+    },
+    {
+      "seq": 63524,
+      "cmd": "ping",
+      "args": null
+    }
+  ],
+  "packets": [
+    {
+      "at_ms": 6042.838,
+      "packet": {
+        "n": 0,
+        "t": "ack",
+        "seq": 63455,
+        "cmd": "ping",
+        "st": "ok",
+        "q": 0
+      }
+    },
+    {
+      "at_ms": 6064.043,
+      "packet": {
+        "n": 1,
+        "t": "ack",
+        "seq": 63456,
+        "cmd": "set_time",
+        "st": "ok",
+        "q": 0
+      }
+    },
+    {
+      "at_ms": 6086.978,
+      "packet": {
+        "n": 2,
+        "t": "ack",
+        "seq": 63457,
+        "cmd": "ping",
+        "st": "ok",
+        "q": 0
+      }
+    },
+    {
+      "at_ms": 6118.111,
+      "packet": {
+        "n": 3,
+        "t": "tm",
+        "ts": 1794429751,
+        "md": "bench",
+        "vb": null,
+        "ib": null,
+        "vs": null,
+        "is": null,
+        "tp": null,
+        "w": null,
+        "az": null,
+        "ac": null,
+        "msg": null,
+        "rssi": null,
+        "snr": null,
+        "rx": 4,
+        "err": 0,
+        "rst": 5
+      }
+    },
+    {
+      "at_ms": 6127.689,
+      "packet": {
+        "n": 4,
+        "t": "ack",
+        "seq": 63458,
+        "cmd": "request_tm",
+        "st": "ok",
+        "q": 0
+      }
+    },
+    {
+      "at_ms": 6250.937,
+      "packet": {
+        "n": 5,
+        "t": "ack",
+        "seq": 63459,
+        "cmd": "ping",
+        "st": "ok",
+        "q": 0
+      }
+    },
+    {
+      "at_ms": 6284.418,
+      "packet": {
+        "n": 6,
+        "t": "tm",
+        "ts": 1794429751,
+        "md": "bench",
+        "vb": null,
+        "ib": null,
+        "vs": null,
+        "is": null,
+        "tp": null,
+        "w": null,
+        "az": null,
+        "ac": null,
+        "msg": null,
+        "rssi": null,
+        "snr": null,
+        "rx": 6,
+        "err": 0,
+        "rst": 5
+      }
+    },
+    {
+      "at_ms": 6321.946,
+      "packet": {
+        "n": 7,
+        "t": "ack",
+        "seq": 63460,
+        "cmd": "request_tm",
+        "st": "ok",
+        "q": 0
+      }
+    },
+    {
+      "at_ms": 6507.238,
+      "packet": {
+        "n": 8,
+        "t": "ack",
+        "seq": 63461,
+        "cmd": "ping",
+        "st": "ok",
+        "q": 0
+      }
+    },
+    {
+      "at_ms": 6538.054,
+      "packet": {
+        "n": 9,
+        "t": "tm",
+        "ts": 1794429751,
+        "md": "bench",
+        "vb": null,
+        "ib": null,
+        "vs": null,
+        "is": null,
+        "tp": null,
+        "w": null,
+        "az": null,
+        "ac": null,
+        "msg": null,
+        "rssi": null,
+        "snr": null,
+        "rx": 8,
+        "err": 0,
+        "rst": 6
+      }
+    },
+    {
+      "at_ms": 6547.809,
+      "packet": {
+        "n": 10,
+        "t": "ack",
+        "seq": 63462,
+        "cmd": "request_tm",
+        "st": "ok",
+        "q": 0
+      }
+    },
+    {
+      "at_ms": 6749.977,
+      "packet": {
+        "n": 11,
+        "t": "ack",
+        "seq": 63463,
+        "cmd": "ping",
+        "st": "ok",
+        "q": 0
+      }
+    },
+    {
+      "at_ms": 6781.076,
+      "packet": {
+        "n": 12,
+        "t": "tm",
+        "ts": 1794429751,
+        "md": "bench",
+        "vb": null,
+        "ib": null,
+        "vs": null,
+        "is": null,
+        "tp": null,
+        "w": null,
+        "az": null,
+        "ac": null,
+        "msg": null,
+        "rssi": null,
+        "snr": null,
+        "rx": 10,
+        "err": 0,
+        "rst": 6
+      }
+    },
+    {
+      "at_ms": 6790.839,
+      "packet": {
+        "n": 13,
+        "t": "ack",
+        "seq": 63464,
+        "cmd": "request_tm",
+        "st": "ok",
+        "q": 0
+      }
+    },
+    {
+      "at_ms": 6993.443,
+      "packet": {
+        "n": 14,
+        "t": "ack",
+        "seq": 63465,
+        "cmd": "ping",
+        "st": "ok",
+        "q": 0
+      }
+    },
+    {
+      "at_ms": 7024.399,
+      "packet": {
+        "n": 15,
+        "t": "tm",
+        "ts": 1794429751,
+        "md": "bench",
+        "vb": null,
+        "ib": null,
+        "vs": null,
+        "is": null,
+        "tp": null,
+        "w": null,
+        "az": null,
+        "ac": null,
+        "msg": null,
+        "rssi": null,
+        "snr": null,
+        "rx": 12,
+        "err": 0,
+        "rst": 6
+      }
+    },
+    {
+      "at_ms": 7033.621,
+      "packet": {
+        "n": 16,
+        "t": "ack",
+        "seq": 63466,
+        "cmd": "request_tm",
+        "st": "ok",
+        "q": 0
+      }
+    },
+    {
+      "at_ms": 7103.578,
+      "packet": {
+        "n": 17,
+        "t": "ac",
+        "id": [
+          44,
+          1
+        ],
+        "ts": null,
+        "icao": "000001",
+        "lat": 0,
+        "lon": 0,
+        "alt": 100,
+        "vel": null,
+        "hdg": null,
+        "cnt": null
+      }
+    },
+    {
+      "at_ms": 7248.184,
+      "packet": {
+        "n": 18,
+        "t": "ack",
+        "seq": 63467,
+        "cmd": "ping",
+        "st": "ok",
+        "q": 0
+      }
+    },
+    {
+      "at_ms": 7279.096,
+      "packet": {
+        "n": 19,
+        "t": "tm",
+        "ts": 1794429752,
+        "md": "bench",
+        "vb": null,
+        "ib": null,
+        "vs": null,
+        "is": null,
+        "tp": null,
+        "w": null,
+        "az": null,
+        "ac": 1,
+        "msg": null,
+        "rssi": null,
+        "snr": null,
+        "rx": 14,
+        "err": 0,
+        "rst": 6
+      }
+    },
+    {
+      "at_ms": 7287.298,
+      "packet": {
+        "n": 20,
+        "t": "ack",
+        "seq": 63468,
+        "cmd": "request_tm",
+        "st": "ok",
+        "q": 0
+      }
+    },
+    {
+      "at_ms": 7518.863,
+      "packet": {
+        "n": 21,
+        "t": "ack",
+        "seq": 63470,
+        "cmd": "ping",
+        "st": "ok",
+        "q": 0
+      }
+    },
+    {
+      "at_ms": 7651.201,
+      "packet": {
+        "n": 22,
+        "t": "lg",
+        "rq": 63469,
+        "op": "read",
+        "name": "boot_000000000000002c_00000000.bin",
+        "off": 0,
+        "tot": 68,
+        "d": "RkNEMQEBRAAsAAAAAAAAAAEAAAAAAAAAlhoAAAAAAAABAAAABwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABZQIqHdq8="
+      }
+    },
+    {
+      "at_ms": 7657.022,
+      "packet": {
+        "n": 23,
+        "t": "ack",
+        "seq": 63469,
+        "cmd": "request_log",
+        "st": "ok",
+        "q": 0
+      }
+    },
+    {
+      "at_ms": 7680.822,
+      "packet": {
+        "n": 24,
+        "t": "ack",
+        "seq": 63471,
+        "cmd": "ping",
+        "st": "ok",
+        "q": 0
+      }
+    },
+    {
+      "at_ms": 7712.154,
+      "packet": {
+        "n": 25,
+        "t": "tm",
+        "ts": 1794429752,
+        "md": "bench",
+        "vb": null,
+        "ib": null,
+        "vs": null,
+        "is": null,
+        "tp": null,
+        "w": null,
+        "az": null,
+        "ac": 1,
+        "msg": null,
+        "rssi": null,
+        "snr": null,
+        "rx": 18,
+        "err": 0,
+        "rst": 7
+      }
+    },
+    {
+      "at_ms": 7721.543,
+      "packet": {
+        "n": 26,
+        "t": "ack",
+        "seq": 63472,
+        "cmd": "request_tm",
+        "st": "ok",
+        "q": 0
+      }
+    },
+    {
+      "at_ms": 7885.709,
+      "packet": {
+        "n": 27,
+        "t": "ack",
+        "seq": 63474,
+        "cmd": "ping",
+        "st": "ok",
+        "q": 0
+      }
+    },
+    {
+      "at_ms": 7905.582,
+      "packet": {
+        "n": 28,
+        "t": "lg",
+        "rq": 63473,
+        "op": "read",
+        "name": "boot_000000000000002c_00000000.bin",
+        "off": 0,
+        "tot": 68,
+        "d": "RkNEMQEBRAAsAAAAAAAAAAEAAAAAAAAAlhoAAAAAAAABAAAABwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABZQIqHdq8="
+      }
+    },
+    {
+      "at_ms": 7910.685,
+      "packet": {
+        "n": 29,
+        "t": "ack",
+        "seq": 63473,
+        "cmd": "request_log",
+        "st": "ok",
+        "q": 0
+      }
+    },
+    {
+      "at_ms": 7929.055,
+      "packet": {
+        "n": 30,
+        "t": "ack",
+        "seq": 63475,
+        "cmd": "ping",
+        "st": "ok",
+        "q": 0
+      }
+    },
+    {
+      "at_ms": 7959.984,
+      "packet": {
+        "n": 31,
+        "t": "tm",
+        "ts": 1794429752,
+        "md": "bench",
+        "vb": null,
+        "ib": null,
+        "vs": null,
+        "is": null,
+        "tp": null,
+        "w": null,
+        "az": null,
+        "ac": 1,
+        "msg": null,
+        "rssi": null,
+        "snr": null,
+        "rx": 22,
+        "err": 0,
+        "rst": 7
+      }
+    },
+    {
+      "at_ms": 7969.71,
+      "packet": {
+        "n": 32,
+        "t": "ack",
+        "seq": 63476,
+        "cmd": "request_tm",
+        "st": "ok",
+        "q": 0
+      }
+    },
+    {
+      "at_ms": 8213.895,
+      "packet": {
+        "n": 33,
+        "t": "ack",
+        "seq": 63478,
+        "cmd": "ping",
+        "st": "ok",
+        "q": 0
+      }
+    },
+    {
+      "at_ms": 8233.195,
+      "packet": {
+        "n": 34,
+        "t": "lg",
+        "rq": 63477,
+        "op": "read",
+        "name": "boot_000000000000002c_00000000.bin",
+        "off": 0,
+        "tot": 68,
+        "d": "RkNEMQEBRAAsAAAAAAAAAAEAAAAAAAAAlhoAAAAAAAABAAAABwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABZQIqHdq8="
+      }
+    },
+    {
+      "at_ms": 8238.724,
+      "packet": {
+        "n": 35,
+        "t": "ack",
+        "seq": 63477,
+        "cmd": "request_log",
+        "st": "ok",
+        "q": 1
+      }
+    },
+    {
+      "at_ms": 8257.254,
+      "packet": {
+        "n": 36,
+        "t": "ack",
+        "seq": 63479,
+        "cmd": "ping",
+        "st": "ok",
+        "q": 0
+      }
+    },
+    {
+      "at_ms": 8290.173,
+      "packet": {
+        "n": 37,
+        "t": "tm",
+        "ts": 1794429753,
+        "md": "bench",
+        "vb": null,
+        "ib": null,
+        "vs": null,
+        "is": null,
+        "tp": null,
+        "w": null,
+        "az": null,
+        "ac": 1,
+        "msg": null,
+        "rssi": null,
+        "snr": null,
+        "rx": 26,
+        "err": 0,
+        "rst": 7
+      }
+    },
+    {
+      "at_ms": 8324.93,
+      "packet": {
+        "n": 38,
+        "t": "ack",
+        "seq": 63480,
+        "cmd": "request_tm",
+        "st": "ok",
+        "q": 1
+      }
+    },
+    {
+      "at_ms": 8547.858,
+      "packet": {
+        "n": 39,
+        "t": "ack",
+        "seq": 63482,
+        "cmd": "ping",
+        "st": "ok",
+        "q": 0
+      }
+    },
+    {
+      "at_ms": 8567.083,
+      "packet": {
+        "n": 40,
+        "t": "lg",
+        "rq": 63481,
+        "op": "read",
+        "name": "boot_000000000000002c_00000000.bin",
+        "off": 0,
+        "tot": 68,
+        "d": "RkNEMQEBRAAsAAAAAAAAAAEAAAAAAAAAlhoAAAAAAAABAAAABwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABZQIqHdq8="
+      }
+    },
+    {
+      "at_ms": 8572.867,
+      "packet": {
+        "n": 41,
+        "t": "ack",
+        "seq": 63481,
+        "cmd": "request_log",
+        "st": "ok",
+        "q": 0
+      }
+    },
+    {
+      "at_ms": 8632.296,
+      "packet": {
+        "n": 42,
+        "t": "ack",
+        "seq": 63483,
+        "cmd": "ping",
+        "st": "ok",
+        "q": 30
+      }
+    },
+    {
+      "at_ms": 8662.202,
+      "packet": {
+        "n": 43,
+        "t": "tm",
+        "ts": 1794429753,
+        "md": "bench",
+        "vb": null,
+        "ib": null,
+        "vs": null,
+        "is": null,
+        "tp": null,
+        "w": null,
+        "az": null,
+        "ac": 1,
+        "msg": null,
+        "rssi": null,
+        "snr": null,
+        "rx": 30,
+        "err": 0,
+        "rst": 8
+      }
+    },
+    {
+      "at_ms": 8671.861,
+      "packet": {
+        "n": 44,
+        "t": "ack",
+        "seq": 63484,
+        "cmd": "request_tm",
+        "st": "ok",
+        "q": 0
+      }
+    },
+    {
+      "at_ms": 8816.871,
+      "packet": {
+        "n": 45,
+        "t": "ack",
+        "seq": 63486,
+        "cmd": "ping",
+        "st": "ok",
+        "q": 0
+      }
+    },
+    {
+      "at_ms": 8851.356,
+      "packet": {
+        "n": 46,
+        "t": "lg",
+        "rq": 63485,
+        "op": "read",
+        "name": "boot_000000000000002c_00000000.bin",
+        "off": 0,
+        "tot": 68,
+        "d": "RkNEMQEBRAAsAAAAAAAAAAEAAAAAAAAAlhoAAAAAAAABAAAABwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABZQIqHdq8="
+      }
+    },
+    {
+      "at_ms": 8857.069,
+      "packet": {
+        "n": 47,
+        "t": "ack",
+        "seq": 63485,
+        "cmd": "request_log",
+        "st": "ok",
+        "q": 0
+      }
+    },
+    {
+      "at_ms": 8881.116,
+      "packet": {
+        "n": 48,
+        "t": "ack",
+        "seq": 63487,
+        "cmd": "ping",
+        "st": "ok",
+        "q": 0
+      }
+    },
+    {
+      "at_ms": 8911.811,
+      "packet": {
+        "n": 49,
+        "t": "tm",
+        "ts": 1794429753,
+        "md": "bench",
+        "vb": null,
+        "ib": null,
+        "vs": null,
+        "is": null,
+        "tp": null,
+        "w": null,
+        "az": null,
+        "ac": 1,
+        "msg": null,
+        "rssi": null,
+        "snr": null,
+        "rx": 34,
+        "err": 0,
+        "rst": 8
+      }
+    },
+    {
+      "at_ms": 8921.538,
+      "packet": {
+        "n": 50,
+        "t": "ack",
+        "seq": 63488,
+        "cmd": "request_tm",
+        "st": "ok",
+        "q": 0
+      }
+    },
+    {
+      "at_ms": 9165.842,
+      "packet": {
+        "n": 51,
+        "t": "ack",
+        "seq": 63490,
+        "cmd": "ping",
+        "st": "ok",
+        "q": 0
+      }
+    },
+    {
+      "at_ms": 9185.161,
+      "packet": {
+        "n": 52,
+        "t": "lg",
+        "rq": 63489,
+        "op": "read",
+        "name": "boot_000000000000002c_00000000.bin",
+        "off": 0,
+        "tot": 68,
+        "d": "RkNEMQEBRAAsAAAAAAAAAAEAAAAAAAAAlhoAAAAAAAABAAAABwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABZQIqHdq8="
+      }
+    },
+    {
+      "at_ms": 9190.412,
+      "packet": {
+        "n": 53,
+        "t": "ack",
+        "seq": 63489,
+        "cmd": "request_log",
+        "st": "ok",
+        "q": 0
+      }
+    },
+    {
+      "at_ms": 9209.011,
+      "packet": {
+        "n": 54,
+        "t": "ack",
+        "seq": 63491,
+        "cmd": "ping",
+        "st": "ok",
+        "q": 0
+      }
+    },
+    {
+      "at_ms": 9240.043,
+      "packet": {
+        "n": 55,
+        "t": "tm",
+        "ts": 1794429754,
+        "md": "bench",
+        "vb": null,
+        "ib": null,
+        "vs": null,
+        "is": null,
+        "tp": null,
+        "w": null,
+        "az": null,
+        "ac": 1,
+        "msg": null,
+        "rssi": null,
+        "snr": null,
+        "rx": 38,
+        "err": 0,
+        "rst": 8
+      }
+    },
+    {
+      "at_ms": 9249.441,
+      "packet": {
+        "n": 56,
+        "t": "ack",
+        "seq": 63492,
+        "cmd": "request_tm",
+        "st": "ok",
+        "q": 0
+      }
+    },
+    {
+      "at_ms": 9399.585,
+      "packet": {
+        "n": 57,
+        "t": "ack",
+        "seq": 63494,
+        "cmd": "ping",
+        "st": "ok",
+        "q": 0
+      }
+    },
+    {
+      "at_ms": 9472.264,
+      "packet": {
+        "n": 58,
+        "t": "lg",
+        "rq": 63493,
+        "op": "read",
+        "name": "boot_000000000000002c_00000000.bin",
+        "off": 0,
+        "tot": 68,
+        "d": "RkNEMQEBRAAsAAAAAAAAAAEAAAAAAAAAlhoAAAAAAAABAAAABwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABZQIqHdq8="
+      }
+    },
+    {
+      "at_ms": 9477.908,
+      "packet": {
+        "n": 59,
+        "t": "ack",
+        "seq": 63493,
+        "cmd": "request_log",
+        "st": "ok",
+        "q": 0
+      }
+    },
+    {
+      "at_ms": 9502.048,
+      "packet": {
+        "n": 60,
+        "t": "ack",
+        "seq": 63495,
+        "cmd": "ping",
+        "st": "ok",
+        "q": 0
+      }
+    },
+    {
+      "at_ms": 9533.074,
+      "packet": {
+        "n": 61,
+        "t": "tm",
+        "ts": 1794429754,
+        "md": "bench",
+        "vb": null,
+        "ib": null,
+        "vs": null,
+        "is": null,
+        "tp": null,
+        "w": null,
+        "az": null,
+        "ac": 1,
+        "msg": null,
+        "rssi": null,
+        "snr": null,
+        "rx": 42,
+        "err": 0,
+        "rst": 9
+      }
+    },
+    {
+      "at_ms": 9542.784,
+      "packet": {
+        "n": 62,
+        "t": "ack",
+        "seq": 63496,
+        "cmd": "request_tm",
+        "st": "ok",
+        "q": 0
+      }
+    },
+    {
+      "at_ms": 9787.128,
+      "packet": {
+        "n": 63,
+        "t": "ack",
+        "seq": 63498,
+        "cmd": "ping",
+        "st": "ok",
+        "q": 1
+      }
+    },
+    {
+      "at_ms": 9806.841,
+      "packet": {
+        "n": 64,
+        "t": "lg",
+        "rq": 63497,
+        "op": "read",
+        "name": "boot_000000000000002c_00000000.bin",
+        "off": 0,
+        "tot": 68,
+        "d": "RkNEMQEBRAAsAAAAAAAAAAEAAAAAAAAAlhoAAAAAAAABAAAABwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABZQIqHdq8="
+      }
+    },
+    {
+      "at_ms": 9812.017,
+      "packet": {
+        "n": 65,
+        "t": "ack",
+        "seq": 63497,
+        "cmd": "request_log",
+        "st": "ok",
+        "q": 1
+      }
+    },
+    {
+      "at_ms": 9831.93,
+      "packet": {
+        "n": 66,
+        "t": "ack",
+        "seq": 63499,
+        "cmd": "ping",
+        "st": "ok",
+        "q": 1
+      }
+    },
+    {
+      "at_ms": 9864.594,
+      "packet": {
+        "n": 67,
+        "t": "tm",
+        "ts": 1794429754,
+        "md": "bench",
+        "vb": null,
+        "ib": null,
+        "vs": null,
+        "is": null,
+        "tp": null,
+        "w": null,
+        "az": null,
+        "ac": 1,
+        "msg": null,
+        "rssi": null,
+        "snr": null,
+        "rx": 46,
+        "err": 0,
+        "rst": 9
+      }
+    },
+    {
+      "at_ms": 9874.076,
+      "packet": {
+        "n": 68,
+        "t": "ack",
+        "seq": 63500,
+        "cmd": "request_tm",
+        "st": "ok",
+        "q": 1
+      }
+    },
+    {
+      "at_ms": 10204.404,
+      "packet": {
+        "n": 69,
+        "t": "ack",
+        "seq": 63502,
+        "cmd": "ping",
+        "st": "ok",
+        "q": 81
+      }
+    },
+    {
+      "at_ms": 10851.297,
+      "packet": {
+        "n": 70,
+        "t": "lg",
+        "rq": 63501,
+        "op": "read",
+        "name": "boot_000000000000002c_00000000.bin",
+        "off": 0,
+        "tot": 68,
+        "d": "RkNEMQEBRAAsAAAAAAAAAAEAAAAAAAAAlhoAAAAAAAABAAAABwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABZQIqHdq8="
+      }
+    },
+    {
+      "at_ms": 10857.338,
+      "packet": {
+        "n": 71,
+        "t": "ack",
+        "seq": 63501,
+        "cmd": "request_log",
+        "st": "ok",
+        "q": 92
+      }
+    },
+    {
+      "at_ms": 10881.311,
+      "packet": {
+        "n": 72,
+        "t": "ack",
+        "seq": 63503,
+        "cmd": "ping",
+        "st": "ok",
+        "q": 0
+      }
+    },
+    {
+      "at_ms": 10912.187,
+      "packet": {
+        "n": 73,
+        "t": "tm",
+        "ts": 1794429755,
+        "md": "bench",
+        "vb": null,
+        "ib": null,
+        "vs": null,
+        "is": null,
+        "tp": null,
+        "w": null,
+        "az": null,
+        "ac": 20,
+        "msg": null,
+        "rssi": null,
+        "snr": null,
+        "rx": 50,
+        "err": 0,
+        "rst": 10
+      }
+    },
+    {
+      "at_ms": 10921.749,
+      "packet": {
+        "n": 74,
+        "t": "ack",
+        "seq": 63504,
+        "cmd": "request_tm",
+        "st": "ok",
+        "q": 0
+      }
+    },
+    {
+      "at_ms": 11087.205,
+      "packet": {
+        "n": 75,
+        "t": "ack",
+        "seq": 63506,
+        "cmd": "ping",
+        "st": "ok",
+        "q": 0
+      }
+    },
+    {
+      "at_ms": 11261.058,
+      "packet": {
+        "n": 76,
+        "t": "lg",
+        "rq": 63505,
+        "op": "read",
+        "name": "boot_000000000000002c_00000000.bin",
+        "off": 0,
+        "tot": 68,
+        "d": "RkNEMQEBRAAsAAAAAAAAAAEAAAAAAAAAlhoAAAAAAAABAAAABwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABZQIqHdq8="
+      }
+    },
+    {
+      "at_ms": 11266.997,
+      "packet": {
+        "n": 77,
+        "t": "ack",
+        "seq": 63505,
+        "cmd": "request_log",
+        "st": "ok",
+        "q": 1
+      }
+    },
+    {
+      "at_ms": 11291.793,
+      "packet": {
+        "n": 78,
+        "t": "ack",
+        "seq": 63507,
+        "cmd": "ping",
+        "st": "ok",
+        "q": 0
+      }
+    },
+    {
+      "at_ms": 11344.079,
+      "packet": {
+        "n": 79,
+        "t": "tm",
+        "ts": 1794429756,
+        "md": "bench",
+        "vb": null,
+        "ib": null,
+        "vs": null,
+        "is": null,
+        "tp": null,
+        "w": null,
+        "az": null,
+        "ac": 20,
+        "msg": null,
+        "rssi": null,
+        "snr": null,
+        "rx": 54,
+        "err": 0,
+        "rst": 11
+      }
+    },
+    {
+      "at_ms": 11352.022,
+      "packet": {
+        "n": 80,
+        "t": "ack",
+        "seq": 63508,
+        "cmd": "request_tm",
+        "st": "ok",
+        "q": 0
+      }
+    },
+    {
+      "at_ms": 11547.798,
+      "packet": {
+        "n": 81,
+        "t": "ack",
+        "seq": 63510,
+        "cmd": "ping",
+        "st": "ok",
+        "q": 0
+      }
+    },
+    {
+      "at_ms": 11720.443,
+      "packet": {
+        "n": 82,
+        "t": "lg",
+        "rq": 63509,
+        "op": "read",
+        "name": "boot_000000000000002c_00000000.bin",
+        "off": 0,
+        "tot": 68,
+        "d": "RkNEMQEBRAAsAAAAAAAAAAEAAAAAAAAAlhoAAAAAAAABAAAABwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABZQIqHdq8="
+      }
+    },
+    {
+      "at_ms": 11726.072,
+      "packet": {
+        "n": 83,
+        "t": "ack",
+        "seq": 63509,
+        "cmd": "request_log",
+        "st": "ok",
+        "q": 0
+      }
+    },
+    {
+      "at_ms": 11750.12,
+      "packet": {
+        "n": 84,
+        "t": "ack",
+        "seq": 63511,
+        "cmd": "ping",
+        "st": "ok",
+        "q": 0
+      }
+    },
+    {
+      "at_ms": 11781.064,
+      "packet": {
+        "n": 85,
+        "t": "tm",
+        "ts": 1794429756,
+        "md": "bench",
+        "vb": null,
+        "ib": null,
+        "vs": null,
+        "is": null,
+        "tp": null,
+        "w": null,
+        "az": null,
+        "ac": 20,
+        "msg": null,
+        "rssi": null,
+        "snr": null,
+        "rx": 58,
+        "err": 0,
+        "rst": 11
+      }
+    },
+    {
+      "at_ms": 11789.98,
+      "packet": {
+        "n": 86,
+        "t": "ack",
+        "seq": 63512,
+        "cmd": "request_tm",
+        "st": "ok",
+        "q": 0
+      }
+    },
+    {
+      "at_ms": 11956.563,
+      "packet": {
+        "n": 87,
+        "t": "ack",
+        "seq": 63514,
+        "cmd": "ping",
+        "st": "ok",
+        "q": 0
+      }
+    },
+    {
+      "at_ms": 12129.319,
+      "packet": {
+        "n": 88,
+        "t": "lg",
+        "rq": 63513,
+        "op": "read",
+        "name": "boot_000000000000002c_00000000.bin",
+        "off": 0,
+        "tot": 68,
+        "d": "RkNEMQEBRAAsAAAAAAAAAAEAAAAAAAAAlhoAAAAAAAABAAAABwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABZQIqHdq8="
+      }
+    },
+    {
+      "at_ms": 12135.038,
+      "packet": {
+        "n": 89,
+        "t": "ack",
+        "seq": 63513,
+        "cmd": "request_log",
+        "st": "ok",
+        "q": 0
+      }
+    },
+    {
+      "at_ms": 12159.079,
+      "packet": {
+        "n": 90,
+        "t": "ack",
+        "seq": 63515,
+        "cmd": "ping",
+        "st": "ok",
+        "q": 0
+      }
+    },
+    {
+      "at_ms": 12190.104,
+      "packet": {
+        "n": 91,
+        "t": "tm",
+        "ts": 1794429757,
+        "md": "bench",
+        "vb": null,
+        "ib": null,
+        "vs": null,
+        "is": null,
+        "tp": null,
+        "w": null,
+        "az": null,
+        "ac": 20,
+        "msg": null,
+        "rssi": null,
+        "snr": null,
+        "rx": 62,
+        "err": 0,
+        "rst": 11
+      }
+    },
+    {
+      "at_ms": 12198.424,
+      "packet": {
+        "n": 92,
+        "t": "ack",
+        "seq": 63516,
+        "cmd": "request_tm",
+        "st": "ok",
+        "q": 0
+      }
+    },
+    {
+      "at_ms": 12363.954,
+      "packet": {
+        "n": 93,
+        "t": "ack",
+        "seq": 63518,
+        "cmd": "ping",
+        "st": "ok",
+        "q": 0
+      }
+    },
+    {
+      "at_ms": 12623.183,
+      "packet": {
+        "n": 94,
+        "t": "lg",
+        "rq": 63517,
+        "op": "read",
+        "name": "boot_000000000000002c_00000000.bin",
+        "off": 0,
+        "tot": 68,
+        "d": "RkNEMQEBRAAsAAAAAAAAAAEAAAAAAAAAlhoAAAAAAAABAAAABwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABZQIqHdq8="
+      }
+    },
+    {
+      "at_ms": 12629.003,
+      "packet": {
+        "n": 95,
+        "t": "ack",
+        "seq": 63517,
+        "cmd": "request_log",
+        "st": "ok",
+        "q": 1
+      }
+    },
+    {
+      "at_ms": 12675.952,
+      "packet": {
+        "n": 96,
+        "t": "ack",
+        "seq": 63520,
+        "cmd": "ping",
+        "st": "ok",
+        "q": 0
+      }
+    },
+    {
+      "at_ms": 13031.064,
+      "packet": {
+        "n": 97,
+        "t": "lg",
+        "rq": 63519,
+        "op": "list",
+        "ls": [
+          [
+            "boot_000000000000002c_00000000.bin",
+            68,
+            0
+          ],
+          [
+            "boot_000000000000002c_00000001.bin",
+            68,
+            0
+          ],
+          [
+            "boot_000000000000002c_00000002.bin",
+            68,
+            0
+          ],
+          [
+            "boot_000000000000002c_00000003.bin",
+            68,
+            0
+          ]
+        ],
+        "end": false
+      }
+    },
+    {
+      "at_ms": 13037.066,
+      "packet": {
+        "n": 98,
+        "t": "ack",
+        "seq": 63519,
+        "cmd": "request_log",
+        "st": "ok",
+        "q": 0
+      }
+    },
+    {
+      "at_ms": 13081.012,
+      "packet": {
+        "n": 99,
+        "t": "ack",
+        "seq": 63522,
+        "cmd": "ping",
+        "st": "ok",
+        "q": 0
+      }
+    },
+    {
+      "at_ms": 13435.914,
+      "packet": {
+        "n": 100,
+        "t": "lg",
+        "rq": 63521,
+        "op": "list",
+        "ls": [
+          [
+            "boot_000000000000002c_00000004.bin",
+            68,
+            0
+          ],
+          [
+            "boot_000000000000002c_00000005.bin",
+            68,
+            0
+          ],
+          [
+            "boot_000000000000002c_00000006.bin",
+            68,
+            0
+          ],
+          [
+            "boot_000000000000002c_00000007.bin",
+            68,
+            0
+          ]
+        ],
+        "end": true
+      }
+    },
+    {
+      "at_ms": 13441.618,
+      "packet": {
+        "n": 101,
+        "t": "ack",
+        "seq": 63521,
+        "cmd": "request_log",
+        "st": "ok",
+        "q": 0
+      }
+    },
+    {
+      "at_ms": 13488.636,
+      "packet": {
+        "n": 102,
+        "t": "ack",
+        "seq": 63524,
+        "cmd": "ping",
+        "st": "ok",
+        "q": 0
+      }
+    },
+    {
+      "at_ms": 13841.377,
+      "packet": {
+        "n": 103,
+        "t": "lg",
+        "rq": 63523,
+        "op": "read",
+        "name": "boot_000000000000002c_00000000.bin",
+        "off": 0,
+        "tot": 68,
+        "d": "RkNEMQEBRAAsAAAAAAAAAAEAAAAAAAAAlhoAAAAAAAABAAAABwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABZQIqHdq8="
+      }
+    },
+    {
+      "at_ms": 13847.374,
+      "packet": {
+        "n": 104,
+        "t": "ack",
+        "seq": 63523,
+        "cmd": "request_log",
+        "st": "ok",
+        "q": 0
+      }
+    }
+  ],
+  "payload": [
+    {
+      "case": 1,
+      "status": "READY",
+      "id": 1,
+      "count": 1,
+      "crc": 3540954241,
+      "valid": 1,
+      "extras": 0,
+      "identification": 0,
+      "tick": 0,
+      "accepted": 1,
+      "lost": 0,
+      "occupied": 1,
+      "peak": 1
+    },
+    {
+      "case": 2,
+      "status": "READY",
+      "id": 2,
+      "count": 1,
+      "crc": 1293764325,
+      "valid": 1,
+      "extras": 0,
+      "identification": 0,
+      "tick": 0,
+      "accepted": 1,
+      "lost": 0,
+      "occupied": 1,
+      "peak": 1
+    },
+    {
+      "case": 3,
+      "status": "READY",
+      "id": 3,
+      "count": 20,
+      "crc": 3899320051,
+      "valid": 1,
+      "extras": 32,
+      "identification": 16,
+      "tick": 40,
+      "accepted": 20,
+      "lost": 0,
+      "occupied": 20,
+      "peak": 20
+    },
+    {
+      "case": 4,
+      "status": "NO_MEMORY",
+      "id": 3,
+      "count": 20,
+      "crc": 3899320051,
+      "valid": 1,
+      "extras": 32,
+      "identification": 16,
+      "tick": 40,
+      "accepted": 20,
+      "lost": 0,
+      "occupied": 20,
+      "peak": 20
+    },
+    {
+      "case": 5,
+      "status": "READY",
+      "id": 5,
+      "count": 1,
+      "crc": 2781126805,
+      "valid": 1,
+      "extras": 0,
+      "identification": 0,
+      "tick": 0,
+      "accepted": 21,
+      "lost": 0,
+      "occupied": 21,
+      "peak": 21
+    }
+  ],
+  "acks": [
+    {
+      "packet": {
+        "n": 0,
+        "t": "ack",
+        "seq": 63455,
+        "cmd": "ping",
+        "st": "ok",
+        "q": 0
+      },
+      "elapsed_ms": 15.564
+    },
+    {
+      "packet": {
+        "n": 1,
+        "t": "ack",
+        "seq": 63456,
+        "cmd": "set_time",
+        "st": "ok",
+        "q": 0
+      },
+      "elapsed_ms": 21.171
+    },
+    {
+      "packet": {
+        "n": 2,
+        "t": "ack",
+        "seq": 63457,
+        "cmd": "ping",
+        "st": "ok",
+        "q": 0
+      },
+      "elapsed_ms": 22.918
+    },
+    {
+      "packet": {
+        "n": 4,
+        "t": "ack",
+        "seq": 63458,
+        "cmd": "request_tm",
+        "st": "ok",
+        "q": 0
+      },
+      "elapsed_ms": 40.697
+    },
+    {
+      "packet": {
+        "n": 5,
+        "t": "ack",
+        "seq": 63459,
+        "cmd": "ping",
+        "st": "ok",
+        "q": 0
+      },
+      "elapsed_ms": 23.091
+    },
+    {
+      "packet": {
+        "n": 7,
+        "t": "ack",
+        "seq": 63460,
+        "cmd": "request_tm",
+        "st": "ok",
+        "q": 0
+      },
+      "elapsed_ms": 70.992
+    },
+    {
+      "packet": {
+        "n": 8,
+        "t": "ack",
+        "seq": 63461,
+        "cmd": "ping",
+        "st": "ok",
+        "q": 0
+      },
+      "elapsed_ms": 30.901
+    },
+    {
+      "packet": {
+        "n": 10,
+        "t": "ack",
+        "seq": 63462,
+        "cmd": "request_tm",
+        "st": "ok",
+        "q": 0
+      },
+      "elapsed_ms": 40.559
+    },
+    {
+      "packet": {
+        "n": 11,
+        "t": "ack",
+        "seq": 63463,
+        "cmd": "ping",
+        "st": "ok",
+        "q": 0
+      },
+      "elapsed_ms": 17.743
+    },
+    {
+      "packet": {
+        "n": 13,
+        "t": "ack",
+        "seq": 63464,
+        "cmd": "request_tm",
+        "st": "ok",
+        "q": 0
+      },
+      "elapsed_ms": 40.848
+    },
+    {
+      "packet": {
+        "n": 14,
+        "t": "ack",
+        "seq": 63465,
+        "cmd": "ping",
+        "st": "ok",
+        "q": 0
+      },
+      "elapsed_ms": 18.197
+    },
+    {
+      "packet": {
+        "n": 16,
+        "t": "ack",
+        "seq": 63466,
+        "cmd": "request_tm",
+        "st": "ok",
+        "q": 0
+      },
+      "elapsed_ms": 40.165
+    },
+    {
+      "packet": {
+        "n": 18,
+        "t": "ack",
+        "seq": 63467,
+        "cmd": "ping",
+        "st": "ok",
+        "q": 0
+      },
+      "elapsed_ms": 30.063
+    },
+    {
+      "packet": {
+        "n": 20,
+        "t": "ack",
+        "seq": 63468,
+        "cmd": "request_tm",
+        "st": "ok",
+        "q": 0
+      },
+      "elapsed_ms": 39.102
+    },
+    {
+      "packet": {
+        "n": 21,
+        "t": "ack",
+        "seq": 63470,
+        "cmd": "ping",
+        "st": "ok",
+        "q": 0
+      },
+      "elapsed_ms": 55.325
+    },
+    {
+      "packet": {
+        "n": 23,
+        "t": "ack",
+        "seq": 63469,
+        "cmd": "request_log",
+        "st": "ok",
+        "q": 0
+      },
+      "elapsed_ms": 202.11
+    },
+    {
+      "packet": {
+        "n": 24,
+        "t": "ack",
+        "seq": 63471,
+        "cmd": "ping",
+        "st": "ok",
+        "q": 0
+      },
+      "elapsed_ms": 23.761
+    },
+    {
+      "packet": {
+        "n": 26,
+        "t": "ack",
+        "seq": 63472,
+        "cmd": "request_tm",
+        "st": "ok",
+        "q": 0
+      },
+      "elapsed_ms": 40.709
+    },
+    {
+      "packet": {
+        "n": 27,
+        "t": "ack",
+        "seq": 63474,
+        "cmd": "ping",
+        "st": "ok",
+        "q": 0
+      },
+      "elapsed_ms": 53.819
+    },
+    {
+      "packet": {
+        "n": 29,
+        "t": "ack",
+        "seq": 63473,
+        "cmd": "request_log",
+        "st": "ok",
+        "q": 0
+      },
+      "elapsed_ms": 87.504
+    },
+    {
+      "packet": {
+        "n": 30,
+        "t": "ack",
+        "seq": 63475,
+        "cmd": "ping",
+        "st": "ok",
+        "q": 0
+      },
+      "elapsed_ms": 18.329
+    },
+    {
+      "packet": {
+        "n": 32,
+        "t": "ack",
+        "seq": 63476,
+        "cmd": "request_tm",
+        "st": "ok",
+        "q": 0
+      },
+      "elapsed_ms": 40.642
+    },
+    {
+      "packet": {
+        "n": 33,
+        "t": "ack",
+        "seq": 63478,
+        "cmd": "ping",
+        "st": "ok",
+        "q": 0
+      },
+      "elapsed_ms": 51.284
+    },
+    {
+      "packet": {
+        "n": 35,
+        "t": "ack",
+        "seq": 63477,
+        "cmd": "request_log",
+        "st": "ok",
+        "q": 1
+      },
+      "elapsed_ms": 84.859
+    },
+    {
+      "packet": {
+        "n": 36,
+        "t": "ack",
+        "seq": 63479,
+        "cmd": "ping",
+        "st": "ok",
+        "q": 0
+      },
+      "elapsed_ms": 18.491
+    },
+    {
+      "packet": {
+        "n": 38,
+        "t": "ack",
+        "seq": 63480,
+        "cmd": "request_tm",
+        "st": "ok",
+        "q": 1
+      },
+      "elapsed_ms": 67.664
+    },
+    {
+      "packet": {
+        "n": 39,
+        "t": "ack",
+        "seq": 63482,
+        "cmd": "ping",
+        "st": "ok",
+        "q": 0
+      },
+      "elapsed_ms": 52.232
+    },
+    {
+      "packet": {
+        "n": 41,
+        "t": "ack",
+        "seq": 63481,
+        "cmd": "request_log",
+        "st": "ok",
+        "q": 0
+      },
+      "elapsed_ms": 85.775
+    },
+    {
+      "packet": {
+        "n": 42,
+        "t": "ack",
+        "seq": 63483,
+        "cmd": "ping",
+        "st": "ok",
+        "q": 30
+      },
+      "elapsed_ms": 59.407
+    },
+    {
+      "packet": {
+        "n": 44,
+        "t": "ack",
+        "seq": 63484,
+        "cmd": "request_tm",
+        "st": "ok",
+        "q": 0
+      },
+      "elapsed_ms": 39.553
+    },
+    {
+      "packet": {
+        "n": 45,
+        "t": "ack",
+        "seq": 63486,
+        "cmd": "ping",
+        "st": "ok",
+        "q": 0
+      },
+      "elapsed_ms": 36.141
+    },
+    {
+      "packet": {
+        "n": 47,
+        "t": "ack",
+        "seq": 63485,
+        "cmd": "request_log",
+        "st": "ok",
+        "q": 0
+      },
+      "elapsed_ms": 85.054
+    },
+    {
+      "packet": {
+        "n": 48,
+        "t": "ack",
+        "seq": 63487,
+        "cmd": "ping",
+        "st": "ok",
+        "q": 0
+      },
+      "elapsed_ms": 24.025
+    },
+    {
+      "packet": {
+        "n": 50,
+        "t": "ack",
+        "seq": 63488,
+        "cmd": "request_tm",
+        "st": "ok",
+        "q": 0
+      },
+      "elapsed_ms": 40.41
+    },
+    {
+      "packet": {
+        "n": 51,
+        "t": "ack",
+        "seq": 63490,
+        "cmd": "ping",
+        "st": "ok",
+        "q": 0
+      },
+      "elapsed_ms": 51.148
+    },
+    {
+      "packet": {
+        "n": 53,
+        "t": "ack",
+        "seq": 63489,
+        "cmd": "request_log",
+        "st": "ok",
+        "q": 0
+      },
+      "elapsed_ms": 84.405
+    },
+    {
+      "packet": {
+        "n": 54,
+        "t": "ack",
+        "seq": 63491,
+        "cmd": "ping",
+        "st": "ok",
+        "q": 0
+      },
+      "elapsed_ms": 18.574
+    },
+    {
+      "packet": {
+        "n": 56,
+        "t": "ack",
+        "seq": 63492,
+        "cmd": "request_tm",
+        "st": "ok",
+        "q": 0
+      },
+      "elapsed_ms": 40.418
+    },
+    {
+      "packet": {
+        "n": 57,
+        "t": "ack",
+        "seq": 63494,
+        "cmd": "ping",
+        "st": "ok",
+        "q": 0
+      },
+      "elapsed_ms": 39.361
+    },
+    {
+      "packet": {
+        "n": 59,
+        "t": "ack",
+        "seq": 63493,
+        "cmd": "request_log",
+        "st": "ok",
+        "q": 0
+      },
+      "elapsed_ms": 126.217
+    },
+    {
+      "packet": {
+        "n": 60,
+        "t": "ack",
+        "seq": 63495,
+        "cmd": "ping",
+        "st": "ok",
+        "q": 0
+      },
+      "elapsed_ms": 24.113
+    },
+    {
+      "packet": {
+        "n": 62,
+        "t": "ack",
+        "seq": 63496,
+        "cmd": "request_tm",
+        "st": "ok",
+        "q": 0
+      },
+      "elapsed_ms": 40.724
+    },
+    {
+      "packet": {
+        "n": 63,
+        "t": "ack",
+        "seq": 63498,
+        "cmd": "ping",
+        "st": "ok",
+        "q": 1
+      },
+      "elapsed_ms": 51.488
+    },
+    {
+      "packet": {
+        "n": 65,
+        "t": "ack",
+        "seq": 63497,
+        "cmd": "request_log",
+        "st": "ok",
+        "q": 1
+      },
+      "elapsed_ms": 85.102
+    },
+    {
+      "packet": {
+        "n": 66,
+        "t": "ack",
+        "seq": 63499,
+        "cmd": "ping",
+        "st": "ok",
+        "q": 1
+      },
+      "elapsed_ms": 19.892
+    },
+    {
+      "packet": {
+        "n": 68,
+        "t": "ack",
+        "seq": 63500,
+        "cmd": "request_tm",
+        "st": "ok",
+        "q": 1
+      },
+      "elapsed_ms": 42.133
+    },
+    {
+      "packet": {
+        "n": 69,
+        "t": "ack",
+        "seq": 63502,
+        "cmd": "ping",
+        "st": "ok",
+        "q": 81
+      },
+      "elapsed_ms": 134.249
+    },
+    {
+      "packet": {
+        "n": 71,
+        "t": "ack",
+        "seq": 63501,
+        "cmd": "request_log",
+        "st": "ok",
+        "q": 92
+      },
+      "elapsed_ms": 795.705
+    },
+    {
+      "packet": {
+        "n": 72,
+        "t": "ack",
+        "seq": 63503,
+        "cmd": "ping",
+        "st": "ok",
+        "q": 0
+      },
+      "elapsed_ms": 23.948
+    },
+    {
+      "packet": {
+        "n": 74,
+        "t": "ack",
+        "seq": 63504,
+        "cmd": "request_tm",
+        "st": "ok",
+        "q": 0
+      },
+      "elapsed_ms": 40.426
+    },
+    {
+      "packet": {
+        "n": 75,
+        "t": "ack",
+        "seq": 63506,
+        "cmd": "ping",
+        "st": "ok",
+        "q": 0
+      },
+      "elapsed_ms": 49.22
+    },
+    {
+      "packet": {
+        "n": 77,
+        "t": "ack",
+        "seq": 63505,
+        "cmd": "request_log",
+        "st": "ok",
+        "q": 1
+      },
+      "elapsed_ms": 237.553
+    },
+    {
+      "packet": {
+        "n": 78,
+        "t": "ack",
+        "seq": 63507,
+        "cmd": "ping",
+        "st": "ok",
+        "q": 0
+      },
+      "elapsed_ms": 24.757
+    },
+    {
+      "packet": {
+        "n": 80,
+        "t": "ack",
+        "seq": 63508,
+        "cmd": "request_tm",
+        "st": "ok",
+        "q": 0
+      },
+      "elapsed_ms": 60.217
+    },
+    {
+      "packet": {
+        "n": 81,
+        "t": "ack",
+        "seq": 63510,
+        "cmd": "ping",
+        "st": "ok",
+        "q": 0
+      },
+      "elapsed_ms": 38.177
+    },
+    {
+      "packet": {
+        "n": 83,
+        "t": "ack",
+        "seq": 63509,
+        "cmd": "request_log",
+        "st": "ok",
+        "q": 0
+      },
+      "elapsed_ms": 225.256
+    },
+    {
+      "packet": {
+        "n": 84,
+        "t": "ack",
+        "seq": 63511,
+        "cmd": "ping",
+        "st": "ok",
+        "q": 0
+      },
+      "elapsed_ms": 24.029
+    },
+    {
+      "packet": {
+        "n": 86,
+        "t": "ack",
+        "seq": 63512,
+        "cmd": "request_tm",
+        "st": "ok",
+        "q": 0
+      },
+      "elapsed_ms": 39.848
+    },
+    {
+      "packet": {
+        "n": 87,
+        "t": "ack",
+        "seq": 63514,
+        "cmd": "ping",
+        "st": "ok",
+        "q": 0
+      },
+      "elapsed_ms": 50.625
+    },
+    {
+      "packet": {
+        "n": 89,
+        "t": "ack",
+        "seq": 63513,
+        "cmd": "request_log",
+        "st": "ok",
+        "q": 0
+      },
+      "elapsed_ms": 237.595
+    },
+    {
+      "packet": {
+        "n": 90,
+        "t": "ack",
+        "seq": 63515,
+        "cmd": "ping",
+        "st": "ok",
+        "q": 0
+      },
+      "elapsed_ms": 24.019
+    },
+    {
+      "packet": {
+        "n": 92,
+        "t": "ack",
+        "seq": 63516,
+        "cmd": "request_tm",
+        "st": "ok",
+        "q": 0
+      },
+      "elapsed_ms": 39.333
+    },
+    {
+      "packet": {
+        "n": 93,
+        "t": "ack",
+        "seq": 63518,
+        "cmd": "ping",
+        "st": "ok",
+        "q": 0
+      },
+      "elapsed_ms": 49.495
+    },
+    {
+      "packet": {
+        "n": 95,
+        "t": "ack",
+        "seq": 63517,
+        "cmd": "request_log",
+        "st": "ok",
+        "q": 1
+      },
+      "elapsed_ms": 323.095
+    },
+    {
+      "packet": {
+        "n": 96,
+        "t": "ack",
+        "seq": 63520,
+        "cmd": "ping",
+        "st": "ok",
+        "q": 0
+      },
+      "elapsed_ms": 43.947
+    },
+    {
+      "packet": {
+        "n": 98,
+        "t": "ack",
+        "seq": 63519,
+        "cmd": "request_log",
+        "st": "ok",
+        "q": 0
+      },
+      "elapsed_ms": 408.026
+    },
+    {
+      "packet": {
+        "n": 99,
+        "t": "ack",
+        "seq": 63522,
+        "cmd": "ping",
+        "st": "ok",
+        "q": 0
+      },
+      "elapsed_ms": 38.102
+    },
+    {
+      "packet": {
+        "n": 101,
+        "t": "ack",
+        "seq": 63521,
+        "cmd": "request_log",
+        "st": "ok",
+        "q": 0
+      },
+      "elapsed_ms": 404.532
+    },
+    {
+      "packet": {
+        "n": 102,
+        "t": "ack",
+        "seq": 63524,
+        "cmd": "ping",
+        "st": "ok",
+        "q": 0
+      },
+      "elapsed_ms": 38.291
+    },
+    {
+      "packet": {
+        "n": 104,
+        "t": "ack",
+        "seq": 63523,
+        "cmd": "request_log",
+        "st": "ok",
+        "q": 0
+      },
+      "elapsed_ms": 405.719
+    }
+  ],
+  "files": [
+    {
+      "name": "boot_000000000000002c_00000000.bin",
+      "bytes": 68,
+      "id": [
+        44,
+        1
+      ],
+      "crc": "ok",
+      "hex": "46434431010144002c000000000000000100000000000000961a00000000000001000000070000000000000000000000000000000000000000000000000059408a8776af"
+    }
+  ],
+  "dense_result": "READY",
+  "closed_reads_during_memory": 13,
+  "deliveries": 1
+}

@@ -1,8 +1,49 @@
 # OBC-DH — documentação e orientação
 
+**Conclusão INT-004 — 17/11/2026:** o responsável OBC-DH informou o aceite
+TT&C das definições do contrato e autorizou o encerramento. Task movida para
+`done/`, com matriz, evidências e limites preservados. RF/tempos integrados
+continuam na TES-008 e contratos operacionais próprios seguem na INT-006.
+
+**INT-009 — 17/11/2026:** bancada LM75A concluída, separada da INA219.
+Referência NXP provisória, cinco canais em RAM/USB; não publica temperatura
+na TM nem implementa proteção. Nativos LM75A/EPS com ASan/UBSan e três builds
+aprovados, após correção de include autorizada. Bancada térmica: 54 ACKs,
+27 TMs, sete tentativas por canal e margem mínima de pilha de 2.448 bytes.
+INA219 original passou; `obc` foi restaurado/verificado com o cliente real.
+Reprovação preservada e INT-009 ainda aberta pelos contratos e integração
+operacional. [Procedimento e limites](../tools/README.md#lm75a-de-bancada--17112026).
+
+**INT-009 — 16/11/2026:** aquisição INA219 disponível somente no ambiente
+`int009-ina219-check`. Namespace do driver corrigido para `CEFAST::eps`;
+seis verificações nativas e dois builds aprovados. Publicação inicial
+corrigida após discussão; reprovações anteriores preservadas. Com a placa
+livre, o mesmo firmware/roteiro passou em 30 s: 54 ACKs, 27 TMs e margem
+mínima de pilha EPS observada de 2.656 bytes. `obc` foi restaurado e passou
+no roteiro USB original. Recorte de bancada concluído; a INT-009 continua
+aberta por contratos/TM operacional/LM75A. Procedimento e
+limitações no [guia](../tools/README.md#ina219-de-bancada--16112026).
+
+**Conclusão INT-012 — 15/11/2026:** watchdog por progresso e reset comandado
+implementados/verificados no ESP32/USB. Quatorze casos novos, memória/esperas
+com watchdog armado e regressões originais passaram; `obc` restaurado e
+verificado. Limites, reprovação inicial e ajustes autorizados de bancada
+estão na task e no [guia](../tools/README.md#watchdog-e-reset-obc--15112026).
+TES-009 recebe o mecanismo para comprovação independente; TES-008 e INT-013
+mantêm efeitos elétricos e retomada de voo. Nenhuma TES mudou de estado.
+
+**Conclusão INT-008 — 15/11/2026:** supervisão e recuperação local dos
+recursos integrados concluídas, incluindo TT&C e memória/pilhas. Regressões
+aprovadas e `obc` restaurado/verificado. Procedimentos e matriz de entrega
+ao setor de testes estão no [guia](../tools/README.md#supervisão-de-recursos-ttc-e-memória--15112026).
+Watchdog/reset, retomada operacional e comprovação física permanecem nas
+INT-012/013 e TES correspondentes; não são aprovados por esta conclusão.
+
 Software de bordo em C++ para ESP32, com Arduino/FreeRTOS. O OBC-DH coordena telecomandos, telemetria, tempo e registros. O Payload executa no Raspberry Pi e se comunica por UART; o ADCS será integrado ao ESP32 central.
 
-**Revisão documental: 10/11/2026, sobre o firmware de `839a186`.** Esta revisão organiza o estado comprovado nas tarefas; não acrescenta execução de testes ou aceite de outros setores.
+**Atualização: 11/11/2026, alterações locais sobre `f7af605`.** Integração OBC de entregas e `request_log` verificada no computador e na bancada USB após correção da admissão de memória. Aceites e ensaios com periféricos reais permanecem nas tarefas.
+
+**Organização vigente — 14/11/2026:** OBC mantém implementação, ferramentas e regressões; o setor de testes registra a comprovação dos ensaios. Aquisição EPS/Térmico, proteções, Burn Wire, watchdog/reset e retomada operacional têm entregas próprias nas INT-009/010/011/012/013. Supervisão e recuperação local permanecem na INT-008. TES-011/012 planejam execução reproduzível e cobertura do consumidor atual. A [correspondência](../.tasks/README.md#correspondência-das-entregas-redistribuídas) preserva origens e pendências; nenhuma tarefa ou requisito foi aprovado pela revisão.
 
 ## Mapa dos documentos
 
@@ -19,6 +60,7 @@ Software de bordo em C++ para ESP32, com Arduino/FreeRTOS. O OBC-DH coordena tel
 | [FUNCIONAMENTO_PIO.md](FUNCIONAMENTO_PIO.md) | Ambiente, compilação, upload, escolha dos roteiros e editor. |
 | [Ferramentas](../tools/README.md) | Armazenamento, codecs e leitura de registros v1/v2/v3. |
 | [Bancadas](../examples/README.md) | Loopback, receptor e fluxo integrado, com procedimentos e limitações. |
+| [Encaminhamentos de 11/11](../encaminhamentos-2026-11-11.md) | Mensagens preparadas para TT&C, Payload e testes, sem envio externo. |
 
 Consultar instruções e padrões, arquitetura/requisitos e a task correspondente antes de trabalhar. Para bancada, conferir pinagem e selecionar o ambiente e o roteiro compatíveis. Obter ConOps, ICDs, regulamento e arquitetura CEFAST vigentes antes dos trabalhos que dependem deles; as referências citadas não constituem cópias disponíveis ou aceites registrados.
 
@@ -28,11 +70,11 @@ Decisões ficam na arquitetura; formatos nos contratos compartilhados; procedime
 
 `main.cpp` inicia Serial a 115200 baud, reserva o boot na NVS, inicializa o serviço I2C e tenta montar o SD por `ObcStartup`. Depois inicia TT&C e a primeira etapa de `ObcDataFlowEsp32`. O `loop()` atende telecomandos e diagnósticos; não contém mais a espera de 100 ms da entrega inicial de INT-003. Falhas dos serviços independentes são diagnosticadas. Boot inválido ou falha de recursos pode impedir o fluxo; não fabricar identificação ou UTC.
 
-TT&C conserva sua tarefa e suas filas. O firmware atende `ping`, `get_status`, `request_tm` e `set_time`. TM é enviada sob demanda, no modo `bench`; dados indisponíveis são `null`. `set_time` aplica UTC em RAM e tenta registrar a referência separadamente. `request_log`, envio agregado de aeronaves, modos de voo, sensores, atuadores e supervisão completa ainda dependem das respectivas integrações.
+TT&C conserva sua tarefa e suas filas. O firmware atende `ping`, `get_status`, `request_tm`, `set_time`, `request_log` e `reset_obc`. Reset usa temporizador nativo de 1.500 ms antes da tentativa de ACK; repetições não adiam prazo e falta de SD/ACK não o cancela. TM é enviada sob demanda, no modo `bench`; dados indisponíveis são `null`. `set_time` aplica UTC em RAM e tenta registrar a referência separadamente. Entregas identificadas usam eventos TX e confirmação `cf`, com timeout provisório de 10 s. Watchdog por progresso está implementado na INT-012; modos de voo, sensores e atuadores continuam nas respectivas integrações.
 
 UART2 tem transporte próprio; processamento e escritor SD usam tarefas separadas. O receptor aceita snapshots JSON completos no enquadramento FCPU local. ACK confirma aceitação em RAM. A gravação usa registros binários versionados, fila limitada e bloco exclusivo de snapshot. SD ausente, lento ou falho pode causar descartes contabilizados, sem exigir interromper recepção/TM. Isso não promete ausência de perdas ou recuperação automática.
 
-Os [contratos](../../common/protocol/obc-data.md) distinguem atualizações individuais v1 preservadas, snapshots v2 e TM v3. O leitor aceita arquivos mistos e exporta JSON Lines sem alterar a origem. Extração por `request_log` continua pendente; leitura de uma cópia obtida do cartão já está disponível.
+Os [contratos](../../common/protocol/obc-data.md) distinguem atualizações individuais v1 preservadas, snapshots v2, TM v3 e entregas FCD1. O leitor aceita arquivos mistos e exporta JSON Lines sem alterar a origem. `request_log` lista e lê arquivos fechados pelo proprietário do SD, com caixa fixa e prazo local de 1 s. A bancada USB passou com SD/solo simulados; o complemento `ObcStationCheck.py` também aprovou as APIs reais da estação e TM/tempo. Cartão físico, RF e durabilidade da estação continuam pendentes.
 
 O [FCPU](../../common/protocol/payload-uart.md) transporta JSON com cabeçalho, CRC e controles binários pelo cabo OBC–Pi. Não é somente uma representação interna. O produtor Pi e o aceite do Payload continuam em INT-006; interoperabilidade física fica em TES-005/TES-009. O enlace com o solo usa o [contrato JSON TT&C](../../common/protocol/ttc-json.md), com corpo ≤245 bytes e quadro ≤255 bytes, sem fragmentação. Esses limites não se aplicam aos snapshots UART ou aos arquivos.
 
@@ -50,11 +92,11 @@ O mapa abaixo agrupa os módulos atuais; não é um inventário exaustivo de arq
 | Dados | `headers/models/ObcData.h`, `ObcData`, `ObcRecordCodec`: modelos, validadores e codecs v1/v2/v3. |
 | Arquivos | `ObcStorage`, `ObcStorageEsp32`: I/O e SD/HSPI; não definem o conteúdo dos registros. |
 | Payload | `PayloadReceiver`, `PayloadReceiverEsp32`: validação, publicação e transporte UART2. |
-| Integração | `ObcTtc`, `ObcDataFlow`, `ObcDataFlowEsp32`: comandos, TM, filas e diário por boot/segmento. |
+| Integração | `ObcTtc`, `ObcDownlink`, `ObcDataFlow`, `ObcDataFlowEsp32`: comandos, entregas, extração e diário por boot/segmento. |
 | Bancadas | `src/bench/`: entradas isoladas; `examples/` conserva os procedimentos e logs UART. |
 | Verificação | `tests/`: verificações portáteis e roteiros USB, cada qual com seu escopo. |
 | Análise | `tools/`: leitor nativo, geradores de vetores e hook controlado de ArduinoJson. |
-| Configuração | `platformio.ini`: ambiente padrão `obc` e três ambientes de bancada. |
+| Configuração | `platformio.ini`: ambiente padrão `obc` e bancadas isoladas, incluindo `int006-ttc-check`. |
 
 Os históricos de entrega, hashes e medições permanecem nas tarefas. Os registros de 08/10 em `.codex/` são históricos e não substituem este mapa ou o painel vigente. Não usar descrições antigas de `main` vazio, ausência de parser ou falta de integração como diagnóstico do firmware atual.
 

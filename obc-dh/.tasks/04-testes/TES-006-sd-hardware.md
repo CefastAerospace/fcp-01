@@ -1,9 +1,16 @@
 # TES-006 — SD: operações e falhas em hardware
 
 **Estado:** Pendente
-**Responsáveis:** OBC-DH e EPS
+**Responsável pela execução e comprovação:** Setor de testes
+**Responsáveis técnicos de apoio:** OBC-DH e EPS
+**Responsável pelas ferramentas e regressões de desenvolvimento:** OBC-DH
 
 A execução e o relato dos ensaios cabem ao setor de testes; a análise e as correções de firmware cabem ao responsável OBC-DH, com apoio dos setores envolvidos. Seguir as [responsabilidades e regras de reexecução](../README.md#responsabilidades-correção-e-reexecução).
+
+
+## Prontidão vigente — 14/11/2026
+
+`request_log` e retomada local limitada do escritor estão implementados nos recortes das INT-006/008. Retomada completa de missão continua pendente na INT-013; não confundir essas entregas. Os casos abaixo, inclusive retomada explícita End/Init, preservam integralmente suas entradas e expectativas. Esta atualização corrige disponibilidade de ferramentas, sem aprovar cartão, FAT32 ou corte de energia.
 
 ## Objetivo
 
@@ -35,7 +42,7 @@ cenários originais e não mudam seu estado por conclusão da origem.
 
 ## Prontidão e preparação para o setor de testes
 
-COM-005 está concluída. Encaminhar preparação; execução depende de cartão/módulo, montagem, alimentação e critérios com EPS. A primeira etapa INT-006 já grava registros, mas a bancada com backend simulado não comprova cartão físico. Para esta tarefa, extração pode usar `Read` de arquivo fechado ou cópia pelo leitor físico; `request_log` ainda não implementado não deve ser presumido disponível.
+COM-005 está concluída. Encaminhar preparação; execução depende de cartão/módulo, montagem, alimentação e critérios com EPS. A primeira etapa INT-006 já grava registros, mas a bancada com backend simulado não comprova cartão físico. Para esta tarefa, extração pode usar `Read` de arquivo fechado, cópia pelo leitor físico ou `request_log`, já integrado no OBC. O recorte USB com backend simulado não comprova extração do cartão real.
 
 Usar cartão de ensaio e conteúdo conhecido, preservando dados anteriores. Registrar capacidade, formatação FAT32, módulo, alimentação, pinagem HSPI e frequência. A frequência inicial de 4 MHz é configurada, não uma garantia de funcionamento da montagem. Interrupção durante escrita permanece na TES-009.
 

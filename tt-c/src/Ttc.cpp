@@ -43,6 +43,20 @@ LINK_STATS Ttc::GetLinkStats(
 }
 
 // Público:
+LINK_DIAGNOSTICS Ttc::GetDiagnostics(
+) {
+    portENTER_CRITICAL(&stats_lock);
+    LINK_DIAGNOSTICS copy = diagnostics;
+    copy.sampled_ms = millis();
+    copy.radio_resets = stats.radio_resets_count;
+    TaskHandle_t task = task_handle;
+    portEXIT_CRITICAL(&stats_lock);
+    // A tarefa não é destruída em produção; nunca varrer sua pilha sob lock.
+    if (task != nullptr) copy.stack_free_bytes = uxTaskGetStackHighWaterMark(task);
+    return copy;
+}
+
+// Público:
 bool Ttc::IsHealthy(
 ) {
     return radio_healthy && rx_queue != nullptr && ack_queue != nullptr && tx_queue != nullptr
@@ -60,6 +74,9 @@ bool Ttc::IsTransmitting(
 // Público:
 bool Ttc::Init(
 ) {
+    portENTER_CRITICAL(&stats_lock);
+    diagnostics.init_attempted = true;
+    portEXIT_CRITICAL(&stats_lock);
     if (rx_queue == nullptr) rx_queue = xQueueCreate(rx_queue_len, sizeof(TC_FRAME));
     if (ack_queue == nullptr) ack_queue = xQueueCreate(ack_queue_len, sizeof(TX_FRAME));
     if (tx_queue == nullptr) tx_queue = xQueueCreate(tx_queue_len, sizeof(TX_FRAME));
@@ -81,6 +98,12 @@ bool Ttc::Init(
 
     // Rádio ausente não impede o umbilical; a verificação de saúde tenta de novo.
     radio_healthy = radio.Init();
+    const bool wired_ready = umbilical != nullptr && umbilical->IsReady();
+    portENTER_CRITICAL(&stats_lock);
+    diagnostics.initialized = true;
+    diagnostics.radio_ready = radio_healthy;
+    diagnostics.wired_ready = wired_ready;
+    portEXIT_CRITICAL(&stats_lock);
     return radio_healthy;
 }
 
@@ -98,12 +121,19 @@ bool Ttc::Start(
 ) {
     if (task_handle != nullptr) return true;
 
-    BaseType_t created = xTaskCreatePinnedToCore(TaskEntry, "ttc_link", task_stack_size, this, priority, &task_handle, core);
+    portENTER_CRITICAL(&stats_lock);
+    diagnostics.progress_ms = millis();
+    portEXIT_CRITICAL(&stats_lock);
+    TaskHandle_t task = nullptr;
+    BaseType_t created = xTaskCreatePinnedToCore(TaskEntry, "ttc_link", task_stack_size, this, priority, &task, core);
     if (created != pdPASS) {
-        task_handle = nullptr;
         Serial.print("[TT&C] ERRO: falha ao criar a task do enlace.\n");
         return false;
     }
+    portENTER_CRITICAL(&stats_lock);
+    task_handle = task;
+    diagnostics.task_started = true;
+    portEXIT_CRITICAL(&stats_lock);
     radio.SetNotifyTask(task_handle);
     return true;
 }
@@ -122,11 +152,21 @@ void Ttc::TaskEntry(
 // Público:
 bool Ttc::Update(
 ) {
+    portENTER_CRITICAL(&stats_lock);
+    diagnostics.updating = true;
+    diagnostics.progress_ms = millis();
+    portEXIT_CRITICAL(&stats_lock);
     MaintainLink();
     PollTransport(radio, LINK_RF);
     if (umbilical != nullptr) PollTransport(*umbilical, LINK_WIRED);
     TransmitNext();
-    return HasPendingTransmit();
+    const bool pending = HasPendingTransmit();
+    portENTER_CRITICAL(&stats_lock);
+    diagnostics.updating = false;
+    diagnostics.progress_ms = millis();
+    if (diagnostics.completions != UINT64_MAX) ++diagnostics.completions;
+    portEXIT_CRITICAL(&stats_lock);
+    return pending;
 }
 
 // Privado:
@@ -145,6 +185,9 @@ void Ttc::CheckRadio(
 ) {
     if (radio.CheckHealth()) {
         radio_healthy = true;
+        portENTER_CRITICAL(&stats_lock);
+        diagnostics.radio_ready = true;
+        portEXIT_CRITICAL(&stats_lock);
         return;
     }
 
@@ -152,6 +195,7 @@ void Ttc::CheckRadio(
     Serial.print("[TT&C] ERRO: SX1276 sem resposta ou fora de RX, reinicializando.\n");
     radio_healthy = radio.Init();
     portENTER_CRITICAL(&stats_lock);
+    diagnostics.radio_ready = radio_healthy;
     stats.radio_resets_count++;
     portEXIT_CRITICAL(&stats_lock);
 }
@@ -197,7 +241,7 @@ void Ttc::PollTransport(
     ttc::DELIVERY_ID confirmed;
     ttc::CONFIRMATION_PARSE confirmation = ttc::ParseConfirmation(buffer, (size_t)len, confirmed);
     if (confirmation == ttc::CF_VALID) {
-        HandleConfirmation(confirmed);
+        HandleConfirmation(confirmed, origin);
         return;
     }
     if (confirmation == ttc::CF_INVALID) {
@@ -230,8 +274,10 @@ void Ttc::PollTransport(
 
 // Privado:
 void Ttc::HandleConfirmation(
-    const ttc::DELIVERY_ID& id
+    const ttc::DELIVERY_ID& id,
+    LINK_ORIGIN origin
 ) {
+    MarkContact(origin);
     // Contato válido com o solo (REQ-OBC-011), mesmo que repetido.
     bool queued = xQueueSend(confirm_queue, &id, 0) == pdTRUE;
     portENTER_CRITICAL(&stats_lock);
@@ -243,12 +289,23 @@ void Ttc::HandleConfirmation(
 }
 
 // Privado:
+void Ttc::MarkContact(
+    LINK_ORIGIN origin
+) {
+    portENTER_CRITICAL(&stats_lock);
+    LINK_CONTACT& contact = origin == LINK_RF ? diagnostics.rf_contact : diagnostics.wired_contact;
+    contact = {true, millis()};
+    portEXIT_CRITICAL(&stats_lock);
+}
+
+// Privado:
 void Ttc::HandleTelecommand(
     const ttc::TC_INFO& info,
     const char* json,
     size_t len,
     LINK_ORIGIN origin
 ) {
+    MarkContact(origin);
     // Contato válido com o solo, mesmo que o TC seja repetido (REQ-OBC-011).
     portENTER_CRITICAL(&stats_lock);
     stats.last_tc_ms = millis();

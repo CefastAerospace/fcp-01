@@ -26,7 +26,7 @@ A tabela conserva as obrigações e a situação registradas no encerramento. O 
 |---|---|---|
 | [INT-003](../../03-integracao/INT-003-inicializacao-central.md) | Confirmar módulo/cartão, alimentação e condições de boot do SD com EPS antes do uso integrado; preservar indisponibilidade sem formatação/reparo automático. | Pendente na destinatária |
 | [INT-006](../../03-integracao/INT-006-fluxo-de-dados.md) | Ligar registros ao SD, nomes/rotação por boot e limite de arquivo, contabilização de perdas, encaminhamento de erros e extração pelo umbilical. | Pendente na destinatária |
-| [INT-008](../../03-integracao/INT-008-supervisao-e-retomada.md) | Integrar a política de retomada do escritor após falha/reset: preservar arquivos, End/Init e nome novo, sem apagar ou reutilizar conteúdo anterior. | Pendente na destinatária |
+| [INT-008](../../03-integracao/done/INT-008-supervisao-e-retomada.md) | Integrar a política de retomada do escritor após falha/reset: preservar arquivos, End/Init e nome novo, sem apagar ou reutilizar conteúdo anterior. | Pendente na destinatária |
 | [TES-006](../../04-testes/TES-006-sd-hardware.md) | Conferir módulo, montagem e alimentação com EPS, frequência/latência e operações do SD na montagem real, incluindo cheio/indisponível e extração. | Pendente na destinatária |
 | [TES-009](../../04-testes/TES-009-falhas-e-recuperacao.md) | Exercitar interrupção durante escrita e avaliar arquivos incompletos e FAT32; fsync lógico não comprova integridade física. | Pendente na destinatária |
 
@@ -40,7 +40,7 @@ Oferecer armazenamento de arquivos com acesso coordenado e falhas observáveis.
 
 ## Entrega
 
-Reutilizar SD e uma instância HSPI própria. Implementar abertura, escrita, leitura, extração, sincronização/fechamento e tratamento de cartão cheio/indisponível. Definir recuperação de arquivos incompletos e do sistema de arquivos. O formato do conteúdo pertence a [DAD-001](../../02-dados-e-tempo/done/DAD-001-modelos-e-formatos.md)/[DAD-003](../../02-dados-e-tempo/done/DAD-003-registros-e-interpretacao.md); não duplicar esse contrato no driver. O rádio é integrado em [INT-004](../../03-integracao/INT-004-ttc-e-umbilical.md).
+Reutilizar SD e uma instância HSPI própria. Implementar abertura, escrita, leitura, extração, sincronização/fechamento e tratamento de cartão cheio/indisponível. Definir recuperação de arquivos incompletos e do sistema de arquivos. O formato do conteúdo pertence a [DAD-001](../../02-dados-e-tempo/done/DAD-001-modelos-e-formatos.md)/[DAD-003](../../02-dados-e-tempo/done/DAD-003-registros-e-interpretacao.md); não duplicar esse contrato no driver. O rádio é integrado em [INT-004](../../03-integracao/done/INT-004-ttc-e-umbilical.md).
 
 ## Pré-requisitos
 

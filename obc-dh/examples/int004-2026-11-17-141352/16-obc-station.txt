@@ -1,0 +1,2 @@
+ObcStationCheck passed; examples/int004-2026-11-17-141352/16-obc-station.json
+

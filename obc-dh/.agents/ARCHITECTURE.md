@@ -1,6 +1,106 @@
 # Arquitetura vigente do OBC-DH
 
-Este documento distingue decisões vigentes, comportamento implementado e integração prevista. Revisão documental de 10/11/2026 sobre `839a186`; evidências de execução permanecem datadas nas tarefas. [REQUISITOS.md](REQUISITOS.md) preserva obrigações e validação; [TODO.md](TODO.md) reúne estado e dependências. Decisão documentada não comprova implementação, aceite externo ou teste físico.
+### Aquisição LM75A isolada — 17/11/2026
+
+O ambiente `int009-lm75a-check` habilita `ObcThermal`/`ObcThermalEsp32`
+somente por `OBC_THERMAL_BENCH`. O driver local `CEFAST::thermal` usa a
+referência NXP LM75A provisória, sem inicializar Wire nem alterar Tos/Thyst.
+Somente o executor I2C realiza configuração/leitura; conversão, cadência,
+publicação e USB ficam fora do callback. Não há TM térmica, persistência,
+proteção ou aquisição térmica no firmware normal.
+
+Cinco estados independentes preservam histórico, mas invalidam a
+disponibilidade após falha, amostra antiga ou recuperação I2C. A guarda
+dentro do executor recusa leitura de configuração de outra geração; o
+getter também revalida recuperação posterior à publicação. A tarefa
+Core 1/prioridade 1/pilha inicial 4 KiB publica metadados antes de iniciar
+e só declara atividade após uma rodada real. Não há nova política ou
+inscrição no watchdog.
+
+Endereços 0x48–0x4C, leitura/espera inicial de 1 s, retentativa offline de
+5 s e validade de 3 s são parâmetros de bancada, sem localização física
+ou aprovação de voo. Referência, procedimento, resultados e limitações
+ficam no [guia](../tools/README.md#lm75a-de-bancada--17112026) e na INT-009.
+A bancada INA219 conserva seu próprio ambiente e critérios.
+
+### Aquisição INA219 isolada — 16/11/2026
+
+O ambiente `int009-ina219-check` habilita `ObcEps`/`ObcEpsEsp32` pelo boot
+existente, somente com `OBC_EPS_BENCH`. Tarefa Core 1/prioridade 1/pilha
+inicial de 4 KiB é proprietária do driver EPS; callbacks no executor I2C
+realizam configuração/leitura por canal. Conversão, diagnóstico e cópias
+publicadas ficam fora do callback. Recuperação invalida a configuração antes
+de nova leitura. Nenhuma aquisição EPS é iniciada pelo firmware normal.
+
+`CEFAST::eps` substitui o namespace que colidia com a macro Xtensa `EPS`.
+Validade, histórico, cadência e falhas são independentes por canal; dados
+permanecem em RAM/USB sem alterar TM/arquivos, proteções ou watchdog.
+Parâmetros provisórios, procedimentos e provas locais estão no
+[guia](../tools/README.md#ina219-de-bancada--16112026). Builds e seis verificações
+nativas passaram. Após reprovação inicial, Init publica metadados antes da
+criação da tarefa; o diagnóstico distingue `starting` da primeira rodada
+real publicada. Uma segunda reprovação por timeout/SCL baixo é preservada.
+Após remover ligações externas, o mesmo firmware/roteiro passou integralmente
+em 30 s, sem mudança de código ou critérios. Recorte de bancada concluído;
+`obc` foi restaurado e verificado por USB. A ligação externa responsável
+pela falha anterior não foi identificada. Não constitui aquisição com
+sensores reais aprovada ou conclusão da INT-009 inteira.
+
+### Watchdog e reset comandado — 15/11/2026
+
+INT-012 concluída no mecanismo de bancada ESP32/USB. `ObcWatchdog` decide
+alimentação por cópias dos proprietários; adaptador ESP32 inscreve loop
+manualmente no task watchdog de 5 s, preservando IDLE0 e interrupt watchdog.
+Arma após iniciar serial, alimenta entre etapas concluídas do setup e, no
+runtime, avalia a cada 100 ms. Sem progresso acima de 500/5.000/10.000/2.000/
+5.000 ms para UART/processamento/escritor/I2C/TT&C, suspende alimentação;
+novo progresso antes do disparo a libera. Tarefas ausentes, recursos
+indisponíveis, espera/recuperação progredindo e NO_MEMORY não causam reset
+sozinhos. Supervisor ou coleta bloqueado deixa de alimentar.
+
+I2C publica progresso também após despertar ocioso de 1.000 ms, sem I/O
+extra ou alteração de prioridade/contexto. Os diagnósticos da INT-008
+mantêm seus limites e registros. GetTaskProgress/GetDiagnostics encaminham
+somente cópias protegidas; não há novo supervisor em tarefa própria.
+
+`reset_obc` é atendido pelo consumidor existente: argumentos ausentes/null/{}
+aceitos; primeiro pedido agenda esp_timer de 1.500 ms antes de registro/ACK,
+sem adiamento por repetição. Callback do serviço nativo executa esp_restart,
+mesmo se consumidor/ACK bloquear. Falha de timer/agendamento rejeita pedido;
+falhas de armamento/timer são independentes e explícitas. EVENT/FAULT 265
+e EVENT 266 reutilizam fila/diário; não condicionam reset ao sucesso do SD.
+Boot/NVS, causa e UTC desconhecido após reinício conservam mecanismos atuais.
+
+Verificação local: 14 cenários novos, perfis de memória/esperas armados,
+regressões e obc restaurado; reprovação e ajustes autorizados só na bancada
+preservados. Valores são provisórios do responsável, não parâmetros de voo.
+Procedimentos no [guia](../tools/README.md#watchdog-e-reset-obc--15112026),
+evidências na [INT-012](../.tasks/03-integracao/done/INT-012-watchdog-reset-obc.md).
+TES-009 comprova independentemente, TES-008 conserva efeitos elétricos e
+INT-013 conserva retomada de missão/estados duráveis. Não assume watchdog
+externo, firmware alternativo ou aprovação de voo.
+
+Este documento distingue decisões vigentes, comportamento implementado e integração prevista. Atualização de 11/11/2026 para integração OBC sobre `f7af605`; evidências de execução permanecem datadas nas tarefas. [REQUISITOS.md](REQUISITOS.md) preserva obrigações e validação; [TODO.md](TODO.md) reúne estado e dependências. Decisão documentada não comprova aceite externo ou teste físico.
+
+**Redistribuição documental — 14/11/2026:** implementação/regressões pertencem ao OBC e comprovação independente ao setor de testes. INT-005 conserva ADCS/encoder/FOC; INT-009 recebe aquisição EPS/Térmico. INT-007 conserva comandos/modos; INT-010 recebe proteções e INT-011, Burn Wire/estados duráveis. INT-008 conserva supervisão/recuperação local; INT-012 recebe watchdog/reset e INT-013, retomada operacional. TES-011/012 são ferramentas/regressões OBC ainda pendentes. A [correspondência](../.tasks/README.md#correspondência-das-entregas-redistribuídas) define as destinatárias dos encaminhamentos antigos. Nenhum comportamento do firmware mudou nesta revisão.
+
+Complemento I2C de 14/11/2026: diagnóstico de callback >100 ms e recuperação
+>200 ms concluído localmente, com verificação portátil e ESP32/USB. Mantém
+política de recuperação, contextos e validações; não solicita recuperação
+ou reset automaticamente. Reprovação da pausa e correções autorizadas estão
+preservadas na INT-008. `obc` restaurado e regressões originais aprovadas.
+
+Complemento de 14/11/2026: diagnóstico de progresso UART/processamento/escritor
+implementado e verificado no núcleo portátil e na bancada FreeRTOS/USB,
+com cinco builds aprovados. Recorte local concluído: suspeita/retorno das
+três tarefas, varredura e espera SD sem falso alerta, regressões originais
+aprovadas e `obc` restaurado. Backend SD simulado; não comprova periféricos
+físicos ou watchdog global. A retomada local de 13/11 continua preservada.
+
+Complemento de 13/11/2026, base `777b5f8`: retomada local do escritor SD da
+INT-008 concluída no recorte descrito abaixo. O bloqueio na reconsulta com
+cache cheio foi corrigido após discussão com o responsável e verificado no
+PC/ESP32. Não encerra a supervisão ou a retomada operacional da missão.
 
 ## 1. Escopo e responsabilidades
 
@@ -23,7 +123,7 @@ As decisões de 06/10/2026 sobre IMU, luminosidade, EN e Burn Wire permanecem. A
 
 | Interface / recurso | Uso e decisão | Definições ainda necessárias |
 |---|---|---|
-| UART0 / USB | TC/TM JSON de bancada, um objeto por linha, pela biblioteca `UmbilicalLink`. | Integração USB local verificada; conferir circuito e aceite TT&C. |
+| UART0 / USB | TC/TM JSON de bancada, um objeto por linha, pela biblioteca `UmbilicalLink`. | Integração USB local verificada; aceite TT&C informado pelo responsável OBC-DH em 17/11/2026, encerrando INT-004. Conferência de circuito e ensaios continuam nos escopos próprios. |
 | UART do Payload | Snapshots JSON em FCPU local; TX 17 / RX 16, 115,2 kbps 8N1. | Aceite do enquadramento pelo Payload, produtor/porta Pi, montagem, tráfego e retenção em INT-006. |
 | I2C | Sensores de ADCS, EPS e Térmico, incluindo encoder conforme montagem. | Executor local a 400 kHz/20 ms por transferência; inventário, montagem e integração dos consumidores ainda pendentes. |
 | VSPI | Rádio LoRa SX1276, 921 MHz SF7, `SPI` global. | Conferência elétrica, montagem e validação de bancada. |
@@ -59,9 +159,9 @@ A persistência v1 proposta é binária: assinatura FCP1, versão/tipo, comprime
 
 DAD-003 acrescentou snapshots v2 variáveis: `FCP2`, versão 2/tipo 8, cabeçalho de 24 bytes nas posições anteriores, corpo com `id`/lista/indisponibilidade/extras e CRC do mesmo algoritmo. Cada string grava comprimento u8 e bytes significativos; campos ausentes são omitidos. Um snapshot vazio tem 37 bytes e o máximo 64497, sem alterar o limite ou os layouts v1. As APIs `GetSnapshotSize`, `EncodeSnapshot` e `DecodeSnapshot` reutilizam os validadores; a união `RECORD` mantém os corpos pequenos v1 e também atende a API dedicada de TM v3, sem incorporar o snapshot. Decodificação valida integralmente antes de publicar em duas passagens, com espaço temporário de uma aeronave, sem outro snapshot completo ou alocação dinâmica. Modelo e buffer de saída pertencem ao chamador e não devem ficar na pilha padrão das tarefas; o orçamento de pilha dos helpers também precisa ser considerado na integração.
 
-`ObcRecordCodec` implementa localmente esse layout, reutilizando os validadores. Codificação/decodificação usam buffers do chamador, sem alocação dinâmica ou I/O, e não publicam saídas parciais em falha. O [leitor nativo](../tools/README.md) usa os mesmos decoders para exportar JSON Lines de arquivos v1/v2/v3/mistos: descarta trechos inválidos da interpretação, informa seus offsets e procura o próximo registro integralmente validado. Não corrige bytes, não pede retransmissão e não modifica o arquivo. Em duas passagens, coleta referências e reconstrói o horário por boot usando a última referência anterior, ou a primeira para eventos anteriores à sincronização; empates usam a última ocorrência no arquivo. Os registros originais e seus horários próprios são preservados. O desenvolvimento do codec/leitor DAD-003 foi encerrado em 09/11/2026. Aceites dos produtores seguem nas integrações INT-004/INT-005/INT-006; estados duráveis e retomada seguem em INT-007/INT-008. Eventos do Burn Wire continuam sem constituir autorização de atuação.
+`ObcRecordCodec` implementa localmente esse layout, reutilizando os validadores. Codificação/decodificação usam buffers do chamador, sem alocação dinâmica ou I/O, e não publicam saídas parciais em falha. O [leitor nativo](../tools/README.md) usa os mesmos decoders para exportar JSON Lines de arquivos v1/v2/v3/mistos: descarta trechos inválidos da interpretação, informa seus offsets e procura o próximo registro integralmente validado. Não corrige bytes, não pede retransmissão e não modifica o arquivo. Em duas passagens, coleta referências e reconstrói o horário por boot usando a última referência anterior, ou a primeira para eventos anteriores à sincronização; empates usam a última ocorrência no arquivo. Os registros originais e seus horários próprios são preservados. O desenvolvimento do codec/leitor DAD-003 foi encerrado em 09/11/2026. Aceites dos produtores seguem nas integrações INT-004/INT-005/INT-006/INT-009; estados duráveis e retomada seguem em INT-011/INT-013. Eventos do Burn Wire continuam sem constituir autorização de atuação.
 
-O objetivo é conservar registros completos no SD e enviar estado agregado por aeronave, conforme decisão de Payload/TT&C. A primeira etapa já grava, com descartes explícitos quando faltam recursos; o envio agregado continua pendente na INT-006. Isso não declara atendimento aos critérios de conservação e perdas. `Ttc::Send()` recebe JSON sem `n`, de até 245 bytes; o TT&C insere o contador na transmissão e limita o quadro final a 255 bytes. Usar `ttc::BuildAircraft()` e `Ttc::SendTelemetry()` para os formatos existentes. Mensagens maiores são rejeitadas, sem fragmentação. Definir seleção/frequência, agrupamento e tratamento de falhas de serialização ou enfileiramento. ACKs já têm prioridade; transmissão nominal é sob demanda. Enfileirar ou transmitir não comprova recepção no solo.
+O objetivo é conservar registros completos no SD e enviar estado agregado por aeronave, conforme decisão de Payload/TT&C. A INT-006 liga gravação e envio identificado de cada alteração da projeção disponível, com descartes explícitos quando faltam recursos. Isso não declara atendimento aos critérios de conservação e perdas. `Ttc::Send()` recebe JSON sem `n`, de até 245 bytes; o TT&C insere o contador na transmissão e limita o quadro final a 255 bytes. `SendAircraft()` usa o gerador existente com máscara e ID; `SendTelemetry()` conserva os formatos atuais. Mensagens maiores são rejeitadas, sem fragmentação. Tráfego, validade e capacidade sob congestionamento exigem acordo e medição. ACKs têm prioridade; transmissão nominal é sob demanda. Enfileirar ou transmitir não comprova recepção no solo.
 
 ## 4. Organização da execução
 
@@ -71,7 +171,7 @@ O coordenador de boot permanece intacto. Após ele, `ObcTtc` inicializa rádio e
 
 O firmware inicia a recepção do Payload e o diário quando houver recursos, conforme INT-006; não inicia aquisição de sensores, missão ou atuadores. Não programa EN/PWM/Burn Wire ou afirma segurança elétrica de reset por omissão dessas saídas. A tarefa I2C existente é iniciada pelo próprio serviço. O modo de voo SAFE/INIT e as condições elétricas continuam pendentes em INT-003. Essa entrega não substitui o ensaio físico de TES-008.
 
-O atendimento atual aceita `ping`, `get_status` e `request_tm`, sem argumentos ou com objeto vazio, e `set_time` com `args.unix` u32. Outros comandos catalogados recebem `invalid_cmd`; argumentos inesperados recebem `invalid_param`. Pedidos de TM só são confirmados após enfileiramento. `set_time` confirma aplicação em RAM, com `state_rejected` se o fluxo não estiver ativo; persistência é separada. A TM publica `bench`, UTC e quantidade de aeronaves quando disponíveis, mantendo `null` para fontes ausentes, inclusive `msg`. RSSI/SNR só ficam disponíveis depois de TC RF. O aceite conjunto TT&C continua na INT-004; modos/atuações seguem na INT-007.
+O atendimento atual aceita `ping`, `get_status` e `request_tm`, sem argumentos ou com objeto vazio, `set_time` com `args.unix` u32 e `request_log` com os argumentos do contrato TT&C. Outros comandos catalogados recebem `invalid_cmd`; argumentos inesperados recebem `invalid_param`. Pedidos de TM só são confirmados após enfileiramento. `set_time` confirma aplicação em RAM, com `state_rejected` se o fluxo não estiver ativo; persistência é separada. A TM publica `bench`, UTC e quantidade de aeronaves quando disponíveis, mantendo `null` para fontes ausentes, inclusive `msg`. RSSI/SNR só ficam disponíveis depois de TC RF. O aceite conjunto TT&C continua na INT-004; modos seguem na INT-007; proteções e atuação Burn Wire seguem nas INT-010/011.
 
 Separar o atendimento frequente do controle FOC das operações demoradas do rádio e do SD. O código ADCS existente não admite operações bloqueantes no atendimento do motor. Após `Ttc::Init()`, `Ttc::Start()` cria a tarefa do enlace no Core 0, prioridade padrão 10; só essa tarefa acessa o rádio e executa `Update()`. Não chamar `Update()` em paralelo com `Start()`. A transmissão por quadro espera TX Done com timeout de 1 s, sem bloquear a tarefa FOC.
 
@@ -83,11 +183,81 @@ Integrar o ADCS como módulo do firmware central: seus `setup()`/`loop()` atuais
 
 ### Primeira etapa INT-006
 
+O histórico desta etapa é complementado pela integração de entregas e extração abaixo.
+
 Após o boot e TT&C, `ObcDataFlowEsp32` inicia o transporte UART2 (Core 1/prioridade 3/pilha 3 KiB), o processamento (Core 1/prioridade 2/pilha 8 KiB) e, quando disponível, o escritor SD (Core 1/prioridade 1/pilha 8 KiB). O transporte é o único proprietário de Serial2 e usa ring fixo de 1 KiB; somente o processador acessa o receptor e a lista. O escritor recebe oito cópias de registros pequenos de até 105 bytes e um bloco exclusivo de snapshot, dividido em 32768 + 31729 bytes. Proteção compartilhada cobre apenas metadados/cópias pequenas, sem I/O ou parse dentro dela.
 
 O resumo de TM não copia a lista de aeronaves. O mesmo snapshot válido fornece `ac`; o tempo da TM é reconstruído no instante da composição. `msg` não é inferido de `id`, pacotes ou aeronaves. `SendTelemetry` devolve opcionalmente a amostra enfileirada para persistência v3. A aplicação de `set_time` confirma RAM e tenta gravar a referência separadamente; ausência/falha de SD não fabrica persistência.
 
-O diário serializa BOOT, referências, snapshots v2, TM v3, estatísticas e eventos/falhas. Cria nomes exclusivos por boot/segmento e rotaciona entre registros; falha terminal desativa escrita. Ocupação de fila/bloco ou SD indisponível gera descarte contado, sem retenção ilimitada e sem interromper recepção/TM. `records_written` só conta um snapshot partido após ambas as partes. A segunda etapa conserva seleção/envio de aeronaves e extração de arquivos; recuperação automática continua em INT-008.
+O diário serializa BOOT, referências, snapshots v2, TM v3, estatísticas e eventos/falhas. Cria nomes exclusivos por boot/segmento e rotaciona entre registros; falha terminal desativa escrita. Ocupação de fila/bloco ou SD indisponível gera descarte contado, sem retenção ilimitada e sem interromper recepção/TM. `records_written` só conta um snapshot partido após ambas as partes. A segunda etapa ligou entregas/extração; desde 13/11 a retomada local limitada do escritor está implementada na INT-008, conforme abaixo.
+
+### Retomada local do escritor INT-008 — 13/11/2026
+
+`StorageRecovery` observa falha do `Journal` e coordena até três ciclos
+End/Init/Resume por episódio, com 5 s de espera antes de cada tentativa.
+Executa na tarefa escritora existente, sem I/O sob lock ou suspensão de 5 s.
+Montagem e operações do driver continuam síncronas; não há garantia de prazo
+físico. Um registro normal confirmado renova o orçamento; BOOT, referência
+e eventos próprios da recuperação não bastam. Esgotamento conserva
+indisponibilidade até reinicialização manual, sem reset automático do ESP32.
+
+`Journal::Resume` conserva boot/contadores, avança segmento e usa criação
+exclusiva. Preserva caudas incertas e não repete o registro perdido. A
+referência vigente em RAM é sincronizada antes de liberar admissão, incluindo
+`set_time` durante montagem. A reconsulta de entregas conserva fronteira,
+IDs e reservas. Filas limitadas e descartes explícitos permanecem. Não há
+hotplug se o escritor não iniciou no boot, nem reparo/formatação do cartão.
+
+`[STORAGE]` acrescenta estado, tentativas, episódios e resultados ao diagnóstico.
+A bancada nova usa o mesmo escritor e TT&C, com SD/Payload simulados;
+callbacks de remontagem ausentes preservam as bancadas históricas.
+Evidências na INT-008 e procedimento no guia de ferramentas. A reconsulta
+com 32 cópias não duráveis pode usar uma posição fixa adicional, exclusiva
+de recuperação persistida, sem reduzir admissões ou descartar o cache.
+`recovery_slot` diagnostica essa posição separadamente de `occupied`/`peak`.
+Cartão, alimentação, durabilidade e retomada de voo continuam nos escopos próprios.
+
+### Entregas e extração INT-006 — 11/11/2026
+
+`ObcDelivery` conserva cache de 32 entregas, FIFO, registros DATA/CONFIRM FCD1
+e recuperação por arquivos fechados. `ObcTtc::Service` liga a reserva da
+tentativa a `SendAircraft`, conclui por evento TX ou recusa imediata e
+encaminha `cf` ao controle. Não bloqueia aguardando confirmação. O timeout
+provisório de 10 s começa na reserva e inclui a fila TT&C. Eventos atrasados
+conservam o ID original. Formato, saturação e custo da recuperação estão em
+[obc-delivery.md](../../common/protocol/obc-delivery.md).
+
+`ObcDownlink` mapeia a projeção disponível sem inventar dados e compõe
+respostas `lg` com os geradores TT&C. O escritor atende uma caixa de um
+pedido de leitura/listagem, sem I/O no atendimento TC ou dentro do lock.
+Prazo local de 1 s produz `busy`; trabalho já iniciado conserva a caixa até
+terminar, e sua resposta tardia é descartada. Ausência do serviço produz
+`no_sd`. ACK `ok` só sai após enfileiramento de `lg`, com `state_rejected`
+em recusa. A resposta de dados segue o destino explícito, enquanto ACK usa
+a origem do TC. A caixa fixa evita uma tarefa ou uma fila adicional.
+
+O aceite OBC dos formatos foi registrado, sem substituir os aceites dos
+outros setores ou os ensaios. A nova bancada `int006-ttc-check` usa o
+adaptador real com entrada, SD e solo simulados; as bancadas anteriores
+conservam seu consumidor simulado exclusivo. O roteiro atual é
+`ObcDownlinkCheck.py`; as expectativas dos roteiros históricos permanecem.
+
+Após a reprovação inicial por memória, o responsável aprovou corrigir a
+admissão sem garantir todos os máximos simultâneos. As pilhas pendentes
+(19.456 bytes) mais a margem existente (4.096 bytes) são verificadas em heap
+interno acessível por byte; o maior bloco deve comportar a maior pilha.
+Alocações e criação de tarefas continuam verificadas. O teto de 98.304 bytes
+do parser não é uma reserva permanente: NO_MEMORY e preservação da lista
+anterior continuam vigentes. `[FLOW-MEMORY]` mostra pico do parser e heap
+por capacidade, sem leitura concorrente do receptor. A bancada USB completa
+e o firmware normal passaram na reexecução; relatórios estão na INT-006.
+
+O complemento `ObcStationCheck.py` também passou com um ESP32/USB, sem
+alterar firmware. Usa o cliente TT&C real, com estado e logs isolados nas
+evidências OBC, para confirmações e downloads com SD simulado. Verifica
+UTC desconhecido, época zero, referência atual e TM com lista de aeronaves
+seguida de lista vazia. Não substitui a perda deliberada de cf do roteiro
+anterior ou aprova persistência da estação, cartão e precisão temporal física.
 
 `poll_gap_ms` mede a tarefa de transporte e `process_gap_ms` mede o consumidor. O parser pode demorar mais de 10 ms sem bloquear o atendimento UART. As medições da bancada e os limites de evidência constam na INT-006. Logs concorrentes novos usam uma escrita por linha, incluindo a quebra; não podem envolver um pacote JSON na mesma linha.
 
@@ -113,17 +283,98 @@ O SD conservará o histórico persistente da missão, TM, eventos, falhas, estat
 
 No serviço de arquivos, cada bloco é escrito e sincronizado antes de retornar sucesso, com até três tentativas totais no mesmo último offset confirmado. O buffer do chamador permanece estável até o retorno; não há cache próprio, fila ou retenção após reset. Falha final bloqueia o escritor e preserva a cauda incerta. Para retomar, fechar/desativar, reinicializar e criar nome novo; `Init` idempotente não limpa a falha. `RESULT` informa status, bytes da última tentativa, errno e tentativas, sem confundir transferência com confirmação. O limite por arquivo é `INT32_MAX` bytes por causa dos offsets do runtime, não a capacidade do cartão.
 
-O adaptador usa mutex estático sem espera (`BUSY` na disputa), somente em contexto de tarefa e fora do atendimento FOC. A primeira inicialização não pode ser concorrente; não acessar SD/HSPI por fora do adaptador. `Read` lê arquivos fechados por nome/offset em buffers do chamador para extração futura. INT-003 chama a montagem no boot; INT-006 liga UART, codecs e escrita. `request_log` permanece para a segunda etapa. Falhas de escrita/sincronização/fechamento são observáveis via APIs POSIX; `File::flush`, que retorna void, não é usado como comprovação.
+O adaptador usa mutex estático sem espera (`BUSY` na disputa), somente em contexto de tarefa e fora do atendimento FOC. A primeira inicialização não pode ser concorrente; não acessar SD/HSPI por fora do adaptador. `Read` lê arquivos fechados por nome/offset em buffers do chamador, inclusive na extração `request_log` integrada. INT-003 chama a montagem no boot; INT-006 liga UART, codecs, escrita e extração. Falhas de escrita/sincronização/fechamento são observáveis via APIs POSIX; `File::flush`, que retorna void, não é usado como comprovação.
 
 `fsync` e repetição no arquivo lógico não garantem integridade física em queda de energia. Falha de montagem mantém indisponibilidade, sem reparo automático de FAT32. Em bancada, preservar cópia/imagem antes de reparo externo; usar o leitor existente em cópias de arquivos v1 para localizar registros íntegros. Confirmar módulo/alimentação com EPS e executar TES-006/TES-009 antes de afirmar comportamento físico. Políticas, evidências e limites estão em [COM-005](../.tasks/01-comunicacao/done/COM-005-armazenamento-sd.md).
 
 ## 6. Missão e supervisão
 
+### Diagnóstico de recursos TT&C/memória — 15/11/2026
+
+`Ttc::GetDiagnostics` publica uma cópia protegida da execução do proprietário:
+inicialização, tarefa criada, entrada/saída de Update, conclusões e última
+saúde observada do rádio. Contato válido RF/cabo possui existência e instante
+próprios; zero é válido. O getter não consulta drivers e mede margem de
+pilha fora do lock. Chamadas manuais de Update não fabricam tarefa criada.
+
+`ObcTtc::Service` encaminha a cópia ao fluxo com período alvo de 100 ms,
+inclusive se a recepção do Payload estiver inativa. `ObcResourceHealth`
+mantém a avaliação portátil: ausência de tarefa, suspeita de progresso
+>2.000 ms e indisponibilidade do rádio são distintas. Contato é informação
+por meio; silêncio não declara perda. Idade modular u32 exige detecção antes
+de um wrap completo; suspeita detectada persiste até novo avanço.
+
+Heap interno acessível por byte, maior bloco e pilhas são avaliados a cada
+segundo. Limites definidos pelo responsável nesta implementação: heap
+<8.192 bytes/retorno >=12.288; bloco <4.096/retorno >=6.144; margem histórica
+de pilha <1.024 bytes, retida durante a vida da tarefa. Tarefas ausentes não
+são margem zero; mínimo histórico de heap não impede retorno. UART,
+processamento, escritor, I2C, TT&C e loop são observados separadamente.
+O proprietário do processamento conta `NO_MEMORY` saturado, capturando
+recusas entre amostras sem modificar o parser ou o snapshot anterior.
+
+Transições usam EVENT/FAULT OBC 260–264 e o diário/fila existentes. Sem boot
+válido há somente USB; indisponibilidade e perdas não confirmam persistência.
+Prefixos `[TTC-HEALTH]`/`[MEMORY-HEALTH]` não mudam os logs antigos ou TM.
+Rádio mantém a recuperação do próprio TT&C; escritor mantém três tentativas
+por episódio/5 s; I2C mantém sua política e retomada explícita. Não há tarefa
+supervisora adicional, reset por memória baixa ou exclusão de tarefas.
+O mecanismo depende do loop e dos locks, sem substituir watchdog global.
+
+Catálogo no [contrato](../../common/protocol/obc-data.md#event-e-fault),
+procedimentos e matriz de entrega no
+[guia](../tools/README.md#supervisão-de-recursos-ttc-e-memória--15112026).
+Os resultados, a reprovação inicial e sua correção autorizada são preservados
+na INT-008; ensaios físicos, watchdog e retomada permanecem nas destinatárias.
+
+### Diagnóstico do executor I2C — 14/11/2026
+
+`I2cBus::DIAGNOSTICS` acrescenta início da recuperação e instante da amostra,
+em millis u32, sob o mutex existente. `ObcI2cHealth` avalia a cópia no loop
+com período alvo de 100 ms: callback acima de 100 ms ou recuperação acima
+de 200 ms ficam suspect. Ociosidade não vence. Disponibilidade é separada
+de progresso: `ok` com serviço `recovering` não significa pronto; esgotamento
+fica unavailable até uma recuperação explicitamente solicitada ter sucesso.
+
+`ReportDiagnostics` publica `[I2C-HEALTH]` mesmo sem boot válido; transições
+observadas com boot válido usam EVENT/FAULT v1, origem OBC, código 259.
+Fila/SD conservam perdas explícitas. Callback/contexto, limites, prioridades,
+duas tentativas e orçamento cooperativo de 100 ms da recuperação permanecem.
+Não há nova tarefa em produção, cancelamento ou recuperação/reset automático.
+O diagnóstico depende do loop/escalonamento/mutex; não recupera driver sem
+retorno. A detecção inicial usa idade modular menor que um wrap u32;
+suspeita já detectada só termina com mudança/fim da atividade. Recuperações
+curtas entre duas amostras podem não ser observadas. Procedimentos no guia
+e evidências do recorte local concluído na INT-008; sem prova elétrica ou de watchdog.
+
+### Diagnóstico das três tarefas do fluxo — 14/11/2026
+
+`ObcTaskHealth` recebe amostras fixas publicadas pelos proprietários, protegidas
+pelos locks já existentes. O loop avalia com período alvo de 100 ms e usa
+limites diagnósticos de 100/2.000/5.000 ms para UART/processamento/escritor.
+O estado suspect exige idade maior que o limite; progresso real retorna a ok.
+Criação não realizada permanece inactive; uma tarefa criada sem executar
+conserva starting e pode exceder o prazo. Zero é instante monotônico válido.
+Esses limites não alteram o critério UART de 10 ms ou a validação existente.
+
+Início/retorno de parser, codificação e callbacks de I/O são instrumentados
+sem I/O dentro dos locks. Leituras/listagens renovam progresso durante SCAN;
+RECOVERY_WAIT distingue a espera entre tentativas SD sem mascarar MOUNT/WRITE
+sem retorno. Retornos de erro ou sem dados também comprovam progresso.
+Não há inferência de perda de comunicação pela ausência de aeronaves.
+
+`[HEALTH]` acrescenta amostras e transições; EVENT/FAULT v1 existentes usam
+origem OBC e códigos 256–258. A fila e o escritor continuam sendo os mesmos,
+com perdas explícitas. Não há alocação dinâmica no supervisor, nova tarefa,
+reset ou recuperação automática de tarefas. O diagnóstico depende do loop,
+escalonamento e locks continuarem funcionando; não substitui watchdog global.
+Prova nativa, builds e bancada USB aprovados; relatórios na INT-008.
+
 Inicializar automaticamente após energização, aplicar os estados de saída acordados, identificar falhas e iniciar no modo do ConOps. Considerar motor e Burn Wire durante boot/reset, inclusive os níveis impostos pelo circuito antes de o firmware executar.
 
 O TT&C valida o envelope JSON; o OBC valida `args`, modo e condições de execução, encaminha a ação e responde com `SendAck()`. O TT&C deduplica os oito TCs mais recentes por 30 s, com reenvio do ACK anterior; isso não garante proteção depois de reset ou fora dessa janela. Definir persistência/condições das atuações críticas sem duplicar a deduplicação já existente. Comando catalogado não comprova ação implementada ou aprovada no ConOps. Umbilical usa o mesmo contrato JSON; ACK volta pelo meio de origem.
 
-A TM atual usa `SendTelemetry()` com disponibilidade explícita. Status, energia e atitude serão completados conforme a integração dos respectivos produtores. O envio agregado previsto usa pacote `t = "ac"`, gerado por `BuildAircraft()` e enfileirado com `Send()`. Essa separação de conteúdo não substitui a demonstração de timestamp na TM prevista nos requisitos; preservar o critério e acordar sua evidência com os responsáveis. Não alterar entradas ou resultados esperados para acomodar o formato do enlace.
+A TM atual usa `SendTelemetry()` com disponibilidade explícita. Status, energia e atitude serão completados conforme a integração dos respectivos produtores. O envio agregado identificado usa pacote `t = "ac"`, gerado e enfileirado com `SendAircraft()`. Essa separação de conteúdo não substitui a demonstração de timestamp na TM prevista nos requisitos; preservar o critério e acordar sua evidência com os responsáveis. Não alterar entradas ou resultados esperados para acomodar o formato do enlace.
 
 Integrar modos/transições registrados no README geral e no contrato TT&C, conferindo o ConOps vigente. Preservar LOW-POWER com rádio em RX para o TC de recuperação; beacon periódico é habilitado só em safe-mode e permanece desligado por padrão. Prioridades energéticas e Thermal Watchdog dependem de EPS/ConOps; proteção térmica é distinta do watchdog de tarefas.
 

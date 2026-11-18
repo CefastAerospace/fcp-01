@@ -3,6 +3,13 @@
 **Estado:** Em andamento
 **Responsáveis:** OBC-DH e setores responsáveis pelas saídas
 
+
+## Separação vigente — 14/11/2026
+
+OBC-DH implementa boot, estados iniciais e tratamento de falhas; o setor de testes comprova comportamento elétrico antes/durante/depois do reset na TES-008. A montagem e os níveis necessários ao código continuam como entradas de engenharia, sem escolher níveis arbitrários. O boot de bancada já disponível pode ser consumido pelas INT-004/006/008/012 sem aguardar o escopo de voo inteiro. Retomada operacional após reset está na [INT-013](INT-013-retomada-operacional.md).
+
+**Estado preservado:** Em andamento; nenhum ensaio ou encerramento decorre desta revisão.
+
 ## Estado vigente — 10/11/2026
 
 O coordenador de bancada continua responsável apenas por tempo/NVS, I2C e montagem SD. Depois dele, `main.cpp` já inicia TT&C e o fluxo INT-006; o diário pode criar/gravar arquivos. `loop()` atende comandos/diagnósticos, sem o `delay(100)` original. O escopo aprovado em 05/11 e os resultados abaixo descrevem a entrega inicial, não limitam as integrações posteriores.
@@ -15,7 +22,7 @@ Inicializar automaticamente os recursos disponíveis, mantendo estados seguros e
 
 ## Entrega
 
-Construir a coordenação de setup()/loop(), ordem de inicialização e organização de tarefas. Manter processamento nos módulos; não criar implementações vazias para recursos futuros. Cada integração posterior acrescenta seus recursos e informa suas falhas. A observação por UART0 usa o contrato umbilical em [INT-004](INT-004-ttc-e-umbilical.md).
+Construir a coordenação de setup()/loop(), ordem de inicialização e organização de tarefas. Manter processamento nos módulos; não criar implementações vazias para recursos futuros. Cada integração posterior acrescenta seus recursos e informa suas falhas. A observação por UART0 usa o contrato umbilical em [INT-004](done/INT-004-ttc-e-umbilical.md).
 
 ## Pré-requisitos
 
@@ -37,7 +44,7 @@ Construir a coordenação de setup()/loop(), ordem de inicialização e organiza
 
 ## Critérios de conclusão
 
-Boot central implementado, falhas de inicialização tratadas e estado inicial documentado. Compilar o firmware; comprovar boot/reset físico em [TES-008](../04-testes/TES-008-integracao.md). Não considerar a existência de setup() suficiente para REQ-OBC-008.
+Boot central e estados iniciais implementados conforme as definições aprovadas, falhas tratadas, build e regressões pertinentes aprovados. Registrar versão e condições ainda pendentes. A comprovação física de boot/reset pertence à [TES-008](../04-testes/TES-008-integracao.md) e não condiciona o encerramento desta implementação. A existência de setup() ou a aprovação desta INT não comprova REQ-OBC-008.
 
 ## Encaminhamentos recebidos — 09/11/2026
 

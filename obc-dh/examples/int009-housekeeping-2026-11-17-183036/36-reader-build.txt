@@ -1,0 +1,1 @@
+command: ["g++", "-std=c++11", "-Wall", "-Wextra", "-Werror", "-fsanitize=address,undefined", "-fno-sanitize-recover=undefined", "-fno-omit-frame-pointer", "-Iheaders", "src/ObcData.cpp", "src/ObcTime.cpp", "src/ObcRecordCodec.cpp", "src/ObcDelivery.cpp", "tools/ReadRecords.cpp", "-o", "/tmp/int009-housekeeping-task-order/read-records"]

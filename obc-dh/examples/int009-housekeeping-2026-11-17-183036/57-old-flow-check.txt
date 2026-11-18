@@ -1,0 +1,2 @@
+command: ["/tmp/int009-housekeeping-task-order/flow-check"]
+INT-006 portátil: tempo, fila, rotação, falhas e observações aprovados

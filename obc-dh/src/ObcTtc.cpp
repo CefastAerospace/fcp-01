@@ -11,11 +11,17 @@ namespace {
 
     // ─── ELEMENTOS STATIC ─────────────────────────────────────────────
 
+#ifdef OBC_WATCHDOG_BENCH_CASE
+    obc_watchdog_bench::Radio radio;
+#elif defined(OBC_RESOURCES_BENCH)
+    obc_resources_bench::Radio radio;
+#else
     const RADIO_PINS radio_pins = {
         pinout::radio_sck, pinout::radio_miso, pinout::radio_mosi,
         pinout::radio_cs, pinout::radio_rst, pinout::radio_dio0
     };
     Sx1276Radio radio(radio_pins);
+#endif
     UmbilicalLink umbilical(Serial, 115200);
     Ttc link(radio, &umbilical);
     bool init_attempted = false;
@@ -24,6 +30,95 @@ namespace {
     constexpr uint32_t service_wait_ms = 20;
 
     // ─── HELPERS ──────────────────────────────────────────────────────
+
+    // O consumidor encaminha uma cópia; o supervisor nunca acessa o rádio.
+    void ServiceResourceHealth(
+    ) {
+        static bool sampled = false;
+        static uint32_t last_ms = 0;
+        const uint32_t now_ms = millis();
+        if (sampled && now_ms - last_ms < obc_resource_health::ttc_period_ms) return;
+        sampled = true;
+        last_ms = now_ms;
+        obc_flow::esp32::ReportResourceHealth(link.GetDiagnostics());
+    }
+
+    // Mantém diagnóstico de recusa separado da execução de cada comando.
+    void Acknowledge(
+        uint16_t sequence,
+        ttc::COMMAND_ID command,
+        ttc::ACK_STATUS status
+    ) {
+        if (!link.SendAck(sequence, command, status)) {
+            Serial.printf("[OBC] TT&C: falha ao enfileirar ACK; seq=%u; status=%s\n",
+                sequence, ttc::StatusName(status));
+        }
+    }
+
+    // ACK ok significa resposta efetivamente enfileirada, incluindo lg de erro.
+    void SendLogResponse(
+        obc_downlink::LOG_RESPONSE& response
+    ) {
+        if (!response.length) {
+            const uint16_t sequence = response.sequence;
+            const ttc::LOG_REQUEST request = response.request;
+            obc_downlink::BuildLogFailure(sequence, request, ttc::LOG_BUSY, response);
+        }
+        const bool queued = response.length
+            && link.Send(response.json, response.length, response.request.dest);
+        Acknowledge(response.sequence, ttc::CMD_REQUEST_LOG,
+            queued ? ttc::ACK_OK : ttc::ERR_STATE_REJECTED);
+    }
+
+    // O escritor recebe só argumentos validados; origem resolve o destino padrão.
+    void RequestLog(
+        const TC_FRAME& tc
+    ) {
+        ttc::LOG_REQUEST request = {};
+        const auto status = ttc::ParseLogRequest(tc.json, tc.len, request);
+        if (status != ttc::ACK_OK) {
+            Acknowledge(tc.seq, tc.cmd, status);
+            return;
+        }
+        if (request.dest == ttc::LOG_DEST_ORIGIN) request.dest = tc.origin;
+        const auto admission = obc_flow::esp32::RequestLog(tc.seq, request);
+        if (admission == obc_storage::STATUS::OK) return;
+        obc_downlink::LOG_RESPONSE response = {};
+        obc_downlink::BuildLogFailure(tc.seq, request,
+            admission == obc_storage::STATUS::BUSY ? ttc::LOG_BUSY : ttc::LOG_NO_MEDIA, response);
+        SendLogResponse(response);
+    }
+
+    // Consome resultado sem esperar pelo SD; expiração é resolvida pela caixa.
+    void ServiceLogResponse(
+    ) {
+        obc_downlink::LOG_RESPONSE response = {};
+        if (obc_flow::esp32::TakeLogResponse(response)) SendLogResponse(response);
+    }
+
+    // As bancadas históricas conservam o consumidor simulado exclusivo.
+    void ServiceDelivery(
+    ) {
+#if !defined(OBC_FLOW_BENCH) || defined(OBC_TTC_INTEGRATION_BENCH)
+        TX_EVENT event = {};
+        for (size_t index = 0; index < ttc_tracked_slots && link.ReceiveTransmitEvent(event, 0); ++index) {
+            obc_flow::esp32::FinishDeliveryTransmit({event.id.boot, event.id.sequence}, event.success);
+        }
+        ttc::DELIVERY_ID confirmed = {};
+        for (size_t index = 0; index < ttc_confirm_slots && link.ReceiveConfirmation(confirmed, 0); ++index) {
+            obc_flow::esp32::ConfirmDelivery({confirmed.boot, confirmed.sequence});
+        }
+        obc_delivery::DELIVERY delivery = {};
+        if (!obc_flow::esp32::BeginDeliveryTransmit(obc_downlink::confirmation_timeout_ms, delivery)) return;
+        ttc::AIRCRAFT_DATA aircraft = {};
+        uint32_t available = 0;
+        const ttc::DELIVERY_ID id = {delivery.id.boot, delivery.id.sequence};
+        const bool queued = obc_downlink::MapAircraft(delivery, aircraft, available)
+            && link.SendAircraft(aircraft, available, id);
+        // Uma recusa não reserva evento TX na biblioteca.
+        if (!queued) obc_flow::esp32::FinishDeliveryTransmit(delivery.id, false);
+#endif
+    }
 
     // Usa UTC/ac do fluxo e a mesma amostra de enlace para envio e registro.
     bool SendCurrentTelemetry(
@@ -39,6 +134,19 @@ namespace {
         if (local.available_fields & obc_data::TM_TIMESTAMP) available |= ttc::TM_TIMESTAMP;
         if (local.available_fields & obc_data::TM_AIRCRAFT) available |= ttc::TM_AIRCRAFT;
         if (rf_seen) available |= ttc::TM_RSSI | ttc::TM_SNR;
+#ifdef OBC_HOUSEKEEPING_BENCH
+        // A disponibilidade térmica do enlace é conjunta; a local continua individual.
+        tm.vbat = local.vbat;
+        tm.ibat = local.ibat;
+        tm.vsolar = local.vsolar;
+        tm.isolar = local.isolar;
+        for (size_t index = 0; index < obc_data::thermal_sensors; ++index) tm.temps[index] = local.temps[index];
+        if (local.available_fields & obc_data::TM_VBAT) available |= ttc::TM_VBAT;
+        if (local.available_fields & obc_data::TM_IBAT) available |= ttc::TM_IBAT;
+        if (local.available_fields & obc_data::TM_VSOLAR) available |= ttc::TM_VSOLAR;
+        if (local.available_fields & obc_data::TM_ISOLAR) available |= ttc::TM_ISOLAR;
+        if (obc_housekeeping::AllTemperaturesAvailable(local)) available |= ttc::TM_TEMPS;
+#endif
         ttc::TELEMETRY_DATA queued = {};
         if (!link.SendTelemetry(tm, available, &queued)) return false;
         local.rx_count = queued.rx_count;
@@ -64,6 +172,7 @@ namespace {
             case ttc::CMD_GET_STATUS:
             case ttc::CMD_REQUEST_TELEMETRY:
             case ttc::CMD_SET_TIME:
+            case ttc::CMD_RESET_OBC:
                 break;
             default:
                 return ttc::ERR_INVALID_CMD;
@@ -86,6 +195,16 @@ namespace {
             return ttc::ERR_INVALID_PARAM;
         }
         if (tc.cmd == ttc::CMD_PING) return ttc::ACK_OK;
+        if (tc.cmd == ttc::CMD_RESET_OBC) {
+#ifdef OBC_WATCHDOG_BENCH_CASE
+            obc_watchdog_bench::BeforeReset(link);
+#endif
+            if (!obc_watchdog::esp32::RequestReset()) return ttc::ERR_STATE_REJECTED;
+#ifdef OBC_WATCHDOG_BENCH_CASE
+            obc_watchdog_bench::AfterReset();
+#endif
+            return ttc::ACK_OK;
+        }
         return SendCurrentTelemetry() ? ttc::ACK_OK : ttc::ERR_STATE_REJECTED;
     }
 
@@ -113,17 +232,23 @@ namespace {
     void Service(
     ) {
         if (!active) {
+            ServiceResourceHealth();
             delay(service_wait_ms);
             return;
         }
-        TC_FRAME tc;
-        if (!link.ReceiveTelecommand(tc, pdMS_TO_TICKS(service_wait_ms))) return;
-        if (tc.origin == LINK_RF) rf_seen = true;
-        const ttc::ACK_STATUS status = ExecuteTelecommand(tc);
-        if (!link.SendAck(tc.seq, tc.cmd, status)) {
-            Serial.printf("[OBC] TT&C: falha ao enfileirar ACK; seq=%u; status=%s\n",
-                tc.seq, ttc::StatusName(status));
+        ServiceLogResponse();
+        TC_FRAME tc = {};
+        if (link.ReceiveTelecommand(tc, pdMS_TO_TICKS(service_wait_ms))) {
+            if (tc.origin == LINK_RF) rf_seen = true;
+            if (tc.cmd == ttc::CMD_REQUEST_LOG) RequestLog(tc);
+            else Acknowledge(tc.seq, tc.cmd, ExecuteTelecommand(tc));
         }
+        ServiceLogResponse();
+        ServiceDelivery();
+        ServiceResourceHealth();
     }
+
+    LINK_DIAGNOSTICS GetDiagnostics(
+    ) { return link.GetDiagnostics(); }
 
 } // namespace obc_ttc

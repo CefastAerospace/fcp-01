@@ -5,6 +5,11 @@ API de aquisição dos três sensores **INA219** do subsistema EPS.
 Esta versão usa **calibração padrão nominal em todos os três sensores**.  
 Não contém a calibração experimental do INA Solar.
 
+O namespace público é `CEFAST::eps`. Consumidores anteriores devem trocar
+`CEFAST::EPS` por `CEFAST::eps`: o nome maiúsculo colide com a macro `EPS`
+do framework Xtensa/ESP32. As funções, unidades, calibração e cálculos
+permanecem iguais. Não é necessário alterar ou remover macros do framework.
+
 ## Arquitetura
 
 | Canal | Endereço proposto | Posição |
@@ -65,7 +70,7 @@ O limite físico do INA219 permanece em **26 V**.
 #include <Wire.h>
 #include <EPS_INA219.h>
 
-using CEFAST::EPS::EPS_INA219;
+using CEFAST::eps::EPS_INA219;
 
 EPS_INA219 epsIna;
 

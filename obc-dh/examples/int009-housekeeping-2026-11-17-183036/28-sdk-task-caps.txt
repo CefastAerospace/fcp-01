@@ -1,0 +1,6 @@
+command: ["/home/o-grande-kayky/.local/share/platformio/packages/toolchain-xtensa-esp32/bin/xtensa-esp32-elf-objdump", "-s", "--start-address=0x400804c8", "--stop-address=0x400804cc", ".pio/build/int009-housekeeping-fixtures-check/firmware.elf"]
+
+.pio/build/int009-housekeeping-fixtures-check/firmware.elf:     file format elf32-xtensa-le
+
+Contents of section .iram0.text:
+ 400804c8 04080000                             ....            

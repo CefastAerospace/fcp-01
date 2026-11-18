@@ -1,9 +1,72 @@
 # TES-009 — Falhas, recuperação e integridade
 
 **Estado:** Pendente
-**Responsáveis:** OBC-DH, EPS e demais setores envolvidos
+**Responsável pela execução e comprovação:** Setor de testes
+**Responsáveis técnicos de apoio:** OBC-DH, EPS e demais setores envolvidos
+**Responsável pelas ferramentas e regressões de desenvolvimento:** OBC-DH
+
+Complemento de limites em 11/11/2026: nova bancada comprovou NO_MEMORY,
+preservação integral do snapshot anterior por CRC no contexto proprietário
+e aceitação do próximo snapshot. Heap interno mínimo de 1.040 bytes e
+pico do parser de 22.220 bytes. Outra bancada saturou o cache, contabilizou
+oito perdas e retomou admissões após confirmar/esvaziar as 32 posições.
+Evidências na [INT-006](../03-integracao/INT-006-fluxo-de-dados.md#limites-de-capacidade-e-memória--11112026).
+Input/SD simulados, sem corte de energia ou recuperação persistente; a
+tarefa e os cenários originais permanecem pendentes.
+
+Complemento local de 11/11/2026: `int006-stress-check` passou no ESP32/USB
+com timeout, exclusividade após expiração, descarte de resultado tardio,
+BUSY, READ_FAILED parcial e NO_SPACE injetados no backend simulado. O
+diário desativou a gravação; falhas foram contabilizadas, mas USB e sete
+confirmações em RAM continuaram. Seis CONFIRM não persistidos podem voltar
+a gerar retransmissão após reset. Os testes existentes TT&C na placa
+também aprovaram falha local e reserva de eventos TX com transportes falsos.
+O firmware obc foi restaurado e verificado. Logs, métricas e limites na
+[INT-006](../03-integracao/INT-006-fluxo-de-dados.md#estresse-adicional-sem-periféricos--11112026).
+Esse recorte não injeta corte de energia, travamento físico, falha FAT32
+ou reinício da estação; não encerra os cenários originais desta tarefa.
 
 A execução e o relato dos ensaios cabem ao setor de testes; a análise e as correções de firmware cabem ao responsável OBC-DH, com apoio dos setores envolvidos. Seguir as [responsabilidades e regras de reexecução](../README.md#responsabilidades-correção-e-reexecução).
+
+
+## Atualização de prontidão — 15/11/2026
+
+A INT-012 concluiu o mecanismo de watchdog/reset no escopo ESP32/USB.
+O [guia](../../tools/README.md#watchdog-e-reset-obc--15112026) e o
+[manifesto](../../examples/obc-watchdog-2026-11-15-manifest.json) entregam
+versão, injeções isoladas, relatórios e limites provisórios. OBC verificou
+travamentos, supervisor/boot, reset comandado independente de ACK/loop,
+novo boot/causa e regressões; essas são evidências de desenvolvimento.
+O cenário de watchdog/reset pode ser preparado/executado por testes com
+montagem e método próprios. Permanecem os critérios e estados originais;
+retomada de missão/atuações continua consumindo INT-011/013 e a verificação
+elétrica de boot/reset continua na TES-008.
+
+A [INT-008](../03-integracao/done/INT-008-supervisao-e-retomada.md) concluiu seu
+escopo de supervisão e recuperação local, incluindo TT&C e memória/pilhas.
+O [guia de entrega](../../tools/README.md#supervisão-de-recursos-ttc-e-memória--15112026)
+identifica firmware/roteiros compatíveis, injeções simuladas e casos
+disponíveis. OBC preservou a reprovação inicial, corrigiu a suíte nova após
+autorização e aprovou regressões nativas/ESP32/USB; obc foi restaurado e
+verificado. Esses resultados são verificação de desenvolvimento.
+
+Os cenários físicos mantêm montagem, método de injeção e critérios acordados.
+O cenário combinado de travamento/reinicialização ainda consome INT-012;
+retomada de missão/atuações consome INT-011/013. Nenhum checkbox, entrada,
+resultado esperado ou estado desta TES foi alterado pela conclusão da INT.
+
+## Prontidão vigente — 14/11/2026
+
+A retomada local do escritor e os diagnósticos UART/processamento/escritor/I2C já possuem evidências na INT-008. Nas atualizações históricas abaixo, “reabilitação do escritor pendente” refere-se à situação anterior; não apaga a implementação de 13/11. Watchdog e retomada operacional continuam não implementados, agora em INT-012/013.
+
+| Cenário original | Implementação consumida após redistribuição |
+|---|---|
+| SDA/SCL presos | COM-003; política dos consumidores INT-005/009; supervisão INT-008 |
+| UART e interrupção SD | COM-004/005 e fluxo INT-006; recuperação local do escritor INT-008 |
+| Travamento/perda de comunicação/reset | INT-008 para diagnóstico/recuperação local; INT-012 para watchdog/reset |
+| Retomada persistente de missão/tempo/atuações | INT-006/007/011/013; INT-012 quando o reset for produzido pelo watchdog |
+
+Condições, entradas, resultados esperados e limites dos casos originais permanecem intactos abaixo. Esta correspondência substitui somente a alocação de responsabilidades e dependências dos IDs anteriores. Espera legítima, falta de ADS-B, silêncio de TC e transporte indisponível continuam situações distintas. OBC mantém regressões; a comprovação física e independente cabe ao setor de testes.
 
 ## Objetivo
 
@@ -25,8 +88,8 @@ Executar os cenários abaixo separadamente, incluindo limites de detecção/recu
 | SDA/SCL presos e retorno do I2C | [COM-003](../01-comunicacao/done/COM-003-recuperacao-i2c.md) | Método de injeção aprovado com EPS/ADCS; conferir tentativas, timeouts, pedidos pendentes e retorno do serviço. | Pendente |
 | Desconexão e excesso UART | [COM-004](../01-comunicacao/done/COM-004-uart-payload.md) | Usar taxas e limites acordados; conferir recuperação do receptor e sinalização das perdas. | Pendente |
 | Interrupção durante escrita no SD | [COM-005](../01-comunicacao/done/COM-005-armazenamento-sd.md) | Método acordado com EPS; avaliar arquivos incompletos e FAT32, não apenas fechamento normal ou conteúdo de um registro. | Pendente |
-| Travamento, perda de comunicação e reinicialização | [INT-008](../03-integracao/INT-008-supervisao-e-retomada.md) | Medir detecção/recuperação, conferir falhas, horários e contagem de reinicializações; ausência ADS-B não significa enlace indisponível. | Pendente |
-| Retomada persistente de missão, tempo e atuações | [INT-006](../03-integracao/INT-006-fluxo-de-dados.md), [INT-007](../03-integracao/INT-007-comandos-modos-e-protecoes.md), [INT-008](../03-integracao/INT-008-supervisao-e-retomada.md) | Conferir boots, referências, registros, saídas e Burn Wire após reset/interrupção, sem repetir atuação indevida nem inventar intervalo desligado. | Pendente |
+| Travamento, perda de comunicação e reinicialização | [INT-008](../03-integracao/done/INT-008-supervisao-e-retomada.md), [INT-012](../03-integracao/done/INT-012-watchdog-reset-obc.md) | Medir detecção/recuperação, conferir falhas, horários e contagem de reinicializações; ausência ADS-B não significa enlace indisponível. | Pendente |
+| Retomada persistente de missão, tempo e atuações | [INT-006](../03-integracao/INT-006-fluxo-de-dados.md), [INT-007](../03-integracao/INT-007-comandos-modos-e-protecoes.md), [INT-008](../03-integracao/done/INT-008-supervisao-e-retomada.md), [INT-011](../03-integracao/INT-011-burn-wire-persistencia.md), [INT-013](../03-integracao/INT-013-retomada-operacional.md) | Conferir boots, referências, registros, saídas e Burn Wire após reset/interrupção, sem repetir atuação indevida nem inventar intervalo desligado. | Pendente |
 
 ## Critérios de conclusão
 
@@ -81,6 +144,17 @@ retomada completa de missão/atuações seguem nas integrações INT-007/INT-008
 Os procedimentos das ferramentas estão em [tools/README.md](../../tools/README.md).
 
 ## Checklist de execução por cenário
+
+Complemento de preparação — 11/11/2026: o OBC já consome eventos TX e `cf`
+e atende `request_log`. A bancada `int006-ttc-check` passou na placa após
+correção da admissão de memória, sem alterar o roteiro. `ObcDownlinkCheck.py`
+perde um `cf` com solo simulado e verifica
+retentativa/extração; esse recorte não comprova os resets físicos abaixo.
+No cenário existente de pendências após reset, registrar ID, conteúdo e
+instante original antes/depois do TX, de `cf` e da persistência de CONFIRM,
+incluindo repetição após reinício da estação. As falhas da estação foram
+encaminhadas ao TT&C; ensaiar cauda truncada e erro de log na versão corrigida.
+Critérios, casos e resultados esperados anteriores permanecem preservados.
 
 - [ ] **Condições da injeção:** registrar falha aplicada, instante, duração, método seguro aprovado, limites de detecção/recuperação e efeito esperado sobre dados/saídas. Sem política ou limite aprovado, registrar impedimento e responsável; não inventar timeout de aceitação.
 - [ ] **I2C preso e liberado:** após COM-003, aplicar SDA/SCL presos pelo método acordado; conferir sinalização, pedidos ativos/pendentes, tentativas e estado após esgotamento. Liberar a falha e verificar retorno segundo a política, sem acesso concorrente a `Wire`. Timeout por transferência não comprova recuperação do barramento ou callback travado.

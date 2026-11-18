@@ -12,11 +12,13 @@ O Design Package e os ICDs/ConOps vigentes são as referências de engenharia. A
 
 **Revisão documental OBC de 10/11/2026:** o resumo abaixo reflete `839a186`. Evidências e históricos das entregas permanecem nas tarefas do [painel OBC](obc-dh/.agents/TODO.md); esta revisão não acrescenta ensaios ou aceites.
 
+**Organização OBC de 14/11/2026:** o [painel vigente](obc-dh/.agents/TODO.md) separa implementação/regressões, contratos e comprovação independente. INT-009 a INT-013 e TES-011/012 foram criadas como planejamento, sem novos ensaios ou encerramentos. Os históricos anteriores não definem os escopos redistribuídos.
+
 ## Arquitetura e estado da integração
 
 O FCP-01 tem arquitetura centralizada planejada: ESP32/Arduino/FreeRTOS, com ADCS ainda a integrar, e Payload no Raspberry Pi Zero W por UART. O firmware OBC atual inicia Serial a 115200 baud, reserva boot/NVS, inicializa I2C e tenta montar o SD. Depois inicia TT&C e o fluxo Payload–tempo–registros; `loop()` atende TCs e diagnósticos, sem a antiga espera de 100 ms.
 
-A primeira etapa INT-006 recebe snapshots JSON em FCPU local, aplica referências de tempo e usa diário binário por boot/segmento. O leitor aceita v1/v2/v3 e exporta JSON Lines. `ping`, `get_status`, `request_tm` e `set_time` estão implementados; `request_log`, envio agregado de aeronaves, sensores, modos, atuações e supervisão completa conservam suas tarefas próprias. Boot de voo e estados elétricos continuam pendentes.
+A primeira etapa INT-006 recebe snapshots JSON em FCPU local, aplica referências de tempo e usa diário binário por boot/segmento. O leitor aceita v1/v2/v3 e exporta JSON Lines. `ping`, `get_status`, `request_tm`, `set_time` e `request_log` estão implementados; envio identificado de aeronaves e extração estão integrados nos recortes locais da INT-006. Sensores, modos, atuações, watchdog e retomada operacional conservam suas tarefas próprias. Boot de voo e estados elétricos continuam pendentes.
 
 As verificações locais registradas incluem computador, ESP/USB e bancada com dados em flash/SD simulado. Não comprovam troca com Pi, cartão físico ou precisão RF. COM-004/005, DAD-001/003 e TES-004/007 encerraram escopos locais; aceites e ensaios continuam nas integrações/TES destinatárias. Consultar [contratos](common/protocol/obc-data.md) e [procedimentos](obc-dh/tools/README.md).
 
@@ -82,7 +84,7 @@ Detalhes e restrições em [pinout compartilhado](common/interfaces/pinout.md) e
 
 - **Payload → OBC:** snapshots JSON completos com dados ADS-B já decodificados via UART, conforme decisão de 05/11/2026. I/Q cru permanece no Pi. FCPU tem implementação local; seu cabeçalho e controles binários atravessam o cabo. Aceite do enquadramento, produtor Pi e tráfego continuam em INT-006. `id` é opaco, não SeqID.
 - **Tempo:** OBC associa ms desde o boot e referências absolutas recebidas via `set_time`; preserva o timestamp local do Payload como informação de bancada, sem confundi-lo com a referência de voo.
-- **TM/TC:** [contrato JSON TT&C](common/protocol/ttc-json.md), LoRa 921 MHz SF7 e umbilical. `Ttc::Send()` aceita corpo de até 245 bytes sem `n`; o quadro final tem até 255 bytes, sem fragmentação. Descida sob demanda e ACK prioritário; envio agregado de aeronaves ainda pertence à segunda etapa INT-006. Os registros recebidos têm gravação integrada, sujeita a falhas/descartes explícitos.
+- **TM/TC:** [contrato JSON TT&C](common/protocol/ttc-json.md), LoRa 921 MHz SF7 e umbilical. `Ttc::Send()` aceita corpo de até 245 bytes sem `n`; o quadro final tem até 255 bytes, sem fragmentação. Descida sob demanda e ACK prioritário; envio identificado de aeronaves está integrado na INT-006, com aceites operacionais ainda pendentes. Os registros recebidos têm gravação integrada, sujeita a falhas/descartes explícitos.
 - **SD:** FAT32, fechamento controlado e monitoramento de alimentação (§7.3); integridade após interrupção de escrita ainda exige evidência de validação.
 - **Registros OBC:** contrato binário local v1/v2/v3, separado dos transportes UART/LoRa; sete tipos de 36–105 bytes, limite global de 512 bytes. Codec portátil, leitor no computador e serviço de arquivos SD/HSPI implementados localmente; snapshots e extras têm representação v2 de 37–64497 bytes, separada do limite v1 de 512 bytes. TM v3 tem 99 bytes e disponibilidade de contadores. Recepção e gravação já estão ligadas; extração pelo umbilical, integração de missão e ensaios físicos continuam pendentes.
 
@@ -154,7 +156,7 @@ A `main` está protegida contra force-push e deleção, mas não exige review ob
 
 ## Bibliotecas e dependências
 
-Dependências de terceiros devem ser declaradas no ambiente consumidor via `lib_deps`. O OBC atual consome `tt-c` do checkout e fixa ArduinoJson 7.0.4/LoRa 0.8.0. A plataforma `espressif32` não está fixada; as versões observadas nas evidências não garantem uma instalação nova idêntica. A integração ADCS permanece pendente. Nunca copie bibliotecas de terceiros para dentro do repositório.
+Dependências de terceiros devem ser declaradas no ambiente consumidor via `lib_deps`. O OBC atual consome `tt-c` do checkout e fixa ArduinoJson 7.0.4/LoRa 0.8.0. O consumidor OBC fixa `espressif32@6.6.0` desde 11/11/2026; a biblioteca local TT&C acompanha o checkout, cuja revisão deve constar nas evidências. A integração ADCS permanece pendente. Nunca copie bibliotecas de terceiros para dentro do repositório.
 
 ## CAD
 

@@ -1,0 +1,22 @@
+ASan/UBSan/LeakSanitizer ativos; execucao fora da sandbox.
+COMMAND ['g++', '-std=c++11', '-Wall', '-Wextra', '-Werror', '-fsanitize=address,undefined', '-fno-sanitize-recover=undefined', '-fno-omit-frame-pointer', '-Iheaders', '-I../tt-c/include', '-I.pio/libdeps/obc/ArduinoJson/src', 'src/ObcData.cpp', 'src/ObcTime.cpp', 'src/ObcRecordCodec.cpp', 'src/ObcTaskHealth.cpp', 'tests/ObcTaskHealthCheck.cpp', '-o', '/tmp/fcp01-resources-final-1j4vf0g9/task-health']
+COMMAND ['/tmp/fcp01-resources-final-1j4vf0g9/task-health']
+Saude OBC: limites, inicio/espera, falta de progresso, retorno e eventos aprovados
+COMMAND ['g++', '-std=c++11', '-Wall', '-Wextra', '-Werror', '-fsanitize=address,undefined', '-fno-sanitize-recover=undefined', '-fno-omit-frame-pointer', '-Iheaders', '-I../tt-c/include', '-I.pio/libdeps/obc/ArduinoJson/src', 'src/ObcData.cpp', 'src/ObcTime.cpp', 'src/ObcRecordCodec.cpp', 'src/ObcI2cHealth.cpp', 'tests/ObcI2cHealthCheck.cpp', '-o', '/tmp/fcp01-resources-final-1j4vf0g9/i2c-health']
+COMMAND ['/tmp/fcp01-resources-final-1j4vf0g9/i2c-health']
+Saude I2C: limites, ociosidade, recuperacao, wrap, transicoes e registros aprovados
+COMMAND ['g++', '-std=c++11', '-Wall', '-Wextra', '-Werror', '-fsanitize=address,undefined', '-fno-sanitize-recover=undefined', '-fno-omit-frame-pointer', '-Iheaders', '-I../tt-c/include', '-I.pio/libdeps/obc/ArduinoJson/src', 'src/ObcData.cpp', 'src/ObcTime.cpp', 'src/ObcRecordCodec.cpp', 'src/ObcResourceHealth.cpp', 'tests/ObcResourceHealthCheck.cpp', '-o', '/tmp/fcp01-resources-final-1j4vf0g9/resource-health']
+COMMAND ['/tmp/fcp01-resources-final-1j4vf0g9/resource-health']
+Recursos OBC: progresso, wrap, histerese, pilhas, NO_MEMORY e eventos aprovados
+COMMAND ['g++', '-std=c++11', '-Wall', '-Wextra', '-Werror', '-fsanitize=address,undefined', '-fno-sanitize-recover=undefined', '-fno-omit-frame-pointer', '-Iheaders', '-I../tt-c/include', '-I.pio/libdeps/obc/ArduinoJson/src', 'src/ObcData.cpp', 'src/ObcTime.cpp', 'src/ObcRecordCodec.cpp', 'src/ObcStorage.cpp', 'src/ObcDataFlow.cpp', 'src/ObcDelivery.cpp', 'tests/ObcStorageRecoveryCheck.cpp', '-o', '/tmp/fcp01-resources-final-1j4vf0g9/storage-recovery']
+COMMAND ['/tmp/fcp01-resources-final-1j4vf0g9/storage-recovery']
+Retomada SD: prazos, episodios, esgotamento, metadados, arquivos e IDs aprovados
+COMMAND ['g++', '-std=c++11', '-Wall', '-Wextra', '-Werror', '-fsanitize=address,undefined', '-fno-sanitize-recover=undefined', '-fno-omit-frame-pointer', '-Iheaders', '-I../tt-c/include', '-I.pio/libdeps/obc/ArduinoJson/src', 'src/ObcData.cpp', 'src/ObcTime.cpp', 'src/ObcRecordCodec.cpp', '-Isrc/bench', 'src/ObcStorage.cpp', 'src/ObcDataFlow.cpp', 'src/ObcDelivery.cpp', 'src/bench/DeliveryRecoveryCheck.cpp', 'tests/ObcDeliveryRecoveryCheck.cpp', '-o', '/tmp/fcp01-resources-final-1j4vf0g9/delivery-recovery']
+COMMAND ['/tmp/fcp01-resources-final-1j4vf0g9/delivery-recovery']
+Reserva de recuperacao: 32 admissoes preservadas, FIFO e consumidores aprovados; queue_bytes=2920
+COMMAND ['g++', '-std=c++11', '-Wall', '-Wextra', '-Werror', '-fsanitize=address,undefined', '-fno-sanitize-recover=undefined', '-fno-omit-frame-pointer', '-Iheaders', '-I../tt-c/include', '-I.pio/libdeps/obc/ArduinoJson/src', 'src/ObcDownlink.cpp', 'src/ObcStorage.cpp', '../tt-c/src/TtcProtocol.cpp', 'tests/ObcDownlinkCheck.cpp', '-o', '/tmp/fcp01-resources-final-1j4vf0g9/downlink']
+COMMAND ['/tmp/fcp01-resources-final-1j4vf0g9/downlink']
+ObcDownlinkCheck: mapping, mailbox and real file extraction passed
+COMMAND ['g++', '-std=c++11', '-Wall', '-Wextra', '-Werror', '-fsanitize=address,undefined', '-fno-sanitize-recover=undefined', '-fno-omit-frame-pointer', '-Iheaders', '-I../tt-c/include', '-I.pio/libdeps/obc/ArduinoJson/src', '-pthread', '-DOBC_I2C_RECOVERY_CHECK', '-Itests/native', 'src/I2cRecovery.cpp', 'src/I2cBus.cpp', 'tests/native/NativeI2cRuntime.cpp', 'src/bench/I2cRecoveryCheck.cpp', '-o', '/tmp/fcp01-resources-final-1j4vf0g9/i2c-recovery']
+COMMAND ['/tmp/fcp01-resources-final-1j4vf0g9/i2c-recovery']
+[I2C-CHECK] PASS cycles=3 attempts=5 recovered=2 exhausted=1 stack=0 callback_max_us=1005378 context_queue_ms=1000 context_hold_ms=1005

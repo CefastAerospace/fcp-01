@@ -1,0 +1,43 @@
+{
+  "board": "ESP32-D0WD-V3 revision v3.1",
+  "port": "/dev/ttyUSB0",
+  "authorized_change": "Inicializar metadados antes de criar tarefa e separar starting da primeira publicacao real",
+  "bench": {
+    "upload_passed": true,
+    "flash_hash_verified": true,
+    "report": "obc-eps-2026-11-16-usb-02.json",
+    "passed": false,
+    "error": "AssertionError: {'active': '1', 'service': '3', 'progress_ms': '2350', 'age_ms': '7', 'operations': '1', 'failures': '1', 'stack_free_bytes': '2736'}"
+  },
+  "restored": {
+    "upload_passed": true,
+    "flash_hash_verified": true,
+    "report": "obc-eps-2026-11-16-restored-02.json",
+    "passed": true,
+    "exchanges": 6,
+    "max_q_ms": 31,
+    "max_response_ms": 72.826
+  },
+  "validation_changed": false,
+  "new_failure": "Timeout Wire status=5; I2C cause=5 failure=5 (SCL_LOW), recovering exhausted, service=3 (UNAVAILABLE). Causa eletrica ainda nao confirmada.",
+  "firmware_sha256": {
+    "obc": "e1618fe92ffefe8c26bdf02bfd4c05684df5169ddb64f5f83f5136395487230a",
+    "int009-ina219-check": "71e1d55b3b90528608eea9bb9b80a49ba0bdf925d3d02ec9136718670b21e201"
+  },
+  "source_sha256": {
+    "src/ObcEpsEsp32.cpp": "d449fc656aef887daf875df9d0fdc84af78bb8a0fc15a5d3a5c8e0c48903ffff",
+    "headers/ObcEpsEsp32.h": "5fcb3c693b03beca004a9c4e672361ac959d958b6873ba90cffe289e9f0a70d8",
+    "tests/ObcEpsBenchCheck.py": "43b363c20958fe82f180b8a4d59cebc9ec47a6f033cddb3ef3dda3b49ad11e64",
+    "tests/ObcDownlinkCheck.py": "6eba6d02d2adc229b54cb9fa979393d0bb657dad53f5bd98393cd89a9daabda2"
+  },
+  "build_sizes": {
+    "obc": {
+      "static_ram_bytes": 32704,
+      "flash_bytes": 432925
+    },
+    "int009-ina219-check": {
+      "static_ram_bytes": 33072,
+      "flash_bytes": 444661
+    }
+  }
+}

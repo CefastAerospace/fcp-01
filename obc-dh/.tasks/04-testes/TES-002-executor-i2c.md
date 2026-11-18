@@ -1,9 +1,16 @@
 # TES-002 — Executor I2C: concorrência, fila e erros
 
 **Estado:** Pendente
-**Responsáveis:** OBC-DH
+**Responsável pela execução e comprovação:** Setor de testes
+**Responsáveis técnicos de apoio:** OBC-DH
+**Responsável pelas ferramentas e regressões de desenvolvimento:** OBC-DH
 
 A execução e o relato dos ensaios cabem ao setor de testes; a análise e as correções de firmware cabem ao responsável OBC-DH, com apoio dos setores envolvidos. Seguir as [responsabilidades e regras de reexecução](../README.md#responsabilidades-correção-e-reexecução).
+
+
+## Preparação de ferramenta — responsabilidade OBC, 14/11/2026
+
+Mapear cada caso do checklist abaixo ao código e ao roteiro. A bancada de recuperação já cobre retorno de operação iniciada, recursão, erros e recuperação; completar especialmente capacidade das oito posições/nono pedido, reuso, exclusividade/resultados por chamador, argumentos, ISR e ordenação efetiva. A simulação nativa atual retorna `false` em `xPortInIsrContext()`; não declarar o caso ISR aprovado por ela. Preservar vetores/expectativas da bancada existente e acrescentar casos isolados, finitos e sincronizados. Entregar firmware, roteiro e instruções ao setor de testes; preparação ou regressão OBC não preenche os checkboxes de comprovação.
 
 ## Objetivo
 
@@ -24,7 +31,7 @@ Registrar ambiente, procedimento, entradas, resultados esperados/observados e ve
 
 ## Prontidão e preparação para o setor de testes
 
-COM-001 e COM-002 estão concluídas. É possível encaminhar esta tarefa agora: basta ESP32 com FreeRTOS e USB, sem sensores. Ainda não existe ambiente/roteiro executável específico para o executor; o setor de testes precisa preparar uma entrada isolada que use o `I2cBus` real. O teste nativo TES-001 verifica somente a política e não substitui esta bancada.
+COM-001 e COM-002 estão concluídas. É possível encaminhar esta tarefa agora: basta ESP32 com FreeRTOS e USB, sem sensores. O ambiente `i2c-recovery-check` já usa o executor real com FreeRTOS e backend de sinais simulado, mas cobre apenas parte deste checklist. OBC-DH deve reutilizar essa base e completar a ferramenta de ensaio; o setor de testes executa o procedimento e registra a comprovação. TES-001 verifica somente a política e não substitui esta bancada.
 
 Executar primeiro o caso sem `Init`, antes que o firmware central inicialize o serviço. Nos demais casos, inicializar uma vez antes dos chamadores. Coordenar as tarefas da bancada com semáforos e contadores fora dos callbacks; não usar callbacks infinitos, logs dentro do callback, alterações de produção ou acesso concorrente a `Wire`. Registrar ordem, identidade do chamador, chamadas ao callback, status e duração. `context == nullptr` é permitido quando o callback não precisa de dados.
 

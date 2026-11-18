@@ -1,0 +1,14 @@
+Traceback (most recent call last):
+  File "/home/o-grande-kayky/Documents/CEFET/02_Graduação/Aerospace/fcp-01/obc-dh/tests/ObcHousekeepingBenchCheck.py", line 240, in <module>
+    main()
+    ~~~~^^
+  File "/home/o-grande-kayky/Documents/CEFET/02_Graduação/Aerospace/fcp-01/obc-dh/tests/ObcHousekeepingBenchCheck.py", line 184, in main
+    exchange("ping")
+    ~~~~~~~~^^^^^^^^
+  File "/home/o-grande-kayky/Documents/CEFET/02_Graduação/Aerospace/fcp-01/obc-dh/tests/ObcHousekeepingBenchCheck.py", line 165, in exchange
+    receive()
+    ~~~~~~~^^
+  File "/home/o-grande-kayky/Documents/CEFET/02_Graduação/Aerospace/fcp-01/obc-dh/tests/ObcHousekeepingBenchCheck.py", line 132, in receive
+    assert packet["st"] == "ok" and type(packet["q"]) is int and 0 <= packet["q"] <= 200, packet
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: {'n': 64, 't': 'ack', 'seq': 3427, 'cmd': 'ping', 'st': 'ok', 'q': 217}

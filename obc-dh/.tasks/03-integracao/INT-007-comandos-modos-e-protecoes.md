@@ -1,48 +1,56 @@
-# INT-007 — Comandos, modos e proteções operacionais
+# INT-007 — Comandos, modos e coordenação da missão
 
 **Estado:** Pendente
-**Responsáveis:** OBC-DH, coordenação, ADCS, EPS, Térmico, Estruturas e TT&C
+**Responsável pela implementação:** OBC-DH
+**Responsáveis pelos contratos:** coordenação, ADCS, EPS, Térmico e TT&C
 
 ## Objetivo
 
-Executar comandos e modos apenas nas condições acordadas, com prioridades energéticas e proteções.
+Coordenar comandos e modos conforme o ConOps, validando argumentos e condições antes de executar ações.
+
+## Redistribuição de 14/11/2026
+
+O escopo anterior reunia modos, proteção energética/térmica, Burn Wire e retorno após reset. As responsabilidades passam a ser:
+
+| Entrega | Destino |
+|---|---|
+| Comandos, transições e coordenação da missão | Esta INT-007 |
+| Proteções energéticas/térmicas, prioridades e retorno | [INT-010](INT-010-protecoes-energia-termico.md) |
+| Burn Wire, autorização, interlock, duplicatas e estados persistentes recebidos de DAD-003 | [INT-011](INT-011-burn-wire-persistencia.md) |
+| `CMD_RESET_OBC` | [INT-012](done/INT-012-watchdog-reset-obc.md) |
+| Retomada operacional de modos/missão após reset | [INT-013](INT-013-retomada-operacional.md) |
+
+Todas as obrigações permanecem pendentes nas destinatárias. A revisão não implementa modos nem altera critérios dos ensaios.
 
 ## Entrega
 
-Validar argumentos, modo e condições antes de executar cada TC, responder com ACK/rejeição e preservar proteção contra atuação duplicada. Integrar modos/transições, detumbling, Thermal Watchdog e Burn Wire. Definir estados persistentes e retorno após reset. Desabilitar o motor fora do detumbling e medir consumo residual; não presumir consumo zero.
+Validar argumentos, modo e condições antes de executar cada TC; responder com ACK/rejeição pelo consumidor existente. Integrar transições, início/fim da missão e coordenação do detumbling. Definir no núcleo de modos as condições e a coordenação que as INT-010/011 consomem. Essas destinatárias integram suas proteções/atuações ao núcleo e verificam os efeitos, sem criar dependência circular de encerramento. Desabilitar motor fora do detumbling conforme a interface ADCS; consumo residual é medido pelo setor de testes, sem presumir zero.
 
 ## Pré-requisitos
 
-- **Tarefas:** [INT-004](INT-004-ttc-e-umbilical.md), [INT-005](INT-005-sensores-e-adcs.md), [INT-006](INT-006-fluxo-de-dados.md)
-- **Condições externas:** ConOps, cota energética, limiares térmicos e condições de atuação aprovados pelos responsáveis.
+- **Tarefas/capacidades:** consumidor/ACK da INT-004 e estado/fluxo da INT-006, já disponíveis nos recortes registrados. Definir a lógica de modos a partir do contrato sem exigir conclusão de escopos independentes dessas INT.
+- **Integração por ação:** comandos ADCS consomem a interface da INT-005; decisões de energia/temperatura consomem INT-009/010; atuação Burn Wire consome INT-011. Ausência de recurso não autoriza indicar que a ação foi executada.
+- **Condições externas:** ConOps, estado inicial, transições, comandos permitidos, duração/perfil de missão e condições de atuação aprovados pelos responsáveis.
 
 ## Definições e condições
 
-- Reutilizar `common/protocol/ttc-json.md` e `tt-c/include/TtcProtocol.h`: envelope TC no TT&C, `args`/condições no OBC e resposta `SendAck()`. A biblioteca deduplica oito TCs por 30 s; definir persistência/condições das atuações críticas após reset e fora da janela. Não presumir PUS; satélite e estação precisam da mesma versão.
-- O mecanismo confirmado é MOSFET no GPIO 33 para queimar a retenção física das antenas. Remoto registra dois circuitos nichrome, 5 V / 4 Ω cada e orçamento de 2,5 A / 12,5 W transitório; conferir montagem, nível ativo, estados em boot/reset, duração máxima, autorização, energia e novas tentativas com Estruturas/EPS.
-- Acionar fora de TX, usando `Ttc::HoldTransmit(true, wait_ms)` e confirmando seu retorno antes da atuação; definir retomada e tratamento de falhas. Esse interlock não autoriza a queima. Preservar ensaio mínimo de cinco ciclos bem-sucedidos registrado pelo TT&C, sem mudar critérios dos setores.
-- A flag `IS_WIRE_BURNT` foi apenas sugerida; não é implementação aprovada nem convenção de nomes. Definir persistência, estado inicial, interrupção durante acionamento e duplicatas de comando; flag volátil perde valor após reset.
-- Distinguir comando emitido de liberação física confirmada; definir sensor ou critério de sucesso. Se a antena for necessária para receber TC, acordar autorização da primeira liberação sem depender de um comando impossível de receber.
-- Definir se o alinhamento do motor no boot é permitido e em quais condições; confirmar a ação denominada “tumbling” nos requisitos versus “detumbling” nas demais referências.
-- Obter cota energética real, limiares, prioridades, baixo consumo, retorno e corte de alimentação de periféricos. Medir consumo da montagem e consumo residual do motor desabilitado; valores históricos não comprovam orçamento.
-- Projeto EPS/Térmico prevê 5x LM75A na bateria/pontos críticos, com alerta ao OBC; confirmar endereços, localização, aquisição, periodicidade, limites/retorno e responsável pela proteção. Não presumir implementação térmica a partir da biblioteca INA219 existente.
-- Distinguir monitoramento de atuação térmica e watchdog de tarefas. Armazenar temperatura não comprova proteção; não presumir sinal dedicado.
-- Integrar modos/transições e estado inicial registrados no README geral e no contrato TT&C, conferindo ConOps vigente. Preservar decisão TT&C de LOW-POWER com rádio em RX e beacon periódico só em safe-mode. Detalhar retomada, comandos permitidos e prioridades sem substituir decisões dos setores.
+- Reutilizar `common/protocol/ttc-json.md` e `tt-c/include/TtcProtocol.h`: envelope TC no TT&C, argumentos/condições no OBC e `SendAck()` existente. Não presumir PUS; satélite e estação precisam da mesma versão.
+- A biblioteca deduplica oito TCs por 30 s; isso não substitui persistência de atuações críticas, transferida à INT-011.
+- Integrar modos/transições e estado inicial do README geral/contrato TT&C, conferindo ConOps vigente. Preservar LOW-POWER com rádio em RX e beacon periódico somente em safe-mode.
+- Definir se alinhamento do motor no boot é permitido e em quais condições com INT-003/005. Confirmar “tumbling” nos requisitos versus “detumbling” nas demais referências, sem alterar o requisito silenciosamente.
+- Detalhar comandos permitidos e prioridades por modo. Proteção térmica e watchdog de tarefas são mecanismos distintos, com INT-010 e INT-012 proprietárias.
+
+## Verificação de desenvolvimento
+
+Cobrir transições válidas e recusadas, argumentos inválidos sem efeitos, recurso indisponível, falha da ação e coordenação de início/fim de missão. Casos novos acompanham a implementação; não alterar as expectativas dos comandos ainda não implementados em roteiros históricos.
 
 ## Critérios de conclusão
 
-Ações e recusas implementadas conforme contratos, estados persistentes tratados e verificações locais disponíveis. A atuação física e o atendimento energético/térmico exigem [TES-008](../04-testes/TES-008-integracao.md)/[TES-009](../04-testes/TES-009-falhas-e-recuperacao.md)/[TES-010](../04-testes/TES-010-missao-e-cobertura.md).
+Comandos e transições do próprio escopo implementados conforme contratos, efeitos/recusas integrados, build e regressões pertinentes aprovados. A interface ADCS deve estar disponível para concluir seus comandos. O núcleo não exige encerrar INT-010/011: elas implementam e verificam as próprias extensões ao núcleo já entregue. Comando ainda não implementado não pode receber sucesso fictício; não criar módulos vazios. Comprovação física de modos, energia e atuações continua nas TES-008/009/010; sua aprovação não é condição de encerramento desta implementação.
 
-## Encaminhamentos recebidos — 09/11/2026
+## Encaminhamento DAD-003
 
-As origens abaixo encerraram seu escopo próprio. Estes itens continuam
-abertos nesta tarefa, com os setores responsáveis, antes do aceite da
-integração ou do ensaio correspondente. Não substituem os critérios e
-cenários originais e não mudam seu estado por conclusão da origem.
-
-| Origem concluída | Obrigação recebida | Situação |
-|---|---|---|
-| [DAD-003](../02-dados-e-tempo/done/DAD-003-registros-e-interpretacao.md) | Definir e implementar os estados duráveis de atuações/Burn Wire, autorização e confirmação; eventos existentes não substituem estado de retomada. Se precisar ampliar registros, versionar a extensão e verificar compatibilidade antes do uso. | Pendente |
+A obrigação de estados duráveis de atuações/Burn Wire, autorização, confirmação e eventual extensão versionada de registros foi transferida integralmente à INT-011. A retomada geral que consome esses estados está na INT-013. Eventos existentes não substituem estado de retomada.
 
 ## Evidências
 
@@ -50,9 +58,7 @@ Nenhuma evidência de conclusão registrada. Ao executar, registrar versão, pro
 
 ## Referências
 
-- Requisitos relacionados: REQ-OBC-001, REQ-OBC-002, REQ-OBC-004, REQ-OBC-012, REQ-NF-OBC-001. Implementação não equivale a requisito validado.
-- [common/protocol/ttc-json.md](../../../common/protocol/ttc-json.md)
-- [obc-dh/.agents/ARCHITECTURE.md](../../.agents/ARCHITECTURE.md)
-- [obc-dh/.agents/PINAGEM.md](../../.agents/PINAGEM.md)
-- Origem no planejamento anterior: P-ADCS, P-BURN-WIRE, P-DADOS, P-EPS-ELETRICA, P-MISSAO, P-TERMICO.
-- [Painel de tarefas](../../.agents/TODO.md); [organização e rastreabilidade](../README.md).
+- REQ-OBC-001/002/004/012 e REQ-NF-OBC-001 conservam implementações complementares nas novas destinatárias; [matriz](../README.md#cobertura-dos-requisitos).
+- [Contrato TT&C](../../../common/protocol/ttc-json.md), [pinagem](../../.agents/PINAGEM.md), [TES-008](../04-testes/TES-008-integracao.md), [TES-009](../04-testes/TES-009-falhas-e-recuperacao.md), [TES-010](../04-testes/TES-010-missao-e-cobertura.md).
+- Origens anteriores preservadas na correspondência: P-ADCS, P-BURN-WIRE, P-DADOS, P-EPS-ELETRICA, P-MISSAO, P-TERMICO.
+- [Painel](../../.agents/TODO.md); [organização e rastreabilidade](../README.md).

@@ -26,6 +26,22 @@ Enlace com o solo do FCP-01: firmware do rádio no OBC + estação terrena espel
 
 Contrato JSON: [`../common/protocol/ttc-json.md`](../common/protocol/ttc-json.md). Pendências: [`TODO.md`](TODO.md).
 
+## Diagnóstico do proprietário
+
+`Ttc::GetDiagnostics()` retorna inicialização, tarefa criada, execução de
+`Update`, contador de conclusões, última disponibilidade observada do rádio,
+contatos RF/cabo e margem histórica da pilha da tarefa. A cópia usa o lock
+existente; a varredura da pilha ocorre fora dele, sem acesso ao rádio/UART.
+Contato válido possui indicador próprio, inclusive para millis zero.
+`Update` manual continua disponível sem indicar tarefa criada.
+
+Essa observabilidade permite ao OBC distinguir silêncio, indisponibilidade
+do rádio e falta de progresso. Não muda protocolo, filas, prioridades ou
+política de recuperação do SX1276. `radio_resets` conserva o significado
+do contador existente de tentativas da verificação periódica; não comprova
+saúde ou presença do rádio. Teste adicional: `pio test -e esp32-diagnostics`.
+Procedimentos integrados no [guia OBC](../obc-dh/tools/README.md#supervisão-de-recursos-ttc-e-memória--15112026).
+
 ## Aprofundar
 
 - `../FCP-01_Design_Package_CubeDesign_2026.md` §§2.6, 3.1, 3.5, 5.3, 7.1 + Apêndice A (REQ-TTC).

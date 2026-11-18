@@ -1,0 +1,3 @@
+command: ["python3", "tests/SnapshotPartsCheck.py", "/tmp/int009-housekeeping-task-order/snapshot-parts-check", "/tmp/int009-housekeeping-task-order/read-records"]
+Snapshot partido: vetores, fronteiras, escrita completa e falha parcial aprovados
+Snapshot partido: bytes preservados e registro parcial não publicado pelo leitor

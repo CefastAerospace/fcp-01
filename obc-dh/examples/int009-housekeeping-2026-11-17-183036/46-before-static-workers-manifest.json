@@ -1,0 +1,1702 @@
+{
+  "started_utc": "2026-11-17T18:30:36.864465+00:00",
+  "revision": "65fdbeb812fd20cabe4e0d5cbd2abad7f1be3524",
+  "initial_status": "",
+  "baseline_sha256": {
+    ".gitignore": "7ba39b127c051b30c8cb78ef9df2853025c74a5fbd5a7f0b16e4e71eafd11dd1",
+    "README.md": "a03f99ae14612e205dd3608fc4e539c5affd3af8acf0945362e08bcf8dda7283",
+    "adcs/.gitignore": "67cca8c6c85c4698d0b5592a07a40ef2c16e9270cbe2773c6798944272525125",
+    "adcs/.vscode/extensions.json": "913d379558f6a8b0f08778a4f80b4ef0dd2e30b26b451adcd39b307763a9ff53",
+    "adcs/README.md": "0d04f969bea53de058f419f3c9bcdb293fb8f5aa3706cf04570f3382b75310c1",
+    "adcs/include/.gitkeep": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "adcs/include/commands.h": "a5f667e156a68a27bb9ca562e0639172fd42a4fbe7e2a1cacb734e7effc82374",
+    "adcs/include/config.h": "d83c8e23414e4d5470ff01628ed4cbb56c98ec048d1fd1dd330d2e1efe3265ec",
+    "adcs/include/missions.h": "2eef6e1227ca56a95bafd1a1389a7401fc39c5895359e7b56bb815ed89be0773",
+    "adcs/include/motor_control.h": "f7da65d50482afee177ef81f999d79032ca3a5a7fe37dbae2eb25700795cca78",
+    "adcs/include/sensors.h": "97cc122becb1ef7db5e91e051ff192a7ae99326ce2d596adde989efccdbba0fd",
+    "adcs/include/web_interface.h": "d960a2d1345181f438f00ef669f942b3c753f6b36d53a15b23a694f15754d0c9",
+    "adcs/platformio.ini": "57a69f901db577b1d1689029cef96e6f6840b3111001fca4977d8b30a57a11cf",
+    "adcs/src/.gitkeep": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "adcs/src/adcs.cpp": "2db5aea876e85d54bc223b44098891c9f87c8960b65db6a0cb9bf668ea015514",
+    "adcs/src/commands.cpp": "018aab5c7d358f662078380f9ec904eff7f18ba20434be2ff83e5531d025bdc1",
+    "adcs/src/missions.cpp": "3f0b05bb925dfc8173758a666df49665437f66aa02857df4dcdb1d449a09a9ff",
+    "adcs/src/motor_control.cpp": "2668bc70ae1854892d90d54a8f33e3e6c4b491e763dcba1412906e1e58a3c8a4",
+    "adcs/src/sensors.cpp": "5f65ae2599861b24e347666155ec55a148418ee51ce877106a01eafa0ec0f906",
+    "adcs/src/web_interface.cpp": "a4b28b02fa327f952e8b6761cc32f67b2f54a573632fac6eb6b78a45a7ef8317",
+    "common/README.md": "6d5efba3c65ec3a51b000871e05c274434f24435d7329ec664e43b9acc3e6dc3",
+    "common/interfaces/pinout.md": "6a985cb4219056d47ee9525e4f89f85144c5a3062e678fbd3c648c900b1a539f",
+    "common/protocol/.gitkeep": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "common/protocol/obc-data.md": "250fe8582e3be97ec8bc4f3133e3274752a7e99532eebc61f90b845f5de6ddc3",
+    "common/protocol/obc-delivery.md": "bcb4befd49bdb7fd611ef4c90932fd66f2d31970905a361a0a1f1f8de144a191",
+    "common/protocol/payload-uart.md": "5ce68cf18cbd15ee400e5a2bfe4c3e9bbee841acb40ea6428fd535bf2f445e73",
+    "common/protocol/ttc-json.md": "cd441096a151d400e8df0dcbd58ce002797859730b970a9acd1debde29496042",
+    "eps-tc/EPS_INA219_Standard/README.md": "ea5cf957b2aebd6313996db8782d12c0e762022faea30a821cb6972763095856",
+    "eps-tc/EPS_INA219_Standard/examples/OBC_Integration/OBC_Integration.ino": "454b7abe044405374deb34e697a2839960bc43ed33d9df0b88a8e1c41d815f53",
+    "eps-tc/EPS_INA219_Standard/library.properties": "f6cb3a111cc3e474ba53256950bcbdf97fd0f6cdd91cbf6cf84e3fea979cc6a1",
+    "eps-tc/EPS_INA219_Standard/src/EPS_INA219.cpp": "78a32724e12bf480716f65bde7d0c2cb11145e29c55b25eddc61c9a3df1dd52b",
+    "eps-tc/EPS_INA219_Standard/src/EPS_INA219.h": "56c903a3a770f6bf29ffabb3cc1e18dc99d477253664a22f391a290482fd7802",
+    "eps-tc/LM75A_Standard/README.md": "3c1515ae14e6f0820d48200a068811449f14c24d255b3c12a84dd567170985a6",
+    "eps-tc/LM75A_Standard/library.properties": "30f35bae029709e44066e27a37ab7182832872ce6ccb39ee8135d9852a7922aa",
+    "eps-tc/LM75A_Standard/src/Lm75a.cpp": "307abc2ada46862d5f7b7162079b3c0e9b26bd55dde583087d9bf42a5cd879b9",
+    "eps-tc/LM75A_Standard/src/Lm75a.h": "6bf18bbc7344770e6be2371eef2bf09e430e17a961b505aca24e6ba5f6d2bab9",
+    "eps-tc/README.md": "9a7d03034c2aa54d4f8a82b9870ec44f849be011370a153aedb50394c53d40ec",
+    "eps-tc/include/.gitkeep": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "eps-tc/src/.gitkeep": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "obc-dh/.agents/AGENTS.md": "449ce91338f3cb4a6c33e53602d3e37fd96f17a6babb4b6485787cf532143e3f",
+    "obc-dh/.agents/ARCHITECTURE.md": "0dbeb25f8f191facaeb32da8f064c7522672e5b536c7ebbc720d44e336f49073",
+    "obc-dh/.agents/CPP_STANDARDS.md": "cb0228032479a03c58c52a54562e2894d777b9b6f931b290215a865b94f18fa3",
+    "obc-dh/.agents/DEFINICOES_OBC_DP.md": "3782272f94c9acf13228f75b103c4883f91ae5875672cadcb27a7ad55eb69b64",
+    "obc-dh/.agents/FUNCIONAMENTO_PIO.md": "df9241ca1eefca4a36e2ceb4fc94f2119338b4d71f13e1e79d6e93d8178481cc",
+    "obc-dh/.agents/PINAGEM.md": "6176990e93852eb541d689a5e373018796e4fbf2c0770f2da52a8614c3cb6a57",
+    "obc-dh/.agents/README.md": "2b217765625b269088d86ef4409062a54faad585a960eb1d628572068187420d",
+    "obc-dh/.agents/REQUISITOS.md": "cf6ad3466a42ae8dacb3c5134cf7da2e8591c8574dff5d386b40afbbd9c2d887",
+    "obc-dh/.agents/TODO.md": "c13da44a7a822a4546e54f728522713cfbecd8309bde0960869dea3bd9cccaeb",
+    "obc-dh/.clangd": "7a5a5f14870de425829d2887e0208121bb1822f4aa724a1b299e534dabf2943b",
+    "obc-dh/.gitignore": "3ce0f24101405f9ece631ac35815bb0cc835952f36e38a6a7b08f234a6396333",
+    "obc-dh/.tasks/01-comunicacao/done/COM-001-servico-i2c.md": "e5491247e665d21910ed9f1d278b67b870cd6d79bf0f3e0ce0b9011516588488",
+    "obc-dh/.tasks/01-comunicacao/done/COM-002-prioridade-dinamica-i2c.md": "c7472220e0b71ca53ba5be073a4610df57953885e20773d8a11cda25e1b54b9a",
+    "obc-dh/.tasks/01-comunicacao/done/COM-003-recuperacao-i2c.md": "3ace097fa37e3f8fd4b1a8ca5067feda2abdd19a7cc7065a950d6181d831a0bf",
+    "obc-dh/.tasks/01-comunicacao/done/COM-004-uart-payload.md": "aa2018c3a6540bec2e24fde4faccb471a40d85381b8c28c6f33c2a71c1b0392a",
+    "obc-dh/.tasks/01-comunicacao/done/COM-005-armazenamento-sd.md": "3d406a090d2d098f722aa6c6067777a7ac879ead31906e3c76b62e0ad5e93a5f",
+    "obc-dh/.tasks/02-dados-e-tempo/done/.gitkeep": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "obc-dh/.tasks/02-dados-e-tempo/done/DAD-001-modelos-e-formatos.md": "b77539ddcc8603ce1ce2983592c01b882952a6011c41f89d50af7d7909adfab9",
+    "obc-dh/.tasks/02-dados-e-tempo/done/DAD-002-tempo-e-boots.md": "1c69dd3fb114b6a7f9947a944c754395df05085280f8f35d0abfa7cabc5a209d",
+    "obc-dh/.tasks/02-dados-e-tempo/done/DAD-003-registros-e-interpretacao.md": "35f288ba21412dc37ab1546782d1bf3c569db8331554da769229a3807a8ddaa9",
+    "obc-dh/.tasks/03-integracao/INT-003-inicializacao-central.md": "ba662257b17dbd8bf2692ddff76a743dd5ec8d5592a4edfe70abe007ae7f23e0",
+    "obc-dh/.tasks/03-integracao/INT-005-sensores-e-adcs.md": "e1e3dd56ed3696f9724d6314dd4a53b40b0c53d5580d7921e3227e323f8efd21",
+    "obc-dh/.tasks/03-integracao/INT-006-fluxo-de-dados.md": "ff69fbc9d6764a16800d3a14fad9189c9f9a000d69e223e0dd7809e6fdb2334e",
+    "obc-dh/.tasks/03-integracao/INT-007-comandos-modos-e-protecoes.md": "204d6fc76b3580f486849e709a2887de94afbaa96aaa2b1bd17d3c2023ef7332",
+    "obc-dh/.tasks/03-integracao/INT-009-aquisicao-eps-termico.md": "55e29e4082c4f09d572eeb85032502a59a2b15bd5b73199e6e7e3463cc8ddcad",
+    "obc-dh/.tasks/03-integracao/INT-010-protecoes-energia-termico.md": "e76877f7876f6d5b72b89130663833b6f5de413e050955f3a71231419c13e59f",
+    "obc-dh/.tasks/03-integracao/INT-011-burn-wire-persistencia.md": "7ac89686fa8ac02807eb76427616b9ee6a887c525fdee89fc1382502543a7e44",
+    "obc-dh/.tasks/03-integracao/INT-013-retomada-operacional.md": "d16b7265f2d80d40ef2341703ffeaf5ebffbff27e3291061fd54449ff1a350e2",
+    "obc-dh/.tasks/03-integracao/done/INT-001-ambiente-obc.md": "2609f489d9fd6dd9c75240f30591df72ce8a9f266a1e7fd76f8105d99dd2d9e5",
+    "obc-dh/.tasks/03-integracao/done/INT-002-pinagem-en-motor.md": "0d9e8002c910354573987e6f6296dda6f2a3a804d8515b277b22ee4af2be0c0b",
+    "obc-dh/.tasks/03-integracao/done/INT-004-ttc-e-umbilical.md": "19421f6c261ebb4bebbacb64ada7c8c74e5b0ae04a47cd05a7643ddeb40475e8",
+    "obc-dh/.tasks/03-integracao/done/INT-008-supervisao-e-retomada.md": "1956f84cbf8ae859ae92cb7d837f1281d67b065d83cf687114056b3ca5617723",
+    "obc-dh/.tasks/03-integracao/done/INT-012-watchdog-reset-obc.md": "b00ef581fec98cbf734fd6aac8e0cec1c53f99c7b9d0db917a08aa1fcd79cb7b",
+    "obc-dh/.tasks/04-testes/TES-002-executor-i2c.md": "150dfa355045260ebe1498ab111f42618f15665ecb87e351a94f62a5dab25b8d",
+    "obc-dh/.tasks/04-testes/TES-003-i2c-hardware.md": "3d0362f57333127a3c9e1e759b23d67df0f9966f398ed1ad2e63e34fe1fd26e7",
+    "obc-dh/.tasks/04-testes/TES-005-uart-hardware.md": "4e3c786ce578d9798d916dc0f991319b844bb3641e07525b0d804031fb1097ac",
+    "obc-dh/.tasks/04-testes/TES-006-sd-hardware.md": "3f964b6d83678dd1c7364831942df498e38cbfb3609d1a18496578a498d12dfe",
+    "obc-dh/.tasks/04-testes/TES-008-integracao.md": "59c8bdbab57d6f52f7bf2cbb89a93630e37198cb479173e98f8ab6213dd231cd",
+    "obc-dh/.tasks/04-testes/TES-009-falhas-e-recuperacao.md": "2c63d03dc647dee0f51f8334997ab81f8a03b926d682c1106bd0a558892a5f3e",
+    "obc-dh/.tasks/04-testes/TES-010-missao-e-cobertura.md": "4b4de3f35fe8c2ea85dd7a38a98177020097870b54eb50348d09b9ec6a60ec01",
+    "obc-dh/.tasks/04-testes/TES-011-regressoes-reproduziveis.md": "cf9fd32f37584b0310ae7e96b2985ef4f098f753b7949876f04778c53a3b29c1",
+    "obc-dh/.tasks/04-testes/TES-012-consumidor-telecomandos.md": "c476df7a9fba125845cfad430d7087fc6acdd36a40b106f596f7fcd64b35bdb1",
+    "obc-dh/.tasks/04-testes/done/TES-001-escalonamento-i2c.md": "3b08c68d18b4234ae30422f6cb3a10c41bf8f1136fc56e7949bb6319d3ae8304",
+    "obc-dh/.tasks/04-testes/done/TES-004-uart-software.md": "56e47e7dfc48d807eb7f5da23b27be71b43643a2d72b00b314f9a24b488ca8f2",
+    "obc-dh/.tasks/04-testes/done/TES-007-dados-e-tempo.md": "1891b655a3f15cd97dc57ae897e7db9f3302fa17f1acaa6607562f4a191b5f07",
+    "obc-dh/.tasks/README.md": "9e7bb092d7a1aea39eeb4ccde2cc1340d96e45ecdacdca1a04c491a57e993cbf",
+    "obc-dh/README.md": "c6eb19d02341b81eb5ae5028ed61a3d0b753dbd7b3d7f185aa4b997cf427b72e",
+    "obc-dh/encaminhamentos-2026-11-11.md": "aa5717d7f146695a0a32cac71620ce4a9e713001d3576de0ce9d8f35f8cfe23c",
+    "obc-dh/examples/README.md": "0eb10374e18b74a7b73a549107d499e60708fede329061c6cabb2699ee8de0e2",
+    "obc-dh/examples/int004-2026-11-17-141352/01-ttc-native-sandbox.txt": "3b641269dcec54644d83f72d460ccc6cdd86745fa1dca4326d63d78dd5071dc2",
+    "obc-dh/examples/int004-2026-11-17-141352/02-ttc-native.txt": "55681b8e47548971b62930c2fae1d0b2a1017a2ba817113d4151ff17d21875cd",
+    "obc-dh/examples/int004-2026-11-17-141352/03-downlink-compile.txt": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+    "obc-dh/examples/int004-2026-11-17-141352/04-downlink-native.txt": "581c11a4947e4f25b9d65464aea6cdd6b1ef08bcb31b5b0ffd39c1cf6dc78983",
+    "obc-dh/examples/int004-2026-11-17-141352/05-firmware-builds.txt": "7c60d2dcfc2209f7fb1a45a6ea3270536a55b2ac370700a4014e7ffbe52e85ee",
+    "obc-dh/examples/int004-2026-11-17-141352/06-reader-compile.txt": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+    "obc-dh/examples/int004-2026-11-17-141352/07-bench-upload.txt": "cce0e38fbd9ca854d799cf1c00092d63c31e63c33886796e1e1e48ec8429d8d4",
+    "obc-dh/examples/int004-2026-11-17-141352/08-bench-downlink.json": "61aed6e7fbad7afd3eeee114c0dab44a3bda5b5894d97f970def08f7fa0e2f30",
+    "obc-dh/examples/int004-2026-11-17-141352/08-bench-downlink.txt": "12a09582976c2b3d541959a55f15013dca10f31db52f13524fdf0cc082cc8fa6",
+    "obc-dh/examples/int004-2026-11-17-141352/09-bench-new-boot.txt": "2e70a69928da11cf8e499fadcc5eacce2f610af4b4a7ea4aa0e6e1a66bc548a0",
+    "obc-dh/examples/int004-2026-11-17-141352/10-obc-restore.txt": "c7b925421fef2329300b3bb4dd1c4587587dc7d2adeccc830d7b92e891ad3c6e",
+    "obc-dh/examples/int004-2026-11-17-141352/11-obc-downlink.json": "930d9aa3d1f10cce5e048ad7fe509fcd1a7a408cdda8ef642a031334d6477984",
+    "obc-dh/examples/int004-2026-11-17-141352/11-obc-downlink.txt": "2b8432702b21394f261ee69aeee0c248ac8d2a0f6b3fb3996273449f71fb7145",
+    "obc-dh/examples/int004-2026-11-17-141352/12-coredump-read.txt": "483c4db8926092004fdafdd5a377e969b1857fbdc96b657c4ddc8f7be2d4947c",
+    "obc-dh/examples/int004-2026-11-17-141352/13-bench-upload-after-diagnosis.txt": "b3cd4802637c9e4b60f4be6a7577ecd534ee205689548babf80e35eb39d5602d",
+    "obc-dh/examples/int004-2026-11-17-141352/14-bench-station.json": "a10319260477c25749e70dfb8b58ca9cfa368b9512084758aebf737aac9267ee",
+    "obc-dh/examples/int004-2026-11-17-141352/14-bench-station.txt": "9fe7a603415a7e12649cd250b27e180acf2a0419fd5f948e2b1e0b23623a6fee",
+    "obc-dh/examples/int004-2026-11-17-141352/14-bench-station/downloads/boot_0000000000000008_00000000.bin": "55f8a099c4a281b45f4c1874dd81d57401fbb1dd63045f13937b367bbf16e8ac",
+    "obc-dh/examples/int004-2026-11-17-141352/14-bench-station/downloads/boot_0000000000000008_00000000.jsonl": "57b915758f805fa279c071d3c94110762dadbc3af7d1990031a975bc895b6052",
+    "obc-dh/examples/int004-2026-11-17-141352/14-bench-station/downloads/boot_0000000000000008_00000001.bin": "31461e0bd887ae4356de55cfe68685bdd74488bb390f191ff61baf52ce421831",
+    "obc-dh/examples/int004-2026-11-17-141352/14-bench-station/downloads/boot_0000000000000008_00000001.jsonl": "d150cc569c42b4d0f1b0924a930e4d30744a2fceec7a29c6d5201af3670c32b0",
+    "obc-dh/examples/int004-2026-11-17-141352/14-bench-station/downloads/boot_0000000000000008_00000002.bin": "a982184f025bc530cb3395863876170402a4c40429d96a465cb74416be412219",
+    "obc-dh/examples/int004-2026-11-17-141352/14-bench-station/downloads/boot_0000000000000008_00000002.jsonl": "1ff17cb6bdf5ec23997beb059e7e3895f3bea1f2178a69a5b8c89f80c8683cf1",
+    "obc-dh/examples/int004-2026-11-17-141352/14-bench-station/downloads/missing.bin.part": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "obc-dh/examples/int004-2026-11-17-141352/14-bench-station/logs/2026-11-17_113722.jsonl": "69df3fde1110f22dbdc9d5469485f7ab74b0586b29bfb1444a5d64119950877a",
+    "obc-dh/examples/int004-2026-11-17-141352/14-bench-station/state/deliveries.jsonl": "2f1b7920615b5d34b3e4df0f7f2bd751f4224e09e51eb8a9805ce6d31bf38b62",
+    "obc-dh/examples/int004-2026-11-17-141352/15-obc-final-restore.txt": "812241dc999ffbebbd3f3d72678b9c23a71fe8c293dcef9158e47aa76c8bc2df",
+    "obc-dh/examples/int004-2026-11-17-141352/16-obc-station.json": "6aec316b4105213f9c3243051e3bf045760df908e7420d39adea322db9d59d4c",
+    "obc-dh/examples/int004-2026-11-17-141352/16-obc-station.txt": "8e076abe3929e8daa555d9afbcbb8f28f3771d2f7f0d6ef976b32c5a2221366c",
+    "obc-dh/examples/int004-2026-11-17-141352/16-obc-station/logs/2026-11-17_114304.jsonl": "b1937be33608690214f5684c910de95738dc7bf0add07e80cb1eb152052727ae",
+    "obc-dh/examples/int004-2026-11-17-141352/16-obc-station/state/deliveries.jsonl": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "obc-dh/examples/int004-2026-11-17-141352/coredump-analysis.json": "6ba6f265a08ee05478d084a48f1377d178cbe3031a130f6985b93e83ae0d62e7",
+    "obc-dh/examples/int004-2026-11-17-141352/coredump.bin": "c214d55e0d3940447f0f00cd8af468a22276303070967fc92ddef9ea9d0548ba",
+    "obc-dh/examples/int004-2026-11-17-141352/manifest.json": "162f23fd99c454527c6269ba2d5d3b83dcab7fe8f80253d69bd7cbefc5d1bc08",
+    "obc-dh/examples/int009-lm75a-2026-11-17-152917/01-native-compile.txt": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+    "obc-dh/examples/int009-lm75a-2026-11-17-152917/02-native-check.txt": "b5ef0b605cbec32de9680fa30d15da142348a7dc2cead2e4093bf9ef0e524822",
+    "obc-dh/examples/int009-lm75a-2026-11-17-152917/03-eps-regression-compile.txt": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+    "obc-dh/examples/int009-lm75a-2026-11-17-152917/04-eps-regression-check.txt": "3e7bc46b5cf397249f7ec9afe9d1ca5b6aeb8ba5a57434fc6761e1e44b3e9fef",
+    "obc-dh/examples/int009-lm75a-2026-11-17-152917/05-firmware-builds.txt": "518a8bfdb97fc1cc16df836b7a425fe4f8e2786d4053b04c250d5aef79b23571",
+    "obc-dh/examples/int009-lm75a-2026-11-17-152917/06-lm75a-build-after-include.txt": "fb3204e4276a9e1f38c200f728b5042878fcd9c751494da4b348c66fec2699a1",
+    "obc-dh/examples/int009-lm75a-2026-11-17-152917/07-lm75a-upload.txt": "b6cfdf9e62d2c083c93c2181f01de949e345ef659104a42f6c2acdccd4e3f4b5",
+    "obc-dh/examples/int009-lm75a-2026-11-17-152917/08-lm75a-usb.json": "85a3e89af544d4d1d0e3cb363d0e038e049dfd871904b1255d02555979f89695",
+    "obc-dh/examples/int009-lm75a-2026-11-17-152917/08-lm75a-usb.txt": "ee7566af3f70374f0bbdfbcf1f9cae306dc9bcee5d690d5c07216699d6e4d763",
+    "obc-dh/examples/int009-lm75a-2026-11-17-152917/09-ina219-upload.txt": "d2c064a071d0dccba3c17b7345f01d147a62cad809fa8338d73dc49821b5c4b8",
+    "obc-dh/examples/int009-lm75a-2026-11-17-152917/10-ina219-regression.json": "21609fe156ea6e862703a284e3dcdeed4d8833b56bd58f254072fdf9936abe12",
+    "obc-dh/examples/int009-lm75a-2026-11-17-152917/10-ina219-regression.txt": "577127bfdb1926c3d251a32f7e0bb1fbc06fd7b39f6cebdf2cc82f096bedd428",
+    "obc-dh/examples/int009-lm75a-2026-11-17-152917/11-obc-restore.txt": "3034c178c779e4b7ebe140d2262f30037597169d4d6010ac450e25fd4aae5923",
+    "obc-dh/examples/int009-lm75a-2026-11-17-152917/12-obc-restored.json": "0711df99608e688ba47cb12e2208a9859a8f6520e9dfaefe889ea53dbf4014c6",
+    "obc-dh/examples/int009-lm75a-2026-11-17-152917/12-obc-restored.txt": "04492a7f1b19f8d7c0aad770ca8443127cd32de2f3b00d3b0db5f8434dcd8b40",
+    "obc-dh/examples/int009-lm75a-2026-11-17-152917/12-obc-restored/logs/2026-11-17_125350.jsonl": "5e54f05d29938f3d69e7cc5d41d717a4868fa3a31f0a12fd87692d16cf07fb5f",
+    "obc-dh/examples/int009-lm75a-2026-11-17-152917/12-obc-restored/state/deliveries.jsonl": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "obc-dh/examples/int009-lm75a-2026-11-17-152917/manifest.json": "739531df2e45aaee6f5750dffa38baa78aa294871fb69459a14d91be8b09c4cf",
+    "obc-dh/examples/obc-downlink-2026-11-11-bench-02.json": "f62d07f5b0e7e8ce23eecf6f11196257974fbcd481bff6a94f5bc7785fead4a5",
+    "obc-dh/examples/obc-downlink-2026-11-11-bench.json": "bd0de0c283d98a165debd920f0c24c0e52b1a786e328fbb74cb4c0bcd6a6a654",
+    "obc-dh/examples/obc-downlink-2026-11-11-obc-02.json": "00c0bcd06786f57a7bda3cb16e3606934b5299cda6ffbfbf7360a0ce9e225e27",
+    "obc-dh/examples/obc-downlink-2026-11-11-obc.json": "0d65e426b0439fafec72741cf6d7be025ca800ac60633eedc21f81254178bbf7",
+    "obc-dh/examples/obc-eps-2026-11-16-native.json": "3f31565ef3310a3823e85eaa46cdb62ae153d407b4ef64f96c146df2f8c47b3e",
+    "obc-dh/examples/obc-eps-2026-11-16-restored-02.json": "c211488dc80138cec2af809e0b64f60e9a277c48ab3575acfe449f2bfe39d113",
+    "obc-dh/examples/obc-eps-2026-11-16-restored-03.json": "a7b8ddfffd56ee92c09b9de4b6662cf47d7c12770475e26e84c7e4d7ba62f273",
+    "obc-dh/examples/obc-eps-2026-11-16-restored.json": "ab08ef156ca1f3f46ce3124d5918d36647c88303f36ff0efeee0262ca78ba4d4",
+    "obc-dh/examples/obc-eps-2026-11-16-usb-02-manifest.json": "189cc1c09e8025a8b63aa93f704300a4c3e666e129e4d0a9e9deacb1faeb125f",
+    "obc-dh/examples/obc-eps-2026-11-16-usb-02.json": "bbeff8ec224a41313d80148fddd0bf333a26f62549be63e11850e3e2257c81f3",
+    "obc-dh/examples/obc-eps-2026-11-16-usb-03-manifest.json": "0343f661c6c4d387f4e34ab71b99e176dba2a638b5c216715cad90b88fd9e6ee",
+    "obc-dh/examples/obc-eps-2026-11-16-usb-03.json": "01332d8116859b507b32c41ea71987bf1a4ef6518db6bb4cbf8cd51e7166e954",
+    "obc-dh/examples/obc-eps-2026-11-16-usb-manifest.json": "48bc7ea5aa18a4645b7ba8d708d32a05722c3f7c7f8f38c5dff7c4d421262418",
+    "obc-dh/examples/obc-eps-2026-11-16-usb.json": "85c295a8c108d0e5be8d11c914b3819510d4199e01af8758d80ae1a47518a3de",
+    "obc-dh/examples/obc-i2c-health-2026-11-14-bench-02.json": "2b54206cf52a2ec6ec870669c042b94e656d078548690cd5b0d36e817bda9e3c",
+    "obc-dh/examples/obc-i2c-health-2026-11-14-bench.json": "76d1def493e55b8ba447ee5d67d8d7e786ddb3669320e46c65e0ceb1ee54ad8e",
+    "obc-dh/examples/obc-i2c-health-2026-11-14-downlink-obc.json": "647bed346fd3f75667b1f1e8a330754046786ac6b9377756bf4a92146504980a",
+    "obc-dh/examples/obc-i2c-health-2026-11-14-downlink-regression.json": "bc26821421f6892f96d3035b77840f0f6031d2fbcef1a3a410b081b92da7d413",
+    "obc-dh/examples/obc-i2c-health-2026-11-14-obc-02.json": "3bf738a669adc2a9f86a83edfc87fe3ec0361897bf75c66d68ed693b432400a8",
+    "obc-dh/examples/obc-i2c-health-2026-11-14-obc.json": "9c5c767abc9ee32263cf95d374dc23dd157956d5cc8d2335f52728935e00ec20",
+    "obc-dh/examples/obc-i2c-health-2026-11-14-recovery-regression.json": "3b3f174d8280b391d02fcdf1a3415c252e9ee44d800050e625c205723d74ddbf",
+    "obc-dh/examples/obc-i2c-health-2026-11-14-task-obc.json": "ca68b66adbd789b35254103bd5f711978f9ce92897f7e9ed10562b1ab286909b",
+    "obc-dh/examples/obc-i2c-health-2026-11-14-task-regression.json": "dde9517852a0760f6692e522af9375dd7a5b8fb030242fe21191f27d94fa94bd",
+    "obc-dh/examples/obc-limits-2026-11-11-capacity.json": "c4094f47265c9bcfaf8a28c92bb8468ba4dd7c7460f42cecb89ab45ce6631c4e",
+    "obc-dh/examples/obc-limits-2026-11-11-memory.json": "eae6110fd9dc8598dc3ea5863073be2a18a7ab7b70f6c6c0fe561c33de2648c5",
+    "obc-dh/examples/obc-limits-2026-11-11-obc.json": "f338f39be9229f4df724fc6a3e609fc9ec76c64f684d0b32ace5754926899ff4",
+    "obc-dh/examples/obc-limits-2026-11-11-regression.json": "35df5b1748e4a7165e9062606679da899fb337f75c4b1b91b48ec2f3c13b60c9",
+    "obc-dh/examples/obc-resources-2026-11-15-bench.json": "f54d4e0a9b74548ed5fe7c97b2d0440270ebfd9fe9a67822cc0c39790a91431f",
+    "obc-dh/examples/obc-resources-2026-11-15-downlink-obc.json": "c5c94d1ecdbe5720bd89e91e607a093d27dd0afcd192bc5b60e294b737ec7411",
+    "obc-dh/examples/obc-resources-2026-11-15-downlink-regression.json": "1b613a4cc7a42d3283280ced3703d37629038c09d706e51d450ae3b97c6a225e",
+    "obc-dh/examples/obc-resources-2026-11-15-downlink-restored.json": "93305868844befcfe9b3ba3f94d50aa10de682758c2af1918dbecc29e1d55a11",
+    "obc-dh/examples/obc-resources-2026-11-15-i2c-obc.json": "096d5afc03f15de6c60dbf45be3edfafa0824c9e9b504c388c1cc5cce7e2279b",
+    "obc-dh/examples/obc-resources-2026-11-15-i2c-regression.json": "9516f7c8e463d3a6f46e2bb19cab9f079b40c8b80c880da2af0a1960a1fc1bf7",
+    "obc-dh/examples/obc-resources-2026-11-15-manifest.json": "228f436a55925b6a2c01193304d4d12c06d4ef1458c70e9495832d3367310693",
+    "obc-dh/examples/obc-resources-2026-11-15-memory-regression.json": "6f9d7423b3681603769a02ce164ebf7a27b3d65d329d781cfd54c5cc654e3a1f",
+    "obc-dh/examples/obc-resources-2026-11-15-native-baseline.txt": "f8fa836b7d8847d4a9af30baf6182dced9430ea34c24285ffe5992df166f1290",
+    "obc-dh/examples/obc-resources-2026-11-15-native-regression.txt": "83501969802ef0007ed5ee84e41e58e34537a4e55346e9640ffe495b500ade56",
+    "obc-dh/examples/obc-resources-2026-11-15-obc.json": "1217d1df529cc2eb8d9456ba3db51b0e7a8466611d45f2b11b281743db7aace1",
+    "obc-dh/examples/obc-resources-2026-11-15-storage-regression.json": "7b2e015f29f5b26a98c77728731b9e58483589c5a8d46f4a18209598d4f14311",
+    "obc-dh/examples/obc-resources-2026-11-15-task-obc.json": "b0060f8ac4279a3a72544a6499d05d84d6fd2413353ebadb4e1b2889afafc1bb",
+    "obc-dh/examples/obc-resources-2026-11-15-task-regression.json": "f19574d03e5db7e7cf9a9c9842b7ba1e4b4841d86c59d9bc4aa7222e676cfd3b",
+    "obc-dh/examples/obc-resources-2026-11-15-ttc-diagnostics-02.txt": "4970d111c37961169e413778b2178364587b7f2fedcb7c2b0e2e9d77f9df77ec",
+    "obc-dh/examples/obc-resources-2026-11-15-ttc-diagnostics.txt": "a4f4b7b3aeea821932312be865eef8861ddbbd501b8c1dd918d968aa17c0812e",
+    "obc-dh/examples/obc-resources-2026-11-15-ttc-regression.txt": "5b88c1475044092509684bb0fa0dc1fa9ea0908474a4f0b6c2e94cf603a44ded",
+    "obc-dh/examples/obc-resources-2026-11-15-usb-regression.txt": "3d765925ce491db43f385f70124d2b8439166f0749dd31a1e074a07a1de187f1",
+    "obc-dh/examples/obc-station-2026-11-11-bench.json": "12c11af96a299a1701cfce536205fcaefc4c6dd55c594e889d1fbd05bbe69074",
+    "obc-dh/examples/obc-station-2026-11-11-bench/downloads/boot_0000000000000020_00000000.bin": "e6cc7cb54f8ed42aa42be68c3eb70ca9ae46cfbe1164300bc603c2f0d619db84",
+    "obc-dh/examples/obc-station-2026-11-11-bench/downloads/boot_0000000000000020_00000000.jsonl": "05c3d2b8e2c63cab81e535f2aa1af5669972c110ea0dc485d41096ee883357b0",
+    "obc-dh/examples/obc-station-2026-11-11-bench/downloads/boot_0000000000000020_00000001.bin": "913e945c9800773e09c3acfbda1e97693238ac6d2bfb7b82f320f85f8508ff6e",
+    "obc-dh/examples/obc-station-2026-11-11-bench/downloads/boot_0000000000000020_00000001.jsonl": "040bea676aca26995dda038b2ac20118c29e5a66daac959817274077b4451c48",
+    "obc-dh/examples/obc-station-2026-11-11-bench/downloads/boot_0000000000000020_00000002.bin": "30b4bf36383098e0dfde5485cb20504607e4b2628f6628fda6784f0e9463d736",
+    "obc-dh/examples/obc-station-2026-11-11-bench/downloads/boot_0000000000000020_00000002.jsonl": "51d9d74219be985da3cd08a59e86f892a724f5e93c115bc9870f41f9bdae3bc4",
+    "obc-dh/examples/obc-station-2026-11-11-bench/downloads/missing.bin.part": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "obc-dh/examples/obc-station-2026-11-11-bench/logs/2026-11-11_144355.jsonl": "02bae319cc154e3ba29edc772e92131072d873e4fe3e1fb9ae0a3040aa242638",
+    "obc-dh/examples/obc-station-2026-11-11-bench/state/deliveries.jsonl": "9f3b0b3ea0eeb0f409ba1f2b6d28af703bfd808261faa7f87a813953195f828e",
+    "obc-dh/examples/obc-station-2026-11-11-obc.json": "4c8cbbca7ef7c3a0008664840d9690350e8ec5dfa2c8ca6c008dee453032515c",
+    "obc-dh/examples/obc-station-2026-11-11-obc/logs/2026-11-11_144545.jsonl": "b29c15a3b4e134f7afe25a6b90a1daaa0dd6bfe1d80b807d2e34a340f23419dd",
+    "obc-dh/examples/obc-station-2026-11-11-obc/state/deliveries.jsonl": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "obc-dh/examples/obc-storage-recovery-2026-11-13-bench-02.json": "5926c2655a9b523cace3fed77341a785c09f7d24ae09c75b10ed05267ed25ffa",
+    "obc-dh/examples/obc-storage-recovery-2026-11-13-bench.json": "90ea6b9941f7a873c61b5976b0b7bcaaceaa4a064803f32a7a0dca7b3ab0a13c",
+    "obc-dh/examples/obc-storage-recovery-2026-11-13-obc-02.json": "8416ddc303e63332cc653ec09cf6ae573a4d6858df39ddf3af0b752d89532565",
+    "obc-dh/examples/obc-storage-recovery-2026-11-13-obc.json": "081136c11b8bc87185e04418bece2457e81501ea5d53f1c965fffc4eb975f309",
+    "obc-dh/examples/obc-storage-recovery-2026-11-13-regression-02.json": "89de21967c94a0564f8db51d58dc2d000947468aca4ecf04607f1ba8d6434512",
+    "obc-dh/examples/obc-storage-recovery-2026-11-13-regression.json": "58af652120c82da9878486acc5700bbc106ac101c3caaef78d277dbd8831fc8a",
+    "obc-dh/examples/obc-stress-2026-11-11-bench.json": "fb6ca99b09b1ea3458ed4de5e382b4ff99e05de999526744fec47888f4e4858f",
+    "obc-dh/examples/obc-stress-2026-11-11-obc.json": "274a46d3ef063dec0dc2a28d6a4ad2dfdf803241eaeced5c5f2cfd0675cc7dee",
+    "obc-dh/examples/obc-task-health-2026-11-14-bench.json": "b1867239f168b682f0b9b796032f12f411ad74a116d721555460ac5bdaf16fc9",
+    "obc-dh/examples/obc-task-health-2026-11-14-downlink-obc.json": "20d66b854a2f1bb11c221cd1c94ebcd2f177a0b4b6c7494c4b5e4e4743b82e46",
+    "obc-dh/examples/obc-task-health-2026-11-14-obc.json": "af1a90fa96e6d678ffc05781edf9609eda59f8e9eacb7577cd99632aea8f61b5",
+    "obc-dh/examples/obc-task-health-2026-11-14-regression.json": "5f9435e384f661bc541c03457a1ccdc84f0aabaaf123a96bbe09d57caddc1b95",
+    "obc-dh/examples/obc-ttc-2026-11-11-esp32.txt": "816d59bd280b01b13d1290a39e6a08fbc0c1d4baddd176e8e7805a116c77e2d6",
+    "obc-dh/examples/obc-watchdog-2026-11-15-builds.txt": "54df48afe853a98ad4c15f209d5aebd6c78a866cdc24659d232a614a04de2d9d",
+    "obc-dh/examples/obc-watchdog-2026-11-15-case-00-02.json": "ad1e410f19b412ab78d2f8364781d0fc037cb677e5de5381f4f43681e20dff73",
+    "obc-dh/examples/obc-watchdog-2026-11-15-case-00-failed.json": "d166b22679d6ed138f3f18d6ebce688ebf413066bed6bc2a426aaeb08652db57",
+    "obc-dh/examples/obc-watchdog-2026-11-15-case-01.json": "ce83af9c70d2a1a8587618347d2832ce043ed15e89f32f4a36c261087dabf666",
+    "obc-dh/examples/obc-watchdog-2026-11-15-case-02.json": "0f89233b1423000b5b81f3f8d2ae581b3be4a9ad2df60c8adbdc71967ea0d6a4",
+    "obc-dh/examples/obc-watchdog-2026-11-15-case-03.json": "e4b33f847779aab603048b9685ceec6e22df42a50b491e21bbff9dc04019e473",
+    "obc-dh/examples/obc-watchdog-2026-11-15-case-04.json": "478c5848bf2be25b666a315ea5b51129639c2b89a9381f9f5a79e156abeb7580",
+    "obc-dh/examples/obc-watchdog-2026-11-15-case-05.json": "c8ec2b6c9a33c046e8affe445f964ce016e632ebfb473083d70ffb6458a38ead",
+    "obc-dh/examples/obc-watchdog-2026-11-15-case-06.json": "a4b9e574370b0c36c091e0a0004b26826dc9e02182dbbdfd410ea9fc43d4a5dc",
+    "obc-dh/examples/obc-watchdog-2026-11-15-case-07.json": "fc7c2c0c005700ee777ab094e0664dfdb4ab095e63f97161c8f380bf7de94c3b",
+    "obc-dh/examples/obc-watchdog-2026-11-15-case-08.json": "56eabbb689951343a477b748db843a6dabde491fd4ac284743891be8acadb957",
+    "obc-dh/examples/obc-watchdog-2026-11-15-case-09.json": "75ab8f4885bb1f2225e8a8d6a8c435d3b42787571ab925669d09740dea8babb7",
+    "obc-dh/examples/obc-watchdog-2026-11-15-case-10.json": "3c26209679413d754118ee9d639c9c6888a87eec033abefa2e7a22ecd75ae3dc",
+    "obc-dh/examples/obc-watchdog-2026-11-15-case-11.json": "ef62dcec6c594468a7b1b7a1a876aef384254653bc1200d264263b37b83895a1",
+    "obc-dh/examples/obc-watchdog-2026-11-15-case-12.json": "f011d09fb5c0cc504002dafb25091784f7e23feb945631616bf81ab6e0454438",
+    "obc-dh/examples/obc-watchdog-2026-11-15-case-13.json": "db4dac95a861cd276875aa72d8c3a028d76b83a32f3fd461e1f282179be27e26",
+    "obc-dh/examples/obc-watchdog-2026-11-15-final-downlink.json": "34a18aa60de8d010ff4e7f6a91e3d9b5e61e27299af10615a3a172017f551e7d",
+    "obc-dh/examples/obc-watchdog-2026-11-15-final-i2c.json": "8ab605e0caf406742ff0db4fb287926d6dae0fbd46f7aadd9d9bbbffb2cfaf5a",
+    "obc-dh/examples/obc-watchdog-2026-11-15-final-resources.json": "9529010f01128bcec4f6a7bce548c8da5259595e8a94a3413947950330b85f55",
+    "obc-dh/examples/obc-watchdog-2026-11-15-final-tasks.json": "b017b3294e77e883e97dbb1f14cfcdc3bec9fa7c79d082aa3c0a235b73393125",
+    "obc-dh/examples/obc-watchdog-2026-11-15-final-watchdog.json": "141b9e01bc5046b63a6b2147d8c18276db6cb7b70ea85a4636b44eda1987cc86",
+    "obc-dh/examples/obc-watchdog-2026-11-15-manifest.json": "ed6bf1d0d24cecd0bba9d131e68b6e55a8edf9b00af46f77390f896e82dc68c3",
+    "obc-dh/examples/obc-watchdog-2026-11-15-native-checks.txt": "0fdbb8e99de1049afd42803aff4560cc335915e87e91a2c7adc38e5f5fa539b5",
+    "obc-dh/examples/obc-watchdog-2026-11-15-normal-restored.json": "7b127d45c8759b8c6a667f2250c5860f647b065adc7f8d96bf5272960480da77",
+    "obc-dh/examples/obc-watchdog-2026-11-15-partial-manifest.json": "a3e72ba106e94659f344d36e3e781dfbedb4bdd2f46d41468fe26cb1892b58d2",
+    "obc-dh/examples/obc-watchdog-2026-11-15-regression-downlink.json": "49f7a221c8c70b3a04309f6a8509e56b60aec8ba44fcb6f2c61a9a48cb64a43c",
+    "obc-dh/examples/obc-watchdog-2026-11-15-regression-i2c.json": "54c3b18eaa90bd255e3bfd7f9ac550587277984e6522cd5e3582956eb698e6f7",
+    "obc-dh/examples/obc-watchdog-2026-11-15-regression-memory.json": "a2446ca7310d1731a5177642f7fd0cb65fcf3ac277752ad60df5de383c0ae5ba",
+    "obc-dh/examples/obc-watchdog-2026-11-15-regression-resources.json": "583eb0436d5523590f59e3a2a588d9950273dcf7993cc0368c8a3312776aa7fb",
+    "obc-dh/examples/obc-watchdog-2026-11-15-regression-storage.json": "5c716078a5184b9092d0f971b508294a141a1a455aea5522b60982535d3f072f",
+    "obc-dh/examples/obc-watchdog-2026-11-15-regression-waits.json": "4e980ec348cc5bd3ea4faf8bbda05067c32503faf6b7f630c64806dfd00d5eaa",
+    "obc-dh/examples/payload-uart-beta/PayloadUart.cpp": "8ac32e922e58e1d604f6bc7aae586f4e2926801bab1cd1971385bf6557d2ae64",
+    "obc-dh/examples/payload-uart-beta/PayloadUart.h": "b0595161b57f421ee8fd8fcb9aa8409d6255c3b1882c2c732f41bd86453b1d62",
+    "obc-dh/examples/uart-loopback-2026-11-09.txt": "b66fd16c16026be53735be84089d152852b0023a84e10ab4806d52e12293171b",
+    "obc-dh/examples/uart-receiver-check-2026-11-09.txt": "1accb871e84315e686de259b795dbe5d41b052e363ca2c6795444674b7776dbd",
+    "obc-dh/examples/uart-receiver-check-split-heap-2026-11-09.txt": "de652680131620560686fb82d6500109cb3f4f99bd9384eefe991868a1fbe339",
+    "obc-dh/headers/I2cBus.h": "cf7dfe119e1f177d57deb919022568aa111c311f105fc020ce2bdf269b0b2ccf",
+    "obc-dh/headers/I2cRecovery.h": "5d3633acc38c7cd43e0daa8be90030562cbd87f8b297106ec4ffc2deb2267dc1",
+    "obc-dh/headers/I2cScheduling.h": "6c0854ecabd8d8dafd345a7c2e6ee358dfad1ebd524ab582ff0ec3ec2eb82190",
+    "obc-dh/headers/ObcDataFlow.h": "b6cf7ebc592f46299d52ce2b887728e6cad00134b685e31c2496ecd2776aca07",
+    "obc-dh/headers/ObcDataFlowEsp32.h": "5d8c1c8ae2bd2a1650147aa4ab971a4133712c53c1e4bcf590b78a0852108897",
+    "obc-dh/headers/ObcDelivery.h": "fab997fbbb3b09ec078d27dffaf3b9414cc8d733a72e76f496881cb46a6f189e",
+    "obc-dh/headers/ObcDownlink.h": "fcc930af3af47955d8be4a9ed4afaef73a7ef3d65721826799b8985e44d0f4f1",
+    "obc-dh/headers/ObcEps.h": "01a385d90620eaa8edf1638459b4222b43e66d82e9dd5f4b169b82954c1cabce",
+    "obc-dh/headers/ObcEpsEsp32.h": "5fcb3c693b03beca004a9c4e672361ac959d958b6873ba90cffe289e9f0a70d8",
+    "obc-dh/headers/ObcI2cHealth.h": "9396a060767c20e77590e3968e58c692e8fe0215a4b7078cebb8b54bd5569f92",
+    "obc-dh/headers/ObcRecordCodec.h": "fe7b00e9b05e2aa67f1512c93aa4621e3b7c2d25692f80defbd83618c898e851",
+    "obc-dh/headers/ObcResourceHealth.h": "40ac9d37b8b228ef5f34cf5a9dbc81a2589d78ba4d7604704530f1162473d0ad",
+    "obc-dh/headers/ObcResourcesBench.h": "cb729c708f920ab01250455d5f66ae957b5cd10e8633a0bd48455b368a577ebf",
+    "obc-dh/headers/ObcStartup.h": "c7cf65313a24ebb55e0144b6f1efb3fdadbe202b7d2d858da58e9611a749a560",
+    "obc-dh/headers/ObcStorage.h": "79f81e259fb8571fda2297b60d2efb16ebdc0763bf4334b473277b41ea2ab999",
+    "obc-dh/headers/ObcStorageEsp32.h": "6635442c4ec55cfddaccdc4d05431667f0dc1e03c3c254ff3f505c280e7b9ede",
+    "obc-dh/headers/ObcTaskHealth.h": "5fcd61888c51718cd0744846ccad5130c5ef4b08ab80e5667bbc77639c3eaad3",
+    "obc-dh/headers/ObcThermal.h": "f020ab17899bf99f6155e5218f7c2c4b8aa074402836430ac83c71731a29638b",
+    "obc-dh/headers/ObcThermalEsp32.h": "1fde4fcfe3152f2c9fb46bb451527ae239b266e1cee3edd891fe8b3eb61c7dbd",
+    "obc-dh/headers/ObcTime.h": "e9508bb97959b763d4efed0d96faed56f812bb6accf86ddbd7db9317cc5fe502",
+    "obc-dh/headers/ObcTimeEsp32.h": "22b1c2bcf4d115e3ced544b733b704baf495699228f639687a4bad60ccff90b9",
+    "obc-dh/headers/ObcTtc.h": "24835b4be8b69754f669e5afab1028e577527a331c686f34f3f0d7bf5d470a18",
+    "obc-dh/headers/ObcWatchdog.h": "5c545cd90364b9fac7b4e55d171aa60dd3d4b287be96f005b9917429c028c012",
+    "obc-dh/headers/ObcWatchdogBench.h": "337ce4a807fc4e39934f8fec412c0f6dadbcd40cbc6902a5ea10d6c4d0b67b57",
+    "obc-dh/headers/ObcWatchdogEsp32.h": "497cd1381e3084b6a430b2da2dd32592daa1457e89bc96623aae1b2109e73c95",
+    "obc-dh/headers/PayloadReceiver.h": "9094174d9177608a9c399bef162cd226f021a08603fe6d207b74a84b9ee19439",
+    "obc-dh/headers/PayloadReceiverEsp32.h": "ae066240c0229b29e970ce5ac133c2fbad50391f01af7f9574c24392eb0a2c56",
+    "obc-dh/headers/PayloadUart.h": "b0595161b57f421ee8fd8fcb9aa8409d6255c3b1882c2c732f41bd86453b1d62",
+    "obc-dh/headers/Pinout.h": "ddf2dbbfaf196f6e92acf955dbe738cf333a107f2958f2c79a85a48ac30e4653",
+    "obc-dh/headers/models/ObcData.h": "1789ac1089016d813bee80d21c9d479f5d01fa8723fff85ccf1a1c150ad1944b",
+    "obc-dh/payload.json": "2b1b702b975fa8c14362a96c641117263301c3e02d5ac7d4ba18f66993e7acbf",
+    "obc-dh/platformio.ini": "93becb5264082d923199c35c621f6be9ae253f4a04cccf79b1c913d9033d944c",
+    "obc-dh/src/I2cBus.cpp": "b7d900a61204c2385e5c2ac5dbf19afff647b4aea89773444b787c8557c6952c",
+    "obc-dh/src/I2cRecovery.cpp": "41f6005d823a7ed070481daeb667de176e11151a5840521465049a45e94bbe60",
+    "obc-dh/src/ObcData.cpp": "3c1dc0a2f350bae0b3c3e01fd435767a88e65799aa0e11b9e08a3b6e6e9dd12f",
+    "obc-dh/src/ObcDataFlow.cpp": "27f58d92d73cd4a06eee6cbf77b20946e8fa552e7ecb5f5bd41176c7871aab30",
+    "obc-dh/src/ObcDataFlowEsp32.cpp": "9f406227a4c81bb22b95574d2dc9490d2f89870ff9bdf54fc0f1d4110abd25c0",
+    "obc-dh/src/ObcDelivery.cpp": "97ea59abca456d1b9b4cbb023e83fc4b18f541f3e300f83080f8f08fcccab1fc",
+    "obc-dh/src/ObcDownlink.cpp": "0c9f062b44d912e5cef10f0c8a11ed612c2e67e333d54bd064ea1caabab5fa17",
+    "obc-dh/src/ObcEps.cpp": "58f99d3b64c6bb8e370da8a8f9d32b55978c66c3b751f5dcf1367b2eeb1b8169",
+    "obc-dh/src/ObcEpsEsp32.cpp": "d449fc656aef887daf875df9d0fdc84af78bb8a0fc15a5d3a5c8e0c48903ffff",
+    "obc-dh/src/ObcI2cHealth.cpp": "2702c309ae745a5533678c5bf6c67c06f1b5ca52a06844050f18914d9038f459",
+    "obc-dh/src/ObcRecordCodec.cpp": "1adf73b0a42d570b8749a78a611d4c44de42292ab0495b64d1fa009562c17c4a",
+    "obc-dh/src/ObcResourceHealth.cpp": "9c2b8c7ebecb33726bc899cdcfeca1dc405ec043412b6f2272a2fd60efc32742",
+    "obc-dh/src/ObcStartup.cpp": "4a51f19b5cb236b2c8020c4ad12f1a42f41d40268f3f4316d44962fd4bc8fa16",
+    "obc-dh/src/ObcStorage.cpp": "bea0f1dd17ddfed294f5eb78a6b785e0684bb144b4351e8dc8acfb27c5a02154",
+    "obc-dh/src/ObcStorageEsp32.cpp": "19f43a88ca551cfea76e1bc968bf83e6a52213a3a60a082b6b43409bba423966",
+    "obc-dh/src/ObcTaskHealth.cpp": "75e7e8f6a82e28bd4911940d4dcc468c031b31c4de3a8094c0b6e0c2832a498c",
+    "obc-dh/src/ObcThermal.cpp": "e849dd71991df171145c9bcc9c341e0caa59427e19a9b62264ca6687fc21bf21",
+    "obc-dh/src/ObcThermalEsp32.cpp": "0bcf523a1f6587658527bf4be3cdf9c01ce0d6bae4de17f2745507299ab4f901",
+    "obc-dh/src/ObcTime.cpp": "15a3b34fdd8afa8783436a4b780f62865ceeb4062470a4c6b1990769ce9205e2",
+    "obc-dh/src/ObcTimeEsp32.cpp": "046eb4cb7bc5f630e39f8ced58bc040d7b477738eb693be128be94f83308f6b3",
+    "obc-dh/src/ObcTtc.cpp": "c655878350f794930126452e66ba4c8948bc3b1b88d74b1a64562bf2e1d0202b",
+    "obc-dh/src/ObcWatchdog.cpp": "fabccea86155a4872cd964224a98dff47fa5110d29f0c8b0feccc87b2ee70833",
+    "obc-dh/src/ObcWatchdogEsp32.cpp": "4c11591f9fa624f8c784be36b4cb03e9ae302f076f646dfdad5f8e224e4bff24",
+    "obc-dh/src/PayloadReceiver.cpp": "9ad55174d2af6b4aa8881f7e71762629b3653e0c0939a8e9018961a413a8e122",
+    "obc-dh/src/PayloadReceiverEsp32.cpp": "9157b8f2be274aa980357694d59d43a713b23f3d3d1534fa19b6f169a3d23dad",
+    "obc-dh/src/PayloadUart.cpp": "8ac32e922e58e1d604f6bc7aae586f4e2926801bab1cd1971385bf6557d2ae64",
+    "obc-dh/src/bench/DeliveryRecoveryCheck.cpp": "0990e056d34081b6de97f8d1f7352a56e39570984dcd34ae1ceed72dd6eaf676",
+    "obc-dh/src/bench/DeliveryRecoveryCheck.h": "71318d12f7f4f1e6a46dcdf6396c7b5fe6e49df117cc95f4473f342903fc605e",
+    "obc-dh/src/bench/I2cHealthCheck.cpp": "8caa3ed6631b53316fcda22206a231df940b12216b93501e02818bdb0bd9a590",
+    "obc-dh/src/bench/I2cRecoveryCheck.cpp": "74702f1239e0d1915d15edd0c5ae283bdcdfe2a0509e8dc93dfe98fb66b39c45",
+    "obc-dh/src/bench/I2cRecoveryCheck.h": "521b09ae3fd29049bb6667a466dc3e6820033164f5d5f194ffdc635d14f11343",
+    "obc-dh/src/bench/ObcDataFlowCheck.cpp": "372a515e17745a77b342ad3d42bbebc39a556ff2d73ad25181784c3db58d9442",
+    "obc-dh/src/bench/PayloadReceiverCheck.cpp": "7d989becff3af4e97afb816cf7daca2c58a1c1c404c75ba12c8b36d4c86dacb9",
+    "obc-dh/src/bench/ResourcesCheck.cpp": "95d4931531ba334355477b78fba21c9c768b096b870058775cccc09875cd1b9b",
+    "obc-dh/src/bench/TaskHealthCheck.cpp": "d82d3176c74a7adcaf67d0eba998c44f3ae233d9faebcd1931a94c9aaac4f970",
+    "obc-dh/src/bench/UartLoopback.cpp": "8fc0d2cbfc34399b4eacc19c27db4cc77036f400ed93fde8969059ebbb513b57",
+    "obc-dh/src/bench/WatchdogCheck.cpp": "46cb3ea76786aa467822251a3582713948139099993d14e9ef43ab194860c449",
+    "obc-dh/src/main.cpp": "6f33f77f4e015dc763e3d3e4f0d6ec243971c1ce394fed48568c7ed54f4b360d",
+    "obc-dh/tests/.gitkeep": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "obc-dh/tests/DeliveryLogsCheck.py": "1c7cc8c1deea82900796ec450c20e1ce50cd62d9eb57c2571faee9df81093185",
+    "obc-dh/tests/I2cRecoveryBenchCheck.py": "6784d9ba9507e7a5f4677b1b11091b6ca60748a17dda7f3f977bc66b6f34c020",
+    "obc-dh/tests/I2cSchedulingCheck.cpp": "d1ad81f0cf8093221f4812e8f01977949d30b77e749d9bc1b2b5ea3c9f6fbb5d",
+    "obc-dh/tests/ObcDataCheck.cpp": "c7fef5a7aab0f3af20259f6d656e78514baad7363b71fed2308f6fadf6be8a98",
+    "obc-dh/tests/ObcDataFlowCheck.cpp": "04188888225fe870948ea73521bb3ec8f980358346a35e06a141c4817da3e6de",
+    "obc-dh/tests/ObcDataFlowCheck.py": "8d361975d8e459a2e4bcdca6283e452d1332f8906b75324fb933d1bc4084f924",
+    "obc-dh/tests/ObcDeliveryBenchCheck.py": "339e84f7c3553026bc89e7fbd5807b19e361d06aef8563f87b357c06bbc72d1e",
+    "obc-dh/tests/ObcDeliveryCheck.cpp": "44de8bed2c946e8296e40eb3bbc33eac44388de88989390833f4f212b9e29a2d",
+    "obc-dh/tests/ObcDeliveryRecoveryCheck.cpp": "343f5133b25d42bf8f58a23e4d65867e6dd28206cc2cfa967d9e7e8bf9f1ae99",
+    "obc-dh/tests/ObcDownlinkCheck.cpp": "b048431e310de7650d35f56c3b0835c0c48db3e3f3ea34cb7354e7819d4da08f",
+    "obc-dh/tests/ObcDownlinkCheck.py": "6eba6d02d2adc229b54cb9fa979393d0bb657dad53f5bd98393cd89a9daabda2",
+    "obc-dh/tests/ObcEpsBenchCheck.py": "43b363c20958fe82f180b8a4d59cebc9ec47a6f033cddb3ef3dda3b49ad11e64",
+    "obc-dh/tests/ObcEpsCheck.cpp": "18447a9f2444b572c66b2ad1ddd20a9b00b1423b2bc329b9e4fd67bfbbe21cea",
+    "obc-dh/tests/ObcI2cHealthBenchCheck.py": "aef5558b339d6263e53efb4d8ab8c0ce8f3c8cbe21b9c4ba236352e639223c77",
+    "obc-dh/tests/ObcI2cHealthCheck.cpp": "b877a45f82f99d0146edeae95a6889eb2b5b7f776a94408cbaf2dd0c49f9253e",
+    "obc-dh/tests/ObcLimitsCheck.py": "a01fb312d2eb905fc1ca37fc30706ffaee916df8a52fc04c79b50e4ede2c05d8",
+    "obc-dh/tests/ObcRecordCodecCheck.cpp": "124883bb44ea2ab60f6e9b72b177eeb892d22fef80257fac14de086f3273289f",
+    "obc-dh/tests/ObcResourceHealthCheck.cpp": "71b1e2f649b9d174b9389e40a8f7e198185906621d9e3af01a30c5ac5e359a13",
+    "obc-dh/tests/ObcResourcesBenchCheck.py": "808983d63b288604380a518cbc204bee5523daa7b7aef73bb235bcb199a25f45",
+    "obc-dh/tests/ObcStartupCheck.cpp": "cc8495804a5a1db7d0ea837bca041333198cdb58244d0dd3e8707dbe48f7d91d",
+    "obc-dh/tests/ObcStationCheck.py": "8cff56a988f3b767574938e44524ff6a4d964be184b5b32c72eea5c58b7e3368",
+    "obc-dh/tests/ObcStorageCheck.cpp": "d33cb9f66c6f857c5e14d826628ae0c72e6b9460785362c75076ac689ff7caeb",
+    "obc-dh/tests/ObcStorageRecoveryBenchCheck.py": "87c69ea1dd533d9225e4fe8951d48ba28c910974ec4ac60b2952b8d0edc760ff",
+    "obc-dh/tests/ObcStorageRecoveryCheck.cpp": "1239161fc14a216588c2dcd1a5830b6a442dc37b3e5fe78e312a144a8a6acf1e",
+    "obc-dh/tests/ObcStressCheck.py": "783a1ac080cc1a802bec69af6aac3522d82eef34ef303e137294bec811c555f2",
+    "obc-dh/tests/ObcTaskHealthBenchCheck.py": "3215eb7971385938c77423854ca4d1ce2fdefc9f502c5a9dfce81b7849009723",
+    "obc-dh/tests/ObcTaskHealthCheck.cpp": "539c08cb13f9373caa2ae2d9a2a7890ff01286eac4e65ea8b0912e09dee9130b",
+    "obc-dh/tests/ObcThermalBenchCheck.py": "d41e6d4f1a327801467939af3fdde261010036dce6ee7e3d68414f4a99c179f7",
+    "obc-dh/tests/ObcThermalCheck.cpp": "6d8856863fe3e457f5faed721c22c64d027bbe2e947fec4c52958c9d3c3a016c",
+    "obc-dh/tests/ObcTimeCheck.cpp": "077e430d91e3692ef976b274e7a300cdbca6cde7fd4fc1e384d07b5ddcb3e77f",
+    "obc-dh/tests/ObcTtcCheck.py": "bf5de0ac190518922afdcafa8ab8e82358ed5b5d1eb0868b867e3f516fdc9c49",
+    "obc-dh/tests/ObcWatchdogBenchCheck.py": "6bfaf09e7334c3e143cbb265875f5f7f54282a397f6158bace71ab1ed3abf5be",
+    "obc-dh/tests/ObcWatchdogCheck.cpp": "26fafbeb9c1f986e4ab2a52b02911bdd47eda754f41a2c2206e48f6a62df05bb",
+    "obc-dh/tests/PayloadReceiverCheck.cpp": "2a06f0eb788fcb38afd9e0e8a0f8719798e417b0919c73450edcf96aa585692c",
+    "obc-dh/tests/PayloadReceiverCheck.py": "cff76fea8872c2bdc37f265fadf2a2641587b9514af7a92f659aa44b2b646c92",
+    "obc-dh/tests/PayloadSnapshotCheck.cpp": "72fb69f251cf617873659f0f81b228bee160e5b6f8b76ffc6394cb45938feb42",
+    "obc-dh/tests/ReadRecordsCheck.py": "2f78b65f7840334c542a5105e8d8486b02ed2127541185412d2b0589117d16a6",
+    "obc-dh/tests/SnapshotCodecCheck.cpp": "f7ad752ea9e11f1ee88f6027a528bc93eb3f28ad4343e793f09f26284e022344",
+    "obc-dh/tests/SnapshotPartsCheck.cpp": "68ec15b51264a710f5d0b6f3c3873dc154e27259e0cd849851f9c25ede2066fc",
+    "obc-dh/tests/SnapshotPartsCheck.py": "405acc084d9d3832fe50ee3742f9da4c25fc888cd8a34c259f3897fe3b631f5b",
+    "obc-dh/tests/SnapshotRecordsCheck.py": "53ee717e67a5d60f9a06b7892751b3512d3bb729f4292db4e7b6a95839e66c40",
+    "obc-dh/tests/TelemetryV3Check.cpp": "c40a3553fda71ed8f4d94be0bbc24998901d3b5fc1006078a8f8f80f920ea7fa",
+    "obc-dh/tests/TelemetryV3Check.py": "e2d42f3d71b427707b11f536832ee1b8e5106d96c97ade17d7aba55d5b1f9957",
+    "obc-dh/tests/eps_native/Arduino.h": "6b19ba60273febd411dfd57879b98f4d64cfec767fd47dbf1a6bcbf46adae6e6",
+    "obc-dh/tests/eps_native/Wire.h": "5e5f90d5d6e4988c7740f54fadf76536799f0d3ed356a75ae10def42ed77a669",
+    "obc-dh/tests/native/NativeI2cRuntime.cpp": "a987bd18a41af3fa85279b11f78ea435347d356e42cbad6bc36fc2c460d4b08b",
+    "obc-dh/tests/native/NativeI2cRuntime.h": "5820d6d07cfabd8a16754835256590395269c2000b2579741d7817838b7bc093",
+    "obc-dh/tests/native/Wire.h": "4eba8a867419ea0ba6d7ab48898acbd67e63f3672cbb9773038d3ddc611775a5",
+    "obc-dh/tests/native/freertos/FreeRTOS.h": "da44a26b20f0d091ddf9741cb0ec1003b4563da0001d99ef1532b86eb4e2429e",
+    "obc-dh/tests/native/freertos/semphr.h": "2cf944ef14274074a27f9362ddd52b7ccb6eab60c2ea38d5a3e58580f94b0721",
+    "obc-dh/tests/native/freertos/task.h": "16d9f19264a28ee8a09ca432df0b0cc0a3e4db92cf9986d871684098fdbc26b9",
+    "obc-dh/tests/thermal_native/Wire.h": "ebca1fc1b38774a7bd27927d50907fe061f050fbfbcfeb7fd43e7c2c0dc08356",
+    "obc-dh/tools/BuildFlowFixtures.py": "d5b9e0420d7e30cd7cbe6936a975d492079806042962e6274db8e570dfc0d4a3",
+    "obc-dh/tools/BuildFlowLimitsFixtures.py": "1b8ad466be75c5c28def0503fae9301bf448ce357d6073946b89e752fae8fbd5",
+    "obc-dh/tools/DeliveryLogs.cpp": "abfc89c2b6e3199246572eedee7bd3c45135f771debdd00d6d3cfc0614d34ad5",
+    "obc-dh/tools/DeliveryLogs.h": "d33c8e605584499645516fdf2c2233c56a1cdb2721cda5d6e04fbd99901915e1",
+    "obc-dh/tools/PatchArduinoJson.py": "91bc251e8155a25cd71cb57b92d2a1513e7790c5db6cd08a1a3e0a7862a65a72",
+    "obc-dh/tools/README.md": "54aff0317c99e44bb7812005ba13449d4ac0f19597aade30b803e97a4fcfd170",
+    "obc-dh/tools/ReadRecords.cpp": "c9eaede706fc7bfe29dc28cae29651ab20ccb4bff84f24e283325ba7a50a6933",
+    "obc-dh/tools/ReadRecords.h": "6738a26ef033be110abde6f7e5bf91896bad091ab79ed50e793c71def54d2a01",
+    "payload/.gitkeep": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "payload/README.md": "6448eff32a95262fbf997d9574d6b0955a2427c5cb399178cc18d22e97fdc999",
+    "payload/raspberry-pi-runbook.md": "2a5965c85bbd44d7066469e3c254c173fa5b1d1b7e431b3ef390abfc49e63dd5",
+    "payload/telemetry.py": "3fa1310d16ce76e6ab5aa9ddccb6303c6a9580617eeedfd0dd33fb5be4abfc60",
+    "str/README.md": "9e1ebe3d28e3ece0ad4a2484a6cc96d9eede0b65bf7422c45ee36958fa361aaf",
+    "str/drawings/.gitkeep": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "str/exports/.gitkeep": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "str/manufacturing/.gitkeep": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "tt-c/.gitignore": "692b1af4436043e2e965c8d563bbf90d648cda3a6afa9bba38e1c38af1d38919",
+    "tt-c/ENSAIOS.md": "0fe28986451bec29c49b90b3005fecc00a0b95e0ad70fa638e3c30d32ba152ce",
+    "tt-c/README.md": "ff81632e2fb5395c6608d4cf96f19f7e3ef1e224ffcdd4d8f1c6aa7a155d2c35",
+    "tt-c/TODO.md": "bc3ca4cd582727b1039fda97b1064c0d95dae28dc389c04811c94dc3dfbee497",
+    "tt-c/examples/link-test/platformio.ini": "66234997fbeac22fad2ffe005a10fd31d0ed30c3648246bfa4d9fb317d9e7bb4",
+    "tt-c/examples/link-test/src/main.cpp": "4b4a86cac9b324c7e743a2f2c3d11c52ca20ac29928ada7fc1bb6ffe710cabd8",
+    "tt-c/ground-station/app/.gitignore": "6c9f982de7620fad958f0a5d6f90555f5231906dd63cd3034c963420e3b2f9da",
+    "tt-c/ground-station/app/README.md": "9f480c6658a86df163dfe039a2d1c0c23531a32d3ea4b397ec868affd17600d1",
+    "tt-c/ground-station/app/fcp_gs/__init__.py": "7b096099605426b9068d1d9b82c77cfc829ef1396fda5cda21fcd987bed2fde0",
+    "tt-c/ground-station/app/fcp_gs/__main__.py": "e908d200bfa87bc2b4be364501d4605b00d6e837947f4f8d7eb60567346c8892",
+    "tt-c/ground-station/app/fcp_gs/analyze.py": "98906085f2986512aaeee853b074c09361af5ee2a963a9c44f3746ad8c501655",
+    "tt-c/ground-station/app/fcp_gs/deliveries.py": "45e0f7173ce9b4606b66063b576be9fe99a265fd1ccc66f3d00eb614611ca8f7",
+    "tt-c/ground-station/app/fcp_gs/demo.py": "8913a28e93af4cd18bb572d5ebc764dfe080cf42a8c6fe38108f55dda3ac6661",
+    "tt-c/ground-station/app/fcp_gs/link.py": "599b4aa7cf85873d15665013d72387b35cbd4f419c7b769f0764e436d3ba5f33",
+    "tt-c/ground-station/app/fcp_gs/logs.py": "415f5b571da3f9e22da63078263331aa555f07791f23bd829fa0a31b7c363cce",
+    "tt-c/ground-station/app/fcp_gs/protocol.py": "2f31cff2a06d1a5fda72338a8e0902564c2c5c7a1b79de01a309254ac15734f6",
+    "tt-c/ground-station/app/fcp_gs/server.py": "9116a78c443e3c3101e32e9fc7bb415e20f04035c16bd29d9a2b848467f7f786",
+    "tt-c/ground-station/app/fcp_gs/session_log.py": "77e3259336226890034ba1f4adb44a656b36be04431af49736d1a234c91fa8ab",
+    "tt-c/ground-station/app/fcp_gs/static/app.js": "41f389b82ce8ea053331c3a98b60065390bc236971806c2d859e237eb4a61796",
+    "tt-c/ground-station/app/fcp_gs/static/index.html": "ffb5dbfb63ba03e3a477efbb7fb855e265be6131251a9e8fcd5d1a5f34ab56d0",
+    "tt-c/ground-station/app/fcp_gs/static/style.css": "685e80c190110562f892778d5153c9fa9aa4c9e07c0b0eab67148b7664840fac",
+    "tt-c/ground-station/app/fcp_gs/static/vendor/borders/README.md": "0ba0401d58992c5c369714bd69bd2d9ee525643679ec0e4a4b8445638be245ac",
+    "tt-c/ground-station/app/fcp_gs/static/vendor/borders/borders.geojson": "551311579763302200094c58a447785cfc6ecd072d70992fb75f788a25e20229",
+    "tt-c/ground-station/app/fcp_gs/static/vendor/leaflet/images/layers-2x.png": "066daca850d8ffbef007af00b06eac0015728dee279c51f3cb6c716df7c42edf",
+    "tt-c/ground-station/app/fcp_gs/static/vendor/leaflet/images/layers.png": "1dbbe9d028e292f36fcba8f8b3a28d5e8932754fc2215b9ac69e4cdecf5107c6",
+    "tt-c/ground-station/app/fcp_gs/static/vendor/leaflet/images/marker-icon-2x.png": "00179c4c1ee830d3a108412ae0d294f55776cfeb085c60129a39aa6fc4ae2528",
+    "tt-c/ground-station/app/fcp_gs/static/vendor/leaflet/images/marker-icon.png": "574c3a5cca85f4114085b6841596d62f00d7c892c7b03f28cbfa301deb1dc437",
+    "tt-c/ground-station/app/fcp_gs/static/vendor/leaflet/images/marker-shadow.png": "264f5c640339f042dd729062cfc04c17f8ea0f29882b538e3848ed8f10edb4da",
+    "tt-c/ground-station/app/fcp_gs/static/vendor/leaflet/leaflet.css": "a7837102824184820dfa198d1ebcd109ff6d0ff9a2672a074b9a1b4d147d04c6",
+    "tt-c/ground-station/app/fcp_gs/static/vendor/leaflet/leaflet.js": "db49d009c841f5ca34a888c96511ae936fd9f5533e90d8b2c4d57596f4e5641a",
+    "tt-c/ground-station/app/fcp_gs/tiles.py": "b2afb03e0b6ff1724b48241af4daba684bf0ceec262653c983f7a3d38330cea6",
+    "tt-c/ground-station/app/fcp_gs/verification.py": "6c41f124b6236fec15c011ea02a5fc0734fe03e45f49d0254a3c544cfac33588",
+    "tt-c/ground-station/app/requirements.txt": "3b4f1528995184b0dd4fc1f2928e07a7cd375fd8962511275b1db3f2275666c7",
+    "tt-c/ground-station/app/tests/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "tt-c/ground-station/app/tests/conftest.py": "510c0d738779caa93dccf6d6301b44944e1335b3b00db172a6dd5ab0ed0b7837",
+    "tt-c/ground-station/app/tests/data/tm_samples.jsonl": "c3583973df58d6bbf5de25f37ea5381d89d20e4aeb1ebd58a14619257bc338a9",
+    "tt-c/ground-station/app/tests/test_analyze.py": "8c4d18fdeedd7e9c24efb04c74385f3e0254fd3f1fcfd739324b39df2a375105",
+    "tt-c/ground-station/app/tests/test_deliveries.py": "32d5e81049c53b8753d28dc252c57212812f0a7e86c09e66e63bd64db590e50a",
+    "tt-c/ground-station/app/tests/test_demo.py": "c232e2b4700ac6baef6e28b772d0c96258365a902035013f4e77f49dda9932a6",
+    "tt-c/ground-station/app/tests/test_inject_api.py": "86d2d11f162fd56458d1823bb564b0c0de88a4b4eb6628409b933c1674fbc7ff",
+    "tt-c/ground-station/app/tests/test_link.py": "f229aff52d4121ed64b7f17d38b35332a041c9cb8ba12682b42cfcc48f7544c2",
+    "tt-c/ground-station/app/tests/test_protocol.py": "24f2c15420135a600f9e87cb6318f292e4221ac729b6a15bb966abd1516db7d1",
+    "tt-c/ground-station/app/tests/test_tiles.py": "f0883697f5755c6a6aa2cec91d20399764d7b522c959be2d2ac71827eb70985e",
+    "tt-c/ground-station/app/tests/test_tm.py": "6dcb66a0f9e43f4e49c87d32f31a5bd2ca710e1829d5193ff19eac89bc86447d",
+    "tt-c/ground-station/app/tests/test_tracks.py": "291d430ccfa03b5b963504dd28a6b2c038eaeafbddabaae68544cb7af7dab873",
+    "tt-c/ground-station/platformio.ini": "b0ede96cf84f686b2f116872556acb252c4286f22ee61a4922e708f94f64c5ab",
+    "tt-c/ground-station/src/main.cpp": "a1a23ae7d05c4f3e992e4c13d5c596aef0d3abe0fc78537e67f99242d7075d09",
+    "tt-c/include/LinkTransport.h": "b40048b5d68a748702e3243886fd143f106c949b9f206345aeb0be339aa48c73",
+    "tt-c/include/LoraRadio.h": "91f860d662f39a6bb5d53a6815b4c9d2f57a5d2de6cc1892230fb7d63d9cd338",
+    "tt-c/include/Ttc.h": "61c1e8577c2851843f29137951dd3119796d7714cfbbf583969b86f3034daed7",
+    "tt-c/include/TtcProtocol.h": "393235954d0889a9d76f896501859de3ce4d3e94da27ef9884d962f3df26de20",
+    "tt-c/include/UmbilicalLink.h": "6831f2c995074a80f5f2b6bb193ddda50d3f629f513ff52abf9007cb9e3eafb5",
+    "tt-c/library.json": "a1a1f088cf4bd5d0a3d5c042e2eab4082c17ddad3424c4b73f93bf9b988f763a",
+    "tt-c/platformio.ini": "599a301984948896413ffbad6a27987d75838b18c2717752f1cec60e0ae87cbb",
+    "tt-c/src/Sx1276Radio.cpp": "ebfd51120a797e44ea397b99cf667e43e5926a23ca23a8452950a5933dbea683",
+    "tt-c/src/Ttc.cpp": "4e9cbee26908f75b47119a6c73749c1158ef52516fd6663397e09d53cbd0d247",
+    "tt-c/src/TtcProtocol.cpp": "695e210a563b2b99c069d79be98fa7314391e62d497489493b6d31438bd43cae",
+    "tt-c/src/UmbilicalLink.cpp": "c84d40adf2ac48da347cc573df06b22ac46d620aa89f42be39281a913bc1e037",
+    "tt-c/test/test_diagnostics/test_main.cpp": "917364bfb9df643fc5d433b6a428fe42dd92a58ffc9a1ecca8691469abafc9a6",
+    "tt-c/test/test_protocol/test_main.cpp": "8b21590ef56a7761900e20d05725637983c856b92338855d7f5852080f98f248",
+    "tt-c/test/test_ttc/test_main.cpp": "0cb51be92d19958ab07acc1973e73652f2eaf4c91b21ea9e637686560b6d5bfa"
+  },
+  "steps": [
+    {
+      "label": "01-native-build",
+      "command": [
+        "g++",
+        "-std=c++11",
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+        "-fsanitize=address,undefined",
+        "-fno-sanitize-recover=undefined",
+        "-fno-omit-frame-pointer",
+        "-Iheaders",
+        "src/ObcHousekeeping.cpp",
+        "src/ObcData.cpp",
+        "src/ObcTime.cpp",
+        "src/ObcRecordCodec.cpp",
+        "src/ObcEps.cpp",
+        "src/ObcThermal.cpp",
+        "tests/ObcHousekeepingCheck.cpp",
+        "-o",
+        "/tmp/int009-housekeeping-2026-11-17-183036/housekeeping-check"
+      ],
+      "started_utc": "2026-11-17T18:36:41.481644+00:00",
+      "finished_utc": "2026-11-17T18:36:42.573411+00:00",
+      "exit_code": 0,
+      "log": "01-native-build.txt",
+      "working_directory": "obc-dh"
+    },
+    {
+      "label": "02-native-check",
+      "command": [
+        "/tmp/int009-housekeeping-2026-11-17-183036/housekeeping-check"
+      ],
+      "started_utc": "2026-11-17T18:38:16.659493+00:00",
+      "finished_utc": "2026-11-17T18:38:16.666986+00:00",
+      "exit_code": 0,
+      "log": "02-native-check.txt",
+      "working_directory": "obc-dh"
+    },
+    {
+      "label": "03-firmware-builds",
+      "command": [
+        "pio",
+        "run",
+        "-e",
+        "obc",
+        "-e",
+        "int009-ina219-check",
+        "-e",
+        "int009-lm75a-check",
+        "-e",
+        "int009-housekeeping-check",
+        "-e",
+        "int009-housekeeping-fixtures-check"
+      ],
+      "exit_code": 0,
+      "log": "03-firmware-builds.txt",
+      "working_directory": "obc-dh"
+    },
+    {
+      "label": "04-eps-build",
+      "command": [
+        "g++",
+        "-std=c++11",
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+        "-fsanitize=address,undefined",
+        "-fno-sanitize-recover=undefined",
+        "-fno-omit-frame-pointer",
+        "-Iheaders",
+        "-Itests/eps_native",
+        "-I../eps-tc/EPS_INA219_Standard/src",
+        "src/ObcEps.cpp",
+        "../eps-tc/EPS_INA219_Standard/src/EPS_INA219.cpp",
+        "tests/ObcEpsCheck.cpp",
+        "-o",
+        "/tmp/int009-housekeeping-2026-11-17-183036/eps-check"
+      ],
+      "started_utc": "2026-11-17T18:49:14.894471+00:00",
+      "finished_utc": "2026-11-17T18:49:15.328364+00:00",
+      "exit_code": 0,
+      "log": "04-eps-build.txt",
+      "working_directory": "obc-dh"
+    },
+    {
+      "label": "05-eps-check",
+      "command": [
+        "/tmp/int009-housekeeping-2026-11-17-183036/eps-check"
+      ],
+      "started_utc": "2026-11-17T18:49:15.358114+00:00",
+      "finished_utc": "2026-11-17T18:49:15.367496+00:00",
+      "exit_code": 0,
+      "log": "05-eps-check.txt",
+      "working_directory": "obc-dh"
+    },
+    {
+      "label": "06-thermal-build",
+      "command": [
+        "g++",
+        "-std=c++11",
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+        "-fsanitize=address,undefined",
+        "-fno-sanitize-recover=undefined",
+        "-fno-omit-frame-pointer",
+        "-Iheaders",
+        "-Itests/thermal_native",
+        "-I../eps-tc/LM75A_Standard/src",
+        "src/ObcThermal.cpp",
+        "src/ObcEps.cpp",
+        "../eps-tc/LM75A_Standard/src/Lm75a.cpp",
+        "tests/ObcThermalCheck.cpp",
+        "-o",
+        "/tmp/int009-housekeeping-2026-11-17-183036/thermal-check"
+      ],
+      "started_utc": "2026-11-17T18:49:15.396596+00:00",
+      "finished_utc": "2026-11-17T18:49:15.739061+00:00",
+      "exit_code": 0,
+      "log": "06-thermal-build.txt",
+      "working_directory": "obc-dh"
+    },
+    {
+      "label": "07-thermal-check",
+      "command": [
+        "/tmp/int009-housekeeping-2026-11-17-183036/thermal-check"
+      ],
+      "started_utc": "2026-11-17T18:49:15.767649+00:00",
+      "finished_utc": "2026-11-17T18:49:15.775177+00:00",
+      "exit_code": 0,
+      "log": "07-thermal-check.txt",
+      "working_directory": "obc-dh"
+    },
+    {
+      "label": "08-flow-build",
+      "command": [
+        "g++",
+        "-std=c++11",
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+        "-fsanitize=address,undefined",
+        "-fno-sanitize-recover=undefined",
+        "-fno-omit-frame-pointer",
+        "-Iheaders",
+        "-O1",
+        "-g",
+        "-I.pio/libdeps/obc/ArduinoJson/src",
+        "src/ObcData.cpp",
+        "src/ObcTime.cpp",
+        "src/ObcRecordCodec.cpp",
+        "src/ObcStorage.cpp",
+        "src/PayloadReceiver.cpp",
+        "src/ObcDataFlow.cpp",
+        "tests/ObcDataFlowCheck.cpp",
+        "-o",
+        "/tmp/int009-housekeeping-2026-11-17-183036/flow-check"
+      ],
+      "started_utc": "2026-11-17T18:49:15.805778+00:00",
+      "finished_utc": "2026-11-17T18:49:20.557921+00:00",
+      "exit_code": 0,
+      "log": "08-flow-build.txt",
+      "working_directory": "obc-dh"
+    },
+    {
+      "label": "09-flow-check",
+      "command": [
+        "/tmp/int009-housekeeping-2026-11-17-183036/flow-check"
+      ],
+      "started_utc": "2026-11-17T18:49:20.584947+00:00",
+      "finished_utc": "2026-11-17T18:49:20.600577+00:00",
+      "exit_code": 0,
+      "log": "09-flow-check.txt",
+      "working_directory": "obc-dh"
+    },
+    {
+      "label": "10-downlink-build",
+      "command": [
+        "g++",
+        "-std=c++11",
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+        "-fsanitize=address,undefined",
+        "-fno-sanitize-recover=undefined",
+        "-fno-omit-frame-pointer",
+        "-Iheaders",
+        "-I../tt-c/include",
+        "-I.pio/libdeps/obc/ArduinoJson/src",
+        "src/ObcDownlink.cpp",
+        "src/ObcStorage.cpp",
+        "../tt-c/src/TtcProtocol.cpp",
+        "tests/ObcDownlinkCheck.cpp",
+        "-o",
+        "/tmp/int009-housekeeping-2026-11-17-183036/downlink-check"
+      ],
+      "started_utc": "2026-11-17T18:49:20.627042+00:00",
+      "finished_utc": "2026-11-17T18:49:23.623625+00:00",
+      "exit_code": 0,
+      "log": "10-downlink-build.txt",
+      "working_directory": "obc-dh"
+    },
+    {
+      "label": "11-downlink-check",
+      "command": [
+        "/tmp/int009-housekeeping-2026-11-17-183036/downlink-check"
+      ],
+      "started_utc": "2026-11-17T18:49:23.650385+00:00",
+      "finished_utc": "2026-11-17T18:49:23.662721+00:00",
+      "exit_code": 0,
+      "log": "11-downlink-check.txt",
+      "working_directory": "obc-dh"
+    },
+    {
+      "label": "12-codec-build",
+      "command": [
+        "g++",
+        "-std=c++11",
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+        "-fsanitize=address,undefined",
+        "-fno-sanitize-recover=undefined",
+        "-fno-omit-frame-pointer",
+        "-Iheaders",
+        "src/ObcData.cpp",
+        "src/ObcTime.cpp",
+        "src/ObcRecordCodec.cpp",
+        "tests/TelemetryV3Check.cpp",
+        "-o",
+        "/tmp/int009-housekeeping-2026-11-17-183036/telemetry-v3-check"
+      ],
+      "started_utc": "2026-11-17T18:49:23.689472+00:00",
+      "finished_utc": "2026-11-17T18:49:24.545097+00:00",
+      "exit_code": 0,
+      "log": "12-codec-build.txt",
+      "working_directory": "obc-dh"
+    },
+    {
+      "label": "13-reader-build",
+      "command": [
+        "g++",
+        "-std=c++11",
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+        "-fsanitize=address,undefined",
+        "-fno-sanitize-recover=undefined",
+        "-fno-omit-frame-pointer",
+        "-Iheaders",
+        "src/ObcData.cpp",
+        "src/ObcTime.cpp",
+        "src/ObcRecordCodec.cpp",
+        "src/ObcDelivery.cpp",
+        "tools/ReadRecords.cpp",
+        "-o",
+        "/tmp/int009-housekeeping-2026-11-17-183036/read-records"
+      ],
+      "started_utc": "2026-11-17T18:49:24.573143+00:00",
+      "finished_utc": "2026-11-17T18:49:26.292671+00:00",
+      "exit_code": 0,
+      "log": "13-reader-build.txt",
+      "working_directory": "obc-dh"
+    },
+    {
+      "label": "14-codec-reader-check",
+      "command": [
+        "python3",
+        "tests/TelemetryV3Check.py",
+        "/tmp/int009-housekeeping-2026-11-17-183036/telemetry-v3-check",
+        "/tmp/int009-housekeeping-2026-11-17-183036/read-records"
+      ],
+      "started_utc": "2026-11-17T18:49:26.319866+00:00",
+      "finished_utc": "2026-11-17T18:49:26.375728+00:00",
+      "exit_code": 0,
+      "log": "14-codec-reader-check.txt",
+      "working_directory": "obc-dh"
+    },
+    {
+      "label": "15-ttc-native",
+      "command": [
+        "pio",
+        "test",
+        "-e",
+        "native"
+      ],
+      "working_directory": "tt-c",
+      "exit_code": 0,
+      "log": "15-ttc-native.txt"
+    },
+    {
+      "label": "16-fixtures-upload",
+      "command": [
+        "pio",
+        "run",
+        "-e",
+        "int009-housekeeping-fixtures-check",
+        "-t",
+        "upload",
+        "--upload-port",
+        "/dev/ttyUSB0"
+      ],
+      "exit_code": 0,
+      "log": "16-fixtures-upload.txt",
+      "working_directory": "obc-dh"
+    },
+    {
+      "label": "17-fixtures-usb",
+      "command": [
+        "/home/o-grande-kayky/.local/share/uv/tools/platformio/bin/python",
+        "tests/ObcHousekeepingBenchCheck.py",
+        "/dev/ttyUSB0",
+        "--source",
+        "fixtures",
+        "--reader",
+        "/tmp/int009-housekeeping-2026-11-17-183036/read-records",
+        "--report",
+        "examples/int009-housekeeping-2026-11-17-183036/17-fixtures-usb.json"
+      ],
+      "started_utc": "2026-11-17T18:54:30.955647+00:00",
+      "finished_utc": "2026-11-17T18:55:06.677279+00:00",
+      "exit_code": 1,
+      "log": "17-fixtures-usb.txt",
+      "working_directory": "obc-dh"
+    },
+    {
+      "label": "18-obc-restore-upload",
+      "command": [
+        "pio",
+        "run",
+        "-e",
+        "obc",
+        "-t",
+        "upload",
+        "--upload-port",
+        "/dev/ttyUSB0"
+      ],
+      "exit_code": 0,
+      "log": "18-obc-restore-upload.txt",
+      "working_directory": "obc-dh"
+    },
+    {
+      "label": "19-obc-restored",
+      "command": [
+        "/home/o-grande-kayky/.local/share/uv/tools/platformio/bin/python",
+        "tests/ObcStationCheck.py",
+        "/dev/ttyUSB0",
+        "--reader",
+        "/tmp/int009-housekeeping-2026-11-17-183036/read-records",
+        "--report",
+        "examples/int009-housekeeping-2026-11-17-183036/19-obc-restored.json"
+      ],
+      "started_utc": "2026-11-17T18:57:00.736234+00:00",
+      "finished_utc": "2026-11-17T18:57:08.047690+00:00",
+      "exit_code": 0,
+      "log": "19-obc-restored.txt",
+      "working_directory": "obc-dh"
+    },
+    {
+      "label": "21-reserved-firmware-builds",
+      "command": [
+        "pio",
+        "run",
+        "-e",
+        "obc",
+        "-e",
+        "int009-ina219-check",
+        "-e",
+        "int009-lm75a-check",
+        "-e",
+        "int009-housekeeping-check",
+        "-e",
+        "int009-housekeeping-fixtures-check"
+      ],
+      "working_directory": "obc-dh",
+      "exit_code": 0,
+      "log": "21-reserved-firmware-builds.txt"
+    },
+    {
+      "label": "22-reserved-fixtures-upload",
+      "command": [
+        "pio",
+        "run",
+        "-e",
+        "int009-housekeeping-fixtures-check",
+        "-t",
+        "upload",
+        "--upload-port",
+        "/dev/ttyUSB0"
+      ],
+      "working_directory": "obc-dh",
+      "exit_code": 0,
+      "log": "22-reserved-fixtures-upload.txt"
+    },
+    {
+      "label": "23-reserved-fixtures-usb",
+      "command": [
+        "/home/o-grande-kayky/.local/share/uv/tools/platformio/bin/python",
+        "tests/ObcHousekeepingBenchCheck.py",
+        "/dev/ttyUSB0",
+        "--source",
+        "fixtures",
+        "--reader",
+        "/tmp/int009-housekeeping-2026-11-17-183036/read-records",
+        "--report",
+        "examples/int009-housekeeping-2026-11-17-183036/23-reserved-fixtures-usb.json"
+      ],
+      "working_directory": "obc-dh",
+      "exit_code": 1,
+      "log": "23-reserved-fixtures-usb.txt"
+    },
+    {
+      "label": "24-second-obc-restore-upload",
+      "command": [
+        "pio",
+        "run",
+        "-e",
+        "obc",
+        "-t",
+        "upload",
+        "--upload-port",
+        "/dev/ttyUSB0"
+      ],
+      "working_directory": "obc-dh",
+      "exit_code": 0,
+      "log": "24-second-obc-restore-upload.txt"
+    },
+    {
+      "label": "25-second-obc-restored",
+      "command": [
+        "/home/o-grande-kayky/.local/share/uv/tools/platformio/bin/python",
+        "tests/ObcStationCheck.py",
+        "/dev/ttyUSB0",
+        "--reader",
+        "/tmp/int009-housekeeping-2026-11-17-183036/read-records",
+        "--report",
+        "examples/int009-housekeeping-2026-11-17-183036/25-second-obc-restored.json"
+      ],
+      "working_directory": "obc-dh",
+      "exit_code": 0,
+      "log": "25-second-obc-restored.txt"
+    },
+    {
+      "label": "27-sdk-task-allocation",
+      "command": [
+        "/home/o-grande-kayky/.local/share/platformio/packages/toolchain-xtensa-esp32/bin/xtensa-esp32-elf-objdump",
+        "-d",
+        "--disassemble=xTaskCreatePinnedToCore",
+        ".pio/build/int009-housekeeping-fixtures-check/firmware.elf"
+      ],
+      "started_utc": "2026-11-17T20:35:46.678303+00:00",
+      "finished_utc": "2026-11-17T20:35:46.681945+00:00",
+      "exit_code": 0,
+      "log": "27-sdk-task-allocation.txt",
+      "working_directory": "obc-dh"
+    },
+    {
+      "label": "28-sdk-task-caps",
+      "command": [
+        "/home/o-grande-kayky/.local/share/platformio/packages/toolchain-xtensa-esp32/bin/xtensa-esp32-elf-objdump",
+        "-s",
+        "--start-address=0x400804c8",
+        "--stop-address=0x400804cc",
+        ".pio/build/int009-housekeeping-fixtures-check/firmware.elf"
+      ],
+      "started_utc": "2026-11-17T20:35:46.889499+00:00",
+      "finished_utc": "2026-11-17T20:35:46.891271+00:00",
+      "exit_code": 0,
+      "log": "28-sdk-task-caps.txt",
+      "working_directory": "obc-dh"
+    },
+    {
+      "label": "29-diagnostic-firmware-builds",
+      "command": [
+        "pio",
+        "run",
+        "-e",
+        "obc",
+        "-e",
+        "int009-ina219-check",
+        "-e",
+        "int009-lm75a-check",
+        "-e",
+        "int009-housekeeping-check",
+        "-e",
+        "int009-housekeeping-fixtures-check"
+      ],
+      "working_directory": "obc-dh",
+      "exit_code": 0,
+      "log": "29-diagnostic-firmware-builds.txt"
+    },
+    {
+      "label": "30-diagnostic-fixtures-upload",
+      "command": [
+        "pio",
+        "run",
+        "-e",
+        "int009-housekeeping-fixtures-check",
+        "-t",
+        "upload",
+        "--upload-port",
+        "/dev/ttyUSB0"
+      ],
+      "working_directory": "obc-dh",
+      "exit_code": 0,
+      "log": "30-diagnostic-fixtures-upload.txt"
+    },
+    {
+      "label": "31-allocation-diagnosis",
+      "command": [
+        "/home/o-grande-kayky/.local/share/uv/tools/platformio/bin/python",
+        "examples/int009-housekeeping-2026-11-17-183036/CaptureAllocationDiagnostics.py",
+        "/dev/ttyUSB0",
+        "--report",
+        "examples/int009-housekeeping-2026-11-17-183036/31-allocation-diagnosis.json"
+      ],
+      "started_utc": "2026-11-17T20:37:50.170996+00:00",
+      "finished_utc": "2026-11-17T20:37:50.873901+00:00",
+      "exit_code": 0,
+      "log": "31-allocation-diagnosis.txt",
+      "working_directory": "obc-dh"
+    },
+    {
+      "label": "32-diagnostic-obc-restore-upload",
+      "command": [
+        "pio",
+        "run",
+        "-e",
+        "obc",
+        "-t",
+        "upload",
+        "--upload-port",
+        "/dev/ttyUSB0"
+      ],
+      "working_directory": "obc-dh",
+      "exit_code": 0,
+      "log": "32-diagnostic-obc-restore-upload.txt"
+    },
+    {
+      "label": "33-diagnostic-obc-restored",
+      "command": [
+        "/home/o-grande-kayky/.local/share/uv/tools/platformio/bin/python",
+        "tests/ObcStationCheck.py",
+        "/dev/ttyUSB0",
+        "--reader",
+        "/tmp/int009-housekeeping-2026-11-17-183036/read-records",
+        "--report",
+        "examples/int009-housekeeping-2026-11-17-183036/33-diagnostic-obc-restored.json"
+      ],
+      "working_directory": "obc-dh",
+      "exit_code": 0,
+      "log": "33-diagnostic-obc-restored.txt"
+    },
+    {
+      "label": "35-native-build",
+      "command": [
+        "g++",
+        "-std=c++11",
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+        "-fsanitize=address,undefined",
+        "-fno-sanitize-recover=undefined",
+        "-fno-omit-frame-pointer",
+        "-Iheaders",
+        "src/ObcHousekeeping.cpp",
+        "src/ObcData.cpp",
+        "src/ObcTime.cpp",
+        "src/ObcRecordCodec.cpp",
+        "src/ObcEps.cpp",
+        "src/ObcThermal.cpp",
+        "tests/ObcHousekeepingCheck.cpp",
+        "-o",
+        "/tmp/int009-housekeeping-task-order/housekeeping-check"
+      ],
+      "working_directory": "obc-dh",
+      "started_utc": "2026-11-18T01:20:04.863614+00:00",
+      "finished_utc": "2026-11-18T01:20:06.017350+00:00",
+      "exit_code": 0,
+      "log": "35-native-build.txt"
+    },
+    {
+      "label": "36-reader-build",
+      "command": [
+        "g++",
+        "-std=c++11",
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+        "-fsanitize=address,undefined",
+        "-fno-sanitize-recover=undefined",
+        "-fno-omit-frame-pointer",
+        "-Iheaders",
+        "src/ObcData.cpp",
+        "src/ObcTime.cpp",
+        "src/ObcRecordCodec.cpp",
+        "src/ObcDelivery.cpp",
+        "tools/ReadRecords.cpp",
+        "-o",
+        "/tmp/int009-housekeeping-task-order/read-records"
+      ],
+      "working_directory": "obc-dh",
+      "started_utc": "2026-11-18T01:20:06.207237+00:00",
+      "finished_utc": "2026-11-18T01:20:08.193275+00:00",
+      "exit_code": 0,
+      "log": "36-reader-build.txt"
+    },
+    {
+      "label": "37-native-check",
+      "command": [
+        "/tmp/int009-housekeeping-task-order/housekeeping-check"
+      ],
+      "working_directory": "obc-dh",
+      "started_utc": "2026-11-18T01:22:42.835225+00:00",
+      "finished_utc": "2026-11-18T01:22:42.843868+00:00",
+      "exit_code": 0,
+      "log": "37-native-check.txt"
+    },
+    {
+      "label": "38-task-order-firmware-builds",
+      "command": [
+        "pio",
+        "run",
+        "-e",
+        "obc",
+        "-e",
+        "int009-ina219-check",
+        "-e",
+        "int009-lm75a-check",
+        "-e",
+        "int009-housekeeping-check",
+        "-e",
+        "int009-housekeeping-fixtures-check"
+      ],
+      "working_directory": "obc-dh",
+      "exit_code": 0,
+      "log": "38-task-order-firmware-builds.txt"
+    },
+    {
+      "label": "39-task-order-fixtures-upload",
+      "command": [
+        "pio",
+        "run",
+        "-e",
+        "int009-housekeeping-fixtures-check",
+        "-t",
+        "upload",
+        "--upload-port",
+        "/dev/ttyUSB0"
+      ],
+      "working_directory": "obc-dh",
+      "exit_code": 0,
+      "log": "39-task-order-fixtures-upload.txt"
+    },
+    {
+      "label": "40-task-order-fixtures-usb",
+      "command": [
+        "/home/o-grande-kayky/.local/share/uv/tools/platformio/bin/python",
+        "tests/ObcHousekeepingBenchCheck.py",
+        "/dev/ttyUSB0",
+        "--source",
+        "fixtures",
+        "--reader",
+        "/tmp/int009-housekeeping-task-order/read-records",
+        "--report",
+        "examples/int009-housekeeping-2026-11-17-183036/40-task-order-fixtures-usb.json"
+      ],
+      "working_directory": "obc-dh",
+      "exit_code": 0,
+      "log": "40-task-order-fixtures-usb.txt"
+    },
+    {
+      "label": "41-task-order-acquisition-upload",
+      "command": [
+        "pio",
+        "run",
+        "-e",
+        "int009-housekeeping-check",
+        "-t",
+        "upload",
+        "--upload-port",
+        "/dev/ttyUSB0"
+      ],
+      "working_directory": "obc-dh",
+      "exit_code": 0,
+      "log": "41-task-order-acquisition-upload.txt"
+    },
+    {
+      "label": "42-task-order-acquisition-usb",
+      "command": [
+        "/home/o-grande-kayky/.local/share/uv/tools/platformio/bin/python",
+        "tests/ObcHousekeepingBenchCheck.py",
+        "/dev/ttyUSB0",
+        "--source",
+        "acquisition",
+        "--reader",
+        "/tmp/int009-housekeeping-task-order/read-records",
+        "--report",
+        "examples/int009-housekeeping-2026-11-17-183036/42-task-order-acquisition-usb.json"
+      ],
+      "working_directory": "obc-dh",
+      "exit_code": 1,
+      "log": "42-task-order-acquisition-usb.txt"
+    },
+    {
+      "label": "43-acquisition-passive-diagnosis",
+      "working_directory": "obc-dh",
+      "exit_code": 0,
+      "report": "43-acquisition-passive-diagnosis.json",
+      "procedure": "open_serial port /dev/ttyUSB0; settle 0.5 s/quiet 0.1 s/max_wait 0.8 s; receive only for 4 s; no TC or other input"
+    },
+    {
+      "label": "44-task-order-obc-restore-upload",
+      "command": [
+        "pio",
+        "run",
+        "-e",
+        "obc",
+        "-t",
+        "upload",
+        "--upload-port",
+        "/dev/ttyUSB0"
+      ],
+      "working_directory": "obc-dh",
+      "exit_code": 0,
+      "log": "44-task-order-obc-restore-upload.txt"
+    },
+    {
+      "label": "45-task-order-obc-restored",
+      "command": [
+        "/home/o-grande-kayky/.local/share/uv/tools/platformio/bin/python",
+        "tests/ObcStationCheck.py",
+        "/dev/ttyUSB0",
+        "--reader",
+        "/tmp/int009-housekeeping-task-order/read-records",
+        "--report",
+        "examples/int009-housekeeping-2026-11-17-183036/45-task-order-obc-restored.json"
+      ],
+      "working_directory": "obc-dh",
+      "exit_code": 0,
+      "log": "45-task-order-obc-restored.txt"
+    }
+  ],
+  "scope": "INT-009 bancada conjunta; nao encerra INT/TES ou sensores fisicos",
+  "usb_python": "/home/o-grande-kayky/.local/share/uv/tools/platformio/bin/python",
+  "pyserial_version": "3.5",
+  "finished_utc": "2026-11-18T01:37:58.643956+00:00",
+  "complete": false,
+  "board": {
+    "port": "/dev/ttyUSB0",
+    "chip": "ESP32-D0WD-V3 rev 3.1",
+    "final_firmware": "obc",
+    "restored_upload_verified": true,
+    "original_station_check_passed": true,
+    "restoration_report": "45-task-order-obc-restored.json"
+  },
+  "failure_diagnosis": {
+    "result": "Fixtures aprovadas; aquisicao conjunta interrompida sem outra correcao",
+    "report": "42-task-order-acquisition-usb.json",
+    "passive_report": "43-acquisition-passive-diagnosis.json",
+    "eps_started": true,
+    "thermal_started": false,
+    "i2c_service": "READY",
+    "byte_heap": 12916,
+    "byte_largest": 4084,
+    "thermal_stack_bytes": 4096,
+    "cause": "Tarefa termica nao criada; maior bloco menor que a pilha solicitada, com I2C pronto",
+    "next_proposal": "Pilhas/controles estaticos FreeRTOS para EPS/Termico somente no perfil conjunto, mantendo 4 KiB por produtor",
+    "next_proposal_applied": false
+  },
+  "validation_preservation": {
+    "existing_paths_checked": 63,
+    "changed_paths": [],
+    "new_housekeeping_script_unchanged_since_before_correction": true
+  },
+  "final_source_sha256": {
+    "obc-dh/.agents/TODO.md": "bee93689dd56139c5084c41c8358b84989250db0d39d465023f61c6ba8659e4d",
+    "obc-dh/.tasks/03-integracao/INT-009-aquisicao-eps-termico.md": "e8a4e3fbc7355d4e11f3dbd016cd812b42c49b7a70f84100f57988b89545f852",
+    "obc-dh/headers/ObcDataFlowEsp32.h": "629c5bcad25ad606ed4114025272096a35f9ae8e2b8c034f0e5e5f6c0bf19477",
+    "obc-dh/platformio.ini": "8b7485df1e13c7bfdfb638e142d4fdd47c0b2316d0b6077dce1e565b0bd1857a",
+    "obc-dh/src/ObcDataFlowEsp32.cpp": "babc6355ea327197e8003bb4c8b316e08b6f74fd3a009c6ba51346ff06ca1579",
+    "obc-dh/src/ObcTtc.cpp": "fc56108c65c2ea0ea19edb10a08c09d14e734a8e4b00b604e177dd8be029c9e3",
+    "obc-dh/src/bench/ObcDataFlowCheck.cpp": "53dfca86117c28b7614f766e149070a614ad6aaf1bbe5662ba0529c0c50230c2",
+    "obc-dh/tools/README.md": "128fa079019f0baed8a90ad074ec251d810a55077be90419e665f94b3e64b323",
+    "obc-dh/headers/ObcHousekeeping.h": "60602733964eea7890ff6a544da2f810b6440b830e315a1c06f13627fd66f50a",
+    "obc-dh/headers/ObcHousekeepingBench.h": "627cf5b76fe26d685485bce41e478279f2c0feda74b4eab2a25a231d35498ea7",
+    "obc-dh/src/ObcHousekeeping.cpp": "5a5aa71567e2d41bb681173c812e51ff5590c56e85562679eac40b47594e3045",
+    "obc-dh/src/bench/HousekeepingCheck.cpp": "5e9d8e463977881a0d9302ec317d352fbd208bd57dda5e871a89c7bee5b1064d",
+    "obc-dh/tests/ObcHousekeepingCheck.cpp": "342e99bf49eb1f71da747676ef772fa23880b66aee8b1abe7127a0d3f5100eb3",
+    "obc-dh/tests/ObcHousekeepingBenchCheck.py": "520352164d63aab05b62305813bccc0be76f73e9ea5c4af6274df6bf65d4b3f8"
+  },
+  "firmware_sha256": {
+    "obc": "2b047b00b02ec1f42438e1c8dfca4b1a0e61b32f8c4d8a42dfd91a3cc3ffcb28",
+    "int009-ina219-check": "9fbcae31ef38dd01954c5e6ff85754f33028d56c28902f9391106a343d4e0296",
+    "int009-lm75a-check": "88a6991df1a6db5ae2816f9c8bc6c91fc6397286f5178ac813ac6bc5c33931b6",
+    "int009-housekeeping-check": "e164bb2c8251a700c5e23c674dd072413d67dc7e4fa7f60556dfc79d6570a0a3",
+    "int009-housekeeping-fixtures-check": "f3939cafb3f78bbfce9d3b55a50b795541a13422110ef80c59e6e29c53bc3b27"
+  },
+  "artifacts": {
+    "01-native-build.txt": {
+      "bytes": 405,
+      "sha256": "8e4929e447dd67f2a1b72bcf86e5948c9d7731f64291e84db0c6c8ef23deaab6"
+    },
+    "02-native-check.txt": {
+      "bytes": 145,
+      "sha256": "6ace29a85434ade6d923e950d7b45bdb4e58f1b71e11f5b0777223c1a20ae160"
+    },
+    "03-firmware-builds.txt": {
+      "bytes": 52343,
+      "sha256": "dd6bd747cbf37d8e12965fc144165bbca8dae203534e44941ea911a693ee9c00"
+    },
+    "04-eps-build.txt": {
+      "bytes": 387,
+      "sha256": "0527670e2b4a4f785f37a953318177de6cfab65ec6fc7eba1573ebe9ce43385c"
+    },
+    "05-eps-check.txt": {
+      "bytes": 149,
+      "sha256": "594c840232f8ab31d388d97ba43fe9eb876ae2368ff62acc1fa1ed4d9b52750a"
+    },
+    "06-thermal-build.txt": {
+      "bytes": 406,
+      "sha256": "a7d5e051b5e6a483f796c86fc500d404fa0e43f42b0d68068efb4c796c4cd2e3"
+    },
+    "07-thermal-check.txt": {
+      "bytes": 156,
+      "sha256": "8d4090c1ef1289b2f884c79023dae1510356b9312e57880bc33c700e0d67f847"
+    },
+    "08-flow-build.txt": {
+      "bytes": 449,
+      "sha256": "f80244d88c4a7076764b6264445056c8a791b5eb17f43f22410bb08e23853609"
+    },
+    "09-flow-check.txt": {
+      "bytes": 143,
+      "sha256": "eafb5478863070db9927fef787af11499a8c52c483c8c84e697fad87712acaba"
+    },
+    "10-downlink-build.txt": {
+      "bytes": 401,
+      "sha256": "e32340d31e9188fdc45c9ce30ba3f256f36b3569a6466324a521ccd219a0ab4c"
+    },
+    "11-downlink-check.txt": {
+      "bytes": 138,
+      "sha256": "00bf0b6909d7edd6055ecb31b5f8372ac9109b5c908f2ee9f02d4e3a44b1aa31"
+    },
+    "12-codec-build.txt": {
+      "bytes": 334,
+      "sha256": "3e38bd2ce8384b54e1876565acc902ba4a88a1ada0becb5eb4c3edfbbc91bdfc"
+    },
+    "13-reader-build.txt": {
+      "bytes": 346,
+      "sha256": "eabc7938ac3a468021fa33e2974ae79bde5d141b18d3f7b10a74021c7b54fadb"
+    },
+    "14-codec-reader-check.txt": {
+      "bytes": 250,
+      "sha256": "e542db82fb555e30f2841517019d98d585c3cc11969aef1a3cf40add9c2c4949"
+    },
+    "15-ttc-native.txt": {
+      "bytes": 2451,
+      "sha256": "da6d828e7329164fe29dd09eee5075d28f12d1a618e4d68ae6f3dd9ef847abac"
+    },
+    "16-fixtures-upload.txt": {
+      "bytes": 4126,
+      "sha256": "4fb419e51d3537a7489b90d1f4dc8bf827d65d6fe110fa8df8082a1a9f4dbb77"
+    },
+    "17-fixtures-usb.json": {
+      "bytes": 136363,
+      "sha256": "ddc05b8b947a5fab8782fe9c95c8908303980f701698cf5bd802cf8e9dd5fb52"
+    },
+    "17-fixtures-usb.records.bin": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "17-fixtures-usb.records.jsonl": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "17-fixtures-usb.txt": {
+      "bytes": 866,
+      "sha256": "9c08ffaf39017765a8b4105bc92e230b2644c57c22ae19c291c2595c6633749d"
+    },
+    "18-obc-restore-upload.txt": {
+      "bytes": 3955,
+      "sha256": "6ce769cccd0383210134f1b3dda0b3d8a2a80961a70ed33d274d31d0f29e51f1"
+    },
+    "19-obc-restored/logs/2026-11-17_155700.jsonl": {
+      "bytes": 65148,
+      "sha256": "6918bf64ed2a20a47c72c4e8204f308b5d5c42ca05d9919bea2b3f6159a7b057"
+    },
+    "19-obc-restored/state/deliveries.jsonl": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "19-obc-restored.json": {
+      "bytes": 28123,
+      "sha256": "81ac4e29d619bb33dfb7df3457e776cf5b8fb15888837ad918050e6832bd5cb1"
+    },
+    "19-obc-restored.txt": {
+      "bytes": 368,
+      "sha256": "e1ac57971c17745b0ce74073925553f16ae2c395babc3afaa2b368b75224100d"
+    },
+    "20-before-resume-manifest.json": {
+      "bytes": 71369,
+      "sha256": "0ddfa19a629fdc80053be3179aeca01dea742e3a1bb0481e9a7174fcba4262dc"
+    },
+    "21-reserved-firmware-builds.txt": {
+      "bytes": 11944,
+      "sha256": "f1ad922e42170fd0391d117c3bd11e6ad15b9fce13eae2a3c4dcb4bb84f0c1e5"
+    },
+    "22-reserved-fixtures-upload.txt": {
+      "bytes": 4126,
+      "sha256": "4dfda6b8269274c6b69f85d774b800c6bad0cc11b3714f06d898d81f6780a645"
+    },
+    "23-reserved-fixtures-usb.json": {
+      "bytes": 134640,
+      "sha256": "e81544e7e9a3b5be0a77e4544c8579f18985305adb91a1991ee4f6710a32bbb3"
+    },
+    "23-reserved-fixtures-usb.records.bin": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "23-reserved-fixtures-usb.records.jsonl": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "23-reserved-fixtures-usb.txt": {
+      "bytes": 556,
+      "sha256": "508190bd31d451013c627a141b15d36b69ce2451b28a7c3ba3849f57791d7835"
+    },
+    "24-second-obc-restore-upload.txt": {
+      "bytes": 3957,
+      "sha256": "770dffb8b4bdfa727caa84f09316e60a1b48f58073340b9801677a25d3bc6012"
+    },
+    "25-second-obc-restored/logs/2026-11-17_165849.jsonl": {
+      "bytes": 65149,
+      "sha256": "dbc54ccd14b62ce4019c05e23382688438e9258c67e525d51295090b239c5bea"
+    },
+    "25-second-obc-restored/state/deliveries.jsonl": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "25-second-obc-restored.json": {
+      "bytes": 28138,
+      "sha256": "89d8cf6ccc5dbaaae8c465849315cd11b2501c95ac58fbd7147cdabec89759ec"
+    },
+    "25-second-obc-restored.txt": {
+      "bytes": 99,
+      "sha256": "9d8d6afb820e26114f2a70e98b865fe6d34e9e6b9cffcc9912f0e7b663218d44"
+    },
+    "26-before-allocation-diagnosis-manifest.json": {
+      "bytes": 76515,
+      "sha256": "4f6c4a74cc91d451d5c221f98b62f68a9222cd68de5676bbb1a38794f944f820"
+    },
+    "27-sdk-task-allocation.txt": {
+      "bytes": 2435,
+      "sha256": "4d5f253328e4a8a121c5c721dea38447e91e06502da285f25df5bf653f4f3a45"
+    },
+    "28-sdk-task-caps.txt": {
+      "bytes": 437,
+      "sha256": "1b21e3ca6bb3ba44156bd05ce423348a164974486a77c1994c8fbb685672459f"
+    },
+    "29-diagnostic-firmware-builds.txt": {
+      "bytes": 12115,
+      "sha256": "cef645019b20e17479cf95ab7557c6a40299f98569857b4999e53b05ac4bc589"
+    },
+    "30-diagnostic-fixtures-upload.txt": {
+      "bytes": 4127,
+      "sha256": "0ac8b0cc58133c7d13f16d9501d259d4d36369f9f6067878439636b7e11042f1"
+    },
+    "31-allocation-diagnosis.json": {
+      "bytes": 4223,
+      "sha256": "56725b7ea093578fb55817100892eb24a3788854bd953354a0e56dd62fe76206"
+    },
+    "31-allocation-diagnosis.txt": {
+      "bytes": 2077,
+      "sha256": "6cb7e267872d2c917263643b543e95cad82ad5427bc70030edd25946750f651e"
+    },
+    "32-diagnostic-obc-restore-upload.txt": {
+      "bytes": 3923,
+      "sha256": "225f6d3310d2b56c8df3a335f4d374941c7033856db5719e4a0d34fd827daf9e"
+    },
+    "33-diagnostic-obc-restored/logs/2026-11-17_175117.jsonl": {
+      "bytes": 65147,
+      "sha256": "0df7683ce0a69a35a6ef87b8118f01bc8aab2e5390b2129d790926912e026bdf"
+    },
+    "33-diagnostic-obc-restored/state/deliveries.jsonl": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "33-diagnostic-obc-restored.json": {
+      "bytes": 28145,
+      "sha256": "ae1ba6d01534c36289bb3f978303423f04252487671c04d7b47d1d93544aac2a"
+    },
+    "33-diagnostic-obc-restored.txt": {
+      "bytes": 103,
+      "sha256": "9ce72648f0f08285c522da743e8110e4443bfa63d06a22e01bbe6e032de1965a"
+    },
+    "34-before-task-order-change-manifest.json": {
+      "bytes": 84995,
+      "sha256": "8335c0221039c0f92cecff9c3f0ad30d31c981b08af0224a0e04ace0ef4a954d"
+    },
+    "35-native-build.txt": {
+      "bytes": 398,
+      "sha256": "f671e1333009e943106748101e67c1ff996a5b10b511dc43bc7ec0358becefc0"
+    },
+    "36-reader-build.txt": {
+      "bytes": 339,
+      "sha256": "76d5b048207e6ef3626197f0c24a4e40b54cb73432e166633a4c43c61cfa6f9d"
+    },
+    "37-native-check.txt": {
+      "bytes": 138,
+      "sha256": "9fbfe2d9b0b54c325e53ce21d337af3c3098ffeb7dea3d6f59e907078f025334"
+    },
+    "38-task-order-firmware-builds.txt": {
+      "bytes": 12115,
+      "sha256": "b5cff0cc9c094b68b2eb0c262b79828e129473eb2daec13e97b65319a6d1779d"
+    },
+    "39-task-order-fixtures-upload.txt": {
+      "bytes": 4128,
+      "sha256": "a0586bf9676bccbbcca35b407b5f224d6e6bf234d8abe7f664988ea5e12df065"
+    },
+    "40-task-order-fixtures-usb.json": {
+      "bytes": 144308,
+      "sha256": "cf9efc17aec71e3e787de26f06833e26c2797fb204710ca1ab2bd85607bd26cc"
+    },
+    "40-task-order-fixtures-usb.records.bin": {
+      "bytes": 4506,
+      "sha256": "b1e908aaf1bbcae66d69a8194273660b0ee3d5db97602629e5b05f75d2f183f4"
+    },
+    "40-task-order-fixtures-usb.records.jsonl": {
+      "bytes": 18765,
+      "sha256": "44ab1e150651f79b83ee12af4cc83e0d0a7f8ca012e3f33ac8f378b353fb2470"
+    },
+    "40-task-order-fixtures-usb.txt": {
+      "bytes": 147,
+      "sha256": "6c815f8483dea877245e43f0a0edb45be42dda9a1bd76da08c76e9b8803fbf30"
+    },
+    "41-task-order-acquisition-upload.txt": {
+      "bytes": 4064,
+      "sha256": "5f54889d98c25938b8c9fddbc07fec7f89379a4fb2bc6ea454e5f0a471cceb58"
+    },
+    "42-task-order-acquisition-usb.json": {
+      "bytes": 2562,
+      "sha256": "bd73acc6c7de215870ca954f43e1b34ac6a3f8911980bbae2bd886faee9ce0de"
+    },
+    "42-task-order-acquisition-usb.records.bin": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "42-task-order-acquisition-usb.records.jsonl": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "42-task-order-acquisition-usb.txt": {
+      "bytes": 813,
+      "sha256": "343b1c177077a5afc2f51407077919ca721b622e502a4f3084f7475bde2fe561"
+    },
+    "43-acquisition-passive-diagnosis.json": {
+      "bytes": 15798,
+      "sha256": "1f25b1e132157f8eaa2a7c5928790cce8fa1ec606607b6434bddcd77782b356c"
+    },
+    "44-task-order-obc-restore-upload.txt": {
+      "bytes": 3925,
+      "sha256": "f4d4446cb3a0d3494c5821a90b2e39eb90ebbcc858a5138156bf99602f4b1ac0"
+    },
+    "45-task-order-obc-restored/logs/2026-11-17_223345.jsonl": {
+      "bytes": 64885,
+      "sha256": "22dca8a2b212585b54fbf8adceab4e59cf4384480be906ec3802a3dbea71c4e1"
+    },
+    "45-task-order-obc-restored/state/deliveries.jsonl": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "45-task-order-obc-restored.json": {
+      "bytes": 28017,
+      "sha256": "931d04deff0d34e1b60745fe667a5d745ac7adbc8cd8d3cbe34d2187113a6059"
+    },
+    "45-task-order-obc-restored.txt": {
+      "bytes": 103,
+      "sha256": "22956f2daf8d26099e8300b52ac12b600d2de834f7b7f6b92b930188488eefbe"
+    },
+    "CaptureAllocationDiagnostics.py": {
+      "bytes": 2737,
+      "sha256": "c8c02c57eef7b97daa784368113afa2962cffe3af9fbb73d0e471954526d3c28"
+    }
+  },
+  "resume_authorization": {
+    "utc": "2026-11-17T19:21:05.285439+00:00",
+    "instruction": "Pode continuar",
+    "scope": "Investigar e ajustar ordem de reserva/inicializacao; preservar margens, tarefas e expectativas"
+  },
+  "failure_history": [
+    {
+      "result": "interrompida conforme AGENTS.md, sem correcao autonoma",
+      "reason": "Bloco de snapshot nao alocado; escritor inativo antes da captura",
+      "byte_heap_before": 103368,
+      "largest_before": 47092,
+      "byte_heap_after_attempt": 70584,
+      "largest_after_attempt": 28660,
+      "snapshot_block_bytes": [
+        32768,
+        31729
+      ],
+      "telemetry_received": 33,
+      "records_captured": 0,
+      "remaining": [
+        "investigar e ajustar ordem/reserva de memoria com aprovacao",
+        "repetir fixtures sem alterar expectativas",
+        "bancada conjunta de aquisicao USB",
+        "regressoes USB individuais INA219/LM75A",
+        "concluir provas de captura e leitura"
+      ]
+    },
+    {
+      "result": "Segunda interrupcao conforme AGENTS.md; nenhum outro ajuste aplicado",
+      "report": "23-reserved-fixtures-usb.json",
+      "snapshot_buffers_allocated": true,
+      "snapshot_block_bytes": [
+        32768,
+        31729
+      ],
+      "before_task_creation": {
+        "byte_heap": 38836,
+        "byte_largest": 16372,
+        "stack_budget": 19456,
+        "margin": 4096
+      },
+      "reason": "xTaskCreatePinnedToCore do escritor falhou apos iniciar transporte/processamento",
+      "unresolved": "Distribuicao das alocacoes imediatamente antes de cada criacao nao foi medida",
+      "telemetry_received": 34,
+      "records_captured": 0,
+      "remaining": [
+        "discutir diagnostico e nova ordem/orcamento das tarefas",
+        "repetir fixtures sem alterar expectativas",
+        "bancada conjunta de aquisicao USB",
+        "regressoes USB individuais INA219/LM75A",
+        "concluir captura e leitura"
+      ]
+    },
+    {
+      "result": "Diagnostico autorizado concluido; nenhuma correcao adicional aplicada",
+      "report": "31-allocation-diagnosis.json",
+      "diagnosis_captured": true,
+      "functional_acceptance": "not_run",
+      "inputs_sent": [],
+      "allocation_steps": [
+        {
+          "task": "uart",
+          "phase": "before",
+          "stack_bytes": "3072",
+          "result": "0",
+          "byte_heap": "38820",
+          "byte_largest": "16372",
+          "refusals": "0",
+          "refused_bytes": "0",
+          "refused_caps": "0x0",
+          "function": "none"
+        },
+        {
+          "task": "uart",
+          "phase": "after",
+          "stack_bytes": "3072",
+          "result": "1",
+          "byte_heap": "35372",
+          "byte_largest": "16372",
+          "refusals": "0",
+          "refused_bytes": "0",
+          "refused_caps": "0x0",
+          "function": "none"
+        },
+        {
+          "task": "process",
+          "phase": "before",
+          "stack_bytes": "8192",
+          "result": "0",
+          "byte_heap": "35372",
+          "byte_largest": "16372",
+          "refusals": "0",
+          "refused_bytes": "0",
+          "refused_caps": "0x0",
+          "function": "none"
+        },
+        {
+          "task": "process",
+          "phase": "after",
+          "stack_bytes": "8192",
+          "result": "1",
+          "byte_heap": "26804",
+          "byte_largest": "8180",
+          "refusals": "0",
+          "refused_bytes": "0",
+          "refused_caps": "0x0",
+          "function": "none"
+        },
+        {
+          "task": "writer",
+          "phase": "before",
+          "stack_bytes": "8192",
+          "result": "0",
+          "byte_heap": "26804",
+          "byte_largest": "8180",
+          "refusals": "0",
+          "refused_bytes": "0",
+          "refused_caps": "0x0",
+          "function": "none"
+        },
+        {
+          "task": "writer",
+          "phase": "after",
+          "stack_bytes": "8192",
+          "result": "-1",
+          "byte_heap": "26804",
+          "byte_largest": "8180",
+          "refusals": "1",
+          "refused_bytes": "8192",
+          "refused_caps": "0x804",
+          "function": "heap_caps_malloc"
+        }
+      ],
+      "cause": "Fragmentacao: maior bloco de 8180 bytes apos processamento; pilha do escritor de 8192 bytes recusada pelo SDK",
+      "refused_bytes": 8192,
+      "refused_caps": "0x804",
+      "sdk_control_block_bytes": 344,
+      "proposed_next_change": "Criar tarefas maiores antes de I2C/produtores e contabilizar pilhas pendentes na admissao, sem reduzir margem/tamanhos",
+      "proposed_next_change_applied": false
+    }
+  ],
+  "authorizations": [
+    {
+      "utc": "2026-11-17T20:34:42.534921+00:00",
+      "instruction": "Pode continuar.",
+      "scope": "Instrumentar memoria antes/depois das criacoes e identificar alocacao recusada; sem ajustar tamanhos ou testes"
+    },
+    {
+      "utc": "2026-11-18T01:19:45.078022+00:00",
+      "instruction": "Pode fazer.",
+      "scope": "Criar tarefas do fluxo antes de I2C/produtores e contabilizar suas pilhas pendentes, preservando tamanhos, margem e expectativas"
+    }
+  ],
+  "diagnostic_subtask_complete": true,
+  "temporary_tools_regenerated": true,
+  "fixtures_subtask_complete": true,
+  "acquisition_subtask_complete": false,
+  "current_pending_stack_bytes": {
+    "fixtures": 4096,
+    "acquisition": 12288,
+    "unchanged_margin": 4096
+  }
+}

@@ -57,6 +57,7 @@ namespace obc_delivery {
         uint64_t evicted;
         size_t occupied;
         size_t high_water;
+        bool recovery_occupied;
     };
 
     /** @brief Diagnóstico de leitura; bytes inválidos não equivalem a entregas perdidas. */
@@ -147,10 +148,13 @@ namespace obc_delivery {
     // ─── CLASSES ──────────────────────────────────────────────────────
 
     /**
-     * @brief Cache de 32 cópias, FIFO e uma tentativa/ACK de solo por vez.
+     * @brief Cache de 32 cópias, uma reserva durável e uma tentativa/ACK por vez.
      * @details Chamadas sequenciais ou protegidas pelo adaptador. I/O usa cópias
      * retornadas por BeginStorage e BeginTransmit, estáveis fora do lock. Um
      * slot em gravação fica reservado até FinishStorage. ACK pode anteceder SD.
+     * A posição adicional aceita somente recuperação já persistida quando o
+     * cache não pode ceder espaço. occupied/high_water contam as 32 posições;
+     * recovery_occupied informa a reserva separada, sem ampliar admissões.
      */
     class Queue {
     public:
@@ -201,6 +205,9 @@ namespace obc_delivery {
         /** @brief Falha de leitura libera oportunidade de envio das cópias em RAM. */
         void ReaderFailed(
         );
+        /** @brief Reconsulta o SD após remontagem, sem alterar IDs, fronteira ou reservas. */
+        void RecheckStorage(
+        );
         /** @brief Amostra contadores e ocupação, sem zerar. */
         STATISTICS GetStatistics(
         ) const;
@@ -214,7 +221,8 @@ namespace obc_delivery {
             bool confirmed;
             bool busy;
         };
-        ENTRY entries_[cache_slots] = {};
+        // Última posição exclusiva de Restore; Reserve comum nunca a utiliza.
+        ENTRY entries_[cache_slots + 1] = {};
         AIRCRAFT previous_[obc_data::max_snapshot_aircraft] = {};
         size_t previous_count_ = 0;
         uint64_t boot_ = 0;

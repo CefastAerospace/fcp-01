@@ -1,0 +1,2 @@
+command: ["/tmp/int009-housekeeping-2026-11-17-183036/housekeeping-check"]
+Housekeeping: composicao, numeros, disponibilidade e TM v3 aprovados.

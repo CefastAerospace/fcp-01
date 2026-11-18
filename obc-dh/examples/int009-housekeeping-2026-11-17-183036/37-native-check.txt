@@ -1,0 +1,2 @@
+command: ["/tmp/int009-housekeeping-task-order/housekeeping-check"]
+Housekeeping: composicao, numeros, disponibilidade e TM v3 aprovados.

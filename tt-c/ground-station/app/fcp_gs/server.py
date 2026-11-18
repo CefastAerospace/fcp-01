@@ -62,8 +62,11 @@ def host_name(host: str) -> str:
 def create_app(link: Link, report_dir: Path,
                map_center: tuple[float, float, int] = DEFAULT_MAP_CENTER,
                tile_cache: TileCache | None = None,
-               allowed_hosts: frozenset[str] | None = LOOPBACK_HOSTS) -> Flask:
+               allowed_hosts: frozenset[str] | None = LOOPBACK_HOSTS,
+               demo=None) -> Flask:
     """allowed_hosts: nomes aceitos no cabeçalho Host; None aceita qualquer um.
+
+    demo: o DemoSatellite do `serve --demo`, para trocar o cenário ao vivo.
 
     O padrão (só loopback) barra DNS rebinding: uma página externa que aponte
     seu domínio para 127.0.0.1 não consegue chamar /api/tc nem /api/inject.
@@ -116,7 +119,20 @@ def create_app(link: Link, report_dir: Path,
     def config():
         lat, lon, zoom = map_center
         return jsonify({"map_center": [lat, lon], "map_zoom": zoom,
-                        "commands": sorted(COMMANDS)})
+                        "commands": sorted(COMMANDS),
+                        "demo": demo.describe() if demo is not None else None})
+
+    @app.post("/api/demo/scenario")
+    def demo_scenario():
+        if demo is None:
+            return jsonify({"error": "disponível só no serve --demo"}), 404
+        name = (request.get_json(silent=True) or {}).get("name")
+        try:
+            demo.set_scenario(name)
+        except ValueError as error:
+            return jsonify({"error": str(error)}), 400
+        link.note(f"demo: cenário {name}")
+        return jsonify(demo.describe())
 
     @app.get("/api/tracks")
     def tracks():

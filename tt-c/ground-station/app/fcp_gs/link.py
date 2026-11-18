@@ -270,6 +270,10 @@ class Link:
             event["text"] = received.text
         return event
 
+    def note(self, text: str) -> None:
+        """Mensagem do operador/sistema no log ao vivo e no log da sessão."""
+        self._emit({"dir": "log", "kind": "info", "text": text})
+
     def _emit(self, event: dict, durable: bool = False) -> bool:
         """Grava no log da sessão e avisa os listeners. Devolve False se a gravação falhou."""
         logged = True

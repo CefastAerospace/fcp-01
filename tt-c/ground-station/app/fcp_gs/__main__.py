@@ -2,7 +2,7 @@
 
     python -m fcp_gs ports
     python -m fcp_gs serve --port /dev/ttyUSB0 [--wired] [--http 8080] [--map-center LAT,LON[,ZOOM]]
-    python -m fcp_gs serve --demo [--map-center LAT,LON[,ZOOM]]
+    python -m fcp_gs serve --demo [--scenario NOME] [--map-center LAT,LON[,ZOOM]]
     python -m fcp_gs tiles --bbox S,W,N,E [--zoom 4-11]
     python -m fcp_gs tm-loss --port /dev/ttyUSB0 [--count 1000] [--wired]
     python -m fcp_gs tc-latency --port /dev/ttyUSB0 [--count 50] [--wired]
@@ -22,6 +22,7 @@ from serial.tools import list_ports
 
 from .analyze import analyze
 from .deliveries import DeliveryStore
+from .demo import DEFAULT_SCENARIO, SCENARIOS
 from .link import Link, open_serial
 from .logs import LogError, download_file, list_files
 from .session_log import SessionLog
@@ -76,7 +77,7 @@ def _open_link(args: argparse.Namespace) -> Link:
         from .demo import DemoSatellite
 
         center = getattr(args, "map_center", None) or _map_center(DEFAULT_MAP_CENTER)
-        stream = DemoSatellite(center=center[:2], wired=args.wired)
+        stream = DemoSatellite(center=center[:2], wired=args.wired, scenario=args.scenario)
     else:
         if args.port is None:
             print("--port é obrigatório sem --demo.", file=sys.stderr)
@@ -112,7 +113,9 @@ def _cmd_serve(args: argparse.Namespace) -> int:
     else:
         allowed_hosts = LOOPBACK_HOSTS | {args.host}
     app = create_app(link, REPORT_DIR, map_center=args.map_center, tile_cache=TileCache(TILE_DIR),
-                     allowed_hosts=allowed_hosts)
+                     allowed_hosts=allowed_hosts, demo=link.stream if args.demo else None)
+    if args.demo:
+        print(f"Demo, cenário {args.scenario}: {SCENARIOS[args.scenario].description}")
     print(f"Abra http://localhost:{args.http}")
     try:
         app.run(host=args.host, port=args.http, threaded=True)
@@ -215,6 +218,9 @@ def main(argv: list[str] | None = None) -> int:
         sub.add_argument("--baud", type=int, default=115200)
         sub.add_argument("--wired", action="store_true", help="conexão direta ao satélite (umbilical)")
         sub.add_argument("--demo", action="store_true", help="satélite simulado na memória, sem hardware")
+        sub.add_argument("--scenario", choices=list(SCENARIOS), default=DEFAULT_SCENARIO,
+                         help="cenário do --demo (troca ao vivo pela interface): "
+                              + "; ".join(f"{s.name}: {s.title}" for s in SCENARIOS.values()))
         return sub
 
     serve = with_port(commands.add_parser("serve", help="interface web"))

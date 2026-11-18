@@ -1,0 +1,2 @@
+command: ["/tmp/int009-housekeeping-2026-11-17-183036/downlink-check"]
+ObcDownlinkCheck: mapping, mailbox and real file extraction passed

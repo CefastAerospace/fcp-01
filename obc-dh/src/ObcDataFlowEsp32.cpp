@@ -22,8 +22,7 @@ namespace {
     obc_downlink::LogMailbox log_mailbox;
     bool delivery_reader_ready = false;
     obc_payload::Receiver receiver;
-    std::unique_ptr<uint8_t[]> snapshot_first;
-    std::unique_ptr<uint8_t[]> snapshot_second;
+    SnapshotBuffers snapshot_buffers;
     enum class SLOT_STATE { FREE, ENCODING, READY, WRITING };
     SLOT_STATE snapshot_state = SLOT_STATE::FREE;
     size_t snapshot_size = 0;
@@ -373,9 +372,24 @@ namespace {
 
         MarkProcess(obc_health::ACTIVITY::ENCODING);
         size_t size = 0;
-        const bool encoded = obc_record::EncodeSnapshotParts(snapshot,
-            snapshot_first.get(), snapshot_first_bytes, snapshot_second.get(),
-            snapshot_second_bytes, size) == obc_record::STATUS::OK;
+#ifdef OBC_HOUSEKEEPING_BENCH
+        // O slot ENCODING pertence ao processador; nenhuma escrita usa estes blocos.
+        size_t expected_size = 0;
+        const bool prepared = obc_record::GetSnapshotSize(snapshot, expected_size) == obc_record::STATUS::OK
+            && snapshot_buffers.Reserve(expected_size);
+        const size_t first_capacity = expected_size < snapshot_first_bytes ? expected_size : snapshot_first_bytes;
+        const size_t second_capacity = expected_size - first_capacity;
+#else
+        const bool prepared = true;
+        const size_t first_capacity = snapshot_first_bytes;
+        const size_t second_capacity = snapshot_second_bytes;
+#endif
+        const bool encoded = prepared && obc_record::EncodeSnapshotParts(snapshot,
+            snapshot_buffers.GetFirstData(), first_capacity, snapshot_buffers.GetSecondData(),
+            second_capacity, size) == obc_record::STATUS::OK;
+#ifdef OBC_HOUSEKEEPING_BENCH
+        if (!encoded) snapshot_buffers.Reset(); // Ainda ENCODING, antes de publicar FREE.
+#endif
         portENTER_CRITICAL(&state_lock);
         if (encoded) {
             snapshot_size = size;
@@ -655,8 +669,12 @@ namespace {
             portEXIT_CRITICAL(&state_lock);
             if (snapshot) {
                 const size_t first_size = size < snapshot_first_bytes ? size : snapshot_first_bytes;
-                const bool written = !synchronizing_reference && journal.WriteParts(snapshot_first.get(), first_size,
-                    snapshot_second.get(), size - first_size);
+                const bool written = !synchronizing_reference && journal.WriteParts(snapshot_buffers.GetFirstData(), first_size,
+                    snapshot_buffers.GetSecondData(), size - first_size);
+#ifdef OBC_HOUSEKEEPING_BENCH
+                // I/O terminou; liberar ainda em WRITING impede realocação pelo processador.
+                snapshot_buffers.Reset();
+#endif
                 portENTER_CRITICAL(&state_lock);
                 snapshot_state = SLOT_STATE::FREE;
                 if (!written) state.DropRecords();
@@ -684,6 +702,24 @@ namespace {
 
 // ─── DEMAIS MÉTODOS ───────────────────────────────────────────────
 
+#ifdef OBC_HOUSEKEEPING_BENCH
+bool ReserveHousekeepingBuffers(
+    uint64_t boot
+) {
+    if (attempted || boot == 0) return false;
+    const bool reserved = receiver.Init(boot);
+    char line[180];
+    const int length = std::snprintf(line, sizeof(line),
+        "[HK-RESERVE] receiver=%u staging=on_demand byte_heap=%u byte_largest=%u\n", reserved ? 1U : 0U,
+        static_cast<unsigned>(heap_caps_get_free_size(MALLOC_CAP_INTERNAL | MALLOC_CAP_8BIT)),
+        static_cast<unsigned>(heap_caps_get_largest_free_block(MALLOC_CAP_INTERNAL | MALLOC_CAP_8BIT)));
+    if (length > 0 && static_cast<size_t>(length) < sizeof(line)) {
+        Serial.write(reinterpret_cast<const uint8_t*>(line), static_cast<size_t>(length));
+    }
+    return reserved;
+}
+#endif
+
 bool Init(
     const obc_startup::STARTUP_REPORT& report
 ) {
@@ -701,12 +737,20 @@ bool Init(
         ESP.getFreeHeap(), heap_caps_get_free_size(MALLOC_CAP_INTERNAL | MALLOC_CAP_8BIT),
         heap_caps_get_largest_free_block(MALLOC_CAP_INTERNAL | MALLOC_CAP_8BIT));
     if (storage) {
-        snapshot_first.reset(new (std::nothrow) uint8_t[snapshot_first_bytes]);
-        snapshot_second.reset(new (std::nothrow) uint8_t[snapshot_second_bytes]);
+#ifndef OBC_HOUSEKEEPING_BENCH
+        const bool snapshot_memory_ready = snapshot_buffers.Reserve(obc_record::max_snapshot_record_bytes);
+#else
+        const bool snapshot_memory_ready = true; // Reserva por registro, fora do boot.
+        Serial.write("[HK-STAGING] allocation=on_demand max_bytes=64497\n");
+#endif
         // Admissão das tarefas ainda não criadas, em memória acessível por byte.
         // O parser mantém seu teto por quadro e NO_MEMORY; não reserva 96 KiB.
         const size_t stack_budget = payload_stack_bytes + writer_stack_bytes
-            + obc_payload::esp32::transport_stack_bytes;
+            + obc_payload::esp32::transport_stack_bytes
+#ifdef OBC_HOUSEKEEPING_BENCH
+            + obc_housekeeping::bench::pending_stack_bytes
+#endif
+            ;
         const size_t reserve = stack_budget + startup_margin_bytes;
         const size_t flow_stack = payload_stack_bytes > writer_stack_bytes
             ? payload_stack_bytes : writer_stack_bytes;
@@ -715,16 +759,15 @@ bool Init(
         const size_t byte_heap = heap_caps_get_free_size(MALLOC_CAP_INTERNAL | MALLOC_CAP_8BIT);
         const size_t byte_largest = heap_caps_get_largest_free_block(MALLOC_CAP_INTERNAL | MALLOC_CAP_8BIT);
         Serial.printf("[FLOW] RAM apos bloco SD: bloco=%u heap=%u byte_heap=%u byte_largest=%u stack_budget=%u margin=%u reserva=%u parser_limit=%u\n",
-            snapshot_first && snapshot_second ? 1U : 0U, ESP.getFreeHeap(),
+            snapshot_buffers.GetFirstData() && snapshot_buffers.GetSecondData() ? 1U : 0U, ESP.getFreeHeap(),
             static_cast<unsigned>(byte_heap), static_cast<unsigned>(byte_largest),
             static_cast<unsigned>(stack_budget), static_cast<unsigned>(startup_margin_bytes),
             static_cast<unsigned>(reserve), static_cast<unsigned>(obc_payload::parser_memory_bytes));
         // Fragmentação pode impedir uma pilha mesmo quando a soma cabe.
         // A criação real das tarefas abaixo continua sendo verificada.
-        if (!snapshot_first || !snapshot_second || byte_heap < reserve || byte_largest < largest_stack) {
+        if (!snapshot_memory_ready || byte_heap < reserve || byte_largest < largest_stack) {
             storage = false;
-            snapshot_first.reset();
-            snapshot_second.reset();
+            snapshot_buffers.Reset();
             Serial.printf("[FLOW] Escritor inativo: memoria por byte insuficiente para tarefas e margem\n");
         }
     }
@@ -732,12 +775,28 @@ bool Init(
     writer_result = report.storage_result;
     if (!storage) state.DropRecords(); // BOOT pretendido, sem escritor disponível.
     state.SetStorageStatistics(0, startup_storage_failures);
-    if (obc_payload::esp32::StartTransportTask()) {
+#ifdef OBC_HOUSEKEEPING_BENCH
+    obc_housekeeping::bench::TraceTaskCreation("uart", false,
+        obc_payload::esp32::transport_stack_bytes, 0);
+#endif
+    const bool transport_started = obc_payload::esp32::StartTransportTask();
+#ifdef OBC_HOUSEKEEPING_BENCH
+    obc_housekeeping::bench::TraceTaskCreation("uart", true,
+        obc_payload::esp32::transport_stack_bytes, transport_started ? pdPASS : pdFAIL);
+#endif
+    if (transport_started) {
         portENTER_CRITICAL(&state_lock);
         obc_health::Start(process_progress, obc_time::esp32::GetMonotonicMs());
         portEXIT_CRITICAL(&state_lock);
-        active = xTaskCreatePinnedToCore(PayloadEntry, "payload_rx", payload_stack_bytes,
-            nullptr, 2, &payload_task, 1) == pdPASS;
+#ifdef OBC_HOUSEKEEPING_BENCH
+        obc_housekeeping::bench::TraceTaskCreation("process", false, payload_stack_bytes, 0);
+#endif
+        const BaseType_t process_create_result = xTaskCreatePinnedToCore(PayloadEntry, "payload_rx", payload_stack_bytes,
+            nullptr, 2, &payload_task, 1);
+        active = process_create_result == pdPASS;
+#ifdef OBC_HOUSEKEEPING_BENCH
+        obc_housekeeping::bench::TraceTaskCreation("process", true, payload_stack_bytes, process_create_result);
+#endif
         if (!active) {
             portENTER_CRITICAL(&state_lock);
             process_progress = {};
@@ -748,10 +807,16 @@ bool Init(
         portENTER_CRITICAL(&state_lock);
         obc_health::Start(writer_progress, obc_time::esp32::GetMonotonicMs());
         portEXIT_CRITICAL(&state_lock);
-        if (xTaskCreatePinnedToCore(WriterEntry, "obc_journal", writer_stack_bytes,
-                nullptr, 1, &writer_task, 1) != pdPASS) {
-            snapshot_first.reset();
-            snapshot_second.reset();
+#ifdef OBC_HOUSEKEEPING_BENCH
+        obc_housekeeping::bench::TraceTaskCreation("writer", false, writer_stack_bytes, 0);
+#endif
+        const BaseType_t writer_create_result = xTaskCreatePinnedToCore(WriterEntry, "obc_journal", writer_stack_bytes,
+            nullptr, 1, &writer_task, 1);
+#ifdef OBC_HOUSEKEEPING_BENCH
+        obc_housekeeping::bench::TraceTaskCreation("writer", true, writer_stack_bytes, writer_create_result);
+#endif
+        if (writer_create_result != pdPASS) {
+            snapshot_buffers.Reset();
             startup_storage_failures = 1;
             portENTER_CRITICAL(&state_lock);
             writer_progress = {};
@@ -823,8 +888,13 @@ obc_data::TELEMETRY_DATA ComposeTelemetry(
 ) {
     sampled_ms = obc_time::esp32::GetMonotonicMs();
     portENTER_CRITICAL(&state_lock);
-    const obc_data::TELEMETRY_DATA telemetry = state.ComposeTelemetry(sampled_ms);
+    obc_data::TELEMETRY_DATA telemetry = state.ComposeTelemetry(sampled_ms);
     portEXIT_CRITICAL(&state_lock);
+#ifdef OBC_HOUSEKEEPING_BENCH
+    // Getters e conversão fora do lock; o mesmo objeto segue para TT&C e TM v3.
+    const auto readings = obc_housekeeping::bench::Read(sampled_ms);
+    obc_housekeeping::ApplyTelemetry(readings, telemetry);
+#endif
     return telemetry;
 }
 

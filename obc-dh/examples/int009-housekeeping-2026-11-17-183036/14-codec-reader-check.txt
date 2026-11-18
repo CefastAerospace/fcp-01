@@ -1,0 +1,2 @@
+command: ["python3", "tests/TelemetryV3Check.py", "/tmp/int009-housekeeping-2026-11-17-183036/telemetry-v3-check", "/tmp/int009-housekeeping-2026-11-17-183036/read-records"]
+TM v3: vetor independente, ausência, corrupção e leitura mista aprovados

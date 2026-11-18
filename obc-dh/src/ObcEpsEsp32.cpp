@@ -20,6 +20,12 @@ namespace {
     DIAGNOSTICS diagnostics = {};
     portMUX_TYPE publication_lock = portMUX_INITIALIZER_UNLOCKED;
     TaskHandle_t worker_task = nullptr;
+#if defined(OBC_HOUSEKEEPING_BENCH) && !defined(OBC_HOUSEKEEPING_FIXTURES)
+    // Memória pertence ao produtor por toda sua vida; nenhuma reserva tardia no heap.
+    StaticTask_t worker_control;
+    alignas(portBYTE_ALIGNMENT) StackType_t worker_stack[worker_stack_bytes / sizeof(StackType_t)];
+    static_assert(sizeof(worker_stack) == worker_stack_bytes, "Pilha EPS deve manter 4096 bytes");
+#endif
     bool init_attempted = false;
     bool init_active = false;
 
@@ -156,8 +162,14 @@ bool Init(
     diagnostics = initial_diagnostics;
     portEXIT_CRITICAL(&publication_lock);
     if (initial_diagnostics.service != i2c::SERVICE_STATE::READY) return false;
+#if defined(OBC_HOUSEKEEPING_BENCH) && !defined(OBC_HOUSEKEEPING_FIXTURES)
+    worker_task = xTaskCreateStaticPinnedToCore(RunWorker, "eps_ina219", worker_stack_bytes,
+        nullptr, 1, worker_stack, &worker_control, 1);
+    if (worker_task == nullptr) return false;
+#else
     if (xTaskCreatePinnedToCore(RunWorker, "eps_ina219", worker_stack_bytes,
             nullptr, 1, &worker_task, 1) != pdPASS) return false;
+#endif
     init_active = true;
     return true;
 }

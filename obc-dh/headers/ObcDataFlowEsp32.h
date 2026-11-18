@@ -16,6 +16,9 @@
 #ifdef OBC_RESOURCES_BENCH
 #include "ObcResourcesBench.h" // Injeções exclusivas da bancada de recursos.
 #endif
+#ifdef OBC_HOUSEKEEPING_BENCH
+#include "ObcHousekeepingBench.h" // Cópias EPS/Térmico e captura exclusivas da INT-009.
+#endif
 #include "I2cBus.h" // Cópia coerente dos diagnósticos do executor existente.
 #include "PayloadReceiverEsp32.h" // Proprietário único de UART2 e Receiver.
 #include "ObcStorageEsp32.h" // Operações existentes sobre SD/HSPI.
@@ -25,6 +28,18 @@
 
 namespace obc_flow {
 namespace esp32 {
+
+#ifdef OBC_HOUSEKEEPING_BENCH
+    /**
+     * @brief Reserva os dois buffers do receptor antes dos serviços, sem UART ou tarefas.
+     * @details Uso sequencial no setup da bancada, após reservar boot válido e antes de Init.
+     * Init reutiliza o receptor e conserva a admissão das pilhas/margem. O estágio
+     * SD é reservado pelo tamanho real somente durante ENCODING, fora do boot.
+     */
+    bool ReserveHousekeepingBuffers(
+        uint64_t boot_id
+    );
+#endif
 
     /**
      * @brief Inicia uma vez o fluxo após TT&C, usando o boot já confirmado.

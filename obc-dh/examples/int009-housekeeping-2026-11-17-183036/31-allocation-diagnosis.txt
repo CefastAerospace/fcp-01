@@ -1,0 +1,79 @@
+command: ["/home/o-grande-kayky/.local/share/uv/tools/platformio/bin/python", "examples/int009-housekeeping-2026-11-17-183036/CaptureAllocationDiagnostics.py", "/dev/ttyUSB0", "--report", "examples/int009-housekeeping-2026-11-17-183036/31-allocation-diagnosis.json"]
+{
+  "diagnosis_captured": true,
+  "allocations": [
+    {
+      "task": "uart",
+      "phase": "before",
+      "stack_bytes": "3072",
+      "result": "0",
+      "byte_heap": "38820",
+      "byte_largest": "16372",
+      "refusals": "0",
+      "refused_bytes": "0",
+      "refused_caps": "0x0",
+      "function": "none"
+    },
+    {
+      "task": "uart",
+      "phase": "after",
+      "stack_bytes": "3072",
+      "result": "1",
+      "byte_heap": "35372",
+      "byte_largest": "16372",
+      "refusals": "0",
+      "refused_bytes": "0",
+      "refused_caps": "0x0",
+      "function": "none"
+    },
+    {
+      "task": "process",
+      "phase": "before",
+      "stack_bytes": "8192",
+      "result": "0",
+      "byte_heap": "35372",
+      "byte_largest": "16372",
+      "refusals": "0",
+      "refused_bytes": "0",
+      "refused_caps": "0x0",
+      "function": "none"
+    },
+    {
+      "task": "process",
+      "phase": "after",
+      "stack_bytes": "8192",
+      "result": "1",
+      "byte_heap": "26804",
+      "byte_largest": "8180",
+      "refusals": "0",
+      "refused_bytes": "0",
+      "refused_caps": "0x0",
+      "function": "none"
+    },
+    {
+      "task": "writer",
+      "phase": "before",
+      "stack_bytes": "8192",
+      "result": "0",
+      "byte_heap": "26804",
+      "byte_largest": "8180",
+      "refusals": "0",
+      "refused_bytes": "0",
+      "refused_caps": "0x0",
+      "function": "none"
+    },
+    {
+      "task": "writer",
+      "phase": "after",
+      "stack_bytes": "8192",
+      "result": "-1",
+      "byte_heap": "26804",
+      "byte_largest": "8180",
+      "refusals": "1",
+      "refused_bytes": "8192",
+      "refused_caps": "0x804",
+      "function": "heap_caps_malloc"
+    }
+  ],
+  "flow_result": "[FLOW] Recepcao=OK; SD=indisponivel; heap=161132; maior_bloco=69620"
+}

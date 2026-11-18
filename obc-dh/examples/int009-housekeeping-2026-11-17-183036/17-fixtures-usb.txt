@@ -1,0 +1,9 @@
+command: ["/home/o-grande-kayky/.local/share/uv/tools/platformio/bin/python", "tests/ObcHousekeepingBenchCheck.py", "/dev/ttyUSB0", "--source", "fixtures", "--reader", "/tmp/int009-housekeeping-2026-11-17-183036/read-records", "--report", "examples/int009-housekeeping-2026-11-17-183036/17-fixtures-usb.json"]
+Traceback (most recent call last):
+  File "/home/o-grande-kayky/Documents/CEFET/02_Graduação/Aerospace/fcp-01/obc-dh/tests/ObcHousekeepingBenchCheck.py", line 240, in <module>
+    main()
+    ~~~~^^
+  File "/home/o-grande-kayky/Documents/CEFET/02_Graduação/Aerospace/fcp-01/obc-dh/tests/ObcHousekeepingBenchCheck.py", line 205, in main
+    assert sum(raw[:4] == b"FCP3" for raw in records) == len(report["telemetry"]), "TM nao capturada"
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: TM nao capturada

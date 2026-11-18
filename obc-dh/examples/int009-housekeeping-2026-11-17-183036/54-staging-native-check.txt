@@ -1,0 +1,2 @@
+command: ["/tmp/int009-housekeeping-task-order/snapshot-buffers-check"]
+SnapshotBuffers: tamanhos, fronteiras, duas falhas de reserva e codec aprovados.

@@ -1,0 +1,1 @@
+ObcStationCheck passed; examples/int009-housekeeping-2026-11-17-183036/51-static-workers-obc-restored.json

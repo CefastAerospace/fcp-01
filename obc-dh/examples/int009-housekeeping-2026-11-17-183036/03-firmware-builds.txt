@@ -1,0 +1,814 @@
+Processing obc (platform: espressif32@6.6.0; board: esp32doit-devkit-v1; framework: arduino)
+--------------------------------------------------------------------------------
+Verbose mode can be enabled via `-v, --verbose` option
+CONFIGURATION: https://docs.platformio.org/page/boards/espressif32/esp32doit-devkit-v1.html
+PLATFORM: Espressif 32 (6.6.0) > DOIT ESP32 DEVKIT V1
+HARDWARE: ESP32 240MHz, 320KB RAM, 4MB Flash
+DEBUG: Current (cmsis-dap) External (cmsis-dap, esp-bridge, esp-prog, iot-bus-jtag, jlink, minimodule, olimex-arm-usb-ocd, olimex-arm-usb-ocd-h, olimex-arm-usb-tiny-h, olimex-jtag-tiny, tumpa)
+PACKAGES: 
+ - framework-arduinoespressif32 @ 3.20014.231204 (2.0.14) 
+ - tool-esptoolpy @ 1.40501.0 (4.5.1) 
+ - toolchain-xtensa-esp32 @ 8.4.0+2021r2-patch5
+LDF: Library Dependency Finder -> https://bit.ly/configure-pio-ldf
+LDF Modes: Finder ~ chain, Compatibility ~ soft
+Found 36 compatible libraries
+Scanning dependencies...
+Dependency Graph
+|-- ArduinoJson @ 7.0.4
+|-- LoRa @ 0.8.0
+|-- tt-c @ 0.1.0
+|-- Wire @ 2.0.0
+|-- SD @ 2.0.0
+|-- SPI @ 2.0.0
+Building in release mode
+Compiling .pio/build/obc/src/I2cBus.cpp.o
+Compiling .pio/build/obc/src/I2cRecovery.cpp.o
+Compiling .pio/build/obc/src/ObcData.cpp.o
+Compiling .pio/build/obc/src/ObcDataFlow.cpp.o
+Compiling .pio/build/obc/src/ObcDataFlowEsp32.cpp.o
+Compiling .pio/build/obc/src/ObcDelivery.cpp.o
+Compiling .pio/build/obc/src/ObcDownlink.cpp.o
+Compiling .pio/build/obc/src/ObcEps.cpp.o
+Compiling .pio/build/obc/src/ObcEpsEsp32.cpp.o
+Compiling .pio/build/obc/src/ObcHousekeeping.cpp.o
+Compiling .pio/build/obc/src/ObcI2cHealth.cpp.o
+Compiling .pio/build/obc/src/ObcRecordCodec.cpp.o
+Compiling .pio/build/obc/src/ObcResourceHealth.cpp.o
+Compiling .pio/build/obc/src/ObcStartup.cpp.o
+Compiling .pio/build/obc/src/ObcStorage.cpp.o
+Compiling .pio/build/obc/src/ObcStorageEsp32.cpp.o
+Compiling .pio/build/obc/src/ObcTaskHealth.cpp.o
+Compiling .pio/build/obc/src/ObcThermal.cpp.o
+Compiling .pio/build/obc/src/ObcThermalEsp32.cpp.o
+Compiling .pio/build/obc/src/ObcTime.cpp.o
+Compiling .pio/build/obc/src/ObcTimeEsp32.cpp.o
+Compiling .pio/build/obc/src/ObcTtc.cpp.o
+Compiling .pio/build/obc/src/ObcWatchdog.cpp.o
+Compiling .pio/build/obc/src/ObcWatchdogEsp32.cpp.o
+Compiling .pio/build/obc/src/PayloadReceiver.cpp.o
+Compiling .pio/build/obc/src/PayloadReceiverEsp32.cpp.o
+Compiling .pio/build/obc/src/main.cpp.o
+Building .pio/build/obc/bootloader.bin
+Generating partitions .pio/build/obc/partitions.bin
+esptool.py v4.5.1
+Creating esp32 image...
+Merged 1 ELF section
+Successfully created esp32 image.
+Compiling .pio/build/obc/lib416/SPI/SPI.cpp.o
+Compiling .pio/build/obc/libbb8/LoRa/LoRa.cpp.o
+Compiling .pio/build/obc/lib1da/tt-c/Sx1276Radio.cpp.o
+Compiling .pio/build/obc/lib1da/tt-c/Ttc.cpp.o
+Compiling .pio/build/obc/lib1da/tt-c/TtcProtocol.cpp.o
+Compiling .pio/build/obc/lib1da/tt-c/UmbilicalLink.cpp.o
+Archiving .pio/build/obc/lib416/libSPI.a
+Indexing .pio/build/obc/lib416/libSPI.a
+Compiling .pio/build/obc/lib120/Wire/Wire.cpp.o
+Archiving .pio/build/obc/libbb8/libLoRa.a
+Indexing .pio/build/obc/libbb8/libLoRa.a
+Compiling .pio/build/obc/lib9d0/FS/FS.cpp.o
+Compiling .pio/build/obc/lib9d0/FS/vfs_api.cpp.o
+Compiling .pio/build/obc/libcdd/SD/SD.cpp.o
+Compiling .pio/build/obc/libcdd/SD/sd_diskio.cpp.o
+Archiving .pio/build/obc/lib120/libWire.a
+Indexing .pio/build/obc/lib120/libWire.a
+Compiling .pio/build/obc/libcdd/SD/sd_diskio_crc.c.o
+Compiling .pio/build/obc/FrameworkArduino/Esp.cpp.o
+Compiling .pio/build/obc/FrameworkArduino/FirmwareMSC.cpp.o
+Compiling .pio/build/obc/FrameworkArduino/FunctionalInterrupt.cpp.o
+Compiling .pio/build/obc/FrameworkArduino/HWCDC.cpp.o
+Compiling .pio/build/obc/FrameworkArduino/HardwareSerial.cpp.o
+Compiling .pio/build/obc/FrameworkArduino/IPAddress.cpp.o
+Archiving .pio/build/obc/lib9d0/libFS.a
+Indexing .pio/build/obc/lib9d0/libFS.a
+Compiling .pio/build/obc/FrameworkArduino/IPv6Address.cpp.o
+Compiling .pio/build/obc/FrameworkArduino/MD5Builder.cpp.o
+Archiving .pio/build/obc/libcdd/libSD.a
+Indexing .pio/build/obc/libcdd/libSD.a
+Compiling .pio/build/obc/FrameworkArduino/Print.cpp.o
+Compiling .pio/build/obc/FrameworkArduino/Stream.cpp.o
+Compiling .pio/build/obc/FrameworkArduino/StreamString.cpp.o
+Compiling .pio/build/obc/FrameworkArduino/Tone.cpp.o
+Compiling .pio/build/obc/FrameworkArduino/USB.cpp.o
+Compiling .pio/build/obc/FrameworkArduino/USBCDC.cpp.o
+Compiling .pio/build/obc/FrameworkArduino/USBMSC.cpp.o
+Compiling .pio/build/obc/FrameworkArduino/WMath.cpp.o
+Compiling .pio/build/obc/FrameworkArduino/WString.cpp.o
+Compiling .pio/build/obc/FrameworkArduino/base64.cpp.o
+Compiling .pio/build/obc/FrameworkArduino/cbuf.cpp.o
+Compiling .pio/build/obc/FrameworkArduino/esp32-hal-adc.c.o
+Compiling .pio/build/obc/FrameworkArduino/esp32-hal-bt.c.o
+Compiling .pio/build/obc/FrameworkArduino/esp32-hal-cpu.c.o
+Compiling .pio/build/obc/FrameworkArduino/esp32-hal-dac.c.o
+Archiving .pio/build/obc/lib1da/libtt-c.a
+Indexing .pio/build/obc/lib1da/libtt-c.a
+Compiling .pio/build/obc/FrameworkArduino/esp32-hal-gpio.c.o
+Compiling .pio/build/obc/FrameworkArduino/esp32-hal-i2c-slave.c.o
+Compiling .pio/build/obc/FrameworkArduino/esp32-hal-i2c.c.o
+Compiling .pio/build/obc/FrameworkArduino/esp32-hal-ledc.c.o
+Compiling .pio/build/obc/FrameworkArduino/esp32-hal-matrix.c.o
+Compiling .pio/build/obc/FrameworkArduino/esp32-hal-misc.c.o
+Compiling .pio/build/obc/FrameworkArduino/esp32-hal-psram.c.o
+Compiling .pio/build/obc/FrameworkArduino/esp32-hal-rgb-led.c.o
+Compiling .pio/build/obc/FrameworkArduino/esp32-hal-rmt.c.o
+Compiling .pio/build/obc/FrameworkArduino/esp32-hal-sigmadelta.c.o
+Compiling .pio/build/obc/FrameworkArduino/esp32-hal-spi.c.o
+Compiling .pio/build/obc/FrameworkArduino/esp32-hal-time.c.o
+Compiling .pio/build/obc/FrameworkArduino/esp32-hal-timer.c.o
+Compiling .pio/build/obc/FrameworkArduino/esp32-hal-tinyusb.c.o
+Compiling .pio/build/obc/FrameworkArduino/esp32-hal-touch.c.o
+Compiling .pio/build/obc/FrameworkArduino/esp32-hal-uart.c.o
+Compiling .pio/build/obc/FrameworkArduino/firmware_msc_fat.c.o
+Compiling .pio/build/obc/FrameworkArduino/libb64/cdecode.c.o
+Compiling .pio/build/obc/FrameworkArduino/libb64/cencode.c.o
+Compiling .pio/build/obc/FrameworkArduino/main.cpp.o
+Compiling .pio/build/obc/FrameworkArduino/stdlib_noniso.c.o
+/home/o-grande-kayky/.local/share/platformio/packages/framework-arduinoespressif32/cores/esp32/esp32-hal-uart.c: In function 'uartSetPins':
+/home/o-grande-kayky/.local/share/platformio/packages/framework-arduinoespressif32/cores/esp32/esp32-hal-uart.c:153:9: warning: 'return' with no value, in function returning non-void
+         return;
+         ^~~~~~
+/home/o-grande-kayky/.local/share/platformio/packages/framework-arduinoespressif32/cores/esp32/esp32-hal-uart.c:149:6: note: declared here
+ bool uartSetPins(uint8_t uart_num, int8_t rxPin, int8_t txPin, int8_t ctsPin, int8_t rtsPin)
+      ^~~~~~~~~~~
+Compiling .pio/build/obc/FrameworkArduino/wiring_pulse.c.o
+Compiling .pio/build/obc/FrameworkArduino/wiring_shift.c.o
+Archiving .pio/build/obc/libFrameworkArduino.a
+Indexing .pio/build/obc/libFrameworkArduino.a
+Linking .pio/build/obc/firmware.elf
+Retrieving maximum program size .pio/build/obc/firmware.elf
+Checking size .pio/build/obc/firmware.elf
+Advanced Memory Usage is available via "PlatformIO Home > Project Inspect"
+RAM:   [=         ]  10.0% (used 32704 bytes from 327680 bytes)
+Flash: [===       ]  33.0% (used 432925 bytes from 1310720 bytes)
+Building .pio/build/obc/firmware.bin with action:
+  "$PYTHONEXE" "$OBJCOPY" --chip esp32 elf2image --flash_mode ${__get_board_flash_mode(__env__)} --flash_freq ${__get_board_f_image(__env__)} --flash_size 4MB --elf-sha256-offset 0xb0 -o $TARGET $SOURCES
+Building .pio/build/obc/firmware.bin
+esptool.py v4.5.1
+Creating esp32 image...
+Merged 2 ELF sections
+Successfully created esp32 image.
+========================= [SUCCESS] Took 9.85 seconds =========================
+
+Processing int009-ina219-check (platform: espressif32@6.6.0; board: esp32doit-devkit-v1; framework: arduino)
+--------------------------------------------------------------------------------
+Verbose mode can be enabled via `-v, --verbose` option
+CONFIGURATION: https://docs.platformio.org/page/boards/espressif32/esp32doit-devkit-v1.html
+PLATFORM: Espressif 32 (6.6.0) > DOIT ESP32 DEVKIT V1
+HARDWARE: ESP32 240MHz, 320KB RAM, 4MB Flash
+DEBUG: Current (cmsis-dap) External (cmsis-dap, esp-bridge, esp-prog, iot-bus-jtag, jlink, minimodule, olimex-arm-usb-ocd, olimex-arm-usb-ocd-h, olimex-arm-usb-tiny-h, olimex-jtag-tiny, tumpa)
+PACKAGES: 
+ - framework-arduinoespressif32 @ 3.20014.231204 (2.0.14) 
+ - tool-esptoolpy @ 1.40501.0 (4.5.1) 
+ - toolchain-xtensa-esp32 @ 8.4.0+2021r2-patch5
+LDF: Library Dependency Finder -> https://bit.ly/configure-pio-ldf
+LDF Modes: Finder ~ chain, Compatibility ~ soft
+Found 37 compatible libraries
+Scanning dependencies...
+Dependency Graph
+|-- ArduinoJson @ 7.0.4
+|-- LoRa @ 0.8.0
+|-- tt-c @ 0.1.0
+|-- EPS_INA219 @ 1.0.0
+|-- Wire @ 2.0.0
+|-- SD @ 2.0.0
+|-- SPI @ 2.0.0
+Building in release mode
+Compiling .pio/build/int009-ina219-check/src/I2cBus.cpp.o
+Compiling .pio/build/int009-ina219-check/src/I2cRecovery.cpp.o
+Compiling .pio/build/int009-ina219-check/src/ObcData.cpp.o
+Compiling .pio/build/int009-ina219-check/src/ObcDataFlow.cpp.o
+Compiling .pio/build/int009-ina219-check/src/ObcDataFlowEsp32.cpp.o
+Compiling .pio/build/int009-ina219-check/src/ObcDelivery.cpp.o
+Compiling .pio/build/int009-ina219-check/src/ObcDownlink.cpp.o
+Compiling .pio/build/int009-ina219-check/src/ObcEps.cpp.o
+Compiling .pio/build/int009-ina219-check/src/ObcEpsEsp32.cpp.o
+Compiling .pio/build/int009-ina219-check/src/ObcHousekeeping.cpp.o
+Compiling .pio/build/int009-ina219-check/src/ObcI2cHealth.cpp.o
+Compiling .pio/build/int009-ina219-check/src/ObcRecordCodec.cpp.o
+Compiling .pio/build/int009-ina219-check/src/ObcResourceHealth.cpp.o
+Compiling .pio/build/int009-ina219-check/src/ObcStartup.cpp.o
+Compiling .pio/build/int009-ina219-check/src/ObcStorage.cpp.o
+Compiling .pio/build/int009-ina219-check/src/ObcStorageEsp32.cpp.o
+Compiling .pio/build/int009-ina219-check/src/ObcTaskHealth.cpp.o
+Compiling .pio/build/int009-ina219-check/src/ObcThermal.cpp.o
+Compiling .pio/build/int009-ina219-check/src/ObcThermalEsp32.cpp.o
+Compiling .pio/build/int009-ina219-check/src/ObcTime.cpp.o
+Compiling .pio/build/int009-ina219-check/src/ObcTimeEsp32.cpp.o
+Compiling .pio/build/int009-ina219-check/src/ObcTtc.cpp.o
+Compiling .pio/build/int009-ina219-check/src/ObcWatchdog.cpp.o
+Compiling .pio/build/int009-ina219-check/src/ObcWatchdogEsp32.cpp.o
+Compiling .pio/build/int009-ina219-check/src/PayloadReceiver.cpp.o
+Compiling .pio/build/int009-ina219-check/src/PayloadReceiverEsp32.cpp.o
+Compiling .pio/build/int009-ina219-check/src/main.cpp.o
+Building .pio/build/int009-ina219-check/bootloader.bin
+Generating partitions .pio/build/int009-ina219-check/partitions.bin
+esptool.py v4.5.1
+Creating esp32 image...
+Merged 1 ELF section
+Successfully created esp32 image.
+Compiling .pio/build/int009-ina219-check/lib416/SPI/SPI.cpp.o
+Compiling .pio/build/int009-ina219-check/lib180/LoRa/LoRa.cpp.o
+Compiling .pio/build/int009-ina219-check/lib1da/tt-c/Sx1276Radio.cpp.o
+Compiling .pio/build/int009-ina219-check/lib1da/tt-c/Ttc.cpp.o
+Compiling .pio/build/int009-ina219-check/lib1da/tt-c/TtcProtocol.cpp.o
+Compiling .pio/build/int009-ina219-check/lib1da/tt-c/UmbilicalLink.cpp.o
+Archiving .pio/build/int009-ina219-check/lib416/libSPI.a
+Indexing .pio/build/int009-ina219-check/lib416/libSPI.a
+Compiling .pio/build/int009-ina219-check/lib120/Wire/Wire.cpp.o
+Archiving .pio/build/int009-ina219-check/lib180/libLoRa.a
+Indexing .pio/build/int009-ina219-check/lib180/libLoRa.a
+Compiling .pio/build/int009-ina219-check/lib987/EPS_INA219_Standard/EPS_INA219.cpp.o
+Compiling .pio/build/int009-ina219-check/lib9d0/FS/FS.cpp.o
+Compiling .pio/build/int009-ina219-check/lib9d0/FS/vfs_api.cpp.o
+Compiling .pio/build/int009-ina219-check/libcdd/SD/SD.cpp.o
+Archiving .pio/build/int009-ina219-check/lib120/libWire.a
+Indexing .pio/build/int009-ina219-check/lib120/libWire.a
+Compiling .pio/build/int009-ina219-check/libcdd/SD/sd_diskio.cpp.o
+Compiling .pio/build/int009-ina219-check/libcdd/SD/sd_diskio_crc.c.o
+Compiling .pio/build/int009-ina219-check/FrameworkArduino/Esp.cpp.o
+Archiving .pio/build/int009-ina219-check/lib987/libEPS_INA219_Standard.a
+Indexing .pio/build/int009-ina219-check/lib987/libEPS_INA219_Standard.a
+Compiling .pio/build/int009-ina219-check/FrameworkArduino/FirmwareMSC.cpp.o
+Compiling .pio/build/int009-ina219-check/FrameworkArduino/FunctionalInterrupt.cpp.o
+Compiling .pio/build/int009-ina219-check/FrameworkArduino/HWCDC.cpp.o
+Compiling .pio/build/int009-ina219-check/FrameworkArduino/HardwareSerial.cpp.o
+Compiling .pio/build/int009-ina219-check/FrameworkArduino/IPAddress.cpp.o
+Compiling .pio/build/int009-ina219-check/FrameworkArduino/IPv6Address.cpp.o
+Compiling .pio/build/int009-ina219-check/FrameworkArduino/MD5Builder.cpp.o
+Archiving .pio/build/int009-ina219-check/lib9d0/libFS.a
+Indexing .pio/build/int009-ina219-check/lib9d0/libFS.a
+Archiving .pio/build/int009-ina219-check/libcdd/libSD.a
+Indexing .pio/build/int009-ina219-check/libcdd/libSD.a
+Compiling .pio/build/int009-ina219-check/FrameworkArduino/Print.cpp.o
+Compiling .pio/build/int009-ina219-check/FrameworkArduino/Stream.cpp.o
+Compiling .pio/build/int009-ina219-check/FrameworkArduino/StreamString.cpp.o
+Compiling .pio/build/int009-ina219-check/FrameworkArduino/Tone.cpp.o
+Compiling .pio/build/int009-ina219-check/FrameworkArduino/USB.cpp.o
+Compiling .pio/build/int009-ina219-check/FrameworkArduino/USBCDC.cpp.o
+Compiling .pio/build/int009-ina219-check/FrameworkArduino/USBMSC.cpp.o
+Compiling .pio/build/int009-ina219-check/FrameworkArduino/WMath.cpp.o
+Compiling .pio/build/int009-ina219-check/FrameworkArduino/WString.cpp.o
+Compiling .pio/build/int009-ina219-check/FrameworkArduino/base64.cpp.o
+Compiling .pio/build/int009-ina219-check/FrameworkArduino/cbuf.cpp.o
+Compiling .pio/build/int009-ina219-check/FrameworkArduino/esp32-hal-adc.c.o
+Archiving .pio/build/int009-ina219-check/lib1da/libtt-c.a
+Compiling .pio/build/int009-ina219-check/FrameworkArduino/esp32-hal-bt.c.o
+Indexing .pio/build/int009-ina219-check/lib1da/libtt-c.a
+Compiling .pio/build/int009-ina219-check/FrameworkArduino/esp32-hal-cpu.c.o
+Compiling .pio/build/int009-ina219-check/FrameworkArduino/esp32-hal-dac.c.o
+Compiling .pio/build/int009-ina219-check/FrameworkArduino/esp32-hal-gpio.c.o
+Compiling .pio/build/int009-ina219-check/FrameworkArduino/esp32-hal-i2c-slave.c.o
+Compiling .pio/build/int009-ina219-check/FrameworkArduino/esp32-hal-i2c.c.o
+Compiling .pio/build/int009-ina219-check/FrameworkArduino/esp32-hal-ledc.c.o
+Compiling .pio/build/int009-ina219-check/FrameworkArduino/esp32-hal-matrix.c.o
+Compiling .pio/build/int009-ina219-check/FrameworkArduino/esp32-hal-misc.c.o
+Compiling .pio/build/int009-ina219-check/FrameworkArduino/esp32-hal-psram.c.o
+Compiling .pio/build/int009-ina219-check/FrameworkArduino/esp32-hal-rgb-led.c.o
+Compiling .pio/build/int009-ina219-check/FrameworkArduino/esp32-hal-rmt.c.o
+Compiling .pio/build/int009-ina219-check/FrameworkArduino/esp32-hal-sigmadelta.c.o
+Compiling .pio/build/int009-ina219-check/FrameworkArduino/esp32-hal-spi.c.o
+Compiling .pio/build/int009-ina219-check/FrameworkArduino/esp32-hal-time.c.o
+Compiling .pio/build/int009-ina219-check/FrameworkArduino/esp32-hal-timer.c.o
+Compiling .pio/build/int009-ina219-check/FrameworkArduino/esp32-hal-tinyusb.c.o
+Compiling .pio/build/int009-ina219-check/FrameworkArduino/esp32-hal-touch.c.o
+Compiling .pio/build/int009-ina219-check/FrameworkArduino/esp32-hal-uart.c.o
+Compiling .pio/build/int009-ina219-check/FrameworkArduino/firmware_msc_fat.c.o
+Compiling .pio/build/int009-ina219-check/FrameworkArduino/libb64/cdecode.c.o
+Compiling .pio/build/int009-ina219-check/FrameworkArduino/libb64/cencode.c.o
+Compiling .pio/build/int009-ina219-check/FrameworkArduino/main.cpp.o
+Compiling .pio/build/int009-ina219-check/FrameworkArduino/stdlib_noniso.c.o
+Compiling .pio/build/int009-ina219-check/FrameworkArduino/wiring_pulse.c.o
+/home/o-grande-kayky/.local/share/platformio/packages/framework-arduinoespressif32/cores/esp32/esp32-hal-uart.c: In function 'uartSetPins':
+/home/o-grande-kayky/.local/share/platformio/packages/framework-arduinoespressif32/cores/esp32/esp32-hal-uart.c:153:9: warning: 'return' with no value, in function returning non-void
+         return;
+         ^~~~~~
+/home/o-grande-kayky/.local/share/platformio/packages/framework-arduinoespressif32/cores/esp32/esp32-hal-uart.c:149:6: note: declared here
+ bool uartSetPins(uint8_t uart_num, int8_t rxPin, int8_t txPin, int8_t ctsPin, int8_t rtsPin)
+      ^~~~~~~~~~~
+Compiling .pio/build/int009-ina219-check/FrameworkArduino/wiring_shift.c.o
+Archiving .pio/build/int009-ina219-check/libFrameworkArduino.a
+Indexing .pio/build/int009-ina219-check/libFrameworkArduino.a
+Linking .pio/build/int009-ina219-check/firmware.elf
+Retrieving maximum program size .pio/build/int009-ina219-check/firmware.elf
+Checking size .pio/build/int009-ina219-check/firmware.elf
+Advanced Memory Usage is available via "PlatformIO Home > Project Inspect"
+RAM:   [=         ]  10.1% (used 33072 bytes from 327680 bytes)
+Flash: [===       ]  33.9% (used 444661 bytes from 1310720 bytes)
+Building .pio/build/int009-ina219-check/firmware.bin with action:
+  "$PYTHONEXE" "$OBJCOPY" --chip esp32 elf2image --flash_mode ${__get_board_flash_mode(__env__)} --flash_freq ${__get_board_f_image(__env__)} --flash_size 4MB --elf-sha256-offset 0xb0 -o $TARGET $SOURCES
+Building .pio/build/int009-ina219-check/firmware.bin
+esptool.py v4.5.1
+Creating esp32 image...
+Merged 2 ELF sections
+Successfully created esp32 image.
+========================= [SUCCESS] Took 10.00 seconds =========================
+
+Processing int009-lm75a-check (platform: espressif32@6.6.0; board: esp32doit-devkit-v1; framework: arduino)
+--------------------------------------------------------------------------------
+Verbose mode can be enabled via `-v, --verbose` option
+CONFIGURATION: https://docs.platformio.org/page/boards/espressif32/esp32doit-devkit-v1.html
+PLATFORM: Espressif 32 (6.6.0) > DOIT ESP32 DEVKIT V1
+HARDWARE: ESP32 240MHz, 320KB RAM, 4MB Flash
+DEBUG: Current (cmsis-dap) External (cmsis-dap, esp-bridge, esp-prog, iot-bus-jtag, jlink, minimodule, olimex-arm-usb-ocd, olimex-arm-usb-ocd-h, olimex-arm-usb-tiny-h, olimex-jtag-tiny, tumpa)
+PACKAGES: 
+ - framework-arduinoespressif32 @ 3.20014.231204 (2.0.14) 
+ - tool-esptoolpy @ 1.40501.0 (4.5.1) 
+ - toolchain-xtensa-esp32 @ 8.4.0+2021r2-patch5
+LDF: Library Dependency Finder -> https://bit.ly/configure-pio-ldf
+LDF Modes: Finder ~ chain, Compatibility ~ soft
+Found 37 compatible libraries
+Scanning dependencies...
+Dependency Graph
+|-- ArduinoJson @ 7.0.4
+|-- LoRa @ 0.8.0
+|-- tt-c @ 0.1.0
+|-- CEFAST_LM75A @ 0.1.0
+|-- Wire @ 2.0.0
+|-- SD @ 2.0.0
+|-- SPI @ 2.0.0
+Building in release mode
+Compiling .pio/build/int009-lm75a-check/src/I2cBus.cpp.o
+Compiling .pio/build/int009-lm75a-check/src/I2cRecovery.cpp.o
+Compiling .pio/build/int009-lm75a-check/src/ObcData.cpp.o
+Compiling .pio/build/int009-lm75a-check/src/ObcDataFlow.cpp.o
+Compiling .pio/build/int009-lm75a-check/src/ObcDataFlowEsp32.cpp.o
+Compiling .pio/build/int009-lm75a-check/src/ObcDelivery.cpp.o
+Compiling .pio/build/int009-lm75a-check/src/ObcDownlink.cpp.o
+Compiling .pio/build/int009-lm75a-check/src/ObcEps.cpp.o
+Compiling .pio/build/int009-lm75a-check/src/ObcEpsEsp32.cpp.o
+Compiling .pio/build/int009-lm75a-check/src/ObcHousekeeping.cpp.o
+Compiling .pio/build/int009-lm75a-check/src/ObcI2cHealth.cpp.o
+Compiling .pio/build/int009-lm75a-check/src/ObcRecordCodec.cpp.o
+Compiling .pio/build/int009-lm75a-check/src/ObcResourceHealth.cpp.o
+Compiling .pio/build/int009-lm75a-check/src/ObcStartup.cpp.o
+Compiling .pio/build/int009-lm75a-check/src/ObcStorage.cpp.o
+Compiling .pio/build/int009-lm75a-check/src/ObcStorageEsp32.cpp.o
+Compiling .pio/build/int009-lm75a-check/src/ObcTaskHealth.cpp.o
+Compiling .pio/build/int009-lm75a-check/src/ObcThermal.cpp.o
+Compiling .pio/build/int009-lm75a-check/src/ObcThermalEsp32.cpp.o
+Compiling .pio/build/int009-lm75a-check/src/ObcTime.cpp.o
+Compiling .pio/build/int009-lm75a-check/src/ObcTimeEsp32.cpp.o
+Compiling .pio/build/int009-lm75a-check/src/ObcTtc.cpp.o
+Compiling .pio/build/int009-lm75a-check/src/ObcWatchdog.cpp.o
+Compiling .pio/build/int009-lm75a-check/src/ObcWatchdogEsp32.cpp.o
+Compiling .pio/build/int009-lm75a-check/src/PayloadReceiver.cpp.o
+Compiling .pio/build/int009-lm75a-check/src/PayloadReceiverEsp32.cpp.o
+Compiling .pio/build/int009-lm75a-check/src/main.cpp.o
+Building .pio/build/int009-lm75a-check/bootloader.bin
+Generating partitions .pio/build/int009-lm75a-check/partitions.bin
+esptool.py v4.5.1
+Creating esp32 image...
+Merged 1 ELF section
+Successfully created esp32 image.
+Compiling .pio/build/int009-lm75a-check/lib416/SPI/SPI.cpp.o
+Compiling .pio/build/int009-lm75a-check/lib974/LoRa/LoRa.cpp.o
+Compiling .pio/build/int009-lm75a-check/lib1da/tt-c/Sx1276Radio.cpp.o
+Compiling .pio/build/int009-lm75a-check/lib1da/tt-c/Ttc.cpp.o
+Compiling .pio/build/int009-lm75a-check/lib1da/tt-c/TtcProtocol.cpp.o
+Archiving .pio/build/int009-lm75a-check/lib416/libSPI.a
+Indexing .pio/build/int009-lm75a-check/lib416/libSPI.a
+Compiling .pio/build/int009-lm75a-check/lib1da/tt-c/UmbilicalLink.cpp.o
+Compiling .pio/build/int009-lm75a-check/lib120/Wire/Wire.cpp.o
+Compiling .pio/build/int009-lm75a-check/lib785/LM75A_Standard/Lm75a.cpp.o
+Archiving .pio/build/int009-lm75a-check/lib974/libLoRa.a
+Indexing .pio/build/int009-lm75a-check/lib974/libLoRa.a
+Compiling .pio/build/int009-lm75a-check/lib9d0/FS/FS.cpp.o
+Compiling .pio/build/int009-lm75a-check/lib9d0/FS/vfs_api.cpp.o
+Archiving .pio/build/int009-lm75a-check/lib785/libLM75A_Standard.a
+Indexing .pio/build/int009-lm75a-check/lib785/libLM75A_Standard.a
+Compiling .pio/build/int009-lm75a-check/libcdd/SD/SD.cpp.o
+Compiling .pio/build/int009-lm75a-check/libcdd/SD/sd_diskio.cpp.o
+Compiling .pio/build/int009-lm75a-check/libcdd/SD/sd_diskio_crc.c.o
+Compiling .pio/build/int009-lm75a-check/FrameworkArduino/Esp.cpp.o
+Archiving .pio/build/int009-lm75a-check/lib120/libWire.a
+Compiling .pio/build/int009-lm75a-check/FrameworkArduino/FirmwareMSC.cpp.o
+Indexing .pio/build/int009-lm75a-check/lib120/libWire.a
+Compiling .pio/build/int009-lm75a-check/FrameworkArduino/FunctionalInterrupt.cpp.o
+Compiling .pio/build/int009-lm75a-check/FrameworkArduino/HWCDC.cpp.o
+Compiling .pio/build/int009-lm75a-check/FrameworkArduino/HardwareSerial.cpp.o
+Compiling .pio/build/int009-lm75a-check/FrameworkArduino/IPAddress.cpp.o
+Compiling .pio/build/int009-lm75a-check/FrameworkArduino/IPv6Address.cpp.o
+Archiving .pio/build/int009-lm75a-check/lib9d0/libFS.a
+Indexing .pio/build/int009-lm75a-check/lib9d0/libFS.a
+Compiling .pio/build/int009-lm75a-check/FrameworkArduino/MD5Builder.cpp.o
+Archiving .pio/build/int009-lm75a-check/libcdd/libSD.a
+Indexing .pio/build/int009-lm75a-check/libcdd/libSD.a
+Compiling .pio/build/int009-lm75a-check/FrameworkArduino/Print.cpp.o
+Compiling .pio/build/int009-lm75a-check/FrameworkArduino/Stream.cpp.o
+Compiling .pio/build/int009-lm75a-check/FrameworkArduino/StreamString.cpp.o
+Compiling .pio/build/int009-lm75a-check/FrameworkArduino/Tone.cpp.o
+Compiling .pio/build/int009-lm75a-check/FrameworkArduino/USB.cpp.o
+Compiling .pio/build/int009-lm75a-check/FrameworkArduino/USBCDC.cpp.o
+Compiling .pio/build/int009-lm75a-check/FrameworkArduino/USBMSC.cpp.o
+Compiling .pio/build/int009-lm75a-check/FrameworkArduino/WMath.cpp.o
+Compiling .pio/build/int009-lm75a-check/FrameworkArduino/WString.cpp.o
+Compiling .pio/build/int009-lm75a-check/FrameworkArduino/base64.cpp.o
+Compiling .pio/build/int009-lm75a-check/FrameworkArduino/cbuf.cpp.o
+Archiving .pio/build/int009-lm75a-check/lib1da/libtt-c.a
+Indexing .pio/build/int009-lm75a-check/lib1da/libtt-c.a
+Compiling .pio/build/int009-lm75a-check/FrameworkArduino/esp32-hal-adc.c.o
+Compiling .pio/build/int009-lm75a-check/FrameworkArduino/esp32-hal-bt.c.o
+Compiling .pio/build/int009-lm75a-check/FrameworkArduino/esp32-hal-cpu.c.o
+Compiling .pio/build/int009-lm75a-check/FrameworkArduino/esp32-hal-dac.c.o
+Compiling .pio/build/int009-lm75a-check/FrameworkArduino/esp32-hal-gpio.c.o
+Compiling .pio/build/int009-lm75a-check/FrameworkArduino/esp32-hal-i2c-slave.c.o
+Compiling .pio/build/int009-lm75a-check/FrameworkArduino/esp32-hal-i2c.c.o
+Compiling .pio/build/int009-lm75a-check/FrameworkArduino/esp32-hal-ledc.c.o
+Compiling .pio/build/int009-lm75a-check/FrameworkArduino/esp32-hal-matrix.c.o
+Compiling .pio/build/int009-lm75a-check/FrameworkArduino/esp32-hal-misc.c.o
+Compiling .pio/build/int009-lm75a-check/FrameworkArduino/esp32-hal-psram.c.o
+Compiling .pio/build/int009-lm75a-check/FrameworkArduino/esp32-hal-rgb-led.c.o
+Compiling .pio/build/int009-lm75a-check/FrameworkArduino/esp32-hal-rmt.c.o
+Compiling .pio/build/int009-lm75a-check/FrameworkArduino/esp32-hal-sigmadelta.c.o
+Compiling .pio/build/int009-lm75a-check/FrameworkArduino/esp32-hal-spi.c.o
+Compiling .pio/build/int009-lm75a-check/FrameworkArduino/esp32-hal-time.c.o
+Compiling .pio/build/int009-lm75a-check/FrameworkArduino/esp32-hal-timer.c.o
+Compiling .pio/build/int009-lm75a-check/FrameworkArduino/esp32-hal-tinyusb.c.o
+Compiling .pio/build/int009-lm75a-check/FrameworkArduino/esp32-hal-touch.c.o
+Compiling .pio/build/int009-lm75a-check/FrameworkArduino/esp32-hal-uart.c.o
+Compiling .pio/build/int009-lm75a-check/FrameworkArduino/firmware_msc_fat.c.o
+Compiling .pio/build/int009-lm75a-check/FrameworkArduino/libb64/cdecode.c.o
+Compiling .pio/build/int009-lm75a-check/FrameworkArduino/libb64/cencode.c.o
+Compiling .pio/build/int009-lm75a-check/FrameworkArduino/main.cpp.o
+Compiling .pio/build/int009-lm75a-check/FrameworkArduino/stdlib_noniso.c.o
+Compiling .pio/build/int009-lm75a-check/FrameworkArduino/wiring_pulse.c.o
+/home/o-grande-kayky/.local/share/platformio/packages/framework-arduinoespressif32/cores/esp32/esp32-hal-uart.c: In function 'uartSetPins':
+/home/o-grande-kayky/.local/share/platformio/packages/framework-arduinoespressif32/cores/esp32/esp32-hal-uart.c:153:9: warning: 'return' with no value, in function returning non-void
+         return;
+         ^~~~~~
+/home/o-grande-kayky/.local/share/platformio/packages/framework-arduinoespressif32/cores/esp32/esp32-hal-uart.c:149:6: note: declared here
+ bool uartSetPins(uint8_t uart_num, int8_t rxPin, int8_t txPin, int8_t ctsPin, int8_t rtsPin)
+      ^~~~~~~~~~~
+Compiling .pio/build/int009-lm75a-check/FrameworkArduino/wiring_shift.c.o
+Archiving .pio/build/int009-lm75a-check/libFrameworkArduino.a
+Indexing .pio/build/int009-lm75a-check/libFrameworkArduino.a
+Linking .pio/build/int009-lm75a-check/firmware.elf
+Retrieving maximum program size .pio/build/int009-lm75a-check/firmware.elf
+Checking size .pio/build/int009-lm75a-check/firmware.elf
+Advanced Memory Usage is available via "PlatformIO Home > Project Inspect"
+RAM:   [=         ]  10.1% (used 33200 bytes from 327680 bytes)
+Flash: [===       ]  33.8% (used 442881 bytes from 1310720 bytes)
+Building .pio/build/int009-lm75a-check/firmware.bin with action:
+  "$PYTHONEXE" "$OBJCOPY" --chip esp32 elf2image --flash_mode ${__get_board_flash_mode(__env__)} --flash_freq ${__get_board_f_image(__env__)} --flash_size 4MB --elf-sha256-offset 0xb0 -o $TARGET $SOURCES
+Building .pio/build/int009-lm75a-check/firmware.bin
+esptool.py v4.5.1
+Creating esp32 image...
+Merged 2 ELF sections
+Successfully created esp32 image.
+========================= [SUCCESS] Took 10.04 seconds =========================
+
+Processing int009-housekeeping-check (platform: espressif32@6.6.0; board: esp32doit-devkit-v1; framework: arduino)
+--------------------------------------------------------------------------------
+Library Manager: Installing bblanchon/ArduinoJson @ 7.0.4
+Unpacking 0% 10% 20% 30% 40% 50% 60% 70% 80% 90% 100%
+Library Manager: ArduinoJson@7.0.4 has been installed!
+Library Manager: Installing sandeepmistry/LoRa @ 0.8.0
+Unpacking 0% 10% 20% 30% 40% 50% 60% 70% 80% 90% 100%
+Library Manager: LoRa@0.8.0 has been installed!
+Library Manager: Installing symlink://../tt-c
+Library Manager: tt-c@0.1.0 has been installed!
+Library Manager: Resolving dependencies...
+Library Manager: Installing symlink://../eps-tc/EPS_INA219_Standard
+Library Manager: EPS_INA219@1.0.0 has been installed!
+Library Manager: Installing symlink://../eps-tc/LM75A_Standard
+Library Manager: CEFAST_LM75A@0.1.0 has been installed!
+Verbose mode can be enabled via `-v, --verbose` option
+ArduinoJson 7.0.4: patch nextId_ aplicado
+CONFIGURATION: https://docs.platformio.org/page/boards/espressif32/esp32doit-devkit-v1.html
+PLATFORM: Espressif 32 (6.6.0) > DOIT ESP32 DEVKIT V1
+HARDWARE: ESP32 240MHz, 320KB RAM, 4MB Flash
+DEBUG: Current (cmsis-dap) External (cmsis-dap, esp-bridge, esp-prog, iot-bus-jtag, jlink, minimodule, olimex-arm-usb-ocd, olimex-arm-usb-ocd-h, olimex-arm-usb-tiny-h, olimex-jtag-tiny, tumpa)
+PACKAGES: 
+ - framework-arduinoespressif32 @ 3.20014.231204 (2.0.14) 
+ - tool-esptoolpy @ 1.40501.0 (4.5.1) 
+ - toolchain-xtensa-esp32 @ 8.4.0+2021r2-patch5
+LDF: Library Dependency Finder -> https://bit.ly/configure-pio-ldf
+LDF Modes: Finder ~ chain, Compatibility ~ soft
+Found 38 compatible libraries
+Scanning dependencies...
+Dependency Graph
+|-- ArduinoJson @ 7.0.4
+|-- LoRa @ 0.8.0
+|-- tt-c @ 0.1.0
+|-- EPS_INA219 @ 1.0.0
+|-- CEFAST_LM75A @ 0.1.0
+|-- Wire @ 2.0.0
+|-- SD @ 2.0.0
+|-- SPI @ 2.0.0
+Building in release mode
+Converting .pio/build/int009-housekeeping-check/flow-fixtures.fcpu.txt.o
+Compiling .pio/build/int009-housekeeping-check/src/I2cBus.cpp.o
+Compiling .pio/build/int009-housekeeping-check/src/I2cRecovery.cpp.o
+Compiling .pio/build/int009-housekeeping-check/src/ObcData.cpp.o
+Compiling .pio/build/int009-housekeeping-check/src/ObcDataFlow.cpp.o
+Compiling .pio/build/int009-housekeeping-check/src/ObcDataFlowEsp32.cpp.o
+Compiling .pio/build/int009-housekeeping-check/src/ObcDelivery.cpp.o
+Compiling .pio/build/int009-housekeeping-check/src/ObcDownlink.cpp.o
+Compiling .pio/build/int009-housekeeping-check/src/ObcEps.cpp.o
+Compiling .pio/build/int009-housekeeping-check/src/ObcEpsEsp32.cpp.o
+Compiling .pio/build/int009-housekeeping-check/src/ObcHousekeeping.cpp.o
+Compiling .pio/build/int009-housekeeping-check/src/ObcI2cHealth.cpp.o
+Compiling .pio/build/int009-housekeeping-check/src/ObcRecordCodec.cpp.o
+Compiling .pio/build/int009-housekeeping-check/src/ObcResourceHealth.cpp.o
+Compiling .pio/build/int009-housekeeping-check/src/ObcStartup.cpp.o
+Compiling .pio/build/int009-housekeeping-check/src/ObcStorage.cpp.o
+Compiling .pio/build/int009-housekeeping-check/src/ObcStorageEsp32.cpp.o
+Compiling .pio/build/int009-housekeeping-check/src/ObcTaskHealth.cpp.o
+Compiling .pio/build/int009-housekeeping-check/src/ObcThermal.cpp.o
+Compiling .pio/build/int009-housekeeping-check/src/ObcThermalEsp32.cpp.o
+Compiling .pio/build/int009-housekeeping-check/src/ObcTime.cpp.o
+Compiling .pio/build/int009-housekeeping-check/src/ObcTimeEsp32.cpp.o
+Compiling .pio/build/int009-housekeeping-check/src/ObcTtc.cpp.o
+Compiling .pio/build/int009-housekeeping-check/src/ObcWatchdog.cpp.o
+Compiling .pio/build/int009-housekeeping-check/src/ObcWatchdogEsp32.cpp.o
+Compiling .pio/build/int009-housekeeping-check/src/PayloadReceiver.cpp.o
+Compiling .pio/build/int009-housekeeping-check/src/PayloadReceiverEsp32.cpp.o
+Compiling .pio/build/int009-housekeeping-check/src/bench/HousekeepingCheck.cpp.o
+Compiling .pio/build/int009-housekeeping-check/src/bench/ObcDataFlowCheck.cpp.o
+Building .pio/build/int009-housekeeping-check/bootloader.bin
+esptool.py v4.5.1
+Creating esp32 image...
+Merged 1 ELF section
+Successfully created esp32 image.
+Generating partitions .pio/build/int009-housekeeping-check/partitions.bin
+Compiling .pio/build/int009-housekeeping-check/lib416/SPI/SPI.cpp.o
+Compiling .pio/build/int009-housekeeping-check/libbdd/LoRa/LoRa.cpp.o
+Compiling .pio/build/int009-housekeeping-check/lib1da/tt-c/Sx1276Radio.cpp.o
+Archiving .pio/build/int009-housekeeping-check/lib416/libSPI.a
+Compiling .pio/build/int009-housekeeping-check/lib1da/tt-c/Ttc.cpp.o
+Indexing .pio/build/int009-housekeeping-check/lib416/libSPI.a
+Compiling .pio/build/int009-housekeeping-check/lib1da/tt-c/TtcProtocol.cpp.o
+Compiling .pio/build/int009-housekeeping-check/lib1da/tt-c/UmbilicalLink.cpp.o
+Compiling .pio/build/int009-housekeeping-check/lib120/Wire/Wire.cpp.o
+Compiling .pio/build/int009-housekeeping-check/lib987/EPS_INA219_Standard/EPS_INA219.cpp.o
+Archiving .pio/build/int009-housekeeping-check/libbdd/libLoRa.a
+Indexing .pio/build/int009-housekeeping-check/libbdd/libLoRa.a
+Compiling .pio/build/int009-housekeeping-check/lib785/LM75A_Standard/Lm75a.cpp.o
+Compiling .pio/build/int009-housekeeping-check/lib9d0/FS/FS.cpp.o
+Archiving .pio/build/int009-housekeeping-check/lib785/libLM75A_Standard.a
+Indexing .pio/build/int009-housekeeping-check/lib785/libLM75A_Standard.a
+Compiling .pio/build/int009-housekeeping-check/lib9d0/FS/vfs_api.cpp.o
+Compiling .pio/build/int009-housekeeping-check/libcdd/SD/SD.cpp.o
+Archiving .pio/build/int009-housekeeping-check/lib987/libEPS_INA219_Standard.a
+Archiving .pio/build/int009-housekeeping-check/lib120/libWire.a
+Indexing .pio/build/int009-housekeeping-check/lib987/libEPS_INA219_Standard.a
+Indexing .pio/build/int009-housekeeping-check/lib120/libWire.a
+Compiling .pio/build/int009-housekeeping-check/libcdd/SD/sd_diskio.cpp.o
+Compiling .pio/build/int009-housekeeping-check/libcdd/SD/sd_diskio_crc.c.o
+Compiling .pio/build/int009-housekeeping-check/FrameworkArduino/Esp.cpp.o
+Compiling .pio/build/int009-housekeeping-check/FrameworkArduino/FirmwareMSC.cpp.o
+Compiling .pio/build/int009-housekeeping-check/FrameworkArduino/FunctionalInterrupt.cpp.o
+Compiling .pio/build/int009-housekeeping-check/FrameworkArduino/HWCDC.cpp.o
+Compiling .pio/build/int009-housekeeping-check/FrameworkArduino/HardwareSerial.cpp.o
+Compiling .pio/build/int009-housekeeping-check/FrameworkArduino/IPAddress.cpp.o
+Compiling .pio/build/int009-housekeeping-check/FrameworkArduino/IPv6Address.cpp.o
+Archiving .pio/build/int009-housekeeping-check/lib9d0/libFS.a
+Indexing .pio/build/int009-housekeeping-check/lib9d0/libFS.a
+Compiling .pio/build/int009-housekeeping-check/FrameworkArduino/MD5Builder.cpp.o
+Compiling .pio/build/int009-housekeeping-check/FrameworkArduino/Print.cpp.o
+Archiving .pio/build/int009-housekeeping-check/libcdd/libSD.a
+Indexing .pio/build/int009-housekeeping-check/libcdd/libSD.a
+Compiling .pio/build/int009-housekeeping-check/FrameworkArduino/Stream.cpp.o
+Compiling .pio/build/int009-housekeeping-check/FrameworkArduino/StreamString.cpp.o
+Compiling .pio/build/int009-housekeeping-check/FrameworkArduino/Tone.cpp.o
+Compiling .pio/build/int009-housekeeping-check/FrameworkArduino/USB.cpp.o
+Compiling .pio/build/int009-housekeeping-check/FrameworkArduino/USBCDC.cpp.o
+Compiling .pio/build/int009-housekeeping-check/FrameworkArduino/USBMSC.cpp.o
+Compiling .pio/build/int009-housekeeping-check/FrameworkArduino/WMath.cpp.o
+Compiling .pio/build/int009-housekeeping-check/FrameworkArduino/WString.cpp.o
+Compiling .pio/build/int009-housekeeping-check/FrameworkArduino/base64.cpp.o
+Compiling .pio/build/int009-housekeeping-check/FrameworkArduino/cbuf.cpp.o
+Archiving .pio/build/int009-housekeeping-check/lib1da/libtt-c.a
+Indexing .pio/build/int009-housekeeping-check/lib1da/libtt-c.a
+Compiling .pio/build/int009-housekeeping-check/FrameworkArduino/esp32-hal-adc.c.o
+Compiling .pio/build/int009-housekeeping-check/FrameworkArduino/esp32-hal-bt.c.o
+Compiling .pio/build/int009-housekeeping-check/FrameworkArduino/esp32-hal-cpu.c.o
+Compiling .pio/build/int009-housekeeping-check/FrameworkArduino/esp32-hal-dac.c.o
+Compiling .pio/build/int009-housekeeping-check/FrameworkArduino/esp32-hal-gpio.c.o
+Compiling .pio/build/int009-housekeeping-check/FrameworkArduino/esp32-hal-i2c-slave.c.o
+Compiling .pio/build/int009-housekeeping-check/FrameworkArduino/esp32-hal-i2c.c.o
+Compiling .pio/build/int009-housekeeping-check/FrameworkArduino/esp32-hal-ledc.c.o
+Compiling .pio/build/int009-housekeeping-check/FrameworkArduino/esp32-hal-matrix.c.o
+Compiling .pio/build/int009-housekeeping-check/FrameworkArduino/esp32-hal-misc.c.o
+Compiling .pio/build/int009-housekeeping-check/FrameworkArduino/esp32-hal-psram.c.o
+Compiling .pio/build/int009-housekeeping-check/FrameworkArduino/esp32-hal-rgb-led.c.o
+Compiling .pio/build/int009-housekeeping-check/FrameworkArduino/esp32-hal-rmt.c.o
+Compiling .pio/build/int009-housekeeping-check/FrameworkArduino/esp32-hal-sigmadelta.c.o
+Compiling .pio/build/int009-housekeeping-check/FrameworkArduino/esp32-hal-spi.c.o
+Compiling .pio/build/int009-housekeeping-check/FrameworkArduino/esp32-hal-time.c.o
+Compiling .pio/build/int009-housekeeping-check/FrameworkArduino/esp32-hal-timer.c.o
+Compiling .pio/build/int009-housekeeping-check/FrameworkArduino/esp32-hal-tinyusb.c.o
+Compiling .pio/build/int009-housekeeping-check/FrameworkArduino/esp32-hal-touch.c.o
+Compiling .pio/build/int009-housekeeping-check/FrameworkArduino/esp32-hal-uart.c.o
+Compiling .pio/build/int009-housekeeping-check/FrameworkArduino/firmware_msc_fat.c.o
+Compiling .pio/build/int009-housekeeping-check/FrameworkArduino/libb64/cdecode.c.o
+Compiling .pio/build/int009-housekeeping-check/FrameworkArduino/libb64/cencode.c.o
+Compiling .pio/build/int009-housekeeping-check/FrameworkArduino/main.cpp.o
+Compiling .pio/build/int009-housekeeping-check/FrameworkArduino/stdlib_noniso.c.o
+/home/o-grande-kayky/.local/share/platformio/packages/framework-arduinoespressif32/cores/esp32/esp32-hal-uart.c: In function 'uartSetPins':
+/home/o-grande-kayky/.local/share/platformio/packages/framework-arduinoespressif32/cores/esp32/esp32-hal-uart.c:153:9: warning: 'return' with no value, in function returning non-void
+         return;
+         ^~~~~~
+/home/o-grande-kayky/.local/share/platformio/packages/framework-arduinoespressif32/cores/esp32/esp32-hal-uart.c:149:6: note: declared here
+ bool uartSetPins(uint8_t uart_num, int8_t rxPin, int8_t txPin, int8_t ctsPin, int8_t rtsPin)
+      ^~~~~~~~~~~
+Compiling .pio/build/int009-housekeeping-check/FrameworkArduino/wiring_pulse.c.o
+Compiling .pio/build/int009-housekeeping-check/FrameworkArduino/wiring_shift.c.o
+Archiving .pio/build/int009-housekeeping-check/libFrameworkArduino.a
+Indexing .pio/build/int009-housekeeping-check/libFrameworkArduino.a
+Linking .pio/build/int009-housekeeping-check/firmware.elf
+Retrieving maximum program size .pio/build/int009-housekeeping-check/firmware.elf
+Checking size .pio/build/int009-housekeeping-check/firmware.elf
+Advanced Memory Usage is available via "PlatformIO Home > Project Inspect"
+RAM:   [=         ]  11.5% (used 37768 bytes from 327680 bytes)
+Flash: [====      ]  43.9% (used 575521 bytes from 1310720 bytes)
+Building .pio/build/int009-housekeeping-check/firmware.bin with action:
+  "$PYTHONEXE" "$OBJCOPY" --chip esp32 elf2image --flash_mode ${__get_board_flash_mode(__env__)} --flash_freq ${__get_board_f_image(__env__)} --flash_size 4MB --elf-sha256-offset 0xb0 -o $TARGET $SOURCES
+Building .pio/build/int009-housekeeping-check/firmware.bin
+esptool.py v4.5.1
+Creating esp32 image...
+Merged 2 ELF sections
+Successfully created esp32 image.
+========================= [SUCCESS] Took 14.96 seconds =========================
+
+Processing int009-housekeeping-fixtures-check (platform: espressif32@6.6.0; board: esp32doit-devkit-v1; framework: arduino)
+--------------------------------------------------------------------------------
+Library Manager: Installing bblanchon/ArduinoJson @ 7.0.4
+Unpacking 0% 10% 20% 30% 40% 50% 60% 70% 80% 90% 100%
+Library Manager: ArduinoJson@7.0.4 has been installed!
+Library Manager: Installing sandeepmistry/LoRa @ 0.8.0
+Unpacking 0% 10% 20% 30% 40% 50% 60% 70% 80% 90% 100%
+Library Manager: LoRa@0.8.0 has been installed!
+Library Manager: Installing symlink://../tt-c
+Library Manager: tt-c@0.1.0 has been installed!
+Library Manager: Resolving dependencies...
+Library Manager: Installing symlink://../eps-tc/EPS_INA219_Standard
+Library Manager: EPS_INA219@1.0.0 has been installed!
+Library Manager: Installing symlink://../eps-tc/LM75A_Standard
+Library Manager: CEFAST_LM75A@0.1.0 has been installed!
+Verbose mode can be enabled via `-v, --verbose` option
+ArduinoJson 7.0.4: patch nextId_ aplicado
+CONFIGURATION: https://docs.platformio.org/page/boards/espressif32/esp32doit-devkit-v1.html
+PLATFORM: Espressif 32 (6.6.0) > DOIT ESP32 DEVKIT V1
+HARDWARE: ESP32 240MHz, 320KB RAM, 4MB Flash
+DEBUG: Current (cmsis-dap) External (cmsis-dap, esp-bridge, esp-prog, iot-bus-jtag, jlink, minimodule, olimex-arm-usb-ocd, olimex-arm-usb-ocd-h, olimex-arm-usb-tiny-h, olimex-jtag-tiny, tumpa)
+PACKAGES: 
+ - framework-arduinoespressif32 @ 3.20014.231204 (2.0.14) 
+ - tool-esptoolpy @ 1.40501.0 (4.5.1) 
+ - toolchain-xtensa-esp32 @ 8.4.0+2021r2-patch5
+LDF: Library Dependency Finder -> https://bit.ly/configure-pio-ldf
+LDF Modes: Finder ~ chain, Compatibility ~ soft
+Found 38 compatible libraries
+Scanning dependencies...
+Dependency Graph
+|-- ArduinoJson @ 7.0.4
+|-- LoRa @ 0.8.0
+|-- tt-c @ 0.1.0
+|-- EPS_INA219 @ 1.0.0
+|-- CEFAST_LM75A @ 0.1.0
+|-- Wire @ 2.0.0
+|-- SD @ 2.0.0
+|-- SPI @ 2.0.0
+Building in release mode
+Converting .pio/build/int009-housekeeping-fixtures-check/flow-fixtures.fcpu.txt.o
+Compiling .pio/build/int009-housekeeping-fixtures-check/src/I2cBus.cpp.o
+Compiling .pio/build/int009-housekeeping-fixtures-check/src/I2cRecovery.cpp.o
+Compiling .pio/build/int009-housekeeping-fixtures-check/src/ObcData.cpp.o
+Compiling .pio/build/int009-housekeeping-fixtures-check/src/ObcDataFlow.cpp.o
+Compiling .pio/build/int009-housekeeping-fixtures-check/src/ObcDataFlowEsp32.cpp.o
+Compiling .pio/build/int009-housekeeping-fixtures-check/src/ObcDelivery.cpp.o
+Compiling .pio/build/int009-housekeeping-fixtures-check/src/ObcDownlink.cpp.o
+Compiling .pio/build/int009-housekeeping-fixtures-check/src/ObcEps.cpp.o
+Compiling .pio/build/int009-housekeeping-fixtures-check/src/ObcEpsEsp32.cpp.o
+Compiling .pio/build/int009-housekeeping-fixtures-check/src/ObcHousekeeping.cpp.o
+Compiling .pio/build/int009-housekeeping-fixtures-check/src/ObcI2cHealth.cpp.o
+Compiling .pio/build/int009-housekeeping-fixtures-check/src/ObcRecordCodec.cpp.o
+Compiling .pio/build/int009-housekeeping-fixtures-check/src/ObcResourceHealth.cpp.o
+Compiling .pio/build/int009-housekeeping-fixtures-check/src/ObcStartup.cpp.o
+Compiling .pio/build/int009-housekeeping-fixtures-check/src/ObcStorage.cpp.o
+Compiling .pio/build/int009-housekeeping-fixtures-check/src/ObcStorageEsp32.cpp.o
+Compiling .pio/build/int009-housekeeping-fixtures-check/src/ObcTaskHealth.cpp.o
+Compiling .pio/build/int009-housekeeping-fixtures-check/src/ObcThermal.cpp.o
+Compiling .pio/build/int009-housekeeping-fixtures-check/src/ObcThermalEsp32.cpp.o
+Compiling .pio/build/int009-housekeeping-fixtures-check/src/ObcTime.cpp.o
+Compiling .pio/build/int009-housekeeping-fixtures-check/src/ObcTimeEsp32.cpp.o
+Compiling .pio/build/int009-housekeeping-fixtures-check/src/ObcTtc.cpp.o
+Compiling .pio/build/int009-housekeeping-fixtures-check/src/ObcWatchdog.cpp.o
+Compiling .pio/build/int009-housekeeping-fixtures-check/src/ObcWatchdogEsp32.cpp.o
+Compiling .pio/build/int009-housekeeping-fixtures-check/src/PayloadReceiver.cpp.o
+Compiling .pio/build/int009-housekeeping-fixtures-check/src/PayloadReceiverEsp32.cpp.o
+Compiling .pio/build/int009-housekeeping-fixtures-check/src/bench/HousekeepingCheck.cpp.o
+Compiling .pio/build/int009-housekeeping-fixtures-check/src/bench/ObcDataFlowCheck.cpp.o
+Building .pio/build/int009-housekeeping-fixtures-check/bootloader.bin
+esptool.py v4.5.1
+Creating esp32 image...
+Merged 1 ELF section
+Successfully created esp32 image.
+Generating partitions .pio/build/int009-housekeeping-fixtures-check/partitions.bin
+Compiling .pio/build/int009-housekeeping-fixtures-check/lib416/SPI/SPI.cpp.o
+Compiling .pio/build/int009-housekeeping-fixtures-check/libdfa/LoRa/LoRa.cpp.o
+Compiling .pio/build/int009-housekeeping-fixtures-check/lib1da/tt-c/Sx1276Radio.cpp.o
+Compiling .pio/build/int009-housekeeping-fixtures-check/lib1da/tt-c/Ttc.cpp.o
+Compiling .pio/build/int009-housekeeping-fixtures-check/lib1da/tt-c/TtcProtocol.cpp.o
+Archiving .pio/build/int009-housekeeping-fixtures-check/lib416/libSPI.a
+Indexing .pio/build/int009-housekeeping-fixtures-check/lib416/libSPI.a
+Compiling .pio/build/int009-housekeeping-fixtures-check/lib1da/tt-c/UmbilicalLink.cpp.o
+Compiling .pio/build/int009-housekeeping-fixtures-check/lib120/Wire/Wire.cpp.o
+Compiling .pio/build/int009-housekeeping-fixtures-check/lib987/EPS_INA219_Standard/EPS_INA219.cpp.o
+Archiving .pio/build/int009-housekeeping-fixtures-check/libdfa/libLoRa.a
+Indexing .pio/build/int009-housekeeping-fixtures-check/libdfa/libLoRa.a
+Compiling .pio/build/int009-housekeeping-fixtures-check/lib785/LM75A_Standard/Lm75a.cpp.o
+Compiling .pio/build/int009-housekeeping-fixtures-check/lib9d0/FS/FS.cpp.o
+Compiling .pio/build/int009-housekeeping-fixtures-check/lib9d0/FS/vfs_api.cpp.o
+Archiving .pio/build/int009-housekeeping-fixtures-check/lib785/libLM75A_Standard.a
+Indexing .pio/build/int009-housekeeping-fixtures-check/lib785/libLM75A_Standard.a
+Compiling .pio/build/int009-housekeeping-fixtures-check/libcdd/SD/SD.cpp.o
+Compiling .pio/build/int009-housekeeping-fixtures-check/libcdd/SD/sd_diskio.cpp.o
+Archiving .pio/build/int009-housekeeping-fixtures-check/lib120/libWire.a
+Archiving .pio/build/int009-housekeeping-fixtures-check/lib987/libEPS_INA219_Standard.a
+Indexing .pio/build/int009-housekeeping-fixtures-check/lib120/libWire.a
+Indexing .pio/build/int009-housekeeping-fixtures-check/lib987/libEPS_INA219_Standard.a
+Compiling .pio/build/int009-housekeeping-fixtures-check/libcdd/SD/sd_diskio_crc.c.o
+Compiling .pio/build/int009-housekeeping-fixtures-check/FrameworkArduino/Esp.cpp.o
+Compiling .pio/build/int009-housekeeping-fixtures-check/FrameworkArduino/FirmwareMSC.cpp.o
+Compiling .pio/build/int009-housekeeping-fixtures-check/FrameworkArduino/FunctionalInterrupt.cpp.o
+Compiling .pio/build/int009-housekeeping-fixtures-check/FrameworkArduino/HWCDC.cpp.o
+Compiling .pio/build/int009-housekeeping-fixtures-check/FrameworkArduino/HardwareSerial.cpp.o
+Compiling .pio/build/int009-housekeeping-fixtures-check/FrameworkArduino/IPAddress.cpp.o
+Compiling .pio/build/int009-housekeeping-fixtures-check/FrameworkArduino/IPv6Address.cpp.o
+Archiving .pio/build/int009-housekeeping-fixtures-check/lib9d0/libFS.a
+Indexing .pio/build/int009-housekeeping-fixtures-check/lib9d0/libFS.a
+Compiling .pio/build/int009-housekeeping-fixtures-check/FrameworkArduino/MD5Builder.cpp.o
+Compiling .pio/build/int009-housekeeping-fixtures-check/FrameworkArduino/Print.cpp.o
+Archiving .pio/build/int009-housekeeping-fixtures-check/libcdd/libSD.a
+Indexing .pio/build/int009-housekeeping-fixtures-check/libcdd/libSD.a
+Compiling .pio/build/int009-housekeeping-fixtures-check/FrameworkArduino/Stream.cpp.o
+Compiling .pio/build/int009-housekeeping-fixtures-check/FrameworkArduino/StreamString.cpp.o
+Compiling .pio/build/int009-housekeeping-fixtures-check/FrameworkArduino/Tone.cpp.o
+Compiling .pio/build/int009-housekeeping-fixtures-check/FrameworkArduino/USB.cpp.o
+Compiling .pio/build/int009-housekeeping-fixtures-check/FrameworkArduino/USBCDC.cpp.o
+Compiling .pio/build/int009-housekeeping-fixtures-check/FrameworkArduino/USBMSC.cpp.o
+Compiling .pio/build/int009-housekeeping-fixtures-check/FrameworkArduino/WMath.cpp.o
+Compiling .pio/build/int009-housekeeping-fixtures-check/FrameworkArduino/WString.cpp.o
+Archiving .pio/build/int009-housekeeping-fixtures-check/lib1da/libtt-c.a
+Indexing .pio/build/int009-housekeeping-fixtures-check/lib1da/libtt-c.a
+Compiling .pio/build/int009-housekeeping-fixtures-check/FrameworkArduino/base64.cpp.o
+Compiling .pio/build/int009-housekeeping-fixtures-check/FrameworkArduino/cbuf.cpp.o
+Compiling .pio/build/int009-housekeeping-fixtures-check/FrameworkArduino/esp32-hal-adc.c.o
+Compiling .pio/build/int009-housekeeping-fixtures-check/FrameworkArduino/esp32-hal-bt.c.o
+Compiling .pio/build/int009-housekeeping-fixtures-check/FrameworkArduino/esp32-hal-cpu.c.o
+Compiling .pio/build/int009-housekeeping-fixtures-check/FrameworkArduino/esp32-hal-dac.c.o
+Compiling .pio/build/int009-housekeeping-fixtures-check/FrameworkArduino/esp32-hal-gpio.c.o
+Compiling .pio/build/int009-housekeeping-fixtures-check/FrameworkArduino/esp32-hal-i2c-slave.c.o
+Compiling .pio/build/int009-housekeeping-fixtures-check/FrameworkArduino/esp32-hal-i2c.c.o
+Compiling .pio/build/int009-housekeeping-fixtures-check/FrameworkArduino/esp32-hal-ledc.c.o
+Compiling .pio/build/int009-housekeeping-fixtures-check/FrameworkArduino/esp32-hal-matrix.c.o
+Compiling .pio/build/int009-housekeeping-fixtures-check/FrameworkArduino/esp32-hal-misc.c.o
+Compiling .pio/build/int009-housekeeping-fixtures-check/FrameworkArduino/esp32-hal-psram.c.o
+Compiling .pio/build/int009-housekeeping-fixtures-check/FrameworkArduino/esp32-hal-rgb-led.c.o
+Compiling .pio/build/int009-housekeeping-fixtures-check/FrameworkArduino/esp32-hal-rmt.c.o
+Compiling .pio/build/int009-housekeeping-fixtures-check/FrameworkArduino/esp32-hal-sigmadelta.c.o
+Compiling .pio/build/int009-housekeeping-fixtures-check/FrameworkArduino/esp32-hal-spi.c.o
+Compiling .pio/build/int009-housekeeping-fixtures-check/FrameworkArduino/esp32-hal-time.c.o
+Compiling .pio/build/int009-housekeeping-fixtures-check/FrameworkArduino/esp32-hal-timer.c.o
+Compiling .pio/build/int009-housekeeping-fixtures-check/FrameworkArduino/esp32-hal-tinyusb.c.o
+Compiling .pio/build/int009-housekeeping-fixtures-check/FrameworkArduino/esp32-hal-touch.c.o
+Compiling .pio/build/int009-housekeeping-fixtures-check/FrameworkArduino/esp32-hal-uart.c.o
+Compiling .pio/build/int009-housekeeping-fixtures-check/FrameworkArduino/firmware_msc_fat.c.o
+Compiling .pio/build/int009-housekeeping-fixtures-check/FrameworkArduino/libb64/cdecode.c.o
+Compiling .pio/build/int009-housekeeping-fixtures-check/FrameworkArduino/libb64/cencode.c.o
+Compiling .pio/build/int009-housekeeping-fixtures-check/FrameworkArduino/main.cpp.o
+/home/o-grande-kayky/.local/share/platformio/packages/framework-arduinoespressif32/cores/esp32/esp32-hal-uart.c: In function 'uartSetPins':
+/home/o-grande-kayky/.local/share/platformio/packages/framework-arduinoespressif32/cores/esp32/esp32-hal-uart.c:153:9: warning: 'return' with no value, in function returning non-void
+         return;
+         ^~~~~~
+/home/o-grande-kayky/.local/share/platformio/packages/framework-arduinoespressif32/cores/esp32/esp32-hal-uart.c:149:6: note: declared here
+ bool uartSetPins(uint8_t uart_num, int8_t rxPin, int8_t txPin, int8_t ctsPin, int8_t rtsPin)
+      ^~~~~~~~~~~
+Compiling .pio/build/int009-housekeeping-fixtures-check/FrameworkArduino/stdlib_noniso.c.o
+Compiling .pio/build/int009-housekeeping-fixtures-check/FrameworkArduino/wiring_pulse.c.o
+Compiling .pio/build/int009-housekeeping-fixtures-check/FrameworkArduino/wiring_shift.c.o
+Archiving .pio/build/int009-housekeeping-fixtures-check/libFrameworkArduino.a
+Indexing .pio/build/int009-housekeeping-fixtures-check/libFrameworkArduino.a
+Linking .pio/build/int009-housekeeping-fixtures-check/firmware.elf
+Retrieving maximum program size .pio/build/int009-housekeeping-fixtures-check/firmware.elf
+Checking size .pio/build/int009-housekeeping-fixtures-check/firmware.elf
+Advanced Memory Usage is available via "PlatformIO Home > Project Inspect"
+RAM:   [=         ]  11.3% (used 36928 bytes from 327680 bytes)
+Flash: [====      ]  42.8% (used 561589 bytes from 1310720 bytes)
+Building .pio/build/int009-housekeeping-fixtures-check/firmware.bin with action:
+  "$PYTHONEXE" "$OBJCOPY" --chip esp32 elf2image --flash_mode ${__get_board_flash_mode(__env__)} --flash_freq ${__get_board_f_image(__env__)} --flash_size 4MB --elf-sha256-offset 0xb0 -o $TARGET $SOURCES
+Building .pio/build/int009-housekeeping-fixtures-check/firmware.bin
+esptool.py v4.5.1
+Creating esp32 image...
+Merged 2 ELF sections
+Successfully created esp32 image.
+========================= [SUCCESS] Took 11.21 seconds =========================
+
+Environment                         Status    Duration
+----------------------------------  --------  ------------
+obc                                 SUCCESS   00:00:09.847
+int009-ina219-check                 SUCCESS   00:00:09.998
+int009-lm75a-check                  SUCCESS   00:00:10.043
+int009-housekeeping-check           SUCCESS   00:00:14.956
+int009-housekeeping-fixtures-check  SUCCESS   00:00:11.206
+========================= 5 succeeded in 00:00:56.050 =========================

@@ -1,5 +1,52 @@
 # TODO — OBC-DH
 
+**INT-009 — estágio SD sob demanda aprovado aplicado:** reserva pelo
+tamanho real somente na bancada conjunta, com slot exclusivo e limite
+64.497 preservados. Novo nativo com falhas de alocação, regressões
+originais de fluxo/partes e builds passaram. Produtores e escritor
+iniciaram; execução reprovou em `ping q=217 ms` contra 200 ms. Os 49
+registros parciais foram lidos com CRC válido, sem alterar `passed:false`.
+Pico de poll UART 13 ms também registrado. Sem outra correção; `obc`
+restaurado e cliente original aprovado. Integração continua aberta.
+
+**INT-009 — continuação com pilhas estáticas aprovada:** EPS/Térmico
+passaram a usar pilhas próprias de 4 KiB na aquisição conjunta; somente
+I2C permanece no orçamento dinâmico pendente. Cinco builds passaram.
+Os dois produtores iniciaram e progrediram, porém o roteiro reprovou:
+32 TMs, zero registros; o bloco SD de 31.729 bytes não coube no maior
+bloco de 26.612 bytes e o escritor ficou inativo. Sem outro ajuste;
+`obc` restaurado e cliente original aprovado. Recorte conjunto aberto.
+
+**INT-009 — continuação com ordem aprovada:** fluxo passou a iniciar antes
+dos novos serviços, com suas pilhas pendentes incluídas e margem intacta.
+Teste nativo/cinco builds e roteiro funcional de fixtures passaram: 34 TMs
+e 64 registros interpretados pelo leitor real. Aquisição conjunta reprovou:
+EPS iniciou, Térmico não; maior bloco 4.084 bytes para pilha de 4.096,
+com I2C READY e 12.916 bytes livres. Nenhum outro ajuste aplicado. `obc`
+restaurado e cliente original aprovado; recorte ainda aberto.
+
+**INT-009 — 17/11/2026, diagnóstico de memória concluído:** instrumentação
+exclusiva da nova bancada confirmou recusa da pilha de 8.192 bytes do
+escritor, após processamento deixar maior bloco de 8.180 bytes e heap
+total de 26.804 bytes. SDK/callback concordam; captura sem TC/Payload,
+sem nova correção ou mudança de expectativas. Cinco builds passaram;
+`obc` restaurado e cliente original aprovado. Integração continua aberta.
+
+**INT-009 — 17/11/2026, continuação autorizada:** reserva antecipada dos
+buffers resolveu a alocação dos blocos de snapshot; cinco builds passaram.
+O mesmo roteiro USB voltou a reprovar: 34 TMs, zero registros e falha ao
+criar a tarefa escritora após iniciar transporte/processamento. Não houve
+outro ajuste; margens e expectativas intactas. `obc` novamente restaurado
+e cliente original aprovado. Diagnóstico/evidências na task; recorte aberto.
+
+**INT-009 — 17/11/2026, bancada conjunta interrompida:** mapeador e caminho
+EPS/Térmico–TM–v3 implementados somente em ambientes novos. Nativos com
+ASan/UBSan, 25 casos TT&C e cinco builds passaram. Primeira execução de
+fixtures reprovada: fragmentação impediu alocar os dois blocos de snapshot,
+escritor inativo, 33 TMs e zero registros capturados. Nenhuma correção ou
+alteração de expectativas aplicada. `obc` restaurado e cliente original
+aprovado. Diagnóstico e evidências na INT-009; recorte ainda não concluído.
+
 **INT-009 — 17/11/2026:** recorte LM75A de bancada concluído com referência
 NXP provisória, cinco canais 0x48–0x4C e dados somente em RAM/USB.
 Nativos LM75A/EPS com ASan/UBSan, três builds e bancadas USB aprovados;
@@ -64,7 +111,7 @@ Cada ID aparece uma vez nas seções 1–4. A coluna de capacidades identifica o
 | INT-006 | [Fluxo Payload–tempo–SD–telemetria](../.tasks/03-integracao/INT-006-fluxo-de-dados.md) | COM-004/005, DAD-003 e adaptador INT-004 | Fluxo/extração USB disponíveis; contratos operacionais/semântica pendentes. Comprovação TES-005/006/008/009 | Em andamento |
 | INT-007 | [Comandos, modos e coordenação da missão](../.tasks/03-integracao/INT-007-comandos-modos-e-protecoes.md) | Consumidor INT-004 e estado/fluxo INT-006; ADCS INT-005 para suas ações | ConOps e comandos permitidos; proteções/atuações conectadas por INT-010/011. Comprovação TES-008/010 | Pendente |
 | INT-008 | [Supervisão de recursos e recuperação local](../.tasks/03-integracao/done/INT-008-supervisao-e-retomada.md) | COM-003, boot INT-003, métricas INT-004 e diário INT-006 | Escritor, tarefas, I2C, TT&C e memória/pilhas concluídos; regressões preservadas, obc restaurado e pacote de ensaio disponível. Comprovação física TES-009; watchdog INT-012 e retomada INT-013 | Concluída |
-| INT-009 | [Aquisição e integração EPS/Térmico](../.tasks/03-integracao/INT-009-aquisicao-eps-termico.md) | COM-001/002/003, DAD-001 e boot INT-003 | Recortes INA219 e LM75A de bancada concluídos; nativos, builds e USB aprovados, obc restaurado/verificado. NXP/endereço/cadência térmicos provisórios. Contratos, TM operacional, persistência completa e TES-003/008/009 pendentes | Em andamento |
+| INT-009 | [Aquisição e integração EPS/Térmico](../.tasks/03-integracao/INT-009-aquisicao-eps-termico.md) | COM-001/002/003, DAD-001 e boot INT-003 | Recortes individuais e fixtures anteriores concluídos. Estágio SD sob demanda permite iniciar produtores/escritor; aquisição conjunta reprovada por q=217 ms (limite 200), poll UART 13 ms registrado. 49 registros parciais íntegros, sem aprovar roteiro. obc restaurado/verificado; integração, contratos, TM operacional, Geral e TES pendentes | Em andamento |
 | INT-010 | [Proteções energéticas e térmicas](../.tasks/03-integracao/INT-010-protecoes-energia-termico.md) | Dados INT-009, controle INT-005 e modos INT-007 | Cota EPS, limiares, prioridades e retorno aprovados. Comprovação TES-008/010 | Pendente |
 | INT-011 | [Atuação e persistência do Burn Wire](../.tasks/03-integracao/INT-011-burn-wire-persistencia.md) | Boot INT-003, interlock INT-004, modos INT-007 e proteção INT-010 | Autorização, montagem, duração, confirmação e estados duráveis. Comprovação TES-008/009/010 | Pendente |
 | INT-012 | [Watchdog e reinicialização do OBC](../.tasks/03-integracao/done/INT-012-watchdog-reset-obc.md) | Boot de bancada INT-003, consumidor INT-004 e diagnósticos INT-008 | Mecanismo/TC concluídos no ESP32/USB; prazos provisórios documentados, regressões aprovadas e obc restaurado. Comprovação TES-009; efeitos elétricos TES-008 e retorno operacional INT-013 | Concluída |

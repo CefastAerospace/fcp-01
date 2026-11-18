@@ -9,6 +9,8 @@
 #include "ObcRecordCodec.h" // Modelos e codecs v1/v2/v3 existentes.
 #include "ObcStorage.h" // RESULT, STATUS e operações de arquivo.
 #include <limits> // Saturação de contadores.
+#include <memory> // Propriedade exclusiva dos dois blocos de snapshot.
+#include <new> // Reserva sem exceção, com falha explícita.
 
 namespace obc_flow {
 
@@ -75,6 +77,34 @@ namespace obc_flow {
     };
 
     // ─── CLASSES ──────────────────────────────────────────────────────
+
+    /**
+     * @brief Dois blocos limitados ao tamanho serializado, sem I/O ou sincronização própria.
+     * @details O proprietário chama Reserve/Reset somente com acesso exclusivo.
+     * Ponteiros permanecem estáveis até Reset ou nova reserva; não realocar durante escrita.
+     */
+    class SnapshotBuffers {
+    public:
+        /** @brief Reserva 37–64497 bytes, divididos em até 32768 + restante.
+         * @details Argumento inválido preserva a cópia anterior; uma reserva válida a
+         * descarta primeiro. Falha de alocação libera ambos os blocos, sem cópia parcial.
+         */
+        bool Reserve(
+            size_t size
+        );
+        /** @brief Libera os dois blocos, sem modificar estado do slot externo. */
+        void Reset(
+        );
+        /** @brief Primeiro bloco; capacidade é min(tamanho reservado, 32768). */
+        uint8_t* GetFirstData(
+        ) const;
+        /** @brief Segundo bloco ou nullptr quando o registro cabe inteiro no primeiro. */
+        uint8_t* GetSecondData(
+        ) const;
+    private:
+        std::unique_ptr<uint8_t[]> first_;
+        std::unique_ptr<uint8_t[]> second_;
+    };
 
     /** @brief Resumo compartilhável; não mantém cópia da lista de aeronaves. */
     class State {

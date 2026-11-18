@@ -140,6 +140,47 @@ obc_data::STATISTICS_DATA State::GetStatistics(
 // ─── DEMAIS MÉTODOS ───────────────────────────────────────────────
 
 // Público:
+bool SnapshotBuffers::Reserve(
+    size_t size
+) {
+    if (size < obc_record::min_snapshot_record_bytes || size > obc_record::max_snapshot_record_bytes) return false;
+    Reset();
+    const size_t first_size = size < snapshot_first_bytes ? size : snapshot_first_bytes;
+    first_.reset(new (std::nothrow) uint8_t[first_size]);
+    if (!first_) return false;
+    const size_t second_size = size - first_size;
+    if (second_size != 0) second_.reset(new (std::nothrow) uint8_t[second_size]);
+    if (second_size != 0 && !second_) {
+        Reset();
+        return false;
+    }
+    return true;
+}
+
+// Público:
+void SnapshotBuffers::Reset(
+) {
+    first_.reset();
+    second_.reset();
+}
+
+// ─── GETTERS ──────────────────────────────────────────────────────
+
+// Público:
+uint8_t* SnapshotBuffers::GetFirstData(
+) const { return first_.get(); }
+
+// Público:
+uint8_t* SnapshotBuffers::GetSecondData(
+) const { return second_.get(); }
+
+// ==================================================================
+// === CLASSE =======================================================
+// ==================================================================
+
+// ─── DEMAIS MÉTODOS ───────────────────────────────────────────────
+
+// Público:
 bool RecordQueue::Push(
     const uint8_t* bytes,
     size_t size

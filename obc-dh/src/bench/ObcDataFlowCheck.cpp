@@ -185,7 +185,7 @@ namespace {
             current_delivery_file.size = size;
         }
 #endif
-        if (std::memcmp(bytes, obc_record::telemetry_magic, 4) == 0) {
+        if (size >= 4 && std::memcmp(bytes, obc_record::telemetry_magic, 4) == 0) {
             obc_record::RECORD record = {};
             size_t consumed = 0;
             if (obc_record::DecodeTelemetryV3(bytes, size, record, consumed) != obc_record::STATUS::OK) {
@@ -216,6 +216,10 @@ namespace {
             Serial.printf("[STORAGE-CHECK] normal_write=%u monotonic_ms=%llu\n", recovery_phase,
                 static_cast<unsigned long long>(obc_time::esp32::GetMonotonicMs()));
         }
+#endif
+#ifdef OBC_HOUSEKEEPING_BENCH
+        // Somente os bytes aceitos; nenhum registro de escrita recusada é capturado.
+        obc_housekeeping::bench::CaptureRecord(bytes, size);
 #endif
         return {obc_storage::STATUS::OK, size, 0, 1};
     }
@@ -529,12 +533,23 @@ void setup(
     obc_watchdog::esp32::Checkpoint();
 #endif
 #endif
+#ifdef OBC_HOUSEKEEPING_BENCH
+    // Somente receptor antecipado; o estágio SD será reservado pelo tamanho real.
+    if (report.time_status == obc_time::STATUS::OK) {
+        obc_flow::esp32::ReserveHousekeepingBuffers(report.boot_id);
+    }
+#endif
     report.storage_result.status = obc_storage::STATUS::OK;
     obc_ttc::Init();
 #ifdef OBC_WATCHDOG_ENABLED
     obc_watchdog::esp32::Checkpoint();
 #endif
     obc_flow::esp32::Init(report);
+#ifdef OBC_HOUSEKEEPING_BENCH
+    // As pilhas maiores já existem; a admissão contabilizou I2C e produtores pendentes.
+    report.i2c_ready = i2c::Init();
+    obc_housekeeping::bench::Init();
+#endif
 #ifdef OBC_WATCHDOG_ENABLED
     obc_watchdog::esp32::Checkpoint();
     obc_watchdog::esp32::StartRuntime();
@@ -549,6 +564,9 @@ void loop(
 #endif
     obc_ttc::Service();
     obc_flow::esp32::ReportDiagnostics();
+#ifdef OBC_HOUSEKEEPING_BENCH
+    obc_housekeeping::bench::ReportDiagnostics();
+#endif
 #ifdef OBC_WATCHDOG_ENABLED
     obc_watchdog::esp32::Service(obc_ttc::GetDiagnostics());
 #endif

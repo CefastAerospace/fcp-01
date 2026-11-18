@@ -134,6 +134,19 @@ namespace {
         if (local.available_fields & obc_data::TM_TIMESTAMP) available |= ttc::TM_TIMESTAMP;
         if (local.available_fields & obc_data::TM_AIRCRAFT) available |= ttc::TM_AIRCRAFT;
         if (rf_seen) available |= ttc::TM_RSSI | ttc::TM_SNR;
+#ifdef OBC_HOUSEKEEPING_BENCH
+        // A disponibilidade térmica do enlace é conjunta; a local continua individual.
+        tm.vbat = local.vbat;
+        tm.ibat = local.ibat;
+        tm.vsolar = local.vsolar;
+        tm.isolar = local.isolar;
+        for (size_t index = 0; index < obc_data::thermal_sensors; ++index) tm.temps[index] = local.temps[index];
+        if (local.available_fields & obc_data::TM_VBAT) available |= ttc::TM_VBAT;
+        if (local.available_fields & obc_data::TM_IBAT) available |= ttc::TM_IBAT;
+        if (local.available_fields & obc_data::TM_VSOLAR) available |= ttc::TM_VSOLAR;
+        if (local.available_fields & obc_data::TM_ISOLAR) available |= ttc::TM_ISOLAR;
+        if (obc_housekeeping::AllTemperaturesAvailable(local)) available |= ttc::TM_TEMPS;
+#endif
         ttc::TELEMETRY_DATA queued = {};
         if (!link.SendTelemetry(tm, available, &queued)) return false;
         local.rx_count = queued.rx_count;

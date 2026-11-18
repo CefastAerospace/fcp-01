@@ -1,5 +1,157 @@
 # Codec e leitura de registros OBC v1/v2/v3
 
+## Bancada conjunta EPS/Térmico — 17/11/2026, em desenvolvimento
+
+**Estado atual: fixtures aprovadas na etapa 40; aquisição conjunta com
+estágio SD sob demanda reprovada por q=217 ms contra limite 200 ms.
+Implementação interrompida conforme AGENTS.md.** Os comandos
+abaixo reproduzem os perfis; a aprovação de fixtures não aprova aquisição
+ou operação integrada. O diagnóstico está
+na [INT-009](../.tasks/03-integracao/INT-009-aquisicao-eps-termico.md#recorte-conjunto-interrompido--17112026).
+
+**Estágio sob demanda aprovado aplicado:** somente os perfis conjuntos
+reservam o estágio SD pelo tamanho obtido de `GetSnapshotSize` durante
+ENCODING, fora dos locks. A memória fica estável em READY/WRITING e é
+liberada antes de FREE. Limite 64.497 bytes, formatos, filas e descarte
+contado preservados. Perfis anteriores mantêm reserva máxima no boot.
+Novo teste nativo de buffers e regressões originais de fluxo/partes
+passaram com sanitizadores. Cinco builds e rebuild das bancadas passaram.
+
+O [roteiro conjunto reprovou](../examples/int009-housekeeping-2026-11-17-183036/62-on-demand-acquisition-usb.json)
+após iniciar todos os produtores e o escritor: `ping q=217 ms`; limite
+200 ms intacto. O poll UART também atingiu 13 ms. Os
+[49 registros capturados foram interpretados](../examples/int009-housekeeping-2026-11-17-183036/65-partial-captured-records.json)
+em arquivos novos somente para diagnóstico, com CRC válido e sem bytes
+descartados. Isso não aprova o roteiro original, cujo `passed:false`
+permanece. [obc restaurado/verificado](../examples/int009-housekeeping-2026-11-17-183036/64-on-demand-obc-restored.json).
+Buffer TX UART0 de 8 KiB é proposta ainda não aplicada. Históricos abaixo
+conservam as causas anteriores e suas evidências.
+
+Verificação do proprietário dos buffers, dentro de `obc-dh/`, com
+ASan/UBSan/LeakSanitizer ativos e execução fora de ptrace. O GNU ld
+intercepta o `new[]` sem exceção apenas no executável nativo Linux de
+64 bits, sem trocar o allocator da aplicação:
+
+```bash
+g++ -std=c++11 -Wall -Wextra -Werror \
+    -fsanitize=address,undefined -fno-sanitize-recover=undefined \
+    -fno-omit-frame-pointer -Iheaders \
+    src/ObcData.cpp src/ObcTime.cpp src/ObcRecordCodec.cpp \
+    src/ObcStorage.cpp src/ObcDataFlow.cpp tests/SnapshotBuffersCheck.cpp \
+    -Wl,--wrap=_ZnamRKSt9nothrow_t -o /tmp/fcp01-snapshot-buffers-check
+/tmp/fcp01-snapshot-buffers-check
+```
+
+**Pilhas estáticas aprovadas aplicadas:** o perfil de aquisição conjunta
+usa pilhas próprias EPS/Térmico de 4 KiB com a API estática nativa do
+FreeRTOS. Produtores iniciam e progridem; somente I2C pede pilha dinâmica
+pendente. Cinco builds passaram. O
+[roteiro de aquisição reprovou](../examples/int009-housekeeping-2026-11-17-183036/49-static-acquisition-usb.json):
+32 TMs recebidas e zero registros, pois o bloco SD de 31.729 bytes não
+coube no maior bloco livre de 26.612 bytes. Nenhuma outra correção foi
+aplicada; [obc restaurado/verificado](../examples/int009-housekeeping-2026-11-17-183036/51-static-workers-obc-restored.json).
+Reservar o estágio SD pelo tamanho real do snapshot é uma proposta ainda
+não implementada. As seções seguintes preservam o histórico das tentativas.
+
+**Ordem aprovada aplicada:** após reservar os quatro buffers e iniciar
+TT&C, a bancada cria o fluxo antes de I2C/produtores. A admissão soma
+4 KiB pendentes em fixtures ou 12 KiB em aquisição, além das pilhas do
+fluxo e da margem original. O roteiro de fixtures passou sem mudanças:
+[34 TMs e 64 registros lidos](../examples/int009-housekeeping-2026-11-17-183036/40-task-order-fixtures-usb.json).
+A [aquisição conjunta reprovou](../examples/int009-housekeeping-2026-11-17-183036/42-task-order-acquisition-usb.json):
+EPS iniciou e Térmico não, com maior bloco de 4.084 bytes e pilha de
+4.096 bytes. Captura passiva confirmou I2C READY e EPS progredindo.
+Nenhum novo ajuste foi feito; [obc restaurado/verificado](../examples/int009-housekeeping-2026-11-17-183036/45-task-order-obc-restored.json).
+Os relatos anteriores abaixo são históricos. O coletor de diagnóstico
+da etapa 31 pertence à imagem 29 e não acompanha a ordem atual dos
+marcadores; os roteiros funcionais permanecem intactos.
+
+**Diagnóstico posterior concluído:** `[HK-ALLOC]` registra memória antes e
+depois de criar transporte/processamento/escritor. O callback do SDK
+somente copia metadados da recusa, sem I/O ou alocação. A
+[captura sem telecomandos/Payload](../examples/int009-housekeeping-2026-11-17-183036/31-allocation-diagnosis.json)
+confirmou recusa da pilha de 8.192 bytes do escritor com heap de 26.804
+bytes e maior bloco de 8.180 bytes. O diagnóstico não altera a ordem das
+tarefas ou suas pilhas; não aprova o roteiro funcional. Cinco builds
+passaram e [obc foi restaurado/verificado](../examples/int009-housekeeping-2026-11-17-183036/33-diagnostic-obc-restored.json).
+
+O [coletor de diagnóstico](../examples/int009-housekeeping-2026-11-17-183036/CaptureAllocationDiagnostics.py)
+recebe a porta e `--report ARQUIVO_NOVO`, lê no máximo 15 s e não envia
+comandos. Exige os seis pontos e callback registrado; seu campo
+`diagnosis_captured` indica coleta, enquanto `functional_acceptance`
+permanece `not_run`. A correção da ordem/orçamento das tarefas ainda não
+foi aplicada. As reprovações funcionais abaixo continuam preservadas.
+
+**Continuação autorizada:** os quatro buffers grandes agora são
+reservados pelo fluxo antes de I2C/TT&C/produtores. A admissão de memória
+das tarefas permanece após esses serviços, com a mesma margem. Cinco
+builds passaram; o mesmo roteiro voltou a reprovar, desta vez na criação
+da tarefa escritora: 34 TMs, zero registros. A distribuição de memória
+entre as criações de tarefas ainda precisa de investigação; implementação
+novamente interrompida. [Segunda reprovação](../examples/int009-housekeeping-2026-11-17-183036/23-reserved-fixtures-usb.json)
+e [obc novamente restaurado/verificado](../examples/int009-housekeeping-2026-11-17-183036/25-second-obc-restored.json)
+preservados. Os resultados da primeira tentativa abaixo continuam históricos.
+
+`int009-housekeeping-check` reutiliza a bancada de fluxo/TT&C com SD e
+Payload simulados, inicializa I2C e inicia os produtores INA219/LM75A
+existentes. `int009-housekeeping-fixtures-check` não inicia produtores;
+substitui somente as cópias entregues ao mapeador por sete cenários de
+cinco segundos, iniciados no primeiro pedido de TM: normal,
+zero/corrente negativa, Bateria ausente, Solar ausente, temperatura #3
+ausente, indisponibilidade total e retorno. Depois conserva o retorno.
+
+O mapeador portátil usa VIN− provisório e converte A para mA sem inverter
+o sinal. O JSON mantém `tp:null` quando qualquer temperatura está
+indisponível; o TM v3 mantém disponibilidade individual. O modo permanece
+`bench`, o envio sob demanda e Geral continua somente nos diagnósticos.
+Não há proteção, atuação, aquisição operacional ou contrato final novo.
+
+`[HK-CHECK]` identifica a origem e o instante de cada composição;
+`[HK-HEALTH]` informa memória/pilha. `[HK-RECORD]` captura somente os bytes
+de BOOT, referências e TM aceitos pelo backend simulado após a verificação
+de estabilidade existente. Não é extração dos arquivos FCD1 ou prova de
+durabilidade física. O roteiro novo gera `.records.bin`/`.records.jsonl`
+ao lado do relatório, sem sobrescrever destinos, e usa o leitor real.
+
+Verificação portátil, dentro de `obc-dh/`, com sanitizadores ativos e
+execução fora de ptrace:
+
+```bash
+g++ -std=c++11 -Wall -Wextra -Werror \
+    -fsanitize=address,undefined -fno-sanitize-recover=undefined \
+    -fno-omit-frame-pointer -Iheaders \
+    src/ObcHousekeeping.cpp src/ObcData.cpp src/ObcTime.cpp \
+    src/ObcRecordCodec.cpp src/ObcEps.cpp src/ObcThermal.cpp \
+    tests/ObcHousekeepingCheck.cpp -o /tmp/fcp01-housekeeping-check
+/tmp/fcp01-housekeeping-check
+pio run -e obc -e int009-ina219-check -e int009-lm75a-check \
+    -e int009-housekeeping-check -e int009-housekeeping-fixtures-check
+```
+
+O leitor é compilado pelo procedimento [Primeira etapa INT-006](#primeira-etapa-int-006-fluxo-tm-v3-e-snapshot-partido).
+Com Python contendo pyserial, porta identificada e destinos novos:
+
+```bash
+pio run -e int009-housekeeping-fixtures-check -t upload --upload-port /dev/ttyUSB0
+python3 tests/ObcHousekeepingBenchCheck.py /dev/ttyUSB0 --source fixtures \
+    --reader /tmp/fcp01-read-records --report /tmp/housekeeping-fixtures-novo.json
+pio run -e obc -t upload --upload-port /dev/ttyUSB0
+python3 tests/ObcStationCheck.py /dev/ttyUSB0 --report /tmp/housekeeping-obc-novo.json
+```
+
+O perfil sem sensores usa o outro ambiente e `--source acquisition`; sua
+execução USB permanece pendente. A reprovação de fixtures ocorreu antes
+da captura: um dos blocos de snapshot não foi alocado e o escritor não
+iniciou, mantendo os limites existentes. A composição por USB produziu
+33 TMs, mas nenhum BOOT/referência/TM foi escrito; o roteiro preservou
+`passed:false`. Os dois arquivos de registros dessa tentativa estão vazios.
+
+[Evidências preservadas](../examples/int009-housekeeping-2026-11-17-183036/manifest.json):
+nativos novos e anteriores aprovados, 25 casos TT&C, cinco builds,
+primeira reprovação USB e `obc` restaurado/verificado pelo cliente original.
+As bancadas anteriores e suas entradas/expectativas foram preservadas.
+O recorte e a INT-009 permanecem abertos; nenhuma TES foi aprovada.
+
 ## LM75A de bancada — 17/11/2026
 
 `int009-lm75a-check` habilita somente a aquisição dos cinco canais térmicos

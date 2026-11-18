@@ -4,6 +4,372 @@
 **Responsável pela implementação:** OBC-DH
 **Responsáveis pelos contratos:** EPS e Térmico
 
+## Recorte conjunto interrompido — 17/11/2026
+
+Plano aprovado: conectar cópias EPS/Térmico à TM e ao diário existentes,
+somente em duas bancadas novas. O responsável escolheu VIN−
+(`busVoltage_V`) como convenção provisória e corrente VIN+ para VIN−,
+convertida de A para mA, sem inversão. Não estabelece contrato operacional.
+
+### Implementação parcial
+
+- `ObcHousekeeping` compõe somente os campos já existentes de Bateria,
+  Solar e cinco temperaturas, sem I/O ou histórico próprio. Limpa
+  disponibilidade anterior, preserva campos de outras fontes e recusa
+  números não finitos/conversões não representáveis.
+- Sob `OBC_HOUSEKEEPING_BENCH`, o fluxo lê cópias fora de seus locks e
+  encaminha a mesma amostra ao TT&C e ao codec v3. O JSON conserva
+  `tp:null` quando falta qualquer temperatura; o registro mantém os
+  indicadores individuais. Geral conserva os diagnósticos anteriores.
+- `int009-housekeeping-check` inicia I2C e os dois produtores antes da
+  admissão de memória do fluxo. `int009-housekeeping-fixtures-check`
+  inicializa I2C, mas não inicia produtores; injeta sete cenários
+  determinísticos somente na entrada do mapeador.
+- O backend simulado captura bytes aceitos de BOOT, referência e TM v3
+  por diagnóstico USB. Não amplia os arquivos FCD1 nem promete SD físico.
+- Não foram removidas funções ou alterados drivers, calibrações,
+  protocolos, validações anteriores, limites de memória ou watchdog.
+
+### Provas e reprovação preservadas
+
+O [manifesto](../../examples/int009-housekeeping-2026-11-17-183036/manifest.json)
+conserva comandos, revisão e hashes. Provas disponíveis:
+
+| Verificação | Resultado |
+|---|---|
+| Mapeador novo, C++11/ASan/UBSan/LeakSanitizer | Aprovado: composição, zero/negativos, números inválidos, disponibilidade, fronteiras de idade e codec v3 |
+| Regressões nativas anteriores EPS/Térmico/fluxo/downlink/codec e leitor | Aprovadas, com sanitizadores ativos e arquivos de testes intactos |
+| Contrato TT&C nativo existente | 25/25 casos aprovados |
+| Builds `obc`, INA219, LM75A e duas bancadas novas | Cinco aprovados; somente o aviso externo conhecido de `uartSetPins` |
+| Primeira bancada de fixtures | **Reprovada**: 33 TMs recebidas e zero registros capturados; escritor não iniciado |
+| `obc` restaurado | Upload verificado e `ObcStationCheck.py` original aprovado |
+
+A reprovação está no [relatório USB](../../examples/int009-housekeeping-2026-11-17-183036/17-fixtures-usb.json)
+e na [saída do roteiro](../../examples/int009-housekeeping-2026-11-17-183036/17-fixtures-usb.txt).
+A mensagem final `TM nao capturada` decorre da indisponibilidade do escritor,
+não comprova defeito no hook de captura. O boot registrou:
+
+```text
+RAM apos receptor: byte_heap=103368 byte_largest=47092
+RAM apos bloco SD: bloco=0 byte_heap=70584 byte_largest=28660
+Escritor inativo: memoria por byte insuficiente para tarefas e margem
+```
+
+A soma livre não basta para os dois blocos de snapshot de 32.768 e
+31.729 bytes. A redução de 32.784 bytes é compatível com somente o
+primeiro bloco alocado; o segundo excede o maior bloco restante.
+O fluxo recusou iniciar o escritor conforme sua proteção existente:
+zero gravações, uma falha inicial e descartes contabilizados. Os sete
+cenários produziram TMs, com maior `q` de 84 ms e resposta de 137,751 ms;
+isso não aprova o percurso completo. Os arquivos `.records.bin` e
+`.records.jsonl` dessa reprovação estão vazios, sem conteúdo fabricado.
+
+Conforme AGENTS.md, a implementação foi interrompida, sem correção
+autônoma ou alteração das expectativas. A ordem de reserva dos blocos e
+inicialização dos serviços precisa ser discutida, preservando orçamento
+para todas as tarefas e as margens existentes. A causa de fragmentação
+não foi isolada por comparação adicional em hardware.
+
+Não foram executadas a bancada conjunta de aquisição nem as regressões
+USB individuais INA219/LM75A previstas após esta etapa. A comprovação de
+registros da nova bancada permanece reprovada; a placa foi devolvida a
+`obc` e [verificada pelo cliente original](../../examples/int009-housekeeping-2026-11-17-183036/19-obc-restored.json).
+Guia e reprodução: [ferramentas](../../tools/README.md#bancada-conjunta-epstérmico--17112026-em-desenvolvimento).
+
+**Recorte ainda não concluído; INT-009 permanece Em andamento.** Contratos
+finais, firmware operacional, persistência completa do Geral e TES mantêm
+seus escopos e estados. Não mover esta task para `done/`.
+
+### Continuação autorizada — 17/11/2026
+
+Após o diagnóstico, o responsável autorizou continuar a investigação e o
+ajuste da reserva/inicialização. O manifesto anterior foi preservado em
+[20-before-resume-manifest.json](../../examples/int009-housekeeping-2026-11-17-183036/20-before-resume-manifest.json).
+
+Foi adicionada `ReserveHousekeepingBuffers`, exclusiva da nova bancada:
+reserva os dois blocos do receptor e os dois de snapshot antes de I2C,
+TT&C e produtores, sem iniciar UART ou tarefas. `Init` reutiliza os blocos
+SD por um helper proprietário, conservando a admissão após os demais
+serviços. Os ambientes anteriores mantêm a reserva durante seu próprio
+`Init`. Tamanhos dos buffers/pilhas, margem de 4.096 bytes, prioridades,
+limites e todos os roteiros foram preservados.
+
+Os [cinco builds](../../examples/int009-housekeeping-2026-11-17-183036/21-reserved-firmware-builds.txt)
+passaram. A [segunda execução do mesmo roteiro](../../examples/int009-housekeeping-2026-11-17-183036/23-reserved-fixtures-usb.json)
+**reprovou** novamente, com 34 TMs e zero registros. A reserva antecipada
+resolveu a alocação dos blocos; o ponto de falha mudou para a criação da
+tarefa escritora:
+
+```text
+RAM apos receptor: byte_heap=38836 byte_largest=16372
+RAM apos bloco SD: bloco=1 byte_heap=38836 byte_largest=16372
+stack_budget=19456 margin=4096 reserva=23552
+Escritor inativo: falha ao criar tarefa
+```
+
+A recepção iniciou transporte e processamento; `xTaskCreatePinnedToCore`
+do escritor retornou falha e o fluxo liberou os blocos SD conforme sua
+proteção. A soma e o maior bloco anteriores às três criações passaram na
+admissão, mas não garantiram todas as alocações seguintes. A distribuição
+exata imediatamente antes da criação do escritor ainda não foi medida;
+não atribuir a falha a um componente específico sem essa prova.
+
+Maior `q`: 84 ms; resposta máxima: 157,003 ms. Os sete cenários de TM
+voltaram a executar, sem comprovar registros. A bancada conjunta de
+aquisição e as regressões USB individuais continuam não executadas.
+
+Implementação novamente interrompida conforme AGENTS.md, sem outro
+ajuste ou alteração de expectativas. `obc` foi
+[restaurado](../../examples/int009-housekeeping-2026-11-17-183036/24-second-obc-restore-upload.txt)
+e o [cliente original passou](../../examples/int009-housekeeping-2026-11-17-183036/25-second-obc-restored.json).
+A INT-009 e o recorte permanecem abertos.
+
+### Diagnóstico autorizado das criações — 17/11/2026
+
+O responsável autorizou instrumentar a memória antes/depois das três
+criações. A instrumentação existe somente sob `OBC_HOUSEKEEPING_BENCH`:
+`[HK-ALLOC]` mede heap/maior bloco e resultado, e o callback do SDK copia
+tamanho/capacidades da última alocação recusada. O callback usa proteção
+curta, sem I/O ou alocação; os logs saem depois, fora da proteção.
+Nenhuma pilha, margem, prioridade, ordem ou expectativa foi alterada
+nesta etapa. Não houve nova correção de reserva/inicialização.
+
+O SDK instalado foi inspecionado no binário: `xTaskCreatePinnedToCore`
+aloca primeiro a pilha solicitada e depois 344 bytes de controle, ambos
+com capacidades `0x804` (`MALLOC_CAP_INTERNAL | MALLOC_CAP_8BIT`).
+[Disassembly preservado](../../examples/int009-housekeeping-2026-11-17-183036/27-sdk-task-allocation.txt)
+e [literal das capacidades](../../examples/int009-housekeeping-2026-11-17-183036/28-sdk-task-caps.txt)
+referem-se à imagem anterior à instrumentação, identificada no manifesto
+preservado antes desta etapa. O callback confirmou as mesmas capacidades
+em execução.
+
+Os [cinco builds instrumentados](../../examples/int009-housekeeping-2026-11-17-183036/29-diagnostic-firmware-builds.txt)
+passaram. A [captura de diagnóstico](../../examples/int009-housekeeping-2026-11-17-183036/31-allocation-diagnosis.json)
+foi concluída sem enviar telecomandos ou injetar tráfego Payload:
+
+| Ponto | Heap interno por byte | Maior bloco | Resultado |
+|---|---:|---:|---|
+| Antes do transporte | 38.820 bytes | 16.372 bytes | Pilha pretendida: 3.072 bytes |
+| Após transporte | 35.372 bytes | 16.372 bytes | Criada |
+| Após processamento | 26.804 bytes | 8.180 bytes | Criada, pilha de 8.192 bytes |
+| Tentativa do escritor | 26.804 bytes | 8.180 bytes | Recusa de 8.192 bytes; retorno −1 |
+
+O callback registrou exatamente uma recusa: `heap_caps_malloc`,
+8.192 bytes, capacidades `0x804`. A alocação da pilha falha antes de
+tentar o bloco de controle do escritor. O maior bloco é 12 bytes menor
+que a pilha pretendida, apesar do total livre. A checagem inicial de
+soma/maior bloco não reserva as três pilhas nem garante a distribuição
+restante após criar as anteriores. O tratamento de falha existente
+conservou o escritor inativo e liberou os buffers SD.
+
+**Diagnóstico concluído; integração permanece incompleta.** O coletor
+[CaptureAllocationDiagnostics.py](../../examples/int009-housekeeping-2026-11-17-183036/CaptureAllocationDiagnostics.py)
+registra `diagnosis_captured:true`, `functional_acceptance:not_run` e
+nenhuma entrada enviada. Isso não transforma as duas reprovações do
+roteiro funcional em aprovação.
+
+Próxima correção proposta, ainda não aplicada: criar as tarefas maiores
+do fluxo antes de I2C/produtores, contabilizando no orçamento de admissão
+as pilhas desses serviços ainda pendentes. Preservar a reserva dos quatro
+buffers, os tamanhos das pilhas e a margem de 4.096 bytes; não reduzir a
+pilha do escritor para contornar os 12 bytes faltantes. O ajuste precisa
+ser discutido antes de retomar o roteiro funcional.
+
+Ao concluir o diagnóstico, `obc` foi
+[restaurado com hash verificado](../../examples/int009-housekeeping-2026-11-17-183036/32-diagnostic-obc-restore-upload.txt)
+e o [cliente original passou](../../examples/int009-housekeeping-2026-11-17-183036/33-diagnostic-obc-restored.json).
+As verificações e contratos anteriores permanecem intactos. A bancada
+conjunta de aquisição e as regressões USB individuais continuam pendentes;
+não mover a INT-009 para `done/` nem alterar estados das TES.
+
+### Ordem de tarefas aprovada — continuação
+
+O responsável autorizou criar o fluxo antes de I2C/EPS/Térmico e somar
+as pilhas pendentes à admissão. A mudança foi aplicada somente à nova
+bancada. Reserva dos quatro buffers preservada; margem de 4.096 bytes
+e todos os tamanhos/prioridades/roteiros mantidos. O callback diagnóstico
+é registrado antes da primeira criação e reutilizado ao iniciar produtores.
+O orçamento passa a 23.552 bytes de pilhas em fixtures e 31.744 bytes
+em aquisição, mais a mesma margem: reservas de 27.648/35.840 bytes.
+As entradas anteriores mantêm seu orçamento e sua ordem.
+
+As ferramentas temporárias não estavam disponíveis nesta sessão e foram
+regeneradas das fontes, sem alterar as evidências permanentes. O
+[teste nativo novo passou novamente](../../examples/int009-housekeeping-2026-11-17-183036/37-native-check.txt)
+com ASan/UBSan e os [cinco builds](../../examples/int009-housekeeping-2026-11-17-183036/38-task-order-firmware-builds.txt)
+foram aprovados.
+
+**Fixtures: roteiro funcional original desta bancada aprovado.**
+[Relatório](../../examples/int009-housekeeping-2026-11-17-183036/40-task-order-fixtures-usb.json):
+34 TMs, 68 ACKs, 64 registros capturados, sete cenários completos e
+interpretação pelo leitor OBC real. Inclui zero/corrente negativa,
+indisponibilidades, temperatura parcial e retorno; os indicadores térmicos
+individuais do v3 foram conferidos mesmo com `tp:null` no JSON. Maior `q`
+41 ms; resposta máxima 149,950 ms; heap amostrado mínimo 18.236 bytes e
+menor margem do loop 4.892 bytes. As três tarefas do fluxo iniciaram;
+nenhuma recusa nas seis observações de criação.
+
+**Aquisição conjunta: reprovada ao iniciar Térmico.** O
+[mesmo roteiro, perfil acquisition](../../examples/int009-housekeeping-2026-11-17-183036/42-task-order-acquisition-usb.json)
+registrou `eps_started=1`, `thermal_started=0` e interrompeu antes de
+enviar TCs. O fluxo e o escritor já haviam iniciado. Uma
+[captura passiva de quatro segundos](../../examples/int009-housekeeping-2026-11-17-183036/43-acquisition-passive-diagnosis.json),
+sem comandos, mostrou I2C READY, EPS ativo com progresso e Térmico inativo
+com serviço READY. Heap interno 12.916 bytes, maior bloco 4.084 bytes;
+a tarefa térmica pede 4.096 bytes contíguos. A margem amostrada EPS foi
+2.740 bytes. A aquisição real permanece sem verificação funcional completa;
+o ensaio aprovado de fixtures não a substitui.
+
+Conforme AGENTS.md, nenhuma nova correção foi aplicada após esta
+reprovação. `obc` foi
+[restaurado](../../examples/int009-housekeeping-2026-11-17-183036/44-task-order-obc-restore-upload.txt)
+e [aprovado pelo cliente original](../../examples/int009-housekeeping-2026-11-17-183036/45-task-order-obc-restored.json).
+As regressões USB individuais INA219/LM75A previstas continuam pendentes.
+
+Próxima alternativa para discussão, ainda não implementada: usar
+`xTaskCreateStaticPinnedToCore` com pilhas/controles pertencentes aos
+adaptadores EPS/Térmico, exclusivamente na bancada conjunta. Preservar
+4 KiB por produtor e as políticas atuais; a memória fica reservada
+estaticamente e deixa de depender de dois novos blocos contíguos no heap
+fragmentado. A admissão deve contabilizar somente as pilhas ainda
+dinâmicas, pois as estáticas já reduzem a RAM livre. O custo passa a RAM
+estática, sem reduzir tamanhos ou ampliar dados fictícios.
+
+O coletor de diagnóstico arquivado em `31-allocation-diagnosis` pertence
+à imagem da etapa 29: ele encerra ao receber o resultado do fluxo. A ordem
+atual emite a prontidão dos produtores depois desse resultado; não aplicar
+esse coletor histórico à versão atual sem planejar sua evolução separada.
+Os roteiros funcionais e suas expectativas permanecem intactos.
+
+**Recorte parcialmente aprovado: fixtures concluídas; aquisição conjunta
+aberta.** INT-009 permanece Em andamento e não foi movida para `done/`.
+
+### Pilhas estáticas aprovadas — continuação
+
+O responsável autorizou `xTaskCreateStaticPinnedToCore` para EPS/Térmico
+somente na aquisição conjunta. Cada adaptador agora possui sua pilha
+alinhada de 4.096 bytes e `StaticTask_t` com vida permanente. As bancadas
+individuais conservam a criação dinâmica anterior; fixtures não reservam
+essas pilhas nem iniciam os produtores. A admissão passou a contabilizar
+somente os 4 KiB dinâmicos pendentes de I2C, pois as pilhas estáticas já
+reduzem a RAM livre. Prioridades, afinidade, cadência, validade, limites,
+drivers, margem de 4.096 bytes e roteiros permanecem intactos.
+
+Os [cinco builds](../../examples/int009-housekeeping-2026-11-17-183036/47-static-workers-firmware-builds.txt)
+passaram. RAM estática da aquisição: 37.792 para 46.680 bytes; flash
+576.465 para 576.477 bytes. Isso altera a distribuição da memória antes
+do boot, não apenas a criação tardia das tarefas.
+
+O [mesmo roteiro de aquisição](../../examples/int009-housekeeping-2026-11-17-183036/49-static-acquisition-usb.json)
+**reprovou na captura de registros**: os dois produtores iniciaram e
+progrediram, 32 TMs e 64 ACKs foram recebidos, mas nenhum registro foi
+capturado. Sete tentativas por canal sem sensores produziram 21 operações
+EPS e 35 térmicas, com falhas esperadas de indisponibilidade. As margens
+registradas ao fim foram 2.652 bytes EPS e 2.444 bytes Térmico.
+
+A reserva antecipada do estágio SD voltou a falhar nesta distribuição:
+
+```text
+RAM apos receptor: byte_heap=99048 byte_largest=47092
+RAM apos bloco SD: bloco=0 byte_heap=66264 byte_largest=26612
+stack_budget=23552 margin=4096 reserva=27648
+Escritor inativo: memoria por byte insuficiente para tarefas e margem
+```
+
+Somente um dos blocos foi alocado: a redução de 32.784 bytes corresponde
+ao bloco de 32.768 bytes com overhead. O segundo pede 31.729 bytes,
+maior que os 26.612 bytes contíguos restantes. O fluxo liberou os blocos,
+conservou recepção/TM e recusou iniciar o escritor. O callback ainda não
+estava registrado nessa fase de reserva; não atribuir a ele uma captura
+de recusa que não ocorreu.
+
+Nenhum novo ajuste foi aplicado após a reprovação, conforme AGENTS.md.
+`obc` foi [restaurado](../../examples/int009-housekeeping-2026-11-17-183036/50-static-workers-obc-restore-upload.txt)
+e [aprovado pelo cliente original](../../examples/int009-housekeeping-2026-11-17-183036/51-static-workers-obc-restored.json).
+O perfil de fixtures conserva a aprovação funcional da etapa 40;
+não foi reexecutado após esta interrupção. As regressões USB individuais
+INA219/LM75A previstas continuam pendentes. Nenhuma TES mudou de estado.
+
+Próximo ajuste proposto para discussão, **ainda não implementado**:
+na bancada conjunta, reservar o estágio de snapshot SD somente quando
+`GetSnapshotSize` informar o tamanho real do registro, usando os blocos
+já previstos até o limite atual de 64.497 bytes. Não reservar o máximo
+no boot quando ainda não há snapshot. A reserva/realocação deve ocorrer
+fora dos locks e somente com o slot exclusivo em ENCODING, sem tocar
+em buffers READY/WRITING. Falha mantém descarte contado e serviços
+independentes; formatos, limites, entrada Payload e expectativas ficam
+preservados. O firmware normal e as bancadas anteriores mantêm seu
+caminho até autorização de integração operacional. Esta alternativa
+atua no proprietário do estágio SD e evita reduzir pilhas ou tamanhos
+para contornar a fragmentação.
+
+**Aquisição e persistência conjuntas ainda não concluídas.** INT-009
+permanece Em andamento e não foi movida para `done/`.
+
+### Estágio SD sob demanda aprovado — continuação
+
+O responsável autorizou reservar o estágio SD pelo tamanho real. A
+propriedade dos dois blocos foi consolidada em `obc_flow::SnapshotBuffers`:
+limite de 64.497 bytes, divisão até 32.768 + restante, falha explícita e
+liberação de reserva parcial. Não há ponteiros novos por registro ou
+capacidade ilimitada. Os perfis anteriores continuam reservando o máximo
+no boot; somente a bancada conjunta chama `GetSnapshotSize` e reserva
+durante ENCODING, fora dos locks. O escritor libera os blocos ainda em
+WRITING, antes de publicar FREE. Falha de reserva/codificação conserva
+descarte contado e não interrompe serviços independentes.
+
+A reserva antecipada da bancada agora prepara somente o receptor.
+O helper antigo de reserva máxima foi substituído pelo proprietário
+portátil, sem duplicar a política de slot. O backend simulado só examina
+a assinatura quando recebe pelo menos quatro bytes: o segundo bloco
+exato pode ter 1–3 bytes. Nenhum vetor ou expectativa foi alterado.
+
+Provas novas:
+
+| Verificação | Resultado |
+|---|---|
+| [SnapshotBuffers nativo](../../examples/int009-housekeeping-2026-11-17-183036/54-staging-native-check.txt) | ASan/UBSan/LeakSanitizer aprovados: 37/32768/32769/64497 bytes, argumentos inválidos, recusa de cada alocação, liberação/retomada e codec real |
+| [Regressão do fluxo](../../examples/int009-housekeeping-2026-11-17-183036/57-old-flow-check.txt) | Roteiro original aprovado, com sanitizadores |
+| [Snapshot partido](../../examples/int009-housekeeping-2026-11-17-183036/58-old-parts-check.txt) | Vetores/expectativas originais aprovados; bytes preservados e registro parcial não publicado |
+| [Cinco builds](../../examples/int009-housekeeping-2026-11-17-183036/59-on-demand-firmware-builds.txt) | Aprovados; [rebuild das duas bancadas](../../examples/int009-housekeeping-2026-11-17-183036/60-short-block-firmware-builds.txt) também aprovado após guarda de comprimento |
+
+**Execução conjunta ainda reprovada, agora por tempo de fila.** O
+[roteiro inalterado](../../examples/int009-housekeeping-2026-11-17-183036/62-on-demand-acquisition-usb.json)
+iniciou os dois produtores e o escritor, recebeu 19 TMs e registrou 38
+ACKs antes da falha: `ping`, `st:ok`, **q=217 ms**, acima dos 200 ms
+originais. O limite não foi ampliado. Até ali, o fluxo indicava 89
+registros escritos, zero falhas e sete entregas confirmadas. Heap
+amostrado mínimo 69.332 bytes; menor bloco 47.092 bytes nas amostras.
+O diagnóstico do transporte também registrou `poll_gap_ms=13`; não
+declarar atendimento ao critério UART de 10 ms por esta execução.
+
+O roteiro abortou antes de exportar seus arquivos; eles permanecem
+vazios e seu `passed:false` foi preservado. Para diagnóstico, os 49
+registros dos logs foram exportados para arquivos **novos** e
+[interpretados pelo leitor sanitizado](../../examples/int009-housekeeping-2026-11-17-183036/65-partial-captured-records.json):
+49 válidos, 19 TMs, zero trechos/bytes descartados. Isso comprova dados
+parciais; não transforma o roteiro funcional em aprovação.
+
+A hipótese principal de latência é a saída síncrona de diagnóstico: as
+28 linhas imediatamente anteriores ao ACK reprovado somam 3.899 bytes
+em UART de 115.200 baud, e EPS/Térmico imprimem seus canais em sequência
+no loop que também consome TCs. O framework inicia UART com buffer TX
+zero; nenhuma configuração nova de TX foi aplicada. A causa ainda não
+foi isolada por uma comparação com buffer TX.
+
+Próxima proposta, **ainda não implementada**: usar o buffer TX nativo de
+8 KiB da UART0, configurado antes de `Serial.begin` somente nas duas
+bancadas conjuntas. Conferir configuração/recursos e repetir exatamente
+os roteiros, mantendo 115.200 baud, q <=200 ms, resposta <=2 s, frames
+<=255 bytes e todos os dados. O custo adicional de RAM fica explícito;
+não descartar logs/ACKs nem elevar limites para obter aprovação.
+
+Implementação interrompida após a reprovação conforme AGENTS.md.
+`obc` foi [restaurado](../../examples/int009-housekeeping-2026-11-17-183036/63-on-demand-obc-restore-upload.txt)
+e [aprovado pelo cliente original](../../examples/int009-housekeeping-2026-11-17-183036/64-on-demand-obc-restored.json).
+Reexecução de fixtures e regressões USB individuais permanecem pendentes
+nesta revisão. INT-009 continua Em andamento; nenhuma TES mudou de estado.
+
 ## Recorte LM75A de bancada — 17/11/2026
 
 O responsável aprovou bancada isolada e a referência **NXP LM75A provisória**,

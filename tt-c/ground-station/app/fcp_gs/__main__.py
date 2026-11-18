@@ -6,6 +6,10 @@
     python -m fcp_gs tiles --bbox S,W,N,E [--zoom 4-11]
     python -m fcp_gs tm-loss --port /dev/ttyUSB0 [--count 1000] [--wired]
     python -m fcp_gs tc-latency --port /dev/ttyUSB0 [--count 50] [--wired]
+    python -m fcp_gs dedup --port /dev/ttyUSB0 [--repeats 3] [--wired]
+    python -m fcp_gs delivery --port /dev/ttyUSB0 [--crash | --resume] [--wired]
+    python -m fcp_gs congestion --port /dev/ttyUSB0 [--count 200] [--wired]
+    python -m fcp_gs health --port /dev/ttyUSB0 --wired [--duration 120]
     python -m fcp_gs inject [--port /dev/ttyUSB0] [--file quadros.jsonl] [--delay 0.05]
     python -m fcp_gs analyze logs/2026-10-14_120000.jsonl
     python -m fcp_gs logs list --port /dev/ttyUSB0 [--wired]
@@ -26,13 +30,15 @@ from .demo import DEFAULT_SCENARIO, SCENARIOS
 from .link import Link, open_serial
 from .logs import LogError, download_file, list_files
 from .session_log import SessionLog
-from .verification import run_tc_latency, run_tm_loss, summarize, write_report
+from .verification import (run_congestion, run_dedup, run_delivery, run_health, run_tc_latency, run_tm_loss,
+                           summarize, write_report)
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 LOG_DIR = BASE_DIR / "logs"
 REPORT_DIR = BASE_DIR / "reports"
 TILE_DIR = BASE_DIR / "cache" / "tiles"
 DELIVERY_FILE = BASE_DIR / "state" / "deliveries.jsonl"  # IDs já processados, entre sessões.
+DELIVERY_PENDING_FILE = BASE_DIR / "state" / "delivery-check.json"  # ID retido por "delivery --crash".
 DOWNLOAD_DIR = BASE_DIR / "downloads"
 DEFAULT_MAP_CENTER = "-15.79,-47.88,4"  # Brasília.
 
@@ -125,14 +131,39 @@ def _cmd_serve(args: argparse.Namespace) -> int:
 
 
 def _cmd_test(args: argparse.Namespace) -> int:
+    target = None
+    if args.command == "delivery" and args.resume:
+        try:
+            target = tuple(json.loads(DELIVERY_PENDING_FILE.read_text(encoding="utf-8"))["id"])
+        except (OSError, ValueError, KeyError, TypeError):
+            print(f"Sem ID pendente em {DELIVERY_PENDING_FILE}: rode antes 'delivery --crash'.", file=sys.stderr)
+            return 2
+        if args.demo:
+            print("--resume não vale no --demo: o registro do demo fica só na memória.", file=sys.stderr)
+            return 2
     link = _open_link(args)
     try:
         if args.command == "tm-loss":
             report = run_tm_loss(link, args.count)
-        else:
+        elif args.command == "tc-latency":
             report = run_tc_latency(link, args.count)
+        elif args.command == "dedup":
+            report = run_dedup(link, args.repeats)
+        elif args.command == "congestion":
+            report = run_congestion(link, args.count)
+        elif args.command == "health":
+            report = run_health(link, args.duration)
+        else:
+            report = run_delivery(link, target=target, stop_after_withhold=args.crash)
     finally:
         link.close()
+    if args.command == "delivery" and report["phase"] == "crash" and report["passed"]:
+        DELIVERY_PENDING_FILE.parent.mkdir(parents=True, exist_ok=True)
+        DELIVERY_PENDING_FILE.write_text(json.dumps({"id": report["id"]}), encoding="utf-8")
+        print("ID gravado e cf retido. Reinicie a estação com 'delivery --resume' "
+              f"antes de o OBC desistir; ID em {DELIVERY_PENDING_FILE}.")
+    elif args.command == "delivery" and report["phase"] == "resume" and report["passed"]:
+        DELIVERY_PENDING_FILE.unlink(missing_ok=True)
     path = write_report(report, REPORT_DIR)
     print(summarize(report))
     print(f"Relatório: {path}")
@@ -242,6 +273,26 @@ def main(argv: list[str] | None = None) -> int:
     tc_latency = with_port(commands.add_parser("tc-latency", help="REQ-TTC-004 / HLR-COMM-01: latência de TCs"))
     tc_latency.add_argument("--count", type=int, default=50)
     tc_latency.set_defaults(func=_cmd_test)
+
+    dedup_cmd = with_port(commands.add_parser("dedup", help="deduplicação: mesmo seq sem reexecução"))
+    dedup_cmd.add_argument("--repeats", type=int, default=3)
+    dedup_cmd.set_defaults(func=_cmd_test)
+
+    delivery_cmd = with_port(commands.add_parser(
+        "delivery", help="entrega com cf perdido: retransmissão, reconfirmação e processamento único"))
+    phase = delivery_cmd.add_mutually_exclusive_group()
+    phase.add_argument("--crash", action="store_true", help="grava o ID, retém o cf e encerra (queda da estação)")
+    phase.add_argument("--resume", action="store_true", help="depois do --crash: confere a reconfirmação")
+    delivery_cmd.set_defaults(func=_cmd_test)
+
+    congestion_cmd = with_port(commands.add_parser(
+        "congestion", help="prioridade do ACK com a fila de descida cheia (rajada test_tm)"))
+    congestion_cmd.add_argument("--count", type=int, default=200)
+    congestion_cmd.set_defaults(func=_cmd_test)
+
+    health_cmd = with_port(commands.add_parser("health", help="verificação de saúde: rst sobe ao desligar o SX1276"))
+    health_cmd.add_argument("--duration", type=float, default=120.0, help="segundos de acompanhamento")
+    health_cmd.set_defaults(func=_cmd_test)
 
     tiles_cmd = commands.add_parser("tiles", help="pré-carrega folhas do mapa para uso sem internet")
     tiles_cmd.add_argument("--bbox", type=_bbox, required=True, help="SUL,OESTE,NORTE,LESTE")

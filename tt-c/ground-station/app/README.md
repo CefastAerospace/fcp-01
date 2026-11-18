@@ -124,8 +124,13 @@ Podem ser executados pela interface ou pela linha de comando. Cada execução gr
 |---|---|---|
 | `python -m fcp_gs tm-loss --port ... --count 1000` | REQ-TTC-003 | Rajada de 1000 TMs (`test_tm`) com perda < 1,0%, contada pelo `n`. Um `ping` final revela perdas no fim da rajada; sem o ACK dele, ou com mais de 1,0% das TMs faltando, o ensaio é reprovado. |
 | `python -m fcp_gs tc-latency --port ... --count 50` | REQ-TTC-004, HLR-COMM-01 | 50 TCs distintos; entrega ao OBC (`q` do ACK) ≤ 200 ms e ida e volta ≤ 2 s. |
+| `python -m fcp_gs dedup --port ... --repeats 3` | Deduplicação (contrato) | Um `request_tm` repetido 3 vezes com o mesmo `seq` recebe o mesmo ACK (`st` e `q`) e não é reexecutado: o `rx` da TM, que só conta TCs novos, sobe 1 entre o primeiro `request_tm` e o de fechamento. |
+| `python -m fcp_gs delivery --port ...` | INT-006 | Retém o `cf` da primeira entrega nova (o ID já fica gravado com fsync), como se a confirmação se perdesse. Aprovado com duas recepções do mesmo ID e conteúdo: a original e a retransmissão do OBC, reconhecida como repetida e confirmada. Depois do `cf`, 15 s sem nova retransmissão. |
+| `python -m fcp_gs delivery --port ... --crash`, depois `--resume` | INT-006 | Reinício da estação: `--crash` grava o ID, retém o `cf` e encerra. `--resume`, num processo novo, espera a retransmissão desse ID: o registro persistente a reconhece como repetida, a estação reconfirma e não reprocessa. Rode o `--resume` logo em seguida. |
+| `python -m fcp_gs congestion --port ... --count 200` | Prioridade do ACK (TES-008) | Pings durante uma rajada `test_tm` que enche a fila de descida. Sem prioridade, cada ping esperaria a fila comum (16 × ~0,5 s); o critério é ida e volta ≤ 2 s. Também conta as entregas retransmitidas pelo OBC durante o congestionamento. |
+| `python -m fcp_gs health --port ... --wired --duration 120` | Verificação de saúde | Pede TM a cada 2 s pelo umbilical enquanto o operador desliga e religa o SX1276. Aprovado se o `rst` subir e o último `request_tm` for respondido. Só com `--wired`: sem rádio, não há RF. |
 
-O `test_tm` é atendido pelo firmware `tt-c/examples/link-test`, que simula o OBC.
+O `test_tm` é atendido pelo firmware `tt-c/examples/link-test`, que simula o OBC. `dedup` e `congestion` também estão na interface; `delivery` e `health` dependem de ações do operador e ficam só na linha de comando. `delivery` e `congestion` precisam de entregas identificadas, ou seja, do firmware do OBC integrado.
 
 ## Registros e análise pós-passagem
 

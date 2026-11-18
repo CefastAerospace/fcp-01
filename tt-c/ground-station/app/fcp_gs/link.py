@@ -70,7 +70,11 @@ class Link:
         self.source = source
         self.log = log
         self.deliveries = deliveries if deliveries is not None else DeliveryStore()
-        self.delivery_counts = {"new": 0, "repeated": 0, "confirmations": 0, "confirm_errors": 0}
+        self.delivery_counts = {"new": 0, "repeated": 0, "confirmations": 0, "confirm_errors": 0,
+                                "withheld": 0}
+        # Roteiros de bancada: devolve False para reter o "cf" (simula confirmação
+        # perdida). O ID já está gravado com fsync quando o filtro é consultado.
+        self.confirmation_filter: Callable[[DeliveryId, bool], bool] | None = None
         self.loss = LossTracker()
         self.counts: dict[str, int] = {}
         self.latest_tm: dict | None = None
@@ -201,9 +205,13 @@ class Link:
                 self.delivery_counts["confirm_errors"] += 1
             self._emit({"dir": "log", "kind": "error", "text": f"registro de entregas: {error}"})
             return
+        withhold = self.confirmation_filter is not None and not self.confirmation_filter(delivery, repeated)
         with self._cond:
             self.delivery_counts["repeated" if repeated else "new"] += 1
-            self.delivery_counts["confirmations"] += 1
+            self.delivery_counts["withheld" if withhold else "confirmations"] += 1
+        if withhold:
+            self._emit({"dir": "log", "kind": "info", "text": f"cf {list(delivery)} retido pelo roteiro"})
+            return
         self._write(encode_confirmation(delivery),
                     {"dir": "tx", "kind": "cf", "link": self.source, "pkt": {"t": "cf", "id": list(delivery)}})
 
@@ -298,14 +306,17 @@ class Link:
 
     # ─── Envio ────────────────────────────────────────────────────────
 
-    def send_tc(self, cmd: str, args: dict | None = None, retries: int = 3, timeout: float = 2.0) -> dict:
+    def send_tc(self, cmd: str, args: dict | None = None, retries: int = 3, timeout: float = 2.0,
+                seq: int | None = None) -> dict:
         """Envia um TC e espera o ACK, retransmitindo com o mesmo seq.
 
         rtt_ms mede do primeiro envio ao ACK (ponta a ponta, HLR-COMM-01).
+        seq explícito só para roteiros que repetem um TC já enviado (deduplicação).
         """
         with self._cond:
-            seq = self._next_seq
-            self._next_seq = (seq + 1) % COUNTER_MODULO
+            if seq is None:
+                seq = self._next_seq
+                self._next_seq = (seq + 1) % COUNTER_MODULO
             self._acks.pop(seq, None)
             self._log_responses.pop(seq, None)
         line = encode_tc(seq, cmd, args)
@@ -318,7 +329,8 @@ class Link:
             if ack is not None:
                 rtt_ms = (time.monotonic() - first_send) * 1000
                 return {"seq": seq, "cmd": cmd, "ok": ack.get("st") == "ok", "status": ack.get("st"),
-                        "q": ack.get("q"), "rtt_ms": round(rtt_ms, 1), "attempts": attempt}
+                        "q": ack.get("q"), "rtt_ms": round(rtt_ms, 1), "attempts": attempt,
+                        "n": ack.get("n")}
 
         return {"seq": seq, "cmd": cmd, "ok": False, "status": "timeout", "q": None,
                 "rtt_ms": None, "attempts": retries}

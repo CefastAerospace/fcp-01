@@ -219,8 +219,11 @@ A estação responde a cada recepção com uma confirmação na subida:
   a estação reenvia a confirmação e não reaplica o conteúdo (aeronaves,
   rastro e mapa).
 - **Persistência da deduplicação:** o registro é append-only e é carregado
-  ao iniciar a estação. Uma linha cortada no fim do arquivo é ignorada. O
-  modo demo usa um registro só em memória.
+  ao iniciar a estação. Uma linha cortada no fim do arquivo (gravação
+  interrompida) é descartada: o arquivo é truncado no fim da última linha
+  completa, com `fsync`, antes da próxima gravação. Vários processos da
+  estação podem usar o mesmo registro (acesso sob `flock`). O modo demo usa
+  um registro só em memória.
 - **No satélite:** `cf` não é TC. Não tem `seq`, não recebe ACK nem NACK e
   não passa pela deduplicação de TCs. Com ID válido, vai para
   `Ttc::ReceiveConfirmation()`. Repetições também são repassadas, porque a

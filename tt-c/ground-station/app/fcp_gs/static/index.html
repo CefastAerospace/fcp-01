@@ -144,6 +144,20 @@
           /></label>
           <button type="submit">Iniciar</button>
         </form>
+        <form class="row test" data-test="dedup">
+          <label
+            >Deduplicação: repetições do mesmo seq
+            <input type="number" min="1" max="7" value="3"
+          /></label>
+          <button type="submit">Iniciar</button>
+        </form>
+        <form class="row test" data-test="congestion">
+          <label
+            >Prioridade do ACK com a fila cheia: TMs da rajada
+            <input type="number" min="1" max="2000" value="200"
+          /></label>
+          <button type="submit">Iniciar</button>
+        </form>
         <pre id="test-report" class="report">
 Nenhum teste executado nesta sessão.</pre
         >

@@ -29,7 +29,7 @@ Itens marcados como concluídos estão implementados e compilam; a validação e
 | Biblioteca do enlace | `TtcProtocol`, `Ttc`, `Sx1276Radio`, `UmbilicalLink`: SF7, JSON, TX intercalado com ACK prioritário, DIO0 por interrupção, task no Core 0, umbilical, deduplicação, verificação de saúde, beacon; adaptador OBC integrado e contrato base aceito. | Validação em bancada (seção 5) e integrações operacionais restantes (seção 6). |
 | Estação terrena | `ground-station/` (ponte ESP32) e `ground-station/app/` (Python, interface web, logs, roteiros de verificação, análise pós-passagem). | Ensaio com o hardware; fotos e descrição para o DP. |
 | Firmware de teste | `examples/link-test/`: simula o OBC (TM, aeronaves, `test_tm`, beacon em safe). | — |
-| Testes | `test/test_protocol` (nativo, 25 casos), `test/test_ttc` (na placa, 17 casos), `ground-station/app/tests` (pytest, 112 casos). | Rodar `test_ttc` na placa. |
+| Testes | `test/test_protocol` (nativo, 25 casos), `test/test_ttc` (na placa, 17 casos), `ground-station/app/tests` (pytest, 118 casos). | Rodar `test_ttc` na placa. |
 
 ---
 
@@ -46,7 +46,7 @@ Itens marcados como concluídos estão implementados e compilam; a validação e
   - [x] ArduinoJson 7.
   - [x] Estação terrena em JSON, com detecção de perdas pelo contador `n`.
 - [x] Campos da TM exigidos pelo HLR-COMM-02 e §8.3.1: modo, energia (bateria e painéis), 5 temperaturas, taxa angular, azimute solar, aeronaves, mensagens e enlace.
-- [ ] Confirmar com o OBC, o EPS, o ADCS e o controle térmico as unidades e a origem de cada campo da TM.
+- [ ] Confirmar com o EPS, o ADCS e o controle térmico as unidades e a origem de cada campo da TM. O OBC confirmou o mapeamento de transporte (unidades, `null` e zero, `ac` e `msg`) no aceite da INT-004.
 - [x] Task do enlace no Core 0 com prioridade alta (`Ttc::Start()`).
 - [x] Interrupção do DIO0 para RX/TX Done.
 
@@ -65,7 +65,7 @@ Itens marcados como concluídos estão implementados e compilam; a validação e
 - [x] Deduplicação de TCs por `seq` (8 TCs, 30 s), com reenvio do ACK anterior.
 - [x] Entregas identificadas da INT-006 (11/11/2026): `id` no pacote de aeronave, confirmação `cf` do solo, eventos de TX por ID (`SendAircraft`/`SendDelivery`, `ReceiveTransmitEvent`, `ReceiveConfirmation`), campos `null` na aeronave e `Send` com destino explícito. Contrato em `common/protocol/ttc-json.md`.
 - [x] Contrato do `request_log` (validação de `args`, respostas `lg` e erros) e cliente na estação (`fcp_gs logs`). Despacho OBC implementado na INT-006; verificações USB com SD simulado registradas, sem comprovar cartão/RF físicos ou durabilidade da estação.
-- [ ] Acordar com o OBC o timeout de confirmação (proposta ≥ 10 s) e medir na bancada a ida e volta aeronave → `cf` e a preservação das alterações sob congestionamento.
+- [ ] Fechar com o OBC os parâmetros de operação (capacidade, tráfego, retenção, retentativas e prioridade dos comandos). O timeout de confirmação está em 10 s provisórios, contados desde a reserva da tentativa e incluindo a fila TT&C; com a fila cheia (~8,0 s) e a ida e volta (~0,56 s), a margem é de ~1,4 s. O valor final sai das medições `delivery` e `congestion` na bancada RF.
 - [ ] Acordar com o Payload a origem e as unidades de `ts`, `vel`, `hdg` e `cnt` da aeronave.
 - [x] Campos `flags` e `timestamp` do TC binário eliminados na migração para JSON.
 - [ ] Beacon e enlace mínimo no firmware de safe-mode em partição separada (§7.2), junto com o OBC.
@@ -91,11 +91,12 @@ Ferramentas prontas; falta executar em bancada e anexar os relatórios de `groun
 - [ ] REQ-TTC-001: dados simulados de Payload e ADCS chegando à estação terrena (`link-test`).
 - [ ] REQ-TTC-002: medir a transmissão em 921 MHz e validar o modo umbilical (`--wired`).
 - [x] REQ-TTC-003: `python -m fcp_gs tm-loss --count 1000`, perda < 1,0%. Bancada (E2 em [`ENSAIOS.md`](ENSAIOS.md)): 0,00%. Entre prédios, a 115 m, ficou em 1,74% com 500 TMs (E3).
-- [ ] REQ-TTC-004 e HLR-COMM-01: `python -m fcp_gs tc-latency --count 50`, `q` ≤ 200 ms e ida e volta ≤ 2 s.
-- [ ] Deduplicação: reenviar o mesmo `seq` e confirmar que o comando não é reexecutado.
+- [ ] REQ-TTC-004 e HLR-COMM-01: `python -m fcp_gs tc-latency --count 50`, `q` ≤ 200 ms e ida e volta ≤ 2 s. Depende da correção da latência do ACK registrada pelo OBC na INT-009 (saída síncrona de diagnóstico na UART0).
+- [ ] Deduplicação: `python -m fcp_gs dedup`, mesmo `seq` com o mesmo ACK e sem reexecução (`rx` da TM).
 - [ ] Rodar `pio test -e esp32` com os 5 casos novos de entregas, confirmações e destino explícito.
-- [ ] Entregas na bancada: perder um `cf` e confirmar a retransmissão com o mesmo `id`, a reconfirmação e o processamento único na estação, inclusive depois de reiniciar a estação.
-- [ ] Verificação de saúde: desligar o SX1276 com o satélite rodando e confirmar a reinicialização (`rst` sobe na TM).
+- [ ] Entregas na bancada: `python -m fcp_gs delivery` (`cf` retido, retransmissão com o mesmo `id`, reconfirmação e processamento único) e `delivery --crash` seguido de `delivery --resume` (reinício da estação).
+- [ ] Prioridade e congestionamento: `python -m fcp_gs congestion --count 200` com o OBC integrado, ping ≤ 2 s com a fila cheia e entregas retransmitidas durante a rajada.
+- [ ] Verificação de saúde: `python -m fcp_gs health --wired`, desligar o SX1276 com o satélite rodando e confirmar a reinicialização (`rst` sobe na TM).
 - [ ] REQ-NF-TTC-001: medir consumo no EPS (15 mA nominal, 120 mA de pico).
 - [ ] REQ-NF-TTC-002: pesar a placa do rádio e o conjunto da antena (< 85 g).
 - [ ] Burn-wire (EPS/OBC): mínimo de 5 ciclos de abertura bem-sucedidos em solo.

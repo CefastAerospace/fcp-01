@@ -1,0 +1,62 @@
+{
+  "volume_uuid": "AC31-7988",
+  "run_id": "b6a9",
+  "previous_obc_files": {
+    "t6b6a3c.bin": {
+      "bytes": 81920,
+      "sha256": "cd62497b23d70cd34f3fdb02da3c97f25fa911837b33f2e227377510c9258605"
+    },
+    "t6b6a3n.bin": {
+      "bytes": 6,
+      "sha256": "e9c0f8b575cbfcb42ab3b78ecc87efa3b011d9a5d10b09fa4e96f240bf6a82f5"
+    },
+    "t6b6a4c.bin": {
+      "bytes": 40960,
+      "sha256": "852c57ef6974d8ac91350e7c7c7fb1d2a4ce83df45c786ef8854698876404819"
+    },
+    "t6b6a4n.bin": {
+      "bytes": 6,
+      "sha256": "e9c0f8b575cbfcb42ab3b78ecc87efa3b011d9a5d10b09fa4e96f240bf6a82f5"
+    },
+    "t6b6a8p.bin": {
+      "bytes": 6,
+      "sha256": "e9c0f8b575cbfcb42ab3b78ecc87efa3b011d9a5d10b09fa4e96f240bf6a82f5"
+    }
+  },
+  "existing_files_preserved": true,
+  "case_file": "t6b6a9f.bin",
+  "case_file_bytes": 4096,
+  "confirmed_prefix_hex": "414243",
+  "confirmed_prefix_matches": true,
+  "terminal": {
+    "round": 0,
+    "status": 13,
+    "bytes": 4093,
+    "errno": 5,
+    "attempts": 3,
+    "us": 39616,
+    "pass": 1
+  },
+  "unconfirmed_tail_bytes": 4093,
+  "unconfirmed_tail_byte_counts": {
+    "30": 4093
+  },
+  "unconfirmed_tail_sha256": "22036797ffcb38bf6e1fb9b5369599484c6a3a54714a3183b5afe24e3c9d59d0",
+  "fresh_file": "t6b6a9r.bin",
+  "fresh_file_bytes": 0,
+  "free_allocation_units_before_cleanup": 0,
+  "free_allocation_units_after_cleanup": 1956825,
+  "removed_directory": "T6B6A9",
+  "removed_files": {
+    "FILL0000.BIN": 1073741824,
+    "FILL0001.BIN": 1073741824,
+    "FILL0002.BIN": 1073741824,
+    "FILL0003.BIN": 1073741824,
+    "FILL0004.BIN": 1073741824,
+    "FILL0005.BIN": 1073741824,
+    "FILL0006.BIN": 1073741824,
+    "FILL0007.BIN": 498958336
+  },
+  "unmounted": true,
+  "passed": true
+}

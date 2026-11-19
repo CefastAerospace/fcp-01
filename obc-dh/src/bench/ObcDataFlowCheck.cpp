@@ -15,6 +15,77 @@
 #endif
 
 namespace {
+#ifdef OBC_MODES_BENCH
+    bool boot_ready = false;
+    bool detumbling = false;
+    unsigned detumbling_starts = 0;
+#ifdef OBC_PROTECTION_BENCH
+    uint64_t protection_started_ms = 0;
+    constexpr obc_protection::TEMPERATURE_LIMITS bench_temperature = {10, 40, 15, 35};
+    constexpr obc_protection::POLICY bench_protection_policy = {
+        6, 7, {bench_temperature, bench_temperature, bench_temperature, bench_temperature, bench_temperature},
+        3000, 3000, 2000
+    };
+    obc_protection::Evaluator protection(bench_protection_policy, 0);
+
+    // Uma nova amostra por segundo. O calor continua após a recuperação da bateria.
+    obc_protection::RESULT ReadBenchProtection() {
+        const uint64_t now_ms = obc_time::esp32::GetMonotonicMs();
+        const uint64_t elapsed_ms = now_ms - protection_started_ms;
+        const uint64_t sample_ms = now_ms - elapsed_ms % 1000;
+        obc_protection::READINGS readings = {};
+        if (now_ms >= 1000) {
+            const bool episode = protection_started_ms != 0;
+            readings.battery = {true, episode && elapsed_ms < 4000 ? 6.0f : 8.0f, sample_ms};
+            for (auto& temperature : readings.temperatures) temperature = {true, 25.0f, sample_ms};
+            if (episode && elapsed_ms >= 3000 && elapsed_ms < 7000) readings.temperatures[1].value = 40.0f;
+        }
+        return protection.Evaluate(now_ms, readings);
+    }
+#else
+    uint64_t protection_ends_ms = 0;
+#endif
+
+    // A segunda partida inicia o episódio de proteção do perfil selecionado.
+    bool StartBenchAdcs() {
+        if (detumbling) return false;
+        detumbling = true;
+        if (++detumbling_starts == 2) {
+#ifdef OBC_PROTECTION_BENCH
+            protection_started_ms = obc_time::esp32::GetMonotonicMs();
+#else
+            protection_ends_ms = obc_time::esp32::GetMonotonicMs() + 5000;
+#endif
+        }
+        return true;
+    }
+
+    // A bancada confirma a parada sem acessar o driver do motor.
+    bool StopBenchAdcs() {
+        detumbling = false;
+        return true;
+    }
+
+    // Os demais pré-requisitos vêm da recepção, NVS e escritor usados pela bancada.
+    obc_modes::SUBSYSTEM_STATUS ReadBenchModeStatus() {
+#ifdef OBC_PROTECTION_BENCH
+        return {boot_ready, true, false, !detumbling, false, false};
+#else
+        const bool protection_started = protection_ends_ms != 0;
+        const bool protection_active = protection_started && obc_time::esp32::GetMonotonicMs() < protection_ends_ms;
+        return {boot_ready, true, false, !detumbling, protection_active, protection_started && !protection_active};
+#endif
+    }
+
+    const obc_ttc::MODE_SERVICES bench_modes = {
+        4000, ReadBenchModeStatus, StartBenchAdcs, StopBenchAdcs,
+#ifdef OBC_PROTECTION_BENCH
+        ReadBenchProtection
+#else
+        nullptr
+#endif
+    };
+#endif
 #if defined(OBC_CAPACITY_BENCH)
     extern const uint8_t fixture_start[] asm("_binary__pio_capacity_fixtures_fcpu_start");
     extern const uint8_t fixture_end[] asm("_binary__pio_capacity_fixtures_fcpu_end");
@@ -154,6 +225,34 @@ namespace {
             }
         }
 #endif
+#ifdef OBC_MODES_BENCH
+        if (size == 96 && !std::memcmp(bytes, obc_data::record_magic, 4)
+                && (bytes[5] == static_cast<uint8_t>(obc_data::RECORD_TYPE::EVENT)
+                    || bytes[5] == static_cast<uint8_t>(obc_data::RECORD_TYPE::FAULT))) {
+            obc_record::RECORD event = {};
+            size_t consumed = 0;
+            if (obc_record::Decode(bytes, size, event, consumed) == obc_record::STATUS::OK
+                    && event.body.event.source == obc_data::SOURCE::OBC) {
+                const auto at_ms = static_cast<unsigned long long>(event.header.stamp.monotonic_ms);
+                if (event.body.event.code == obc_modes::event_code) {
+                    Serial.printf("[MODES-SD] event ms=%llu %s\n", at_ms, event.body.event.description);
+                }
+#ifdef OBC_PROTECTION_BENCH
+                if (event.body.event.code == obc_protection::event_code) {
+                    const bool fault = event.header.type == obc_data::RECORD_TYPE::FAULT;
+                    Serial.printf("[PROTECTION-SD] %s ms=%llu %s\n",
+                        fault ? "fault" : "event", at_ms, event.body.event.description);
+                }
+#endif
+            }
+        }
+        if (size >= 24 && !std::memcmp(bytes, obc_record::snapshot_magic, 4)) {
+            uint64_t sampled_ms = 0;
+            // O ESP32 e o campo em offset 16 do cabeçalho v2 usam little-endian.
+            std::memcpy(&sampled_ms, bytes + 16, sizeof(sampled_ms));
+            Serial.printf("[MODES-SD] snapshot ms=%llu\n", static_cast<unsigned long long>(sampled_ms));
+        }
+#endif
 #ifdef OBC_DELIVERY_BENCH
         if (size >= 4 && !std::memcmp(bytes, "FCD1", 4)) {
 #ifdef OBC_CAPACITY_BENCH
@@ -194,6 +293,9 @@ namespace {
                 return {obc_storage::STATUS::WRITE_FAILED, 0, 0, 1};
             }
             const auto& tm = record.body.telemetry;
+#ifdef OBC_MODES_BENCH
+            Serial.printf("[MODES-SD] tm md=%s\n", ttc::ModeName(static_cast<ttc::OP_MODE>(tm.mode)));
+#endif
             Serial.printf("[FLOW-CHECK] v3 ts_available=%u ts=%lu ac_available=%u ac=%u msg_available=%u stable=1\n",
                 (tm.available_fields & obc_data::TM_TIMESTAMP) ? 1U : 0U,
                 static_cast<unsigned long>(tm.timestamp),
@@ -485,6 +587,8 @@ size_t ReadBenchInput(
 #endif
 #ifdef OBC_MEMORY_BENCH
         next_ms = now_ms + 1000;
+#elif defined(OBC_MODES_BENCH)
+        next_ms = now_ms + 250;
 #else
         next_ms = now_ms + 20;
 #endif
@@ -559,7 +663,12 @@ void setup(
     }
 #endif
     report.storage_result.status = obc_storage::STATUS::OK;
+#ifdef OBC_MODES_BENCH
+    boot_ready = report.time_status == obc_time::STATUS::OK;
+    obc_ttc::Init(&bench_modes);
+#else
     obc_ttc::Init();
+#endif
 #ifdef OBC_WATCHDOG_ENABLED
     obc_watchdog::esp32::Checkpoint();
 #endif

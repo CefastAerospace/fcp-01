@@ -12,6 +12,7 @@
 #include "ObcI2cHealth.h" // Diagnóstico portátil de progresso e disponibilidade I2C.
 #include "ObcResourceHealth.h" // Avaliação portátil de TT&C, heap e pilhas.
 #include "ObcWatchdog.h" // Códigos de eventos da supervisão com ação de reset.
+#include "ObcModes.h" // Prontidão da missão e eventos de transição.
 #include "Ttc.h" // Cópia do diagnóstico publicado pelo proprietário do enlace.
 #ifdef OBC_RESOURCES_BENCH
 #include "ObcResourcesBench.h" // Injeções exclusivas da bancada de recursos.
@@ -57,6 +58,20 @@ namespace esp32 {
         uint32_t unix_s,
         uint32_t rx_ms,
         uint32_t delay_ms
+    );
+
+    /** @brief Amostra fluxo, último snapshot, referência UTC e estado do escritor. */
+    obc_modes::MISSION_STATUS GetMissionStatus(
+        uint64_t max_snapshot_age_ms,
+        uint64_t& sampled_ms
+    );
+
+    /** @brief Enfileira EVENT/FAULT v1 de origem OBC e retorna admissão local. */
+    bool RecordObcEvent(
+        uint16_t code,
+        bool fault,
+        uint64_t at_ms,
+        const char* description
     );
 
     /** @brief Copia estado pequeno e instante de composição, sem I/O ou espera. */

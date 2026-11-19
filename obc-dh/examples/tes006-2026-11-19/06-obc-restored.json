@@ -1,0 +1,107 @@
+{
+  "port": "/dev/ttyUSB0",
+  "profile": "obc",
+  "phases": [
+    {
+      "phase": "boot",
+      "ping": {
+        "seq": 17740,
+        "cmd": "ping",
+        "ok": true,
+        "status": "ok",
+        "q": 31,
+        "rtt_ms": 74.2,
+        "attempts": 1,
+        "n": 0
+      },
+      "listing": {
+        "ok": true,
+        "response": {
+          "n": 1,
+          "t": "lg",
+          "rq": 17741,
+          "op": "list",
+          "err": "no_sd"
+        },
+        "seq": 17741
+      },
+      "boot_sd": [
+        "[OBC] SD: indisponivel; status=11; errno=0; bytes=0; tentativas=0"
+      ],
+      "flow_sd": [
+        "[FLOW] received=0 invalid=0 gaps=0 duplicates=0 written=0 failures=1 dropped=6 SD=0 status=11 poll_gap_ms=2 process_gap_ms=2 stack_rx=7572 stack_sd=0 stack_uart=1916 uart_full=0"
+      ]
+    },
+    {
+      "phase": "reset_com_cartao",
+      "ping": {
+        "seq": 17743,
+        "cmd": "ping",
+        "ok": true,
+        "status": "ok",
+        "q": 0,
+        "rtt_ms": 26.1,
+        "attempts": 1,
+        "n": 0
+      },
+      "listing": {
+        "ok": true,
+        "response": {
+          "n": 1,
+          "t": "lg",
+          "rq": 17744,
+          "op": "list",
+          "err": "no_sd"
+        },
+        "seq": 17744
+      },
+      "boot_sd": [
+        "[OBC] SD: indisponivel; status=11; errno=0; bytes=0; tentativas=0"
+      ],
+      "flow_sd": [
+        "[FLOW] received=0 invalid=0 gaps=0 duplicates=0 written=0 failures=1 dropped=2 SD=0 status=11 poll_gap_ms=1 process_gap_ms=1 stack_rx=7636 stack_sd=0 stack_uart=2204 uart_full=0"
+      ]
+    }
+  ],
+  "lines": [
+    "rst:0x1 (POWERON_RESET),boot:0x13 (SPI_FAST_FLASH_BOOT)",
+    "[OBC] Boot de bancada: tempo/NVS, I2C e SD",
+    "[   365][E][sd_diskio.cpp:199] sdCommand(): Card Failed! cmd: 0x00",
+    "[   366][E][sd_diskio.cpp:805] sdcard_mount(): f_mount failed: (3) The physical drive cannot work",
+    "[   672][E][sd_diskio.cpp:199] sdCommand(): Card Failed! cmd: 0x00",
+    "[OBC] Tempo/NVS: OK; boot_id=36",
+    "[OBC] I2C: OK; estado do controlador/executor, sem verificar sensores",
+    "[OBC] SD: indisponivel; status=11; errno=0; bytes=0; tentativas=0",
+    "[OBC] Tempo monotonic_[TT&C] ERRO: SX1276 nao responde.",
+    "[OBC] TT&C: radio=indisponivel; umbilical=OK; tarefa=OK",
+    "[FLOW] RAM apos receptor: heap=171176 byte_heap=107040 byte_largest=47092",
+    "[FLOW] Recepcao=OK; SD=indisponivel; heap=159160; maior_bloco=63476",
+    "[FLOW] received=0 invalid=0 gaps=0 duplicates=0 written=0 failures=1 dropped=2 SD=0 status=11 poll_gap_ms=1 process_gap_ms=1 stack_rx=7572 stack_sd=0 stack_uart=2204 uart_full=0",
+    "[FLOW] received=0 invalid=0 gaps=0 duplicates=0 written=0 failures=1 dropped=4 SD=0 status=11 poll_gap_ms=2 process_gap_ms=2 stack_rx=7572 stack_sd=0 stack_uart=1916 uart_full=0",
+    "[FLOW] received=0 invalid=0 gaps=0 duplicates=0 written=0 failures=1 dropped=6 SD=0 status=11 poll_gap_ms=2 process_gap_ms=2 stack_rx=7572 stack_sd=0 stack_uart=1916 uart_full=0",
+    "[FLOW] received=0 invalid=0 gaps=0 duplicates=0 written=0 failures=1 dropped=9 SD=0 status=11 poll_gap_ms=2 process_gap_ms=2 stack_rx=7572 stack_sd=0 stack_uart=1916 uart_full=0",
+    "rst:0xc (SW_CPU_RESET),boot:0x13 (SPI_FAST_FLASH_BOOT)",
+    "[OBC] Boot de bancada: tempo/NVS, I2C e SD",
+    "[   365][E][sd_diskio.cpp:199] sdCommand(): Card Failed! cmd: 0x00",
+    "[   366][E][sd_diskio.cpp:805] sdcard_mount(): f_mount failed: (3) The physical drive cannot work",
+    "[   672][E][sd_diskio.cpp:199] sdCommand(): Card Failed! cmd: 0x00",
+    "[OBC] Tempo/NVS: OK; boot_id=37",
+    "[OBC] I2C: OK; estado do controlador/executor, sem verificar sensores",
+    "[OBC] SD: indisponivel; status=11; errno=0; bytes=0; tentativas=0",
+    "[OBC] Tempo monotonic_[TT&C] ERRO: SX1276 nao responde.",
+    "[OBC] TT&C: radio=indisponivel; umbilical=OK; tarefa=OK",
+    "[FLOW] RAM apos receptor: heap=171176 byte_heap=107040 byte_largest=47092",
+    "[FLOW] Recepcao=OK; SD=indisponivel; heap=159160; maior_bloco=63476",
+    "[FLOW] received=0 invalid=0 gaps=0 duplicates=0 written=0 failures=1 dropped=2 SD=0 status=11 poll_gap_ms=1 process_gap_ms=1 stack_rx=7636 stack_sd=0 stack_uart=2204 uart_full=0"
+  ],
+  "reset": {
+    "seq": 17742,
+    "cmd": "reset_obc",
+    "ok": true,
+    "status": "ok",
+    "q": 0,
+    "rtt_ms": 28.6,
+    "attempts": 1,
+    "n": 3
+  }
+}

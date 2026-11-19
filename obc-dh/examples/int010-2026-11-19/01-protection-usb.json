@@ -1,0 +1,2873 @@
+{
+  "passed": true,
+  "port": "/dev/ttyUSB0",
+  "exchanges": [
+    {
+      "expected": "ok",
+      "seq": 12823,
+      "cmd": "get_status",
+      "ok": true,
+      "status": "ok",
+      "q": 0,
+      "rtt_ms": 81.8,
+      "attempts": 1,
+      "n": 1,
+      "tm": {
+        "n": 0,
+        "t": "tm",
+        "ts": null,
+        "md": "safe",
+        "vb": null,
+        "ib": null,
+        "vs": null,
+        "is": null,
+        "tp": null,
+        "w": null,
+        "az": null,
+        "ac": null,
+        "msg": null,
+        "rssi": null,
+        "snr": null,
+        "rx": 1,
+        "err": 0,
+        "rst": 3
+      }
+    },
+    {
+      "expected": "ok",
+      "seq": 12824,
+      "cmd": "adcs_start",
+      "ok": true,
+      "status": "ok",
+      "q": 0,
+      "rtt_ms": 26.1,
+      "attempts": 1,
+      "n": 2
+    },
+    {
+      "expected": "ok",
+      "seq": 12825,
+      "cmd": "adcs_stop",
+      "ok": true,
+      "status": "ok",
+      "q": 0,
+      "rtt_ms": 21.5,
+      "attempts": 1,
+      "n": 3
+    },
+    {
+      "expected": "ok",
+      "seq": 12826,
+      "cmd": "set_time",
+      "ok": true,
+      "status": "ok",
+      "q": 0,
+      "rtt_ms": 34.0,
+      "attempts": 1,
+      "n": 4
+    },
+    {
+      "expected": "ok",
+      "seq": 12827,
+      "cmd": "set_mode",
+      "ok": true,
+      "status": "ok",
+      "q": 0,
+      "rtt_ms": 31.1,
+      "attempts": 1,
+      "n": 6
+    },
+    {
+      "expected": "ok",
+      "seq": 12828,
+      "cmd": "get_status",
+      "ok": true,
+      "status": "ok",
+      "q": 0,
+      "rtt_ms": 46.0,
+      "attempts": 1,
+      "n": 8,
+      "tm": {
+        "n": 7,
+        "t": "tm",
+        "ts": 1795109401,
+        "md": "lowpwr",
+        "vb": null,
+        "ib": null,
+        "vs": null,
+        "is": null,
+        "tp": null,
+        "w": null,
+        "az": null,
+        "ac": 7,
+        "msg": null,
+        "rssi": null,
+        "snr": null,
+        "rx": 6,
+        "err": 0,
+        "rst": 4
+      }
+    },
+    {
+      "expected": "state_rejected",
+      "seq": 12829,
+      "cmd": "request_log",
+      "ok": false,
+      "status": "state_rejected",
+      "q": 0,
+      "rtt_ms": 26.9,
+      "attempts": 1,
+      "n": 9
+    },
+    {
+      "expected": "state_rejected",
+      "seq": 12830,
+      "cmd": "adcs_start",
+      "ok": false,
+      "status": "state_rejected",
+      "q": 0,
+      "rtt_ms": 21.2,
+      "attempts": 1,
+      "n": 10
+    },
+    {
+      "expected": "state_rejected",
+      "seq": 12831,
+      "cmd": "start_mission",
+      "ok": false,
+      "status": "state_rejected",
+      "q": 0,
+      "rtt_ms": 21.6,
+      "attempts": 1,
+      "n": 11
+    },
+    {
+      "expected": "state_rejected",
+      "seq": 12832,
+      "cmd": "exit_safe",
+      "ok": false,
+      "status": "state_rejected",
+      "q": 0,
+      "rtt_ms": 21.7,
+      "attempts": 1,
+      "n": 12
+    },
+    {
+      "expected": "state_rejected",
+      "seq": 12833,
+      "cmd": "exit_safe",
+      "ok": false,
+      "status": "state_rejected",
+      "q": 0,
+      "rtt_ms": 32.6,
+      "attempts": 1,
+      "n": 13
+    },
+    {
+      "expected": "ok",
+      "seq": 12834,
+      "cmd": "get_status",
+      "ok": true,
+      "status": "ok",
+      "q": 0,
+      "rtt_ms": 43.4,
+      "attempts": 1,
+      "n": 15,
+      "tm": {
+        "n": 14,
+        "t": "tm",
+        "ts": 1795109411,
+        "md": "lowpwr",
+        "vb": null,
+        "ib": null,
+        "vs": null,
+        "is": null,
+        "tp": null,
+        "w": null,
+        "az": null,
+        "ac": 0,
+        "msg": null,
+        "rssi": null,
+        "snr": null,
+        "rx": 12,
+        "err": 0,
+        "rst": 14
+      }
+    },
+    {
+      "expected": "ok",
+      "seq": 12835,
+      "cmd": "exit_safe",
+      "ok": true,
+      "status": "ok",
+      "q": 0,
+      "rtt_ms": 27.2,
+      "attempts": 1,
+      "n": 16
+    },
+    {
+      "expected": "ok",
+      "seq": 12836,
+      "cmd": "get_status",
+      "ok": true,
+      "status": "ok",
+      "q": 1,
+      "rtt_ms": 32.3,
+      "attempts": 1,
+      "n": 18,
+      "tm": {
+        "n": 19,
+        "t": "tm",
+        "ts": 1795109411,
+        "md": "safe",
+        "vb": null,
+        "ib": null,
+        "vs": null,
+        "is": null,
+        "tp": null,
+        "w": null,
+        "az": null,
+        "ac": 0,
+        "msg": null,
+        "rssi": null,
+        "snr": null,
+        "rx": 14,
+        "err": 0,
+        "rst": 14
+      }
+    },
+    {
+      "expected": "ok",
+      "seq": 12837,
+      "cmd": "request_log",
+      "ok": true,
+      "status": "ok",
+      "q": 0,
+      "rtt_ms": 132.4,
+      "attempts": 1,
+      "n": 21
+    }
+  ],
+  "events": [
+    {
+      "dir": "tx",
+      "kind": "tc",
+      "link": "wired",
+      "attempt": 1,
+      "pkt": {
+        "t": "tc",
+        "seq": 12823,
+        "cmd": "get_status"
+      }
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "ets Jul 29 2019 12:21:46"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "rst:0x1 (POWERON_RESET),boot:0x13 (SPI_FAST_FLASH_BOOT)"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "configsip: 0, SPIWP:0xee"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "clk_drv:0x00,q_drv:0x00,d_drv:0x00,cs0_drv:0x00,hd_drv:0x00,wp_drv:0x00"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "mode:DIO, clock div:2"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "load:0x3fff0030,len:1184"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "load:0x40078000,len:13232"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "load:0x40080400,len:3028"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "entry 0x400805e4"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "E (271) esp_core_dump_flash: Core dum\u0000\u0006\"\ufffd\u0445\ufffdcheck failed:"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "Calculated checksum='1b646d2e'"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "Image checksum='ffffffff'"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[FLOW-CHECK] ADS-B em RAM e SD lento simulados; sem ensaio[TT&C] ERRO: SX1276 nao responde."
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[OBC] TT&C: radio=indisponivel; umbilical=OK; tarefa=OK"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[FLOW] RAM apos receptor: heap=180928 byte_heap=109548 byte_largest=47092"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[FLOW] RAM apos bloco SD: bloco=1 heap=116396 byte_heap=45016 byte_largest=16372 stack_budget=19456 margin=4096 reserva=23552 parser_limit=98304"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[FLOW] Recepcao=OK; SD=em inicializacao; heap=95812; maior_bloco=69620"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[FLOW-CHECK] Arquivo simulado: boot_000000000000001b_00000000.bin"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[TTC-HEALTH] state=ok radio=unavailable updating=0 wired_ready=1 age_ms=2 limit_ms=2000 completions=3 rf_seen=0 rf_age_ms=0 wired_seen=0 wired_age_ms=0 resets=0 changed=1 monotonic_ms=115"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[MEMORY-HEALTH] byte_heap=24432 byte_largest=8180 heap_low=0 block_low=0 stack_low_mask=0 allocation_failures=0 allocation_delta=0 changed=0 monotonic_ms=115"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[MEMORY-HEALTH] task=uart active=1 stack_free=2544 low=0 monotonic_ms=115"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[MEMORY-HEALTH] task=process active=1 stack_free=7664 low=0 monotonic_ms=115"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[MEMORY-HEALTH] task=writer active=1 stack_free=5400 low=0 monotonic_ms=115"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[MEMORY-HEALTH] task=i2c active=0 stack_free=0 low=0 monotonic_ms=115"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[MEMORY-HEALTH] task=ttc active=1 stack_free=7156 low=0 monotonic_ms=115"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[MEMORY-HEALTH] task=loop active=1 stack_free=4944 low=0 monotonic_ms=115"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[DELIVERY] recovery=1 data=0 confirm=0 corrupt=0 tails=0 orphan=0 cache_bytes=2912"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[FLOW] received=0 invalid=0 gaps=0 duplicates=0 written=2 failures=0 dropped=1 SD=1 status=0 poll_gap_ms=1 process_gap_ms=1 stack_rx=7632 stack_sd=5400 stack_uart=2544 uart_full=0"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[TT&C] ERRO: SX1276 sem resposta ou fora de RX, reinicializando."
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[FLOW-MEMORY] heap=95812 byte_heap=24432 byte_largest=8180 byte_min=22060 parser_peak_bytes=0 parser_limit_bytes=98304"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[STORAGE] state=0 attempt=0 episodes=0 attempts=0 recovered=0 exhausted=0 lifecycle_failures=0 cause=0 end=0 status=0 monotonic_ms=1008"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[TT&C] ERRO: SX1276 nao responde."
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[HEALTH] task=uart state=ok activity=idle age_ms=1 limit_ms=100 completions=895 sampled_ms=989 changed=0"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[HEALTH] task=process state=ok activity=idle age_ms=1 limit_ms=2000 completions=895 sampled_ms=989 changed=0"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[HEALTH] task=writer state=ok activity=idle age_ms=21 limit_ms=5000 completions=43 sampled_ms=989 changed=0"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[DELIVERY] occupied=0 peak=0 accepted=0 repeated=0 lost=0 storage_failures=0 attempts=0 tx_failures=0 confirmed=0 unknown=0 evicted=0 recovery_slot=0"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[TTC-HEALTH] state=ok radio=unavailable updating=0 wired_ready=1 age_ms=0 limit_ms=2000 completions=51 rf_seen=0 rf_age_ms=0 wired_seen=0 wired_age_ms=0 resets=1 changed=0 monotonic_ms=1114"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[I2C-HEALTH] state=inactive service=uninitialized activity=inactive age_ms=0 limit_ms=0 sampled_ms=0 monotonic_ms=1124 changed=0 queued=0 cause=0 failure=0 cycles=0 recovered=0 exhausted=0"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[MEMORY-HEALTH] byte_heap=24432 byte_largest=8180 heap_low=0 block_low=0 stack_low_mask=0 allocation_failures=0 allocation_delta=0 changed=0 monotonic_ms=1226"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[MEMORY-HEALTH] task=uart active=1 stack_free=2544 low=0 monotonic_ms=1226"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[MEMORY-HEALTH] task=process active=1 stack_free=7632 low=0 monotonic_ms=1226"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[MEMORY-HEALTH] task=writer active=1 stack_free=5400 low=0 monotonic_ms=1226"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[MEMORY-HEALTH] task=i2c active=0 stack_free=0 low=0 monotonic_ms=1226"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[MEMORY-HEALTH] task=ttc active=1 stack_free=7156 low=0 monotonic_ms=1226"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[MEMORY-HEALTH] task=loop active=1 stack_free=4908 low=0 monotonic_ms=1226"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[FLOW] received=0 invalid=0 gaps=0 duplicates=0 written=4 failures=0 dropped=1 SD=1 status=0 poll_gap_ms=1 process_gap_ms=1 stack_rx=7632 stack_sd=5400 stack_uart=2544 uart_full=0"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[TT&C] ERRO: SX1276 sem resposta ou fora de RX, reinicializando."
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[FLOW-MEMORY] heap=95812 byte_heap=24432 byte_largest=8180 byte_min=22060 parser_peak_bytes=0 parser_limit_bytes=98304"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[STORAGE] state=0 attempt=0 episodes=0 attempts=0 recovered=0 exhausted=0 lifecycle_failures=0 cause=0 end=0 status=0 monotonic_ms=2026"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[TT&C] ERRO: SX1276 nao responde."
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[HEALTH] task=uart state=ok activity=idle age_ms=1 limit_ms=100 completions=1893 sampled_ms=1987 changed=0"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[HEALTH] task=process state=ok activity=idle age_ms=1 limit_ms=2000 completions=1893 sampled_ms=1987 changed=0"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[HEALTH] task=writer state=ok activity=idle age_ms=17 limit_ms=5000 completions=87 sampled_ms=1987 changed=0"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[DELIVERY] occupied=0 peak=0 accepted=0 repeated=0 lost=0 storage_failures=0 attempts=0 tx_failures=0 confirmed=0 unknown=0 evicted=0 recovery_slot=0"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[TTC-HEALTH] state=ok radio=unavailable updating=0 wired_ready=1 age_ms=0 limit_ms=2000 completions=99 rf_seen=0 rf_age_ms=0 wired_seen=0 wired_age_ms=0 resets=2 changed=0 monotonic_ms=2131"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[I2C-HEALTH] state=inactive service=uninitialized activity=inactive age_ms=0 limit_ms=0 sampled_ms=0 monotonic_ms=2141 changed=0 queued=0 cause=0 failure=0 cycles=0 recovered=0 exhausted=0"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[MEMORY-HEALTH] byte_heap=24432 byte_largest=8180 heap_low=0 block_low=0 stack_low_mask=0 allocation_failures=0 allocation_delta=0 changed=0 monotonic_ms=2243"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[MEMORY-HEALTH] task=uart active=1 stack_free=2544 low=0 monotonic_ms=2243"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[MEMORY-HEALTH] task=process active=1 stack_free=7632 low=0 monotonic_ms=2243"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[MEMORY-HEALTH] task=writer active=1 stack_free=5400 low=0 monotonic_ms=2243"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[MEMORY-HEALTH] task=i2c active=0 stack_free=0 low=0 monotonic_ms=2243"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[MEMORY-HEALTH] task=ttc active=1 stack_free=7156 low=0 monotonic_ms=2243"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[MEMORY-HEALTH] task=loop active=1 stack_free=4908 low=0 monotonic_ms=2243"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[TT&C] ERRO: SX1276 sem resposta ou fora de RX, reinicializando."
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[FLOW] received=0 invalid=0 gaps=0 duplicates=0 written=5 failures=0 dropped=1 SD=1 status=0 poll_gap_ms=1 process_gap_ms=1 stack_rx=7632 stack_sd=5400 stack_uart=2544 uart_full=0"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[FLOW-MEMORY] heap=95812 byte_heap=24432 byte_largest=8180 byte_min=22060 parser_peak_bytes=0 parser_limit_bytes=98304"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[TT&C] ERRO: SX1276 nao responde."
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[STORAGE] state=0 attempt=0 episodes=0 attempts=0 recovered=0 exhausted=0 lifecycle_failures=0 cause=0 end=0 status=0 monotonic_ms=3043"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[HEALTH] task=uart state=ok activity=idle age_ms=1 limit_ms=100 completions=2910 sampled_ms=3004 changed=0"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[HEALTH] task=process state=ok activity=idle age_ms=1 limit_ms=2000 completions=2910 sampled_ms=3004 changed=0"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[HEALTH] task=writer state=ok activity=idle age_ms=17 limit_ms=5000 completions=135 sampled_ms=3004 changed=0"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[DELIVERY] occupied=0 peak=0 accepted=0 repeated=0 lost=0 storage_failures=0 attempts=0 tx_failures=0 confirmed=0 unknown=0 evicted=0 recovery_slot=0"
+    },
+    {
+      "dir": "rx",
+      "kind": "packet",
+      "link": "wired",
+      "pkt": {
+        "n": 0,
+        "t": "tm",
+        "ts": null,
+        "md": "safe",
+        "vb": null,
+        "ib": null,
+        "vs": null,
+        "is": null,
+        "tp": null,
+        "w": null,
+        "az": null,
+        "ac": null,
+        "msg": null,
+        "rssi": null,
+        "snr": null,
+        "rx": 1,
+        "err": 0,
+        "rst": 3
+      }
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[TTC-HEALTH] state=ok radio=unavailable updating=1 wired_ready=1 age_ms=1 limit_ms=2000 completions=146 rf_seen=0 rf_age_ms=0 wired_seen=1 wired_age_ms=3 resets=3 changed=0 monotonic_ms=3133"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[TT&C] Falha no TX de 174 bytes."
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[I2C-HEALTH] state=inactive service=uninitialized activity=inactive age_ms=0 limit_ms=0 sampled_ms=0 monotonic_ms=3153 changed=0 queued=0 cause=0 failure=0 cycles=0 recovered=0 exhausted=0"
+    },
+    {
+      "dir": "rx",
+      "kind": "packet",
+      "link": "wired",
+      "pkt": {
+        "n": 1,
+        "t": "ack",
+        "seq": 12823,
+        "cmd": "get_status",
+        "st": "ok",
+        "q": 0
+      }
+    },
+    {
+      "dir": "tx",
+      "kind": "tc",
+      "link": "wired",
+      "attempt": 1,
+      "pkt": {
+        "t": "tc",
+        "seq": 12824,
+        "cmd": "adcs_start"
+      }
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[MODES] ms=3205 queued=1 safe>detumb start_adcs"
+    },
+    {
+      "dir": "rx",
+      "kind": "packet",
+      "link": "wired",
+      "pkt": {
+        "n": 2,
+        "t": "ack",
+        "seq": 12824,
+        "cmd": "adcs_start",
+        "st": "ok",
+        "q": 0
+      }
+    },
+    {
+      "dir": "tx",
+      "kind": "tc",
+      "link": "wired",
+      "attempt": 1,
+      "pkt": {
+        "t": "tc",
+        "seq": 12825,
+        "cmd": "adcs_stop"
+      }
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[MODES] ms=3227 queued=1 detumb>safe stop_adcs"
+    },
+    {
+      "dir": "rx",
+      "kind": "packet",
+      "link": "wired",
+      "pkt": {
+        "n": 3,
+        "t": "ack",
+        "seq": 12825,
+        "cmd": "adcs_stop",
+        "st": "ok",
+        "q": 0
+      }
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[MODES-SD] tm md=safe"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[FLOW-CHECK] v3 ts_available=0 ts=0 ac_available=0 ac=0 msg_available=0 stable=1"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[MEMORY-HEALTH] byte_heap=24432 byte_largest=8180 heap_low=0 block_low=0 stack_low_mask=0 allocation_failures=0 allocation_delta=0 changed=0 monotonic_ms=3249"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[MEMORY-HEALTH] task=uart active=1 stack_free=2544 low=0 monotonic_ms=3249"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[MEMORY-HEALTH] task=process active=1 stack_free=7632 low=0 monotonic_ms=3249"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[MEMORY-HEALTH] task=writer active=1 stack_free=5352 low=0 monotonic_ms=3249"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[MEMORY-HEALTH] task=i2c active=0 stack_free=0 low=0 monotonic_ms=3249"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[MEMORY-HEALTH] task=ttc active=1 stack_free=6104 low=0 monotonic_ms=3249"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[MEMORY-HEALTH] task=loop active=1 stack_free=4908 low=0 monotonic_ms=3249"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[MODES-SD] event ms=3205 safe>detumb start_adcs"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[MODES-SD] event ms=3227 detumb>safe stop_adcs"
+    },
+    {
+      "dir": "tx",
+      "kind": "tc",
+      "link": "wired",
+      "attempt": 1,
+      "pkt": {
+        "t": "tc",
+        "seq": 12826,
+        "cmd": "set_time",
+        "args": {
+          "unix": 1795109400
+        }
+      }
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[FLOW-CHECK] UTC recebida; inicio da injecao em 1000 ms"
+    },
+    {
+      "dir": "rx",
+      "kind": "packet",
+      "link": "wired",
+      "pkt": {
+        "n": 4,
+        "t": "ack",
+        "seq": 12826,
+        "cmd": "set_time",
+        "st": "ok",
+        "q": 0
+      }
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[TT&C] ERRO: SX1276 sem resposta ou fora de RX, reinicializando."
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[FLOW] received=0 invalid=0 gaps=0 duplicates=0 written=10 failures=0 dropped=1 SD=1 status=0 poll_gap_ms=1 process_gap_ms=2 stack_rx=7632 stack_sd=5352 stack_uart=1332 uart_full=0"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[FLOW-MEMORY] heap=95812 byte_heap=24432 byte_largest=8180 byte_min=20992 parser_peak_bytes=0 parser_limit_bytes=98304"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[TT&C] ERRO: SX1276 nao responde."
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[STORAGE] state=0 attempt=0 episodes=0 attempts=0 recovered=0 exhausted=0 lifecycle_failures=0 cause=0 end=0 status=0 monotonic_ms=4060"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[HEALTH] task=uart state=ok activity=idle age_ms=1 limit_ms=100 completions=3927 sampled_ms=4021 changed=0"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[HEALTH] task=process state=ok activity=idle age_ms=1 limit_ms=2000 completions=3927 sampled_ms=4021 changed=0"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[HEALTH] task=writer state=ok activity=idle age_ms=7 limit_ms=5000 completions=173 sampled_ms=4021 changed=0"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[DELIVERY] occupied=0 peak=0 accepted=0 repeated=0 lost=0 storage_failures=0 attempts=0 tx_failures=0 confirmed=0 unknown=0 evicted=0 recovery_slot=0"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[TTC-HEALTH] state=ok radio=unavailable updating=0 wired_ready=1 age_ms=11 limit_ms=2000 completions=198 rf_seen=0 rf_age_ms=0 wired_seen=1 wired_age_ms=681 resets=4 changed=0 monotonic_ms=4155"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[I2C-HEALTH] state=inactive service=uninitialized activity=inactive age_ms=0 limit_ms=0 sampled_ms=0 monotonic_ms=4165 changed=0 queued=0 cause=0 failure=0 cycles=0 recovered=0 exhausted=0"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[MEMORY-HEALTH] byte_heap=24432 byte_largest=8180 heap_low=0 block_low=0 stack_low_mask=0 allocation_failures=0 allocation_delta=0 changed=0 monotonic_ms=4267"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[MEMORY-HEALTH] task=uart active=1 stack_free=1332 low=0 monotonic_ms=4267"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[MEMORY-HEALTH] task=process active=1 stack_free=7632 low=0 monotonic_ms=4267"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[MEMORY-HEALTH] task=writer active=1 stack_free=5352 low=0 monotonic_ms=4267"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[MEMORY-HEALTH] task=i2c active=0 stack_free=0 low=0 monotonic_ms=4267"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[MEMORY-HEALTH] task=ttc active=1 stack_free=6104 low=0 monotonic_ms=4267"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[MEMORY-HEALTH] task=loop active=1 stack_free=4908 low=0 monotonic_ms=4267"
+    },
+    {
+      "dir": "rx",
+      "kind": "packet",
+      "link": "wired",
+      "pkt": {
+        "n": 5,
+        "t": "ac",
+        "id": [
+          27,
+          1
+        ],
+        "ts": null,
+        "icao": "e49a48",
+        "lat": -20.10978,
+        "lon": -44.37088,
+        "alt": 38000,
+        "vel": null,
+        "hdg": null,
+        "cnt": null
+      },
+      "delivery": {
+        "id": [
+          27,
+          1
+        ],
+        "repeated": false
+      }
+    },
+    {
+      "dir": "log",
+      "kind": "info",
+      "text": "cf [27, 1] retido pelo roteiro"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[TT&C] Falha no TX de 131 bytes."
+    },
+    {
+      "dir": "tx",
+      "kind": "tc",
+      "link": "wired",
+      "attempt": 1,
+      "pkt": {
+        "t": "tc",
+        "seq": 12827,
+        "cmd": "set_mode",
+        "args": {
+          "mode": "detumb"
+        }
+      }
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[MODES] ms=4585 queued=1 safe>detumb start_adcs"
+    },
+    {
+      "dir": "rx",
+      "kind": "packet",
+      "link": "wired",
+      "pkt": {
+        "n": 6,
+        "t": "ack",
+        "seq": 12827,
+        "cmd": "set_mode",
+        "st": "ok",
+        "q": 0
+      }
+    },
+    {
+      "dir": "tx",
+      "kind": "tc",
+      "link": "wired",
+      "attempt": 1,
+      "pkt": {
+        "t": "tc",
+        "seq": 12828,
+        "cmd": "get_status"
+      }
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[PROTECTION] ms=4607 queued=1 active unavailable=00 low=01 high=00"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[MODES] ms=4607 queued=1 detumb>lowpwr protection"
+    },
+    {
+      "dir": "rx",
+      "kind": "packet",
+      "link": "wired",
+      "pkt": {
+        "n": 7,
+        "t": "tm",
+        "ts": 1795109401,
+        "md": "lowpwr",
+        "vb": null,
+        "ib": null,
+        "vs": null,
+        "is": null,
+        "tp": null,
+        "w": null,
+        "az": null,
+        "ac": 7,
+        "msg": null,
+        "rssi": null,
+        "snr": null,
+        "rx": 6,
+        "err": 0,
+        "rst": 4
+      }
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[TT&C] Falha no TX de 179 bytes."
+    },
+    {
+      "dir": "rx",
+      "kind": "packet",
+      "link": "wired",
+      "pkt": {
+        "n": 8,
+        "t": "ack",
+        "seq": 12828,
+        "cmd": "get_status",
+        "st": "ok",
+        "q": 0
+      }
+    },
+    {
+      "dir": "tx",
+      "kind": "tc",
+      "link": "wired",
+      "attempt": 1,
+      "pkt": {
+        "t": "tc",
+        "seq": 12829,
+        "cmd": "request_log",
+        "args": {
+          "op": "list"
+        }
+      }
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[FLOW-CHECK] Arquivo simulado: boot_000000000000001b_00000001.bin"
+    },
+    {
+      "dir": "rx",
+      "kind": "packet",
+      "link": "wired",
+      "pkt": {
+        "n": 9,
+        "t": "ack",
+        "seq": 12829,
+        "cmd": "request_log",
+        "st": "state_rejected",
+        "q": 0
+      }
+    },
+    {
+      "dir": "tx",
+      "kind": "tc",
+      "link": "wired",
+      "attempt": 1,
+      "pkt": {
+        "t": "tc",
+        "seq": 12830,
+        "cmd": "adcs_start"
+      }
+    },
+    {
+      "dir": "rx",
+      "kind": "packet",
+      "link": "wired",
+      "pkt": {
+        "n": 10,
+        "t": "ack",
+        "seq": 12830,
+        "cmd": "adcs_start",
+        "st": "state_rejected",
+        "q": 0
+      }
+    },
+    {
+      "dir": "tx",
+      "kind": "tc",
+      "link": "wired",
+      "attempt": 1,
+      "pkt": {
+        "t": "tc",
+        "seq": 12831,
+        "cmd": "start_mission"
+      }
+    },
+    {
+      "dir": "rx",
+      "kind": "packet",
+      "link": "wired",
+      "pkt": {
+        "n": 11,
+        "t": "ack",
+        "seq": 12831,
+        "cmd": "start_mission",
+        "st": "state_rejected",
+        "q": 0
+      }
+    },
+    {
+      "dir": "tx",
+      "kind": "tc",
+      "link": "wired",
+      "attempt": 1,
+      "pkt": {
+        "t": "tc",
+        "seq": 12832,
+        "cmd": "exit_safe"
+      }
+    },
+    {
+      "dir": "rx",
+      "kind": "packet",
+      "link": "wired",
+      "pkt": {
+        "n": 12,
+        "t": "ack",
+        "seq": 12832,
+        "cmd": "exit_safe",
+        "st": "state_rejected",
+        "q": 0
+      }
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[MODES-SD] event ms=4585 safe>detumb start_adcs"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[MODES-SD] snapshot ms=4530"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[TT&C] ERRO: SX1276 sem resposta ou fora de RX, reinicializando."
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[FLOW] received=2 invalid=0 gaps=0 duplicates=1 written=16 failures=0 dropped=1 SD=1 status=0 poll_gap_ms=1 process_gap_ms=21 stack_rx=3184 stack_sd=5304 stack_uart=1332 uart_full=41"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[FLOW-MEMORY] heap=95812 byte_heap=24432 byte_largest=8180 byte_min=15044 parser_peak_bytes=7190 parser_limit_bytes=98304"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[TT&C] ERRO: SX1276 nao responde."
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[STORAGE] state=0 attempt=0 episodes=0 attempts=0 recovered=0 exhausted=0 lifecycle_failures=0 cause=0 end=0 status=0 monotonic_ms=5069"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[HEALTH] task=uart state=ok activity=idle age_ms=1 limit_ms=100 completions=4976 sampled_ms=5070 changed=0"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[HEALTH] task=process state=ok activity=idle age_ms=1 limit_ms=2000 completions=4898 sampled_ms=5070 changed=0"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[HEALTH] task=writer state=ok activity=write age_ms=12 limit_ms=5000 completions=208 sampled_ms=5070 changed=0"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[DELIVERY] occupied=7 peak=7 accepted=7 repeated=0 lost=0 storage_failures=0 attempts=1 tx_failures=1 confirmed=1 unknown=0 evicted=0 recovery_slot=0"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[FLOW-CHECK] Arquivo simulado: boot_000000000000001b_00000002.bin"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[TTC-HEALTH] state=ok radio=unavailable updating=0 wired_ready=1 age_ms=18 limit_ms=2000 completions=253 rf_seen=0 rf_age_ms=0 wired_seen=1 wired_age_ms=427 resets=5 changed=0 monotonic_ms=5173"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[I2C-HEALTH] state=inactive service=uninitialized activity=inactive age_ms=0 limit_ms=0 sampled_ms=0 monotonic_ms=5184 changed=0 queued=0 cause=0 failure=0 cycles=0 recovered=0 exhausted=0"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[MEMORY-HEALTH] byte_heap=24432 byte_largest=8180 heap_low=0 block_low=0 stack_low_mask=0 allocation_failures=0 allocation_delta=0 changed=0 monotonic_ms=5285"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[MEMORY-HEALTH] task=uart active=1 stack_free=1332 low=0 monotonic_ms=5285"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[MEMORY-HEALTH] task=process active=1 stack_free=3104 low=0 monotonic_ms=5285"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[MEMORY-HEALTH] task=writer active=1 stack_free=5304 low=0 monotonic_ms=5285"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[MEMORY-HEALTH] task=i2c active=0 stack_free=0 low=0 monotonic_ms=5285"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[MEMORY-HEALTH] task=ttc active=1 stack_free=6104 low=0 monotonic_ms=5285"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[MEMORY-HEALTH] task=loop active=1 stack_free=4908 low=0 monotonic_ms=5285"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[PROTECTION-SD] fault ms=4607 active unavailable=00 low=01 high=00"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[MODES-SD] snapshot ms=5131"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[FLOW-CHECK] Arquivo simulado: boot_000000000000001b_00000003.bin"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[MODES-SD] event ms=4607 detumb>lowpwr protection"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[TT&C] ERRO: SX1276 sem resposta ou fora de RX, reinicializando."
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[MODES-SD] snapshot ms=5731"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[FLOW] received=6 invalid=0 gaps=0 duplicates=1 written=26 failures=0 dropped=3 SD=1 status=0 poll_gap_ms=1 process_gap_ms=22 stack_rx=3104 stack_sd=5304 stack_uart=1332 uart_full=126"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[FLOW-MEMORY] heap=95812 byte_heap=24432 byte_largest=8180 byte_min=14864 parser_peak_bytes=7190 parser_limit_bytes=98304"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[TT&C] ERRO: SX1276 nao responde."
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[STORAGE] state=0 attempt=0 episodes=0 attempts=0 recovered=0 exhausted=0 lifecycle_failures=0 cause=0 end=0 status=0 monotonic_ms=6069"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[HEALTH] task=uart state=ok activity=idle age_ms=1 limit_ms=100 completions=5976 sampled_ms=6070 changed=0"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[HEALTH] task=process state=ok activity=idle age_ms=1 limit_ms=2000 completions=5708 sampled_ms=6070 changed=0"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[HEALTH] task=writer state=ok activity=write age_ms=2 limit_ms=5000 completions=224 sampled_ms=6070 changed=0"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[DELIVERY] occupied=6 peak=7 accepted=7 repeated=28 lost=0 storage_failures=0 attempts=1 tx_failures=1 confirmed=1 unknown=0 evicted=0 recovery_slot=0"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[FLOW-CHECK] Arquivo simulado: boot_000000000000001b_00000004.bin"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[TTC-HEALTH] state=ok radio=unavailable updating=0 wired_ready=1 age_ms=1 limit_ms=2000 completions=301 rf_seen=0 rf_age_ms=0 wired_seen=1 wired_age_ms=1429 resets=6 changed=0 monotonic_ms=6175"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[I2C-HEALTH] state=inactive service=uninitialized activity=inactive age_ms=0 limit_ms=0 sampled_ms=0 monotonic_ms=6185 changed=0 queued=0 cause=0 failure=0 cycles=0 recovered=0 exhausted=0"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[MEMORY-HEALTH] byte_heap=24432 byte_largest=8180 heap_low=0 block_low=0 stack_low_mask=0 allocation_failures=0 allocation_delta=0 changed=0 monotonic_ms=6288"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[MEMORY-HEALTH] task=uart active=1 stack_free=1332 low=0 monotonic_ms=6288"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[MEMORY-HEALTH] task=process active=1 stack_free=3104 low=0 monotonic_ms=6288"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[MEMORY-HEALTH] task=writer active=1 stack_free=5304 low=0 monotonic_ms=6288"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[MEMORY-HEALTH] task=i2c active=0 stack_free=0 low=0 monotonic_ms=6288"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[MEMORY-HEALTH] task=ttc active=1 stack_free=6104 low=0 monotonic_ms=6288"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[MEMORY-HEALTH] task=loop active=1 stack_free=4828 low=0 monotonic_ms=6288"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[MODES-SD] tm md=lowpwr"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[FLOW-CHECK] v3 ts_available=1 ts=1795109401 ac_available=1 ac=7 msg_available=0 stable=1"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[MODES-SD] snapshot ms=6330"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[FLOW-CHECK] Arquivo simulado: boot_000000000000001b_00000005.bin"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[FLOW] received=9 invalid=0 gaps=0 duplicates=1 written=31 failures=0 dropped=4 SD=1 status=0 poll_gap_ms=1 process_gap_ms=22 stack_rx=3104 stack_sd=5304 stack_uart=1332 uart_full=189"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[TT&C] ERRO: SX1276 sem resposta ou fora de RX, reinicializando."
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[MODES-SD] snapshot ms=6631"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[FLOW-MEMORY] heap=95812 byte_heap=24432 byte_largest=8180 byte_min=14864 parser_peak_bytes=7190 parser_limit_bytes=98304"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[STORAGE] state=0 attempt=0 episodes=0 attempts=0 recovered=0 exhausted=0 lifecycle_failures=0 cause=0 end=0 status=0 monotonic_ms=7070"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[TT&C] ERRO: SX1276 nao responde."
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[HEALTH] task=uart state=ok activity=idle age_ms=1 limit_ms=100 completions=6896 sampled_ms=6990 changed=0"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[HEALTH] task=process state=ok activity=idle age_ms=1 limit_ms=2000 completions=6486 sampled_ms=6990 changed=0"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[HEALTH] task=writer state=ok activity=write age_ms=14 limit_ms=5000 completions=238 sampled_ms=6990 changed=0"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[DELIVERY] occupied=6 peak=7 accepted=7 repeated=49 lost=0 storage_failures=0 attempts=1 tx_failures=1 confirmed=1 unknown=0 evicted=0 recovery_slot=0"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[TTC-HEALTH] state=ok radio=unavailable updating=0 wired_ready=1 age_ms=0 limit_ms=2000 completions=348 rf_seen=0 rf_age_ms=0 wired_seen=1 wired_age_ms=2429 resets=7 changed=0 monotonic_ms=7176"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[I2C-HEALTH] state=inactive service=uninitialized activity=inactive age_ms=0 limit_ms=0 sampled_ms=0 monotonic_ms=7187 changed=0 queued=0 cause=0 failure=0 cycles=0 recovered=0 exhausted=0"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[FLOW-CHECK] Arquivo simulado: boot_000000000000001b_00000006.bin"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[MEMORY-HEALTH] byte_heap=24432 byte_largest=8180 heap_low=0 block_low=0 stack_low_mask=0 allocation_failures=0 allocation_delta=0 changed=0 monotonic_ms=7292"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[MEMORY-HEALTH] task=uart active=1 stack_free=1332 low=0 monotonic_ms=7292"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[MEMORY-HEALTH] task=process active=1 stack_free=3104 low=0 monotonic_ms=7292"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[MEMORY-HEALTH] task=writer active=1 stack_free=5304 low=0 monotonic_ms=7292"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[MEMORY-HEALTH] task=i2c active=0 stack_free=0 low=0 monotonic_ms=7292"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[MEMORY-HEALTH] task=ttc active=1 stack_free=6104 low=0 monotonic_ms=7292"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[MEMORY-HEALTH] task=loop active=1 stack_free=4828 low=0 monotonic_ms=7292"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[PROTECTION] ms=7589 queued=1 active unavailable=00 low=01 high=04"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[MODES-SD] snapshot ms=7231"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[FLOW-CHECK] Arquivo simulado: boot_000000000000001b_00000007.bin"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[TT&C] ERRO: SX1276 sem resposta ou fora de RX, reinicializando."
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[FLOW] received=12 invalid=0 gaps=0 duplicates=1 written=41 failures=0 dropped=5 SD=1 status=0 poll_gap_ms=1 process_gap_ms=22 stack_rx=3104 stack_sd=5304 stack_uart=1332 uart_full=252"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[FLOW-MEMORY] heap=95812 byte_heap=24432 byte_largest=8180 byte_min=14864 parser_peak_bytes=7190 parser_limit_bytes=98304"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[TT&C] ERRO: SX1276 nao responde."
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[STORAGE] state=0 attempt=0 episodes=0 attempts=0 recovered=0 exhausted=0 lifecycle_failures=0 cause=0 end=0 status=0 monotonic_ms=8073"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[HEALTH] task=uart state=ok activity=idle age_ms=1 limit_ms=100 completions=7980 sampled_ms=8074 changed=0"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[HEALTH] task=process state=ok activity=idle age_ms=1 limit_ms=2000 completions=7428 sampled_ms=8074 changed=0"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[HEALTH] task=writer state=ok activity=write age_ms=60 limit_ms=5000 completions=254 sampled_ms=8074 changed=0"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[MODES-SD] snapshot ms=7831"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[DELIVERY] occupied=6 peak=7 accepted=7 repeated=77 lost=0 storage_failures=0 attempts=1 tx_failures=1 confirmed=1 unknown=0 evicted=0 recovery_slot=0"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[TTC-HEALTH] state=ok radio=unavailable updating=0 wired_ready=1 age_ms=1 limit_ms=2000 completions=395 rf_seen=0 rf_age_ms=0 wired_seen=1 wired_age_ms=3444 resets=8 changed=0 monotonic_ms=8190"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[I2C-HEALTH] state=inactive service=uninitialized activity=inactive age_ms=0 limit_ms=0 sampled_ms=0 monotonic_ms=8200 changed=0 queued=0 cause=0 failure=0 cycles=0 recovered=0 exhausted=0"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[FLOW-CHECK] Arquivo simulado: boot_000000000000001b_00000008.bin"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[MEMORY-HEALTH] byte_heap=24432 byte_largest=8180 heap_low=0 block_low=0 stack_low_mask=0 allocation_failures=0 allocation_delta=0 changed=0 monotonic_ms=8302"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[MEMORY-HEALTH] task=uart active=1 stack_free=1332 low=0 monotonic_ms=8302"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[MEMORY-HEALTH] task=process active=1 stack_free=3104 low=0 monotonic_ms=8302"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[MEMORY-HEALTH] task=writer active=1 stack_free=5304 low=0 monotonic_ms=8302"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[MEMORY-HEALTH] task=i2c active=0 stack_free=0 low=0 monotonic_ms=8302"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[MEMORY-HEALTH] task=ttc active=1 stack_free=6104 low=0 monotonic_ms=8302"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[MEMORY-HEALTH] task=loop active=1 stack_free=4828 low=0 monotonic_ms=8302"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[PROTECTION] ms=8592 queued=1 active unavailable=00 low=00 high=04"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[MODES-SD] snapshot ms=8430"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[MODES-SD] snapshot ms=8731"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[PROTECTION-SD] fault ms=7589 active unavailable=00 low=01 high=04"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[FLOW] received=16 invalid=0 gaps=0 duplicates=1 written=54 failures=0 dropped=6 SD=1 status=0 poll_gap_ms=1 process_gap_ms=22 stack_rx=3104 stack_sd=5304 stack_uart=1332 uart_full=337"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[TT&C] ERRO: SX1276 sem resposta ou fora de RX, reinicializando."
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[FLOW-MEMORY] heap=95812 byte_heap=24432 byte_largest=8180 byte_min=14864 parser_peak_bytes=7190 parser_limit_bytes=98304"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[STORAGE] state=0 attempt=0 episodes=0 attempts=0 recovered=0 exhausted=0 lifecycle_failures=0 cause=0 end=0 status=0 monotonic_ms=9073"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[TT&C] ERRO: SX1276 nao responde."
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[HEALTH] task=uart state=ok activity=idle age_ms=0 limit_ms=100 completions=8902 sampled_ms=8995 changed=0"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[HEALTH] task=process state=ok activity=idle age_ms=0 limit_ms=2000 completions=8197 sampled_ms=8995 changed=0"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[HEALTH] task=writer state=ok activity=write age_ms=37 limit_ms=5000 completions=269 sampled_ms=8995 changed=0"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[DELIVERY] occupied=6 peak=7 accepted=7 repeated=98 lost=0 storage_failures=0 attempts=1 tx_failures=1 confirmed=1 unknown=0 evicted=0 recovery_slot=0"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[MODES-SD] snapshot ms=9032"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[TTC-HEALTH] state=ok radio=unavailable updating=0 wired_ready=1 age_ms=1 limit_ms=2000 completions=447 rf_seen=0 rf_age_ms=0 wired_seen=1 wired_age_ms=4532 resets=9 changed=0 monotonic_ms=9279"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[I2C-HEALTH] state=inactive service=uninitialized activity=inactive age_ms=0 limit_ms=0 sampled_ms=0 monotonic_ms=9290 changed=0 queued=0 cause=0 failure=0 cycles=0 recovered=0 exhausted=0"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[PROTECTION-SD] fault ms=8592 active unavailable=00 low=00 high=04"
+    },
+    {
+      "dir": "tx",
+      "kind": "tc",
+      "link": "wired",
+      "attempt": 1,
+      "pkt": {
+        "t": "tc",
+        "seq": 12833,
+        "cmd": "exit_safe"
+      }
+    },
+    {
+      "dir": "rx",
+      "kind": "packet",
+      "link": "wired",
+      "pkt": {
+        "n": 13,
+        "t": "ack",
+        "seq": 12833,
+        "cmd": "exit_safe",
+        "st": "state_rejected",
+        "q": 0
+      }
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[MEMORY-HEALTH] byte_heap=24432 byte_largest=8180 heap_low=0 block_low=0 stack_low_mask=0 allocation_failures=0 allocation_delta=0 changed=0 monotonic_ms=9394"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[MEMORY-HEALTH] task=uart active=1 stack_free=1332 low=0 monotonic_ms=9394"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[MEMORY-HEALTH] task=process active=1 stack_free=3104 low=0 monotonic_ms=9394"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[MEMORY-HEALTH] task=writer active=1 stack_free=5304 low=0 monotonic_ms=9394"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[MEMORY-HEALTH] task=i2c active=0 stack_free=0 low=0 monotonic_ms=9394"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[MEMORY-HEALTH] task=ttc active=1 stack_free=6104 low=0 monotonic_ms=9394"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[MEMORY-HEALTH] task=loop active=1 stack_free=4828 low=0 monotonic_ms=9394"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[MODES-SD] snapshot ms=9332"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[MODES-SD] snapshot ms=9632"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[MODES-SD] snapshot ms=9932"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[FLOW] received=19 invalid=0 gaps=0 duplicates=1 written=63 failures=0 dropped=6 SD=1 status=0 poll_gap_ms=1 process_gap_ms=22 stack_rx=3104 stack_sd=5304 stack_uart=1332 uart_full=400"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[FLOW-MEMORY] heap=95812 byte_heap=24432 byte_largest=8180 byte_min=14864 parser_peak_bytes=7190 parser_limit_bytes=98304"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[TT&C] ERRO: SX1276 sem resposta ou fora de RX, reinicializando."
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[STORAGE] state=0 attempt=0 episodes=0 attempts=0 recovered=0 exhausted=0 lifecycle_failures=0 cause=0 end=0 status=0 monotonic_ms=10076"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[HEALTH] task=uart state=ok activity=idle age_ms=0 limit_ms=100 completions=9963 sampled_ms=10056 changed=0"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[TT&C] ERRO: SX1276 nao responde."
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[HEALTH] task=process state=ok activity=idle age_ms=0 limit_ms=2000 completions=9076 sampled_ms=10056 changed=0"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[HEALTH] task=writer state=ok activity=idle age_ms=0 limit_ms=5000 completions=294 sampled_ms=10056 changed=0"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[DELIVERY] occupied=6 peak=7 accepted=7 repeated=119 lost=0 storage_failures=0 attempts=1 tx_failures=1 confirmed=1 unknown=0 evicted=0 recovery_slot=0"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[TTC-HEALTH] state=ok radio=unavailable updating=0 wired_ready=1 age_ms=4 limit_ms=2000 completions=496 rf_seen=0 rf_age_ms=0 wired_seen=1 wired_age_ms=902 resets=10 changed=0 monotonic_ms=10295"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[I2C-HEALTH] state=inactive service=uninitialized activity=inactive age_ms=0 limit_ms=0 sampled_ms=0 monotonic_ms=10306 changed=0 queued=0 cause=0 failure=0 cycles=0 recovered=0 exhausted=0"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[MODES-SD] snapshot ms=10233"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[MEMORY-HEALTH] byte_heap=24432 byte_largest=8180 heap_low=0 block_low=0 stack_low_mask=0 allocation_failures=0 allocation_delta=0 changed=0 monotonic_ms=10407"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[MEMORY-HEALTH] task=uart active=1 stack_free=1332 low=0 monotonic_ms=10407"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[MEMORY-HEALTH] task=process active=1 stack_free=3104 low=0 monotonic_ms=10407"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[MEMORY-HEALTH] task=writer active=1 stack_free=5304 low=0 monotonic_ms=10407"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[MEMORY-HEALTH] task=i2c active=0 stack_free=0 low=0 monotonic_ms=10407"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[MEMORY-HEALTH] task=ttc active=1 stack_free=6104 low=0 monotonic_ms=10407"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[MEMORY-HEALTH] task=loop active=1 stack_free=4828 low=0 monotonic_ms=10407"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[MODES-SD] snapshot ms=10533"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[MODES-SD] snapshot ms=10834"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[FLOW] received=22 invalid=0 gaps=0 duplicates=1 written=67 failures=0 dropped=6 SD=1 status=0 poll_gap_ms=2 process_gap_ms=22 stack_rx=3104 stack_sd=5304 stack_uart=1332 uart_full=465"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[FLOW-MEMORY] heap=95812 byte_heap=24432 byte_largest=8180 byte_min=14864 parser_peak_bytes=7190 parser_limit_bytes=98304"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[STORAGE] state=0 attempt=0 episodes=0 attempts=0 recovered=0 exhausted=0 lifecycle_failures=0 cause=0 end=0 status=0 monotonic_ms=11080"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[TT&C] ERRO: SX1276 sem resposta ou fora de RX, reinicializando."
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[HEALTH] task=uart state=ok activity=idle age_ms=1 limit_ms=100 completions=10905 sampled_ms=10999 changed=0"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[HEALTH] task=process state=ok activity=idle age_ms=1 limit_ms=2000 completions=9872 sampled_ms=10999 changed=0"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[HEALTH] task=writer state=ok activity=idle age_ms=20 limit_ms=5000 completions=326 sampled_ms=10999 changed=0"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[TT&C] ERRO: SX1276 nao responde."
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[DELIVERY] occupied=6 peak=7 accepted=7 repeated=140 lost=0 storage_failures=0 attempts=1 tx_failures=1 confirmed=1 unknown=0 evicted=0 recovery_slot=0"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[TTC-HEALTH] state=ok radio=unavailable updating=0 wired_ready=1 age_ms=2 limit_ms=2000 completions=548 rf_seen=0 rf_age_ms=0 wired_seen=1 wired_age_ms=2001 resets=11 changed=0 monotonic_ms=11394"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[I2C-HEALTH] state=inactive service=uninitialized activity=inactive age_ms=0 limit_ms=0 sampled_ms=0 monotonic_ms=11405 changed=0 queued=0 cause=0 failure=0 cycles=0 recovered=0 exhausted=0"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[MODES-SD] snapshot ms=11378"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[MEMORY-HEALTH] byte_heap=24432 byte_largest=8180 heap_low=0 block_low=0 stack_low_mask=0 allocation_failures=0 allocation_delta=0 changed=0 monotonic_ms=11506"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[MEMORY-HEALTH] task=uart active=1 stack_free=1332 low=0 monotonic_ms=11506"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[MEMORY-HEALTH] task=process active=1 stack_free=3104 low=0 monotonic_ms=11506"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[MEMORY-HEALTH] task=writer active=1 stack_free=5304 low=0 monotonic_ms=11506"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[MEMORY-HEALTH] task=i2c active=0 stack_free=0 low=0 monotonic_ms=11506"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[MEMORY-HEALTH] task=ttc active=1 stack_free=6104 low=0 monotonic_ms=11506"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[MEMORY-HEALTH] task=loop active=1 stack_free=4828 low=0 monotonic_ms=11506"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[PROTECTION] ms=11599 queued=1 active unavailable=00 low=00 high=00"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[PROTECTION-SD] fault ms=11599 active unavailable=00 low=00 high=00"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[FLOW] received=24 invalid=1 gaps=0 duplicates=1 written=70 failures=0 dropped=6 SD=1 status=0 poll_gap_ms=2 process_gap_ms=22 stack_rx=3104 stack_sd=5304 stack_uart=1332 uart_full=487"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[FLOW-MEMORY] heap=95812 byte_heap=24432 byte_largest=8180 byte_min=14864 parser_peak_bytes=7190 parser_limit_bytes=98304"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[STORAGE] state=0 attempt=0 episodes=0 attempts=0 recovered=0 exhausted=0 lifecycle_failures=0 cause=0 end=0 status=0 monotonic_ms=12085"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[TT&C] ERRO: SX1276 sem resposta ou fora de RX, reinicializando."
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[HEALTH] task=uart state=ok activity=idle age_ms=1 limit_ms=100 completions=11972 sampled_ms=12066 changed=0"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[HEALTH] task=process state=ok activity=idle age_ms=1 limit_ms=2000 completions=10904 sampled_ms=12066 changed=0"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[TT&C] ERRO: SX1276 nao responde."
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[HEALTH] task=writer state=ok activity=idle age_ms=5 limit_ms=5000 completions=372 sampled_ms=12066 changed=0"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[DELIVERY] occupied=6 peak=7 accepted=7 repeated=140 lost=0 storage_failures=0 attempts=1 tx_failures=1 confirmed=1 unknown=0 evicted=0 recovery_slot=0"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[TTC-HEALTH] state=ok radio=unavailable updating=0 wired_ready=1 age_ms=3 limit_ms=2000 completions=600 rf_seen=0 rf_age_ms=0 wired_seen=1 wired_age_ms=3100 resets=12 changed=0 monotonic_ms=12493"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[I2C-HEALTH] state=inactive service=uninitialized activity=inactive age_ms=0 limit_ms=0 sampled_ms=0 monotonic_ms=12503 changed=0 queued=0 cause=0 failure=0 cycles=0 recovered=0 exhausted=0"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[MEMORY-HEALTH] byte_heap=24432 byte_largest=8180 heap_low=0 block_low=0 stack_low_mask=0 allocation_failures=0 allocation_delta=0 changed=0 monotonic_ms=12605"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[MEMORY-HEALTH] task=uart active=1 stack_free=1332 low=0 monotonic_ms=12605"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[MEMORY-HEALTH] task=process active=1 stack_free=3104 low=0 monotonic_ms=12605"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[MEMORY-HEALTH] task=writer active=1 stack_free=5304 low=0 monotonic_ms=12605"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[MEMORY-HEALTH] task=i2c active=0 stack_free=0 low=0 monotonic_ms=12605"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[MEMORY-HEALTH] task=ttc active=1 stack_free=6104 low=0 monotonic_ms=12605"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[MEMORY-HEALTH] task=loop active=1 stack_free=4828 low=0 monotonic_ms=12605"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[FLOW] received=24 invalid=1 gaps=0 duplicates=1 written=72 failures=0 dropped=6 SD=1 status=0 poll_gap_ms=2 process_gap_ms=22 stack_rx=3104 stack_sd=5304 stack_uart=1332 uart_full=487"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[FLOW-MEMORY] heap=95812 byte_heap=24432 byte_largest=8180 byte_min=14864 parser_peak_bytes=7190 parser_limit_bytes=98304"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[STORAGE] state=0 attempt=0 episodes=0 attempts=0 recovered=0 exhausted=0 lifecycle_failures=0 cause=0 end=0 status=0 monotonic_ms=13102"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[TT&C] ERRO: SX1276 sem resposta ou fora de RX, reinicializando."
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[HEALTH] task=uart state=ok activity=idle age_ms=1 limit_ms=100 completions=12969 sampled_ms=13063 changed=0"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[HEALTH] task=process state=ok activity=idle age_ms=1 limit_ms=2000 completions=11901 sampled_ms=13063 changed=0"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[TT&C] ERRO: SX1276 nao responde."
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[HEALTH] task=writer state=ok activity=idle age_ms=17 limit_ms=5000 completions=416 sampled_ms=13063 changed=0"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[DELIVERY] occupied=6 peak=7 accepted=7 repeated=140 lost=0 storage_failures=0 attempts=1 tx_failures=1 confirmed=1 unknown=0 evicted=0 recovery_slot=0"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[TTC-HEALTH] state=ok radio=unavailable updating=0 wired_ready=1 age_ms=3 limit_ms=2000 completions=648 rf_seen=0 rf_age_ms=0 wired_seen=1 wired_age_ms=4117 resets=13 changed=0 monotonic_ms=13510"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[I2C-HEALTH] state=inactive service=uninitialized activity=inactive age_ms=0 limit_ms=0 sampled_ms=0 monotonic_ms=13520 changed=0 queued=0 cause=0 failure=0 cycles=0 recovered=0 exhausted=0"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[MEMORY-HEALTH] byte_heap=24432 byte_largest=8180 heap_low=0 block_low=0 stack_low_mask=0 allocation_failures=0 allocation_delta=0 changed=0 monotonic_ms=13622"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[MEMORY-HEALTH] task=uart active=1 stack_free=1332 low=0 monotonic_ms=13622"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[MEMORY-HEALTH] task=process active=1 stack_free=3104 low=0 monotonic_ms=13622"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[MEMORY-HEALTH] task=writer active=1 stack_free=5304 low=0 monotonic_ms=13622"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[MEMORY-HEALTH] task=i2c active=0 stack_free=0 low=0 monotonic_ms=13622"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[MEMORY-HEALTH] task=ttc active=1 stack_free=6104 low=0 monotonic_ms=13622"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[MEMORY-HEALTH] task=loop active=1 stack_free=4828 low=0 monotonic_ms=13622"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[FLOW] received=24 invalid=1 gaps=0 duplicates=1 written=73 failures=0 dropped=6 SD=1 status=0 poll_gap_ms=2 process_gap_ms=22 stack_rx=3104 stack_sd=5304 stack_uart=1332 uart_full=487"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[FLOW-MEMORY] heap=95812 byte_heap=24432 byte_largest=8180 byte_min=14864 parser_peak_bytes=7190 parser_limit_bytes=98304"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[STORAGE] state=0 attempt=0 episodes=0 attempts=0 recovered=0 exhausted=0 lifecycle_failures=0 cause=0 end=0 status=0 monotonic_ms=14119"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[TT&C] ERRO: SX1276 sem resposta ou fora de RX, reinicializando."
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[HEALTH] task=uart state=ok activity=idle age_ms=1 limit_ms=100 completions=13986 sampled_ms=14080 changed=0"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[HEALTH] task=process state=ok activity=idle age_ms=1 limit_ms=2000 completions=12918 sampled_ms=14080 changed=0"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[TT&C] ERRO: SX1276 nao responde."
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[HEALTH] task=writer state=ok activity=idle age_ms=17 limit_ms=5000 completions=464 sampled_ms=14080 changed=0"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[DELIVERY] occupied=6 peak=7 accepted=7 repeated=140 lost=0 storage_failures=0 attempts=1 tx_failures=1 confirmed=1 unknown=0 evicted=0 recovery_slot=0"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[TTC-HEALTH] state=ok radio=unavailable updating=0 wired_ready=1 age_ms=3 limit_ms=2000 completions=696 rf_seen=0 rf_age_ms=0 wired_seen=1 wired_age_ms=5134 resets=14 changed=0 monotonic_ms=14527"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[I2C-HEALTH] state=inactive service=uninitialized activity=inactive age_ms=0 limit_ms=0 sampled_ms=0 monotonic_ms=14537 changed=0 queued=0 cause=0 failure=0 cycles=0 recovered=0 exhausted=0"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[PROTECTION] ms=14598 queued=1 recovery_allowed unavailable=00 low=00 high=00"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[MEMORY-HEALTH] byte_heap=24432 byte_largest=8180 heap_low=0 block_low=0 stack_low_mask=0 allocation_failures=0 allocation_delta=0 changed=0 monotonic_ms=14640"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[MEMORY-HEALTH] task=uart active=1 stack_free=1332 low=0 monotonic_ms=14640"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[MEMORY-HEALTH] task=process active=1 stack_free=3104 low=0 monotonic_ms=14640"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[MEMORY-HEALTH] task=writer active=1 stack_free=5304 low=0 monotonic_ms=14640"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[MEMORY-HEALTH] task=i2c active=0 stack_free=0 low=0 monotonic_ms=14640"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[MEMORY-HEALTH] task=ttc active=1 stack_free=6104 low=0 monotonic_ms=14640"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[MEMORY-HEALTH] task=loop active=1 stack_free=4828 low=0 monotonic_ms=14640"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[PROTECTION-SD] event ms=14598 recovery_allowed unavailable=00 low=00 high=00"
+    },
+    {
+      "dir": "tx",
+      "kind": "tc",
+      "link": "wired",
+      "attempt": 1,
+      "pkt": {
+        "t": "tc",
+        "seq": 12834,
+        "cmd": "get_status"
+      }
+    },
+    {
+      "dir": "rx",
+      "kind": "packet",
+      "link": "wired",
+      "pkt": {
+        "n": 14,
+        "t": "tm",
+        "ts": 1795109411,
+        "md": "lowpwr",
+        "vb": null,
+        "ib": null,
+        "vs": null,
+        "is": null,
+        "tp": null,
+        "w": null,
+        "az": null,
+        "ac": 0,
+        "msg": null,
+        "rssi": null,
+        "snr": null,
+        "rx": 12,
+        "err": 0,
+        "rst": 14
+      }
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[TT&C] Falha no TX de 181 bytes."
+    },
+    {
+      "dir": "rx",
+      "kind": "packet",
+      "link": "wired",
+      "pkt": {
+        "n": 15,
+        "t": "ack",
+        "seq": 12834,
+        "cmd": "get_status",
+        "st": "ok",
+        "q": 0
+      }
+    },
+    {
+      "dir": "tx",
+      "kind": "tc",
+      "link": "wired",
+      "attempt": 1,
+      "pkt": {
+        "t": "tc",
+        "seq": 12835,
+        "cmd": "exit_safe"
+      }
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[MODES] ms=14766 queued=1 lowpwr>safe recovery"
+    },
+    {
+      "dir": "rx",
+      "kind": "packet",
+      "link": "wired",
+      "pkt": {
+        "n": 16,
+        "t": "ack",
+        "seq": 12835,
+        "cmd": "exit_safe",
+        "st": "ok",
+        "q": 0
+      }
+    },
+    {
+      "dir": "tx",
+      "kind": "tc",
+      "link": "wired",
+      "attempt": 1,
+      "pkt": {
+        "t": "tc",
+        "seq": 12836,
+        "cmd": "get_status"
+      }
+    },
+    {
+      "dir": "rx",
+      "kind": "packet",
+      "link": "wired",
+      "pkt": {
+        "n": 17,
+        "t": "ac",
+        "id": [
+          27,
+          2
+        ],
+        "ts": null,
+        "icao": "e4924a",
+        "lat": -19.80653,
+        "lon": -43.49178,
+        "alt": 33000,
+        "vel": null,
+        "hdg": null,
+        "cnt": null
+      },
+      "delivery": {
+        "id": [
+          27,
+          2
+        ],
+        "repeated": false
+      }
+    },
+    {
+      "dir": "log",
+      "kind": "info",
+      "text": "cf [27, 2] retido pelo roteiro"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[TT&C] Falha no TX de 131 bytes."
+    },
+    {
+      "dir": "rx",
+      "kind": "packet",
+      "link": "wired",
+      "pkt": {
+        "n": 18,
+        "t": "ack",
+        "seq": 12836,
+        "cmd": "get_status",
+        "st": "ok",
+        "q": 1
+      }
+    },
+    {
+      "dir": "rx",
+      "kind": "packet",
+      "link": "wired",
+      "pkt": {
+        "n": 19,
+        "t": "tm",
+        "ts": 1795109411,
+        "md": "safe",
+        "vb": null,
+        "ib": null,
+        "vs": null,
+        "is": null,
+        "tp": null,
+        "w": null,
+        "az": null,
+        "ac": 0,
+        "msg": null,
+        "rssi": null,
+        "snr": null,
+        "rx": 14,
+        "err": 0,
+        "rst": 14
+      }
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[TT&C] Falha no TX de 179 bytes."
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[MODES-SD] tm md=lowpwr"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[FLOW-CHECK] v3 ts_available=1 ts=1795109411 ac_available=1 ac=0 msg_available=0 stable=1"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[MODES-SD] event ms=14766 lowpwr>safe recovery"
+    },
+    {
+      "dir": "tx",
+      "kind": "tc",
+      "link": "wired",
+      "attempt": 1,
+      "pkt": {
+        "t": "tc",
+        "seq": 12837,
+        "cmd": "request_log",
+        "args": {
+          "op": "list"
+        }
+      }
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[MODES-SD] tm md=safe"
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[FLOW-CHECK] v3 ts_available=1 ts=1795109411 ac_available=1 ac=0 msg_available=0 stable=1"
+    },
+    {
+      "dir": "rx",
+      "kind": "packet",
+      "link": "wired",
+      "pkt": {
+        "n": 20,
+        "t": "lg",
+        "rq": 12837,
+        "op": "list",
+        "ls": [
+          [
+            "boot_000000000000001b_00000000.bin",
+            68,
+            0
+          ],
+          [
+            "boot_000000000000001b_00000001.bin",
+            36,
+            0
+          ],
+          [
+            "boot_000000000000001b_00000002.bin",
+            68,
+            0
+          ],
+          [
+            "boot_000000000000001b_00000003.bin",
+            68,
+            0
+          ]
+        ],
+        "end": false
+      }
+    },
+    {
+      "dir": "rx",
+      "kind": "packet",
+      "link": "wired",
+      "pkt": {
+        "n": 21,
+        "t": "ack",
+        "seq": 12837,
+        "cmd": "request_log",
+        "st": "ok",
+        "q": 0
+      }
+    },
+    {
+      "dir": "log",
+      "kind": "log",
+      "link": "wired",
+      "text": "[FLOW] received=24 invalid=1 gaps=0 duplicates=1 written=78 failures=0 dropped=6 SD=1 status=0 poll_gap_ms=2 process_gap_ms=22 stack_rx=3104 stack_sd=5304 stack_uart=1332 uart_full=487"
+    }
+  ],
+  "confirmed_during_protection": [
+    27,
+    1
+  ],
+  "first_after_recovery": [
+    27,
+    2
+  ]
+}

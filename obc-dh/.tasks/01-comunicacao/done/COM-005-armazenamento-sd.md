@@ -27,7 +27,7 @@ A tabela conserva as obrigações e a situação registradas no encerramento. O 
 | [INT-003](../../03-integracao/INT-003-inicializacao-central.md) | Confirmar módulo/cartão, alimentação e condições de boot do SD com EPS antes do uso integrado; preservar indisponibilidade sem formatação/reparo automático. | Pendente na destinatária |
 | [INT-006](../../03-integracao/INT-006-fluxo-de-dados.md) | Ligar registros ao SD, nomes/rotação por boot e limite de arquivo, contabilização de perdas, encaminhamento de erros e extração pelo umbilical. | Pendente na destinatária |
 | [INT-008](../../03-integracao/done/INT-008-supervisao-e-retomada.md) | Integrar a política de retomada do escritor após falha/reset: preservar arquivos, End/Init e nome novo, sem apagar ou reutilizar conteúdo anterior. | Pendente na destinatária |
-| [TES-006](../../04-testes/TES-006-sd-hardware.md) | Conferir módulo, montagem e alimentação com EPS, frequência/latência e operações do SD na montagem real, incluindo cheio/indisponível e extração. | Pendente na destinatária |
+| [TES-006](../../04-testes/done/TES-006-sd-hardware.md) | Conferir módulo, montagem e alimentação com EPS, frequência/latência e operações do SD na montagem real, incluindo cheio/indisponível e extração. | Operações e latências verificadas em bancada USB. Integração com EPS pendente. |
 | [TES-009](../../04-testes/TES-009-falhas-e-recuperacao.md) | Exercitar interrupção durante escrita e avaliar arquivos incompletos e FAT32; fsync lógico não comprova integridade física. | Pendente na destinatária |
 
 ## Situação atual da integração — 10/11/2026
@@ -67,7 +67,7 @@ Reutilizar SD e uma instância HSPI própria. Implementar abertura, escrita, lei
 
 ## Critérios de conclusão
 
-Operações e limites documentados e implementados, incluindo sinalização de perdas e recuperação. Compilar e conferir os caminhos de erro disponíveis. Integridade após interrupção de alimentação depende de [TES-006](../../04-testes/TES-006-sd-hardware.md)/[TES-009](../../04-testes/TES-009-falhas-e-recuperacao.md).
+Operações e limites documentados e implementados, incluindo sinalização de perdas e recuperação. Compilar e conferir os caminhos de erro disponíveis. Integridade após interrupção de alimentação depende de [TES-006](../../04-testes/done/TES-006-sd-hardware.md)/[TES-009](../../04-testes/TES-009-falhas-e-recuperacao.md).
 
 ## Evidências
 

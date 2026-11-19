@@ -294,7 +294,7 @@ namespace {
 #endif
 
     // Cópia limitada sob proteção; codificação e notificações ficam fora dela.
-    void Submit(
+    bool Submit(
         const uint8_t* bytes,
         size_t size
     ) {
@@ -309,22 +309,23 @@ namespace {
         }
         portEXIT_CRITICAL(&state_lock);
         if (queued) xTaskNotifyGive(writer_task);
+        return queued;
     }
 
     // Falha de geração também é perda explícita, sem tentar registrar a si mesma.
-    void SubmitRecord(
+    bool SubmitRecord(
         const obc_record::RECORD& record
     ) {
         uint8_t bytes[small_record_bytes];
         size_t size = 0;
         if (obc_record::Encode(record, bytes, sizeof(bytes), size) == obc_record::STATUS::OK) {
-            Submit(bytes, size);
-        } else {
-            portENTER_CRITICAL(&state_lock);
-            DropRecord(record.header.type == obc_data::RECORD_TYPE::TELEMETRY
-                ? RECORD_DROP_KIND::TELEMETRY : RECORD_DROP_KIND::OTHER, RECORD_DROP_CAUSE::ENCODE_FAILED);
-            portEXIT_CRITICAL(&state_lock);
+            return Submit(bytes, size);
         }
+        portENTER_CRITICAL(&state_lock);
+        DropRecord(record.header.type == obc_data::RECORD_TYPE::TELEMETRY
+            ? RECORD_DROP_KIND::TELEMETRY : RECORD_DROP_KIND::OTHER, RECORD_DROP_CAUSE::ENCODE_FAILED);
+        portEXIT_CRITICAL(&state_lock);
+        return false;
     }
 
     // Eventos reutilizam o diário e suas perdas; sem boot não há registro fabricado.
@@ -938,6 +939,40 @@ bool SetTime(
     return true;
 }
 
+obc_modes::MISSION_STATUS GetMissionStatus(
+    uint64_t max_snapshot_age_ms,
+    uint64_t& sampled_ms
+) {
+    uint64_t snapshot_ms = 0;
+    obc_time::TIME_REFERENCE reference = {};
+    portENTER_CRITICAL(&state_lock);
+    const bool has_snapshot = state.GetLastSnapshotTime(snapshot_ms);
+    const bool utc_valid = state.GetTimeReference(reference);
+    const bool journal_ready = writer_ready;
+    portEXIT_CRITICAL(&state_lock);
+    sampled_ms = obc_time::esp32::GetMonotonicMs();
+    const bool payload_recent = has_snapshot && max_snapshot_age_ms != 0
+        && sampled_ms >= snapshot_ms && sampled_ms - snapshot_ms <= max_snapshot_age_ms;
+    return {active, payload_recent, journal_ready, utc_valid};
+}
+
+bool RecordObcEvent(
+    uint16_t code,
+    bool fault,
+    uint64_t at_ms,
+    const char* description
+) {
+    if (!boot_id) return false;
+    obc_record::RECORD record = {};
+    record.header = {1, fault ? obc_data::RECORD_TYPE::FAULT : obc_data::RECORD_TYPE::EVENT,
+        96, {boot_id, at_ms}};
+    record.body.event.source = obc_data::SOURCE::OBC;
+    record.body.event.code = code;
+    record.body.event.severity = fault ? obc_data::SEVERITY::ERROR : obc_data::SEVERITY::INFO;
+    std::snprintf(record.body.event.description, sizeof(record.body.event.description), "%s", description);
+    return SubmitRecord(record);
+}
+
 void GetTaskProgress(
     obc_health::PROGRESS (&out)[obc_health::task_count]
 ) {
@@ -954,14 +989,7 @@ void RecordWatchdogEvent(
     const char* description
 ) {
     if (!boot_id) return;
-    obc_record::RECORD record = {};
-    record.header = {1, fault ? obc_data::RECORD_TYPE::FAULT : obc_data::RECORD_TYPE::EVENT,
-        96, {boot_id, obc_time::esp32::GetMonotonicMs()}};
-    record.body.event.source = obc_data::SOURCE::OBC;
-    record.body.event.code = static_cast<uint16_t>(code);
-    record.body.event.severity = fault ? obc_data::SEVERITY::ERROR : obc_data::SEVERITY::INFO;
-    std::snprintf(record.body.event.description, sizeof(record.body.event.description), "%s", description);
-    SubmitRecord(record);
+    RecordObcEvent(static_cast<uint16_t>(code), fault, obc_time::esp32::GetMonotonicMs(), description);
 }
 
 obc_data::TELEMETRY_DATA ComposeTelemetry(

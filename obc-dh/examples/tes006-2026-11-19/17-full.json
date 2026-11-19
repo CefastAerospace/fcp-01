@@ -1,0 +1,18 @@
+{
+  "port": "/dev/ttyUSB0",
+  "scenario": "full",
+  "run_id": "b6a6",
+  "started": 1795118515.9603057,
+  "passed": false,
+  "lines": [
+    "E (172) esp_core_dump_flash: Core dum\ufffd\u0006D\ufffd\u0445\ufffdcheck failed:",
+    "Calculated checksum='1b646d2e'",
+    "Image checksum='ffffffff'",
+    "[TES006] ready sck=15 miso=35 mosi=32 cs=13 hz=4000000",
+    "[TES006] start case=F id=b6a6",
+    "[  2358][E][sd_diskio.cpp:805] sdcard_mount(): f_mount failed: (3) The physical drive cannot work",
+    "[TES006] op=init round=0 status=11 bytes=0 errno=0 attempts=0 us=1004076 pass=0",
+    "[TES006] op=end round=0 status=0 bytes=0 errno=0 attempts=0 us=47 pass=1",
+    "[TES006] done case=F id=b6a6 passed=0"
+  ]
+}

@@ -1,0 +1,50 @@
+{
+  "volume_uuid": "AC31-7988",
+  "expected_hex": "414243444546",
+  "files": [
+    {
+      "file": "obc/t6b6a3n.bin",
+      "bytes": 6,
+      "reader_hex": "414243444546",
+      "usb_chunks": [
+        "4142",
+        "4344",
+        "4546"
+      ],
+      "passed": true
+    },
+    {
+      "file": "obc/t6b6a4n.bin",
+      "bytes": 6,
+      "reader_hex": "414243444546",
+      "usb_chunks": [
+        "4142",
+        "4344",
+        "4546"
+      ],
+      "passed": true
+    }
+  ],
+  "existing_obc_files": {
+    "t6b6a3c.bin": {
+      "bytes": 81920,
+      "sha256": "cd62497b23d70cd34f3fdb02da3c97f25fa911837b33f2e227377510c9258605"
+    },
+    "t6b6a3n.bin": {
+      "bytes": 6,
+      "sha256": "e9c0f8b575cbfcb42ab3b78ecc87efa3b011d9a5d10b09fa4e96f240bf6a82f5"
+    },
+    "t6b6a4c.bin": {
+      "bytes": 40960,
+      "sha256": "852c57ef6974d8ac91350e7c7c7fb1d2a4ce83df45c786ef8854698876404819"
+    },
+    "t6b6a4n.bin": {
+      "bytes": 6,
+      "sha256": "e9c0f8b575cbfcb42ab3b78ecc87efa3b011d9a5d10b09fa4e96f240bf6a82f5"
+    }
+  },
+  "allocation_unit": 4096,
+  "free_allocation_units": 1956827,
+  "obc_directory_size": 4096,
+  "passed": true
+}

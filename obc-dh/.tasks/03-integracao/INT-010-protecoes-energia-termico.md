@@ -1,6 +1,6 @@
 # INT-010 — Proteções energéticas e térmicas
 
-**Estado:** Pendente
+**Estado:** Em andamento
 **Responsável pela implementação:** OBC-DH
 **Responsáveis pelos contratos:** EPS, Térmico e coordenação
 
@@ -39,4 +39,54 @@ Proteções implementadas segundo contratos, falhas/eventos encaminhados, build 
 
 ## Evidências
 
-Nenhuma implementação ou aprovação registrada por esta revisão.
+### Recorte de desenvolvimento
+
+O avaliador portátil consome tensão da bateria e cinco temperaturas com
+disponibilidade e instante monotônico. Bloqueia novos inícios durante a
+carência. Dispara ao atingir um limite, ao perder a validade de uma leitura
+obrigatória após a primeira rodada válida ou ao vencer a carência sem essa
+rodada. O retorno exige todos os canais na faixa e amostras que confirmem
+o fim do período de estabilização. A autorização habilita `exit_safe`.
+
+O TT&C pausa novas tentativas ADS-B e novos pedidos de arquivo durante a
+proteção, a parada ADCS pendente por proteção e o modo `LOW-POWER`. Eventos
+TX, `cf`, respostas de arquivo já admitidas, ACK, status e TM continuam
+em serviço. O código OBC 268 registra causas e elegibilidade no diário.
+Rejeições do escritor aparecem no diagnóstico serial e nos contadores.
+
+A política de bancada usa carência e idade máxima de 3 s, amostragem
+simulada de 1 s e estabilização de 2 s. A bateria dispara em até 6 V e
+retorna a partir de 7 V. T0–T4 disparam até 10 °C ou a partir de 40 °C e
+retornam entre 15 e 35 °C, inclusive. O cenário injeta bateria baixa e
+depois sobretemperatura em T1, com sobreposição.
+[Procedimento](../../tools/README.md#proteções-epstérmico-da-int-010).
+
+Para ativação em voo, EPS/Térmico e coordenação precisam aprovar o ponto
+de medição da bateria, cota e critério de potência, mapa dos canais,
+limites e tempos, tratamento de invalidade e prioridades. A configuração
+operacional usa os produtores da INT-009, a parada ADCS da INT-005 e as
+interfaces de corte acordadas com os setores.
+
+### Verificações de 19/11/2026
+
+Base `9731b65` com as alterações locais das INT-007 e INT-010. Builds de
+`int010-protection-check`, `int007-modes-check` e `obc` aprovados.
+`ObcProtectionCheck` e `ObcModesCheck` passaram com UBSan.
+
+A [execução USB](../../examples/int010-2026-11-19/01-protection-usb.json)
+aprovou o disparo, a parada ADCS simulada, o registro das duas causas e a
+recuperação por `exit_safe`. Em `LOW-POWER`, o OBC confirmou a entrega
+`[27,1]` e recusou `request_log`. A entrega `[27,2]` e a listagem de
+arquivos foram atendidas após `exit_safe`. Foram 15 ACKs e 4 TMs, com
+`q` máximo de 1 ms e RTT máximo de 132,4 ms.
+
+A [regressão USB da INT-007](../../examples/int010-2026-11-19/02-int007-regression-usb.json)
+passou com o roteiro original, 28 ACKs e `q` máximo de 85 ms. O ESP32 voltou
+a `obc`. `ObcStationCheck.py` passou com 64 ACKs, 37 TMs, `q` máximo de
+105 ms e RTT máximo de 156,6 ms.
+
+| Perfil | SHA-256 do binário |
+|---|---|
+| `int010-protection-check` | `65d9a47f0ae2bf02e9478171dc8f468f2b6dc2e2563be4a1459aa6e7b3c483f3` |
+| `int007-modes-check` | `3495a073270341538eaa2e52c50e9b942b9909243c830e06e1887e129ce4ef92` |
+| `obc` restaurado | `97fa43670f81e03081cf5237497d084c05f2b3c17864296c1047d84677427f37` |

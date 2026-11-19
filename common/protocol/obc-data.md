@@ -302,6 +302,20 @@ confirma persistência. O reset não espera SD, drenagem ou recepção do ACK.
 Os limites de ação do watchdog são separados dos limites diagnósticos
 256–264; condições de memória/rádio indisponível não acionam reset sozinhas.
 
+O código OBC 267 identifica transição de modo ou falha de ação da INT-007.
+A descrição segue `modo_anterior>modo_destino causa`. `start_mission` marca
+o início da janela ADS-B. Toda transição a partir de `mission` marca seu fim.
+Perda de Payload/diário ou falha de início/parada do ADCS gera FAULT/error.
+As demais transições geram EVENT/info. O layout v1 registra o boot e o
+instante monotônico. A admissão do início na fila antecede o ACK e a escrita
+segue assíncrona.
+
+O código OBC 268 identifica a proteção EPS/Térmico da INT-010. Disparo e
+mudança de causa durante a proteção usam FAULT/error. Mudança na permissão
+de recuperação usa EVENT/info. A descrição traz `unavailable`, `low` e
+`high` como máscaras hexadecimais. O bit 0 indica bateria e os bits 1 a 5
+indicam T0 a T4. Os instantes são monotônicos por boot.
+
 Progresso TT&C é publicado pelo proprietário antes/depois de `Update`,
 independentemente de TC recebido. Silêncio do solo, rádio indisponível e
 tarefa sem progresso são estados distintos. Contato RF/cabo tem indicador

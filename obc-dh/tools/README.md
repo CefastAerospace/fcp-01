@@ -1,5 +1,79 @@
 # Codec e leitura de registros OBC v1/v2/v3/v4
 
+## Bancada SD física da TES-006
+
+`tes006-sd-check` usa o serviço `ObcStorageEsp32` e o cartão real. Cada
+cenário publica os resultados e os tempos na UART a 115200 baud e chama
+`End` antes de concluir. Usar um identificador hexadecimal novo para cada
+rodada nominal. Os arquivos ficam em `obc/` no cartão.
+
+```bash
+pio run -e tes006-sd-check -t upload --upload-port PORTA
+python3 tests/ObcStorageHardwareCheck.py PORTA nominal ID --report NOMINAL.json
+python3 tests/ObcStorageHardwareCheck.py PORTA absent ID --report AUSENTE.json
+python3 tests/ObcStorageHardwareCheck.py PORTA full ID --report CHEIO.json
+python3 tests/ObcStorageHardwareCheck.py PORTA recovered ID --report RETORNO.json
+pio run -e obc -t upload --upload-port PORTA
+```
+
+Desligar o ESP32 antes de retirar ou inserir o cartão. Para a comparação
+pelo leitor, conferir `t6<ID>n.bin` contra os seis bytes `ABCDEF` e o
+`extracted_hex` do relatório. Para `full`, preparar no leitor arquivos de
+preenchimento fora de `obc/`, deixando uma unidade de alocação livre e
+espaço para duas entradas curtas de diretório sob `obc/`. O relatório
+identifica `full_terminal` com o índice do primeiro bloco que falhou.
+O prefixo confirmado de `t6<ID>f.bin` consiste em `ABC` e os blocos
+`full_append` com sucesso, de 4 KiB cada, preenchidos com `0x30 + índice`.
+Comparar esse prefixo e medir a cauda pelo leitor. Remover o preenchimento
+antes de `recovered` e ao concluir preservar os relatórios da rodada.
+
+## Proteções EPS/Térmico da INT-010
+
+`int010-protection-check` usa a bancada da INT-007 com leituras simuladas.
+A segunda partida ADCS injeta bateria baixa e depois sobretemperatura em
+T1. O roteiro confirma uma entrega por `cf` em `LOW-POWER` e verifica que
+a próxima entrega aguarda `exit_safe`. Registra TCs, TM e eventos do diário.
+
+Executar em `obc-dh/`, com Python contendo pyserial para a etapa USB.
+
+```bash
+g++ -std=c++11 -Wall -Wextra -Werror -fsanitize=undefined \
+    -fno-sanitize-recover=undefined -Iheaders src/ObcProtection.cpp \
+    src/ObcModes.cpp tests/ObcProtectionCheck.cpp -o /tmp/fcp01-int010-protection-check
+/tmp/fcp01-int010-protection-check
+pio run -e obc -e int007-modes-check -e int010-protection-check
+pio run -e int010-protection-check -t upload --upload-port PORTA
+python3 tests/ObcProtectionBenchCheck.py PORTA --report NOVO-RELATORIO.json
+pio run -e obc -t upload --upload-port PORTA
+```
+
+## Modos e janela ADS-B da INT-007
+
+`int007-modes-check` usa um ESP32 e USB. Reutiliza o umbilical real e
+simula Payload, SD, ADCS e proteção. A bancada inicia em `safe`. O
+`set_time` libera os snapshots simulados e o limite de frescor de 4 s
+vale somente para esse perfil. O segundo início ADCS injeta proteção por
+5 s. O roteiro aguarda a gravação da primeira parada ADCS antes de
+disparar essa etapa. O teste nativo cobre o prazo nominal de 600 s por
+relógio simulado.
+
+Executar em `obc-dh/`, com Python contendo pyserial para a etapa USB.
+
+```bash
+g++ -std=c++11 -Wall -Wextra -Werror -fsanitize=address,undefined \
+    -fno-sanitize-recover=undefined -fno-omit-frame-pointer -Iheaders \
+    src/ObcModes.cpp tests/ObcModesCheck.cpp -o /tmp/fcp01-int007-modes-check
+/tmp/fcp01-int007-modes-check
+pio run -e obc -e int006-ttc-check -e int007-modes-check
+pio run -e int007-modes-check -t upload --upload-port PORTA
+python3 tests/ObcModesBenchCheck.py PORTA --report NOVO-RELATORIO.json
+pio run -e obc -t upload --upload-port PORTA
+```
+
+O relatório reúne ACKs, TM, marcadores e os instantes dos snapshots aceitos
+pelo escritor simulado. O perfil `obc` usa `bench`. A INT-007 registra as
+condições de ativação em voo.
+
 ## Diário de aquisição FCP4
 
 `int009-acquisition-records-check` liga os dois produtores ao diário simulado.

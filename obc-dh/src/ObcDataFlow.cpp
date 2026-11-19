@@ -33,6 +33,7 @@ void State::Init(
     boot_id_ = boot_id;
     has_reference_ = false;
     has_snapshot_ = false;
+    last_snapshot_ms_ = 0;
     aircraft_count_ = 0;
     reference_ = {};
     statistics_ = {};
@@ -45,7 +46,17 @@ bool State::ObserveSnapshot(
     if (boot_id_ == 0 || snapshot.stamp.boot_id != boot_id_
             || snapshot.aircraft_count > obc_data::max_snapshot_aircraft) return false;
     has_snapshot_ = true;
+    last_snapshot_ms_ = snapshot.stamp.monotonic_ms;
     aircraft_count_ = snapshot.aircraft_count;
+    return true;
+}
+
+// Público:
+bool State::GetLastSnapshotTime(
+    uint64_t& sampled_ms
+) const {
+    if (!has_snapshot_) return false;
+    sampled_ms = last_snapshot_ms_;
     return true;
 }
 

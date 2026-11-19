@@ -119,6 +119,10 @@ namespace obc_flow {
         bool ObserveSnapshot(
             const obc_data::PAYLOAD_SNAPSHOT& snapshot
         );
+        /** @brief Copia o instante do último snapshot publicado no boot atual. */
+        bool GetLastSnapshotTime(
+            uint64_t& sampled_ms
+        ) const;
         /** @brief Expande recepção u32 no boot atual, rejeitando idade ambígua >=2^31 ms. */
         bool SetTime(
             uint32_t unix_s,
@@ -159,6 +163,7 @@ namespace obc_flow {
         uint64_t boot_id_ = 0;
         bool has_reference_ = false;
         bool has_snapshot_ = false;
+        uint64_t last_snapshot_ms_ = 0;
         uint16_t aircraft_count_ = 0;
         obc_time::TIME_REFERENCE reference_ = {};
         obc_data::STATISTICS_DATA statistics_ = {};

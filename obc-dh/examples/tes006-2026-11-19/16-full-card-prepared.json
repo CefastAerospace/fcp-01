@@ -1,0 +1,22 @@
+{
+  "volume_uuid": "AC31-7988",
+  "device": "/dev/sdb",
+  "size": 8032092160,
+  "filesystem": "FAT32",
+  "filler_directory": "T6B6A6",
+  "filler_files": {
+    "FILL0000.BIN": 1073741824,
+    "FILL0001.BIN": 1073741824,
+    "FILL0002.BIN": 1073741824,
+    "FILL0003.BIN": 1073741824,
+    "FILL0004.BIN": 1073741824,
+    "FILL0005.BIN": 1073741824,
+    "FILL0006.BIN": 1073741824,
+    "FILL0007.BIN": 498962432
+  },
+  "allocation_unit": 4096,
+  "free_allocation_units": 1,
+  "free_obc_entries_at_least": 2,
+  "elapsed_s": 1174.742,
+  "unmounted": true
+}

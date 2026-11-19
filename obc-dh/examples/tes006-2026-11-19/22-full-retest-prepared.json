@@ -1,0 +1,45 @@
+{
+  "volume_uuid": "AC31-7988",
+  "device": "/dev/sdb",
+  "size": 8032092160,
+  "filesystem": "FAT32",
+  "filler_directory": "T6B6A9",
+  "filler_files": {
+    "FILL0000.BIN": 1073741824,
+    "FILL0001.BIN": 1073741824,
+    "FILL0002.BIN": 1073741824,
+    "FILL0003.BIN": 1073741824,
+    "FILL0004.BIN": 1073741824,
+    "FILL0005.BIN": 1073741824,
+    "FILL0006.BIN": 1073741824,
+    "FILL0007.BIN": 498958336
+  },
+  "allocation_unit": 4096,
+  "free_obc_entries_at_least": 2,
+  "free_allocation_units_before": 1956826,
+  "free_allocation_units": 1,
+  "existing_obc_files": {
+    "t6b6a3c.bin": {
+      "bytes": 81920,
+      "sha256": "cd62497b23d70cd34f3fdb02da3c97f25fa911837b33f2e227377510c9258605"
+    },
+    "t6b6a3n.bin": {
+      "bytes": 6,
+      "sha256": "e9c0f8b575cbfcb42ab3b78ecc87efa3b011d9a5d10b09fa4e96f240bf6a82f5"
+    },
+    "t6b6a4c.bin": {
+      "bytes": 40960,
+      "sha256": "852c57ef6974d8ac91350e7c7c7fb1d2a4ce83df45c786ef8854698876404819"
+    },
+    "t6b6a4n.bin": {
+      "bytes": 6,
+      "sha256": "e9c0f8b575cbfcb42ab3b78ecc87efa3b011d9a5d10b09fa4e96f240bf6a82f5"
+    },
+    "t6b6a8p.bin": {
+      "bytes": 6,
+      "sha256": "e9c0f8b575cbfcb42ab3b78ecc87efa3b011d9a5d10b09fa4e96f240bf6a82f5"
+    }
+  },
+  "elapsed_s": 1187.227,
+  "unmounted": true
+}

@@ -1,6 +1,6 @@
 # INT-007 — Comandos, modos e coordenação da missão
 
-**Estado:** Pendente
+**Estado:** Em andamento
 **Responsável pela implementação:** OBC-DH
 **Responsáveis pelos contratos:** coordenação, ADCS, EPS, Térmico e TT&C
 
@@ -54,7 +54,66 @@ A obrigação de estados duráveis de atuações/Burn Wire, autorização, confi
 
 ## Evidências
 
-Nenhuma evidência de conclusão registrada. Ao executar, registrar versão, procedimento, entradas, resultados observados e limitações; não marcar esta tarefa por decisão documental.
+### Recorte de desenvolvimento
+
+O coordenador portátil é atendido pelo loop OBC. O consumidor TT&C valida
+`args`, aplica as transições e publica o mesmo modo na TM JSON e no diário
+TM v3. `set_mode safe`, `detumb` e `mission` seguem as mesmas condições dos
+comandos diretos. `exit_safe` recupera `LOW-POWER` para `SAFE/INIT` mediante
+autorização. `sun`, `bench` e `lowpwr` são destinos recusados por TC.
+
+A janela ADS-B abre após os checks de boot, fluxo ativo, snapshot recente,
+UTC no boot atual e admissão do evento de início. Encerra por parada, prazo
+monotônico de 600 s, perda de Payload/diário ou proteção. O código OBC 267
+registra modo e causa no diário v1. O fluxo de snapshots continua fora da
+janela. A falha de parada ADCS bloqueia novos inícios até a confirmação do
+motor desabilitado.
+
+O [procedimento](../../tools/README.md#modos-e-janela-ads-b-da-int-007) usa
+`int007-modes-check`, com ADCS/proteção simulados e entrada/SD da INT-006.
+Frescor de 4 s é provisório e exclusivo da bancada. Em voo, falta a seleção
+de perfil da INT-003, a confirmação do Payload contínuo e de sua cadência,
+o aceite da matriz pela coordenação e a interface real da INT-005. O ADCS
+deve definir eixo, validade, duração da condição de término, alinhamento e
+prazo de confirmação de parada. SUN-POINTING aguarda acordo de ADCS, EPS e
+coordenação sobre a atuação da roda. A INT-010 fornece proteção e recuperação.
+
+### Verificações de 19/11/2026
+
+Base `9731b65` com as alterações locais da INT-007. Builds `obc`,
+`int006-ttc-check` e `int007-modes-check` concluídos. `ObcModesCheck` e
+`ObcDataFlowCheck` passaram com ASan/UBSan. A regressão da TM v3 passou
+com os vetores originais e o leitor C++.
+
+A [execução USB 01](../../examples/int007-2026-11-19/01-modes-usb.json)
+parou após 26 ACKs, com `q` máximo de 54 ms e RTT máximo de 116,64 ms.
+Confirmou abertura/parada da janela, duplicata de início sem reexecução,
+snapshots escritos antes e depois da janela, e `mission` na TM JSON e no
+diário. Confirmou o início e a parada ADCS simulados, a transição para
+`lowpwr` e a recusa de `exit_safe` durante a proteção.
+
+O marcador `detumb>lowpwr protection` recebeu `queued=0` a 7.068 ms. O
+escritor simulado continuou disponível e sem falhas de escrita. A fila
+compartilhada de oito registros curtos recebia TM, eventos e metadados com
+o escritor atrasado em 100 ms por chamada. A saturação é a causa provável.
+O roteiro esperava o marcador no diário e expirou. O caso de recuperação
+por `exit_safe` ficou pendente na placa. A execução preserva `passed: false`.
+
+O ESP32 voltou ao perfil `obc`. O roteiro original `ObcStationCheck.py`
+passou com 64 ACKs, 37 TMs, `q` máximo de 116 ms e RTT máximo de 156,4 ms.
+
+A [execução USB 02](../../examples/int007-2026-11-19/02-modes-usb.json)
+passou com o mesmo binário. O roteiro aguardou a gravação da parada ADCS
+antes de enviar o comando que dispara a proteção. O diário registrou a
+entrada em `lowpwr` e o retorno a `safe` por `exit_safe`. Foram 28 ACKs e
+7 TMs, com `q` máximo de 54 ms e RTT máximo de 137,58 ms. Os telecomandos
+e suas respostas esperadas foram os mesmos da execução 01.
+
+Após a execução 02, `obc` foi restaurado novamente. `ObcStationCheck.py`
+passou com 64 ACKs, 37 TMs, `q` máximo de 116 ms e RTT máximo de 156,9 ms.
+
+- SHA-256 `int007-modes-check` `8b58622e784a9b65fb06546fc732538f81b75ee929e551ac92563a5ee8ed1e84`
+- SHA-256 `obc` restaurado `e8dbf12d1d7f7bc362c884bcdda8c45d9994b30b7660c96fd6198afe5c0f3e51`
 
 ## Referências
 

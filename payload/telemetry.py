@@ -1,122 +1,116 @@
-import socket
-import time
-import os
 import json
+import sys
+import time
+import threading
 from datetime import datetime, timezone
-from dataclasses import dataclass, asdict
 
-LOG_FILE = '/mnt/data/mission_log.json'
-os.makedirs(os.path.dirname(LOG_FILE), exist_ok=True)
+import serial
 
-@dataclass
-class AircraftTelemetry:
-    icao: str
-    timestamp: str = None
-    lat: float = None
-    lon: float = None
-    alt: float = 0.0
-    vel: float = 0.0
-    heading: float = 0.0
-    msg_type: str = ""
-    val_flags: bool = False
-    seq_id: int = 0
+# O payload encaminhado é no mesmo "formato" que o `dump1090 --interactive`
+# envia, a diferença é que agora existe tanto um id no envio atual, com um
+# pequeno cache, e também mensagens da mesma aeronave são mescladas em um
+# mesmo objeto.
+#
+# o payload envia a mensagem com um id monotônico, e espera que obc
+# retorne o id seguinte, que a partir desse momento, removerá do cache
+# o valor antigo e seguirá a partir dele
 
-aircraft_cache = {}
-global_sequence = 0
+messages = {}
+last_updated = {}
+block_lines = []
 
-MISSION_DURATION_SECONDS = 600
-mission_start_time = time.time()
-reported_10min = False
+payload_cache = {}
+next_id = 1
 
-HOST = '127.0.0.1'
-PORT = 30003
+ser = serial.Serial("/dev/serial0", baudrate=115200, timeout=1)
+state_lock = threading.Lock()
+serial_write_lock = threading.Lock()
 
-print("Iniciando missão ADS-B (10 minutos)...")
+def remove_expired():
+    now = time.monotonic()
+    for message_id in list(messages):
+        if message_id in last_updated and now - last_updated[message_id] >= 60:
+            del messages[message_id]
+            del last_updated[message_id]
 
-while True:
-    s = None
-    stream = None
+def send_payload(payload):
+    with serial_write_lock:
+        ser.write(payload)
 
-    try:
-        print(f"Conectando ao dump1090 em {HOST}:{PORT}...")
-        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        s.connect((HOST, PORT))
+def read_serial():
+    while True:
+        line = ser.readline()
+        if not line:
+            continue
 
-        stream = s.makefile('r', encoding='utf-8', errors='ignore')
-        print("Conectado com sucesso. Adquirindo telemetria...")
+        try:
+            received = json.loads(line.decode("utf-8"))
+            requested_id = int(received["id"])
+        except (UnicodeDecodeError, json.JSONDecodeError, KeyError, TypeError, ValueError):
+            continue
 
-        while True:
-            elapsed_time = time.time() - mission_start_time
-            if elapsed_time >= MISSION_DURATION_SECONDS and not reported_10min:
-                print("\n" + "="*50)
-                print(f"AVISO: A janela padrão de 10 minutos de missão foi atingida!")
-                print(f"Total de aeronaves únicas rastreadas: {len(aircraft_cache)}")
-                print("O sistema continuará rodando em modo de monitoramento contínuo...")
-                print("="*50 + "\n")
-                reported_10min = True
-                break
+        with state_lock:
+            # The receiver says it has everything before requested_id.
+            for cached_id in list(payload_cache):
+                if cached_id < requested_id:
+                    del payload_cache[cached_id]
 
-            line = stream.readline()
-            if not line:
-                raise ConnectionError("Stream fechado pelo servidor.")
+            # If we've already sent this ID, resend its original payload.
+            payload = payload_cache.get(requested_id)
 
-            line = line.strip()
+        if payload is not None:
+            send_payload(payload)
 
-            if line:
-                parts = line.split(',')
 
-                if len(parts) > 15 and parts[0] == 'MSG':
-                    msg_type = parts[1]
-                    icao = parts[4]
+def process_block(lines):
+    global next_id
 
-                    if icao not in aircraft_cache:
-                        aircraft_cache[icao] = AircraftTelemetry(icao=icao)
+    if not lines:
+        return
 
-                    plane = aircraft_cache[icao]
-                    updated = False
-                    current_timestamp = datetime.now(timezone.utc).strftime('%Y-%m-%dT%H:%M:%SZ')
+    header = lines[0].strip()
+    if not (header.startswith("*") and header.endswith(";")):
+        return
 
-                    plane.msg_type = msg_type
+    fields = {}
+    for line in lines[1:]:
+        if ":" in line:
+            key, value = line.split(":", 1)
+            fields[key.strip()] = value.strip()
 
-                    if msg_type == '3':
-                        if parts[11]:
-                            plane.alt = float(parts[11])
-                            updated = True
-                        if parts[14] and parts[15]:
-                            plane.lat = float(parts[14])
-                            plane.lon = float(parts[15])
-                            updated = True
+    message_id = fields["ICAO Address"]
 
-                    elif msg_type == '4':
-                        if parts[12]:
-                            plane.vel = float(parts[12])
-                            updated = True
-                        if len(parts) > 13 and parts[13]:
-                            plane.heading = float(parts[13])
-                            updated = True
+    with state_lock:
+        remove_expired()
 
-                    if updated:
-                        global_sequence += 1
-                        plane.seq_id = global_sequence
-                        plane.timestamp = current_timestamp
+        message = messages.setdefault(message_id, {})
+        message.update(fields)
+        message["tick"] = datetime.now(timezone.utc).isoformat()
 
-                        if plane.alt > 0 and plane.lat is not None and plane.lon is not None:
-                            plane.val_flags = True
+        payload_id = next_id
+        next_id += 1
 
-                        if plane.val_flags:
-                            json_record = json.dumps(asdict(plane), separators=(',',':'))
+        payload = json.dumps({
+            "id": payload_id,
+            "messages": messages,
+        }).encode("utf-8") + b"\n"
 
-                            with open(LOG_FILE, 'a') as f:
-                                f.write(json_record + '\n')
+        payload_cache[payload_id] = payload
 
-                            print(f"[{int(elapsed_time)}s] [{current_timestamp}] Log -> Aeronave {icao} | Alt: {plane.alt}ft | Vel: {plane.vel}kt | Total Rastreadas: {len(aircraft_cache)}")
+    print(payload)
+    send_payload(payload)
 
-    except Exception as e:
-        print(f"Erro de conexão ou socket: {e}. Tentando reconectar em 3 segundos...")
-        if stream:
-            try: stream.close()
-            except: pass
-        if s:
-            try: s.close()
-            except: pass
-        time.sleep(3)
+
+threading.Thread(target=read_serial, daemon=True).start()
+
+for line in sys.stdin:
+    line = line.rstrip("\r\n")
+    print(f"=== {line}")
+    if not line.strip():
+        process_block(block_lines)
+        block_lines = []
+    else:
+        block_lines.append(line)
+
+process_block(block_lines)
+ser.close()
